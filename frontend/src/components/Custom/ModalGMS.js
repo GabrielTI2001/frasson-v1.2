@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Modal, CloseButton } from "react-bootstrap";
-import { Button, Form, Row, Col, Card} from 'react-bootstrap';
+import { Button, Form, Row, Col} from 'react-bootstrap';
 import { convertGMStoGD } from '../../helpers/utils';
 
 const ModalGMS = ({show, type, formData, changeform, changemodal}) =>{

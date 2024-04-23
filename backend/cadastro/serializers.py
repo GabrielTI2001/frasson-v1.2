@@ -58,6 +58,29 @@ class ListAnalisesSolo(serializers.ModelSerializer):
         fields = ['data_coleta', 'str_cliente', 'localizacao', 'status']
 
 class detailAnalisesSolo(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    localizacao = serializers.CharField(source='fazenda.nome_imovel', read_only=True)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['fazenda', 'cliente', 'identificacao_amostra', 'profundidade', 'responsavel', 'laboratorio_analise']:
+                field.required = True
+    def get_status(self, obj):
+        status = {
+            'text': 'Aguardando Resultado' if obj.calcio_cmolc_dm3 is None else 'Concluída',
+            'color': 'warning' if obj.calcio_cmolc_dm3 is None else 'success'
+        }
+        return status
+    def validate_file(self, value):
+        if 'file' in self.initial_data:
+            file = self.initial_data.get('file')
+            file_name = file.name.lower()
+            if not file_name.endswith('.pdf'):
+                raise serializers.ValidationError("Arquivo deve ser em formato PDF!")     
+            return file
+        else:
+            return None
     class Meta:
         model = Analise_Solo
         fields = '__all__'

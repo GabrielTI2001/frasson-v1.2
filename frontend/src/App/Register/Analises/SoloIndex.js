@@ -25,8 +25,10 @@ const IndexAnaliseSolo = () => {
 
     }
 
-    const submit = () =>{
-
+    const submit = (type, data) =>{
+        if (type === 'add'){
+            setSearchResults([...searchResults, data])
+        }
     }
 
     useEffect(()=>{
