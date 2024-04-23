@@ -8,6 +8,5 @@ const PrivateRoute = () => {
     <Navigate to={`${process.env.PUBLIC_URL}/auth/login`} />
   );
 };
-//teste
 
 export default PrivateRoute;
