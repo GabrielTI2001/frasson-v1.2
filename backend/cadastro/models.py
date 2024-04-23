@@ -1,0 +1,96 @@
+from django.db import models
+from users.models import User
+from pipefy.models import Cadastro_Pessoal, Imoveis_Rurais
+import uuid, os
+
+class Municipios(models.Model):
+    id = models.BigIntegerField(primary_key=True, verbose_name='Código Município')
+    cod_uf = models.IntegerField(verbose_name='Código UF')
+    sigla_uf = models.CharField(max_length=2, null=True, verbose_name='Sigla UF')
+    nome_uf = models.CharField(max_length=255, null=True, verbose_name='Nome UF')
+    nome_municipio = models.CharField(max_length=255, null=True, verbose_name='Nome Município')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Municípios'
+    def __str__(self):
+        return f"{self.nome_municipio} - {self.sigla_uf}"
+
+class Tipo_Maquina_Equipamento(models.Model):
+    description = models.CharField(max_length=255, null=True, verbose_name='Descrição Tipo')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Tipo Máquina ou Equipamento'
+    def __str__(self):
+        return self.description
+
+class Maquinas_Equipamentos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    proprietario = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Nome Proprietário')
+    tipo = models.ForeignKey(Tipo_Maquina_Equipamento, on_delete=models.SET_NULL,  null=True, blank=True, verbose_name='Tipo Máquina')
+    quantidade = models.IntegerField(null=True, verbose_name='Quantidade', default=1)
+    ano_fabricacao = models.IntegerField(null=True, verbose_name='Ano Fabricação')
+    fabricante = models.CharField(max_length=255, null=True, verbose_name='Fabricante')
+    modelo = models.CharField(max_length=255, null=True, verbose_name='Modelo da Máquina ou Equipamento')
+    valor_total = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Total da Máquina ou Equipamento')
+    situacao = models.CharField(max_length=1, null=True, verbose_name='Situação')
+    cor = models.CharField(max_length=50, null=True, verbose_name='Cor da Máquina ou Equipamento')
+    serie_chassi = models.CharField(max_length=255, null=True, verbose_name='N° Chassi ou Série')
+    potencia_capacidade = models.CharField(max_length=255, null=True, verbose_name='Potência ou Capacidade')
+    propriedade = models.CharField(max_length=255, null=True, verbose_name='Imóvel Rural')
+    estado_conservacao = models.CharField(max_length=50, null=True, verbose_name='Estado Conservação')
+    participacao = models.DecimalField(max_digits=6, decimal_places=2, null=True, verbose_name='Percentual Participação')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Criado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Máquinas e Equipamentos'
+    def __str__(self):
+        return self.proprietario.razao_social
+    
+
+class Fotos_Maquinas_Equipamentos(models.Model):
+    description = models.CharField(max_length=255, null=True, verbose_name='Descrição')
+    file = models.FileField(upload_to='maquinas', null=True, verbose_name='Foto')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Fotos - Máquinas e Equipamentos'
+    def __str__(self):
+        return self.description
+
+
+class Tipo_Benfeitorias(models.Model):
+    id = models.AutoField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    description = models.CharField(max_length=255, null=True, verbose_name='Descrição')
+    def __str__(self):
+        return self.description
+    
+class Benfeitorias_Fazendas(models.Model):
+    id = models.AutoField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    type = models.ForeignKey(Tipo_Benfeitorias, on_delete=models.SET_NULL, null=True, verbose_name='Tipo de Benfeitoria')
+    farm = models.ForeignKey(Imoveis_Rurais, on_delete=models.SET_NULL, null=True, verbose_name='Fazenda')
+    tamanho = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Tamanho (m²)')
+    valor_estimado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Estimado (R$)')
+    data_construcao = models.DateField(verbose_name='Data Construção')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+def upload_to_picture_benfeitoria(instance, filename):
+    # Gera um nome de arquivo usando o UUID do registro.
+    ext = filename.split('.')[-1]
+    uuid = str(instance.uuid)
+    filename = f'{uuid}.{ext}'
+    return os.path.join('benfeitorias/', filename)
+
+class Pictures_Benfeitorias(models.Model):
+    id = models.AutoField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    benfeitoria = models.ForeignKey(Benfeitorias_Fazendas, on_delete=models.CASCADE, null=True)
+    file = models.FileField(upload_to=upload_to_picture_benfeitoria, null=True, verbose_name='Fotos')
+    upload_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    upload_at = models.DateTimeField(auto_now_add=True)

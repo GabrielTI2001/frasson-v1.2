@@ -1,0 +1,24 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import PropTypes from 'prop-types';
+import React from 'react';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+const ActionButton = ({ placement = 'top', title, icon, ...rest }) => {
+  return (
+    <OverlayTrigger
+      placement={placement}
+      overlay={<Tooltip style={{ position: 'fixed' }}>{title}</Tooltip>}
+    >
+      <Button {...rest}>
+        <FontAwesomeIcon icon={icon} size='xs' />
+      </Button>
+    </OverlayTrigger>
+  );
+};
+
+ActionButton.propTypes = {
+  placement: PropTypes.oneOf(['top', 'bottom', 'left', 'right']),
+  title: PropTypes.string.isRequired,
+};
+
+export default ActionButton;

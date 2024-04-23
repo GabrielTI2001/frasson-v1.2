@@ -1,0 +1,90 @@
+import React, {useEffect, useState} from "react";
+import { Card, Row, Col } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUsers, faTractor, faPersonDigging, faFlask} from "@fortawesome/free-solid-svg-icons";
+import { fetchPessoal } from "../Pipeline/Data";
+import { fetchBenfeitorias } from "./Data";
+import { useAppContext } from "../../Main";
+
+const IndexCadGerais = () =>{
+    const {
+      config: { theme}
+    } = useAppContext();
+    const [countRegs, setCountRegs] = useState();
+    useEffect(()=>{
+      const buscadados = async () =>{
+        const dadospessoal = await fetchPessoal()
+        const dadosbenfeitoria = await fetchBenfeitorias()
+        setCountRegs({...countRegs, 'pessoal':dadospessoal.length, 'benfeitoria':dadosbenfeitoria.length})
+      }
+      if(!countRegs){
+        buscadados()
+      }
+    },[])
+    return (
+        <>
+        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
+            <li className="breadcrumb-item fw-bold" aria-current="page">
+                Cadastros Gerais
+            </li>    
+        </ol>
+        <Row className="gy-3 gx-4" xs={1} sm={3} lg={5} xl={6}>
+          <Col>
+            <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'/pipeline/pessoal'}>
+                <Card.Body as={Row} className="justify-content-between">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faUsers} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs-xs">Cadastro Pessoal</h5>     
+                  <h5 className="text-center text-white">{countRegs && countRegs.pessoal} Registros</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
+          <Col>
+            <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'/register/machinery'}>
+                <Card.Body as={Row} className="justify-content-between">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faTractor} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs-xs">Máquinas e Equipamentos</h5>     
+                  <h5 className="text-center text-white">0 Registros</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
+          <Col>
+            <Card as={Col} className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'/register/farm-assets'}>
+                <Card.Body as={Row} className="justify-content-center">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faPersonDigging} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs-xs">Benfeitorias Fazendas</h5>     
+                  <h5 className="text-center text-white">{countRegs && countRegs.benfeitoria} Registros</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
+          <Col>
+            <Card as={Col} className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'/register/analysis/soil'}>
+                <Card.Body as={Row} className="justify-content-center">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faFlask} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs-xs">Análises de Solo</h5>     
+                  <h5 className="text-center text-white">0 Registros</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
+        </Row>
+        </>
+    )
+}
+
+export default IndexCadGerais;

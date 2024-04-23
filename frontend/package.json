@@ -1,0 +1,69 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/free-solid-svg-icons": "^6.5.1",
+    "@fortawesome/react-fontawesome": "^0.2.0",
+    "@react-google-maps/api": "^2.19.3",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "apexcharts": "^3.48.0",
+    "chart": "^0.1.2",
+    "chartjs": "^0.3.24",
+    "date-fns": "^3.3.1",
+    "dayjs": "^1.11.10",
+    "dotenv": "^16.4.5",
+    "fs": "^0.0.1-security",
+    "is_js": "^0.9.0",
+    "path": "^0.12.7",
+    "react": "^18.2.0",
+    "react-18-image-lightbox": "^5.1.4",
+    "react-apexcharts": "^1.4.1",
+    "react-app-rewired": "^2.2.1",
+    "react-bootstrap": "^2.10.1",
+    "react-datepicker": "^6.1.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.22.1",
+    "react-scripts": "5.0.1",
+    "react-select": "^5.8.0",
+    "react-select2": "^4.0.3",
+    "react-sweetalert2": "^0.6.0",
+    "react-table": "^7.8.0",
+    "react-toastify": "^10.0.4",
+    "simplebar-react": "^3.2.4",
+    "util": "^0.12.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "browser": {
+    "fs": false,
+    "os": false,
+    "path": false
+  }
+}
