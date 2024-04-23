@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Row, Col} from 'react-bootstrap';
-import ModalGMS from '../ModalGMS';
+import ModalGMS from '../../../components/Custom/ModalGMS';
 import { AmbientalContext } from '../../../context/Context';
 
 const PontoForm = ({ hasLabel, type, data}) => {

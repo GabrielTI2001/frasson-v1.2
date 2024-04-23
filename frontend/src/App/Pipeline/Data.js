@@ -1,8 +1,9 @@
 
-export const fetchPessoal = async () => {
+export const fetchPessoal = async (inputValue) => {
   const token = localStorage.getItem("token")
+  const params = inputValue ? `search=${inputValue}` : 'all=1'
   try {
-    const apiUrl = `${process.env.REACT_APP_API_URL}/pipefy/pessoal/?all=1`;
+    const apiUrl = `${process.env.REACT_APP_API_URL}/pipefy/pessoal/?${params}`;
     const response = await fetch(apiUrl, {
       headers: {
         'Content-Type': 'application/json',

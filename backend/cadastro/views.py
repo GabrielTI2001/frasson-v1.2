@@ -2,8 +2,9 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias
+from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
 from .serializers import selectMunicipio, ListMachinery, ListBenfeitorias, DetailBenfeitorias, ListTipoBenfeitoria, serPictureBenfeitoria
+from .serializers import ListAnalisesSolo, detailAnalisesSolo
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
@@ -118,3 +119,12 @@ class PicturesBenfeitoriasView(viewsets.ModelViewSet):
                 headers = self.get_success_headers(serializer.data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.data)
+
+class AnalisesSoloView(viewsets.ModelViewSet):
+    queryset = Analise_Solo.objects.all()
+    serializer_class = detailAnalisesSolo
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ListAnalisesSolo
+        else:
+            return self.serializer_class

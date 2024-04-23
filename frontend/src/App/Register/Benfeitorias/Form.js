@@ -131,7 +131,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} xl={2} lg={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo de Benfeitoria*</Form.Label>}
           <Form.Select
-            placeholder={!hasLabel ? 'Estado Conservação' : ''}
+            placeholder={!hasLabel ? 'Tipo de Benfeitoria' : ''}
             value={formData.type || ''}
             name="type"
             onChange={handleFieldChange}

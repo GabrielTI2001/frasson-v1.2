@@ -57,6 +57,7 @@ const AdvanceTable = ({
                 {...column.getHeaderProps(
                   column.getSortByToggleProps(column.headerProps)
                 )}
+                className='text-center'
               >
                 {column.render('Header')}
                 {column.canSort ? (
@@ -75,7 +76,7 @@ const AdvanceTable = ({
               </th>
             ))}
             {tableProps.showactions &&(
-              <th>Ações</th>
+              <th className='text-center'>Ações</th>
             )}
           </tr>
         </thead>
@@ -90,7 +91,7 @@ const AdvanceTable = ({
                     <td
                       key={index}
                       {...cell.getCellProps(cell.column.cellProps)}
-                      className={`${!cell.value && 'text-center'}`}
+                      className='text-center'
                     >
                       {tableProps.index_status && index === tableProps.index_status? 
                       <SubtleBadge bg={row.original.status.color} className='fw-bold'>{row.original.status.text}</SubtleBadge>

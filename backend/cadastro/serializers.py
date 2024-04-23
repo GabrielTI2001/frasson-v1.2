@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Tipo_Benfeitorias, Pictures_Benfeitorias
+from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Tipo_Benfeitorias, Pictures_Benfeitorias, Analise_Solo
 
 class selectMunicipio(serializers.ModelSerializer):
     class Meta:
@@ -41,4 +41,23 @@ class ListTipoBenfeitoria(serializers.ModelSerializer):
 class serPictureBenfeitoria(serializers.ModelSerializer):
     class Meta:
         model = Pictures_Benfeitorias
+        fields = '__all__'
+
+class ListAnalisesSolo(serializers.ModelSerializer):
+    status = serializers.SerializerMethodField()
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    localizacao = serializers.CharField(source='fazenda.nome_imovel', read_only=True)
+    def get_status(self, obj):
+        status = {
+            'text': 'Aguardando Resultado' if obj.calcio_cmolc_dm3 is None else 'Concluída',
+            'color': 'warning' if obj.calcio_cmolc_dm3 is None else 'success'
+        }
+        return status
+    class Meta:
+        model = Analise_Solo
+        fields = ['data_coleta', 'str_cliente', 'localizacao', 'status']
+
+class detailAnalisesSolo(serializers.ModelSerializer):
+    class Meta:
+        model = Analise_Solo
         fields = '__all__'

@@ -8,6 +8,7 @@ router = routers.DefaultRouter()
 router.register(r'municipios', views.MunicipioView)
 router.register(r'machinery', views.MachineryView)
 router.register(r'farm-assets', views.BenfeitoriasView)
+router.register(r'analysis-soil', views.AnalisesSoloView)
 router.register(r'types-farm-assets', views.TipoBenfeitoriaView)
 router.register(r'picture-farm-assets', views.PicturesBenfeitoriasView)
 

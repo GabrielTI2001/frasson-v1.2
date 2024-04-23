@@ -165,3 +165,26 @@ export const columnsBenfeitorias = [
     headerProps: { className: 'text-900 p-1' }
   }
 ];
+
+export const columnsAnalisesSolo = [
+  {
+    accessor: 'data_coleta',
+    Header: 'Data Coleta',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_cliente',
+    Header: 'Cliente',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'localizacao',
+    Header: 'Localização',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'status',
+    Header: 'Status',
+    headerProps: { className: 'text-900 p-1' }
+  }
+];
