@@ -151,20 +151,20 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
                 'capacidade_troca_cations': locale.format_string('%.2f', capacidade_troca_cations, True),
                 'saturacao_bases': locale.format_string('%.2f', saturacao_bases, True),
                 'rel_calcio_magnesio': {
-                    'number': locale.format_string('%.2f', obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3, True),
-                    'nivel': 'BAIXO' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 < niveis_embrapa['rel_ca_mg']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 > niveis_embrapa['rel_ca_mg']['max'] else 'IDEAL'),
-                    'nivel_color': 'warning' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 < niveis_embrapa['rel_ca_mg']['min'] else ('primary' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 > niveis_embrapa['rel_ca_mg']['max'] else 'success'),
+                    'value': locale.format_string('%.2f', obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3, True),
+                    'level': 'BAIXO' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 < niveis_embrapa['rel_ca_mg']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 > niveis_embrapa['rel_ca_mg']['max'] else 'IDEAL'),
+                    'color': 'warning' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 < niveis_embrapa['rel_ca_mg']['min'] else ('primary' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 > niveis_embrapa['rel_ca_mg']['max'] else 'success'),
                 },
                 
                 'rel_calcio_potassio': {
-                    'number': locale.format_string('%.2f', obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3, True),
-                    'nivel': 'BAIXO' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_ca_K']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_ca_K']['max'] else 'IDEAL'),
-                    'nivel_color': 'warning' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_ca_K']['min'] else ('primary' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_ca_K']['max'] else 'success'),
+                    'value': locale.format_string('%.2f', obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3, True),
+                    'level': 'BAIXO' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_ca_K']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_ca_K']['max'] else 'IDEAL'),
+                    'color': 'warning' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_ca_K']['min'] else ('primary' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_ca_K']['max'] else 'success'),
                 }, 
                 'rel_magnesio_potassio': {
-                    'number': locale.format_string('%.2f', obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3, True),
-                    'nivel': 'BAIXO' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_mg_k']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_ca_K']['max'] else 'IDEAL'),
-                    'nivel_color': 'warning' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_mg_k']['min'] else ('primary' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_mg_k']['max'] else 'success'),
+                    'value': locale.format_string('%.2f', obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3, True),
+                    'level': 'BAIXO' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_mg_k']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_ca_K']['max'] else 'IDEAL'),
+                    'color': 'warning' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_mg_k']['min'] else ('primary' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_mg_k']['max'] else 'success'),
                 }, 
                 'calagem': locale.format_string('%.2f', calagem, True),
             }

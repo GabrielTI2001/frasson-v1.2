@@ -5,7 +5,6 @@ import { Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Info from "../../../components/Custom/Info";
 import { Placeholder } from "react-bootstrap";
-import {format} from 'date-fns'
 import GoogleMap from "../../../components/map/GoogleMap";
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -147,10 +146,10 @@ export const View = () => {
                     <Info title="Nome Propriedade" description={appo.nome_fazenda} />
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
-                    <Info title="Data Publicação" description={format(new Date(appo.data_documento), 'dd/MM/yyyy')} />
+                    <Info title="Data Publicação" description={new Date(appo.data_documento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
-                    <Info title="Data Validade" description={format(new Date(appo.data_vencimento), 'dd/MM/yyyy')} />
+                    <Info title="Data Validade" description={new Date(appo.data_vencimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
                     <Info title="Aquífero" description={appo.str_tipo_aquifero} />
@@ -169,7 +168,7 @@ export const View = () => {
                     }
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
-                    <Info title="Data REAPPO" description={format(new Date(appo.renovacao.data), 'dd/MM/yyyy')} />
+                    <Info title="Data REAPPO" description={new Date(appo.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
                     <h6 className="fs-0 mb-0"><span className="fw-bold" style={{fontSize: '12px'}}>Status REAPPO</span></h6>
@@ -183,7 +182,7 @@ export const View = () => {
                 </Col>
                 <Col lg={4} xl={4} sm={4}>
                     <Info title="Criado Por" description={appo.info_user.first_name + " " +appo.info_user.last_name + " em " + 
-                    format(new Date(appo.created_at), 'dd/MM/yyyy HH:mm')} />
+                    new Date(appo.created_at).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
                 </Col>
             </Row>
         ) : (

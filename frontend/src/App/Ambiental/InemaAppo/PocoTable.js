@@ -1,9 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import { useAppContext } from "../../../Main";
-import {format} from 'date-fns'
-import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen } from '@fortawesome/free-solid-svg-icons';
@@ -74,7 +72,7 @@ const PocoTable = ({
                     </td>
                   );
                 })}
-                <td className='text-center'>{row.original.data_perfuracao ? format(row.original.data_perfuracao, 'dd/MM/yyyy'): "-"}</td>
+                <td className='text-center'>{row.original.data_perfuracao ? new Date(row.original.data_perfuracao).toLocaleDateString('pt-BR', {timeZone: 'UTC'}): "-"}</td>
                 {row.original.poco_perfurado ? <td className='text-success fw-bold'>Poço Perfurado</td> : 
                 <td className='text-warning fw-bold'>Não Perfurado</td>}
 

@@ -2,7 +2,6 @@ import React from 'react';
 import { convertGDtoGMS } from '../../helpers/utils';
 import SubtleBadge from '../../components/common/SubtleBadge';
 import { Link } from 'react-router-dom';
-import { format } from 'date-fns';
 
 const MapInfo = ({infoponto, type}) => {
   return (
@@ -53,7 +52,7 @@ export const MapInfoDetail = ({infoponto, type}) => {
         </>}
 
         <div><strong className='fw-bold me-2'>Data Validade: </strong>
-          <label className='mb-0 me-1'>{format(processo.data_validade, 'dd/MM/yyyy')}</label>
+          <label className='mb-0 me-1'>{new Date(processo.data_validade).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</label>
           {new Date(processo.data_validade) < new Date()
             ?<SubtleBadge bg='danger'>Vencida</SubtleBadge>
             :<SubtleBadge bg='success' className='bg-gradient'>Vigente</SubtleBadge>

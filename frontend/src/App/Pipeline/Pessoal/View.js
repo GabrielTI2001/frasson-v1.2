@@ -3,7 +3,6 @@ import React from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import {format} from 'date-fns'
 import {Tabs, Tab} from "react-bootstrap";
 import Avatar from '../../../components/common/Avatar';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -157,7 +156,7 @@ const ViewPessoal = () => {
                 </address>
                 <Row className="mb-3">
                     <div><FontAwesomeIcon icon={faCakeCandles} className="me-2"/>
-                        {pessoa && pessoa.data_nascimento ? `${format(new Date(pessoa.data_nascimento), 'dd/MM/yyyy')} (${calcIdade(pessoa.data_nascimento)} anos)` :'-'}
+                        {pessoa && pessoa.data_nascimento ? `${new Date(pessoa.data_nascimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} (${calcIdade(pessoa.data_nascimento)} anos)` :'-'}
                     </div>
                     <div><FontAwesomeIcon icon={faBriefcase} className="me-2"/>{pessoa && pessoa.profissao ? pessoa.profissao :'-'}</div>
                     <div><FontAwesomeIcon icon={faUsersLine} className="me-2"/>{pessoa && pessoa.grupo_info ? pessoa.grupo_info :'-'}</div>

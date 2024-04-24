@@ -4,7 +4,6 @@ import {Spinner} from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../../Main";
-import { format } from "date-fns";
 import {Table} from "react-bootstrap";
 
 const ListOperacoes = ({operacoes, nome_pessoa}) => {
@@ -36,7 +35,7 @@ const ListOperacoes = ({operacoes, nome_pessoa}) => {
             <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
             {operacoes.map(operacao =>(
             <tr key={operacao.id} className={`${theme === 'light' ? 'hover-table-light': 'hover-table-dark'}`}>
-                <td className="text-center">{format(new Date(operacao.data_emissao_cedula),'dd/MM/yyyy')}</td>
+                <td className="text-center">{new Date(operacao.data_emissao_cedula).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
                 <td className="text-center">{operacao.numero_operaco}</td>
                 <td className="text-center">{operacao.name_instituicao}</td>
                 <td className="text-center">{operacao.name_item}</td>
@@ -44,7 +43,7 @@ const ListOperacoes = ({operacoes, nome_pessoa}) => {
                  {minimumFractionDigits: 2, maximumFractionDigits:2}): '-'}</td>
                 <td className="text-center">{operacao.taxa_juros ? Number(operacao.valor_operacao).toLocaleString('pt-BR',
                  {minimumFractionDigits: 2, maximumFractionDigits:2}): '-'}</td>
-                <td className="text-center">{format(new Date(operacao.data_vencimento),'dd/MM/yyyy')}</td>
+                <td className="text-center">{new Date(operacao.data_vencimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
             </tr>
             ))}
             </tbody>

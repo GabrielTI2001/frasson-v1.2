@@ -6,7 +6,6 @@ import { Col, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faVial } from '@fortawesome/free-solid-svg-icons';
 import {Spinner} from 'react-bootstrap';
-import { format } from 'date-fns';
 
 const ResultAnaliseSolo = ({dados}) => {
     return (
@@ -19,7 +18,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.calcio ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.calcio.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.calcio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.calcio.level}</span>
+                    <span className={`badge bg-${dados.calcio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.calcio.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}
                 </Col>
@@ -27,7 +26,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.magnesio ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.magnesio.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.magnesio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.magnesio.level}</span>
+                    <span className={`badge bg-${dados.magnesio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.magnesio.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}
                 </Col>
@@ -41,7 +40,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.potassio ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.potassio.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.potassio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.potassio.level}</span>
+                    <span className={`badge bg-${dados.potassio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.potassio.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}
                 </Col>
@@ -49,7 +48,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.fosforo ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.fosforo.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.fosforo.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.fosforo.level}</span>
+                    <span className={`badge bg-${dados.fosforo.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.fosforo.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}                
                 </Col>
@@ -57,7 +56,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.fosforo_rem ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.fosforo_rem.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.fosforo_rem.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.fosforo_rem.level}</span>
+                    <span className={`badge bg-${dados.fosforo_rem.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.fosforo_rem.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}    
                 </Col>
@@ -65,7 +64,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.enxofre ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.enxofre.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.enxofre.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.enxofre.level}</span>
+                    <span className={`badge bg-${dados.enxofre.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.enxofre.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>
@@ -73,7 +72,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.zinco ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.zinco.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.zinco.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.zinco.level}</span>
+                    <span className={`badge bg-${dados.zinco.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.zinco.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}          
                 </Col>
@@ -81,7 +80,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.ferro ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.ferro.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.ferro.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.ferro.level}</span>
+                    <span className={`badge bg-${dados.ferro.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.ferro.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>
@@ -89,7 +88,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.cobre ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.cobre.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.cobre.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.cobre.level}</span>
+                    <span className={`badge bg-${dados.cobre.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.cobre.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>
@@ -97,7 +96,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.manganes ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.manganes.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.manganes.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.manganes.level}</span>
+                    <span className={`badge bg-${dados.manganes.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.manganes.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>
@@ -105,7 +104,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.boro ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.boro.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.boro.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.boro.level}</span>
+                    <span className={`badge bg-${dados.boro.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.boro.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>
@@ -116,7 +115,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.ph_h20 ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.ph_h20.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.ph_h20.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.ph_h20.level}</span>
+                    <span className={`badge bg-${dados.ph_h20.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.ph_h20.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>
@@ -124,7 +123,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.ph_cacl2 ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.ph_cacl2.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.ph_cacl2.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.ph_cacl2.level}</span>
+                    <span className={`badge bg-${dados.ph_cacl2.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.ph_cacl2.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>
@@ -132,7 +131,7 @@ const ResultAnaliseSolo = ({dados}) => {
                 {dados.mat_org ? 
                 <>
                     <span className='mx-2 fw-bold'>{Number(dados.mat_org.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}</span>
-                    <span class={`badge bg-${dados.mat_org.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.mat_org.level}</span>
+                    <span className={`badge bg-${dados.mat_org.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>{dados.mat_org.level}</span>
                 </> 
                 : <span className='mx-2 fw-bold'>-</span>}  
                 </Col>

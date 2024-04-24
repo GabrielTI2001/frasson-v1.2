@@ -5,7 +5,6 @@ import SubtleBadge from '../../../components/common/SubtleBadge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen, faEye} from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from "../../../Main";
-import { format } from 'date-fns';
 
 const AdvanceTable = ({
   getTableProps,
@@ -96,8 +95,9 @@ const AdvanceTable = ({
                       {tableProps.index_status && index === tableProps.index_status? 
                       <SubtleBadge bg={row.original.status.color} className='fw-bold'>{row.original.status.text}</SubtleBadge>
                       : cell.value ? 
-                      (isDateTime(cell.value) ? format(new Date(cell.value), 'dd/MM/yyyy hh:mm') : 
-                      isDate(cell.value) ? format(new Date(cell.value), 'dd/MM/yyyy') : 
+                      (isDateTime(cell.value) ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) 
+                      +' '+new Date(cell.value).toLocaleTimeString('pt-BR', {timeZone: 'UTC'}): 
+                      isDate(cell.value) ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 
                       isDecimal(cell.value) ? Number(cell.value).toLocaleString('pt-BR',{minimumFractionDigits: 2, maximumFractionDigits:2}) :
                       cell.render('Cell')) 
                       : '-'}

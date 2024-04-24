@@ -21,9 +21,9 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
   const [showModal, setShowModal] = useState({show:false, type:''})
   const channel = new BroadcastChannel('meu_canal');
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
-  const {uuid} = useParams()
-  const [defaultoptions, setDefaultOptions] = useState()
+  const token = localStorage.getItem("token");
+  const uuid = data.uuid;
+  const [defaultoptions, setDefaultOptions] = useState();
 
   const handleApi = async (dadosform) => {
     const link = `${process.env.REACT_APP_API_URL}/register/analysis-soil/${type === 'edit' ? uuid+'/':''}`
@@ -47,13 +47,13 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
       }
       else if (response.status === 201 || response.status === 200){
         if (type === 'edit'){
-          channel.postMessage({ tipo: 'atualizar_machinery', reg:data});
+          submit('edit', {id:data.id, data_coleta:data.data_coleta, cliente:data.str_cliente, localizacao:data.localizacao,
+            status:{text:data.status.text, color:data.status.color}})
           toast.success("Registro Atualizado com Sucesso!")
         }
         else{
-          submit('add', {data_coleta:data.data_coleta, cliente:data.str_cliente, status:{text:data.status.text, color:data.status.color,
-          localizacao:data.localizacao}})
-          // submit('add', data)
+          submit('add', {data_coleta:data.data_coleta, cliente:data.str_cliente, localizacao:data.localizacao,
+            status:{text:data.status.text, color:data.status.color}})
           toast.success("Registro Efetuado com Sucesso!")
         }
       }
@@ -90,9 +90,15 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
   useEffect(()=>{
     const loadFormData = async () => {
       if(data){
-        setFormData({...formData, farm:data.farm, type:data.type, data_construcao:data.data_construcao, 
-          valor_estimado: data.valor_estimado?data.valor_estimado:'', tamanho: data.tamanho?data.tamanho:''})
-        setDefaultOptions({farm:{value:data.farm, label: data.str_farm}}); 
+        //Pega os atributos não nulos de data
+        const filteredData = Object.entries(data)
+          .filter(([key, value]) => value !== null)
+          .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
+        
+        const { str_cliente, localizacao, file, ...restData } = filteredData;
+        setFormData({...formData, ...restData})
+        setDefaultOptions({fazenda:{value:data.fazenda, label: data.localizacao}, 
+          cliente:{value:data.cliente, label: data.str_cliente}}); 
       }
     }
 
@@ -101,8 +107,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
     }
     else{
       if(!defaultoptions){
-        loadFormData()
-        setDefaultOptions({farm:{}})
+        setDefaultOptions({fazenda:{}, cliente:{}})
       }
     }
 

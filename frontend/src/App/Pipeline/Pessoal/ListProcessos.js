@@ -4,7 +4,6 @@ import {Spinner} from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { useAppContext } from "../../../Main";
-import { format } from "date-fns";
 import {Table} from "react-bootstrap";
 
 const ListProcessos = ({processos, nome_pessoa}) => {
@@ -42,7 +41,7 @@ const ListProcessos = ({processos, nome_pessoa}) => {
                 <td className="text-center">{processo.valor_operacao ? Number(processo.valor_operacao).toLocaleString('pt-BR',
                  {minimumFractionDigits: 2, maximumFractionDigits:2}): '-'}</td>
                 <td className="text-center">{processo.phase_name}</td>
-                <td className="text-center">{format(new Date(processo.created_at),'dd/MM/yyyy hh:mm')}</td>
+                <td className="text-center">{new Date(processo.created_at).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
             </tr>
             ))}
             </tbody>

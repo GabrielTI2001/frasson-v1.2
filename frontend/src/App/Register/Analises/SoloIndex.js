@@ -10,6 +10,7 @@ import { Spinner, Row, Col } from "react-bootstrap";
 import { HandleSearch } from "../../../helpers/Data";
 import AnaliseSoloForm from "./SoloForm";
 import { Modal, CloseButton } from "react-bootstrap";
+import { RetrieveRecord } from "../../../helpers/Data";
 
 const InitData = {
     'columns':columnsAnalisesSolo, 'urlapilist':'register/analysis-soil', 
@@ -18,7 +19,8 @@ const InitData = {
 
 const IndexAnaliseSolo = () => {
     const [searchResults, setSearchResults] = useState();
-    const [showmodal, setShowModal] = useState(false)
+    const [analise, setAnalise] = useState();
+    const [showmodal, setShowModal] = useState({show:false, type:''})
     const navigate = useNavigate();
 
     const onClick = (data, type) =>{
@@ -26,13 +28,33 @@ const IndexAnaliseSolo = () => {
             const url = `${InitData.urlview}${data.uuid}`
             navigate(url)
         }
+        if (type === 'edit'){
+            const edit = async () => {
+                const status = await RetrieveRecord(data.uuid, InitData.urlapilist, setter)
+                if (status === 401){
+                    navigate("/auth/login")
+                }
+                setShowModal({show:true, type:'edit'})
+            }
+            edit()
+        }
     }
 
+    const setter = (data) =>{
+        setAnalise(data)
+    }
     const submit = (type, data) =>{
         if (type === 'add'){
             setSearchResults([...searchResults, data])
         }
-        setShowModal(false)
+        if (type === 'edit'){
+            setSearchResults([...searchResults.map( analise =>
+                analise.id === data.id
+                ? data
+                : analise
+              )])
+        }
+        setShowModal({...showmodal, show:false})
     }
 
     useEffect(()=>{
@@ -74,7 +96,7 @@ const IndexAnaliseSolo = () => {
                 </Col>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
                     <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
-                        style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
+                        style={{padding: '2px 5px'}} onClick={() =>{setShowModal({show:true, type:'add'})}}
                     >Novo Cadastro</Link>
                 </Col>
             </Row>     
@@ -104,7 +126,7 @@ const IndexAnaliseSolo = () => {
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
             size="xl"
-            show={showmodal}
+            show={showmodal.show}
             onHide={() => setShowModal(false)}
             dialogClassName="mt-5"
             aria-labelledby="example-modal-sizes-title-lg"
@@ -117,7 +139,10 @@ const IndexAnaliseSolo = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center w-100 sectionform">
-                        <AnaliseSoloForm hasLabel type='add' submit={submit}/>
+                    {showmodal.type === 'add' 
+                        ? <AnaliseSoloForm hasLabel type='add' submit={submit}/>
+                        : <AnaliseSoloForm hasLabel type='edit' submit={submit} data={analise}/>
+                    }  
                     </Row>
             </Modal.Body>
         </Modal>

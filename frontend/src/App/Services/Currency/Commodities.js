@@ -5,7 +5,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@fortawesome/fontawesome-svg-core/styles.css";  
 import { faChartColumn, faArrowTrendDown, faArrowTrendUp, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../../Main";
-import { format } from "date-fns";
 import { LineChart } from "../../../components/Custom/ChartsLine";
 
 const Commodities = () =>{
@@ -236,7 +235,7 @@ const Commodities = () =>{
                 <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
                 {searchResults.map(price =>(
                 <tr key={price.id} style={{cursor:'auto'}}>
-                    <td>{format(new Date(price.date),'dd/MM/yyyy')}</td>
+                    <td>{new Date(price.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</td>
                     <td>{price.str_commodity}</td>
                     <td>{price.localizacao}</td>
                     <td>{price.type}</td>
@@ -250,12 +249,12 @@ const Commodities = () =>{
             {searchResults && formData &&
                 <LineChart 
                     values={searchResults.map(p => Number(p.price))} 
-                    columns={searchResults.map(p => format(new Date(p.date), 'dd/MM/yyyy'))}
+                    columns={searchResults.map(p => new Date(p.date).toLocaleDateString('pt-BR', {timeZone: 'UTC'}))}
                     name='Preço'
                     title={`${searchResults.length > 0 ? 'Preços de '
                         +produtos.filter(produtos => produtos.id === parseInt(formData.produto))[0].commodity
-                        +' - '+format(new Date(formData.data_inicio), 'dd/MM/yyyy')
-                        +' a '+format(new Date(formData.data_final), 'dd/MM/yyyy')
+                        +' - '+new Date(formData.data_inicio).toLocaleDateString('pt-BR', {timeZone: 'UTC'})
+                        +' a '+new Date(formData.data_final).toLocaleDateString('pt-BR', {timeZone: 'UTC'})
                         : ''}`}
                 />
             }

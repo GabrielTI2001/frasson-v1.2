@@ -3,7 +3,6 @@ import { useNavigate, Link } from "react-router-dom";
 // import ActionButton from '../../../components/common/ActionButton';
 import { Row, Table } from "react-bootstrap";
 // import { faTrashAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
-import { format } from "date-fns";
 import SubtleBadge from "../../../components/common/SubtleBadge";
 import AllowedEmailsForm from "../AllowedEmails/AllowedEmailsForm";
 import { useAppContext } from "../../../Main";
@@ -125,7 +124,9 @@ const IndexUsers = () => {
                 <td>{user.first_name} {user.last_name}</td>
                 <td>{user.email}</td>
                 <td><SubtleBadge bg={user.is_active ? 'success' : 'danger'} className='fw-bold'>{user.is_active ? 'Ativo' : 'Inativo'}</SubtleBadge></td>
-                <td>{user.last_login ? format(new Date(user.last_login),'dd/MM/yyyy HH:mm'): '-'}</td>
+                <td>{user.last_login 
+                    ? new Date(user.last_login).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+' '+new Date(user.last_login).toLocaleTimeString('pt-BR', {timeZone: 'UTC'})
+                    : '-'}</td>
                </tr>
             ))} 
             </tbody>

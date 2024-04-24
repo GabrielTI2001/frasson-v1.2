@@ -5,7 +5,6 @@ import { Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {Spinner} from "react-bootstrap";
 import { Placeholder } from "react-bootstrap";
-import {format} from 'date-fns'
 import GoogleMap from "../../../components/map/GoogleMap";
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -135,10 +134,10 @@ const View = () => {
                     <Info title="Portaria" description={outorga.numero_portaria} />
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
-                    <Info title="Data Publicação" description={format(new Date(outorga.data_publicacao), 'dd/MM/yyyy')} />
+                    <Info title="Data Publicação" description={new Date(outorga.data_publicacao).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
-                    <Info title="Data Validade" description={format(new Date(outorga.data_validade), 'dd/MM/yyyy')} />
+                    <Info title="Data Validade" description={new Date(outorga.data_validade).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
                 </Col>
                 <Col lg={3} xl={3} sm={3}>
                     <Info title="Processo INEMA" description={outorga.numero_processo} />
@@ -181,7 +180,7 @@ const View = () => {
                     }
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
-                    {outorga.renovacao && <Info title="Data RENOUT" description={format(new Date(outorga.renovacao.data), 'dd/MM/yyyy')} />}
+                    {outorga.renovacao && <Info title="Data RENOUT" description={new Date(outorga.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}/>}
                 </Col>
                 <Col lg={2} xl={2} sm={2}>
                     <h6 className="fs-0 mb-0"><span className="fw-bold" style={{fontSize: '12px'}}>Status Renovação</span></h6>
@@ -195,7 +194,7 @@ const View = () => {
                 </Col>
                 <Col lg={4} xl={4} sm={4}>
                     <Info title="Criado Por" description={outorga.info_user.first_name + " " +outorga.info_user.last_name + " em " + 
-                    format(new Date(outorga.created_at), 'dd/MM/yyyy HH:mm')} />
+                    new Date(outorga.created_at).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
                 </Col>
             </Row>
         ) : (

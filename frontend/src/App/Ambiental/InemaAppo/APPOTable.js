@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import { Table } from 'react-bootstrap';
 import { useAppContext } from "../../../Main";
-import {format} from 'date-fns'
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 
 const APPOTable = ({
@@ -65,7 +64,7 @@ const APPOTable = ({
                         overlay={
                           <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
                             {`${row.original.status.text === 'Vigente' ? 'Vence' : 'Venceu' } em 
-                            ${format(new Date(row.original.data_vencimento), 'dd/MM/yyyy')}`}
+                            ${new Date(row.original.data_vencimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}`}
                           </Tooltip>
                         }
                       >
@@ -81,7 +80,7 @@ const APPOTable = ({
                     overlay={
                       <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
                         {`${new Date(row.original.renovacao.data) > new Date() ? 'Vence' : 'Venceu'} em 
-                          ${format(new Date(row.original.renovacao.data), 'dd/MM/yyyy')}`}
+                          ${new Date(row.original.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}`}
                       </Tooltip>
                     }
                   >

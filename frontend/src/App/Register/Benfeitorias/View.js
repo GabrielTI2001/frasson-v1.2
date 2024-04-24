@@ -5,7 +5,6 @@ import { RetrieveRecord } from '../../../helpers/Data';
 import PicturesGallery from '../../../components/Custom/Galery';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTractor, faLayerGroup, faCalendarDays, faUpRightAndDownLeftFromCenter, faMoneyBill } from "@fortawesome/free-solid-svg-icons";
-import {format} from 'date-fns'
 import { Link } from 'react-router-dom';
 
 const ViewBenfeitoria = () => {
@@ -64,7 +63,7 @@ const ViewBenfeitoria = () => {
                 </div>
                 <div className='mb-1'>
                     <FontAwesomeIcon icon={faCalendarDays} className="me-2"/><strong>Data Construção: </strong>
-                    {benfeitoria.data_construcao ? `${format(new Date(benfeitoria.data_construcao), 'dd/MM/yyyy')}` :'-'}
+                    {benfeitoria.data_construcao ? `${new Date(benfeitoria.data_construcao).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}` :'-'}
                 </div>
                 <div className='mb-1'>
                     <FontAwesomeIcon icon={faUpRightAndDownLeftFromCenter} className="me-2"/><strong>Tamanho: </strong>
