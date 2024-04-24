@@ -8,7 +8,7 @@ from .serializers import ListAnalisesSolo, detailAnalisesSolo, resultsAnalisesSo
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
-
+from django.db.models import Q
 
 class MunicipioView(viewsets.ModelViewSet):
     queryset = Municipios.objects.all()
@@ -41,7 +41,7 @@ class BenfeitoriasView(viewsets.ModelViewSet):
         all_term = self.request.query_params.get('all', None)   
         if self.action == 'list':
             if search_term:
-                queryset = queryset.filter(type__description__icontains=search_term)
+                queryset = queryset.filter(Q(type__description__icontains=search_term) | Q(farm__nome_imovel__icontains=search_term))
             elif all_term:
                 queryset = queryset
             else:
@@ -125,6 +125,18 @@ class AnalisesSoloView(viewsets.ModelViewSet):
     serializer_class = detailAnalisesSolo
     # permission_classes = (IsAuthenticated,)
     lookup_field = 'uuid'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)   
+        all_term = self.request.query_params.get('all', None)   
+        if self.action == 'list':
+            if search_term:
+                queryset = queryset.filter(Q(fazenda__nome_imovel__icontains=search_term))
+            elif all_term:
+                queryset = queryset
+            else:
+                queryset = queryset[:10]
+        return queryset
     def get_serializer_class(self):
         if self.action == 'list':
             return ListAnalisesSolo

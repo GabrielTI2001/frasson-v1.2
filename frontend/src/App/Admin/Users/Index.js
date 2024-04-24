@@ -125,7 +125,7 @@ const IndexUsers = () => {
                 <td>{user.email}</td>
                 <td><SubtleBadge bg={user.is_active ? 'success' : 'danger'} className='fw-bold'>{user.is_active ? 'Ativo' : 'Inativo'}</SubtleBadge></td>
                 <td>{user.last_login 
-                    ? new Date(user.last_login).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+' '+new Date(user.last_login).toLocaleTimeString('pt-BR', {timeZone: 'UTC'})
+                    ? new Date(user.last_login).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+' '+new Date(user.last_login).toLocaleTimeString('pt-BR')
                     : '-'}</td>
                </tr>
             ))} 

@@ -11,6 +11,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import AnaliseSoloForm from "./SoloForm";
 import { Modal, CloseButton } from "react-bootstrap";
 import { RetrieveRecord } from "../../../helpers/Data";
+import ModalDelete from "../../../components/Custom/ModalDelete";
 
 const InitData = {
     'columns':columnsAnalisesSolo, 'urlapilist':'register/analysis-soil', 
@@ -20,6 +21,7 @@ const InitData = {
 const IndexAnaliseSolo = () => {
     const [searchResults, setSearchResults] = useState();
     const [analise, setAnalise] = useState();
+    const [modaldelete, setModalDelete] = useState({show:false, link:''})
     const [showmodal, setShowModal] = useState({show:false, type:''})
     const navigate = useNavigate();
 
@@ -38,11 +40,15 @@ const IndexAnaliseSolo = () => {
             }
             edit()
         }
+        if (type === 'delete'){
+            setModalDelete({show:true, link:`${process.env.REACT_APP_API_URL}/register/analysis-soil/${data.uuid}/`})
+        }
     }
 
     const setter = (data) =>{
         setAnalise(data)
     }
+
     const submit = (type, data) =>{
         if (type === 'add'){
             setSearchResults([...searchResults, data])
@@ -54,6 +60,10 @@ const IndexAnaliseSolo = () => {
                 : analise
               )])
         }
+        if (type === 'delete'){
+            setSearchResults([...searchResults.filter( analise => analise.uuid !== data)])
+        }
+        
         setShowModal({...showmodal, show:false})
     }
 
@@ -146,6 +156,7 @@ const IndexAnaliseSolo = () => {
                     </Row>
             </Modal.Body>
         </Modal>
+        <ModalDelete show={modaldelete.show} link={modaldelete.link} close={() => setModalDelete({show: false, link:''})} update={submit}/>
         </>
     );
   };

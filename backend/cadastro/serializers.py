@@ -16,9 +16,10 @@ class ListMachinery(serializers.ModelSerializer):
 
 class ListBenfeitorias(serializers.ModelSerializer):
     name_farm = serializers.CharField(source='farm.nome_imovel', read_only=True)
+    name_type = serializers.CharField(source='type.description', read_only=True)
     class Meta:
         model = Benfeitorias_Fazendas
-        fields = ['id', 'uuid', 'data_construcao', 'type', 'name_farm', 'tamanho', 'valor_estimado']
+        fields = ['id', 'uuid', 'data_construcao', 'name_type', 'name_farm', 'tamanho', 'valor_estimado']
 
 class DetailBenfeitorias(serializers.ModelSerializer):
     pictures = serializers.SerializerMethodField(required=False, read_only=True)

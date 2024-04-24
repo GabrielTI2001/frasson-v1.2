@@ -149,7 +149,7 @@ export const columnsBenfeitorias = [
     headerProps: { className: 'text-900 p-1' }
   },
   {
-    accessor: 'type',
+    accessor: 'name_type',
     Header: 'Tipo',
     headerProps: { className: 'text-900 p-1' }
   },

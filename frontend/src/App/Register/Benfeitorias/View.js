@@ -27,11 +27,11 @@ const ViewBenfeitoria = () => {
         }
         else{
             if(!images){
-                // const img = benfeitoria.pictures.map(picture => ({
-                //     id:picture.id, url:`${process.env.REACT_APP_API_URL}/${picture.url}`
-                // }))
-                const img = [{id: benfeitoria.pictures[0].id, url:`${process.env.REACT_APP_API_URL}/${benfeitoria.pictures[0].url}`}, 
-                {id: benfeitoria.pictures[0].id, url:`${process.env.REACT_APP_API_URL}/${benfeitoria.pictures[0].url}`}]
+                const img = benfeitoria.pictures.map(picture => ({
+                    id:picture.id, url:`${process.env.REACT_APP_API_URL}/${picture.url}`
+                }))
+                // const img = [{id: benfeitoria.pictures[0].id, url:`${process.env.REACT_APP_API_URL}/${benfeitoria.pictures[0].url}`}, 
+                // {id: benfeitoria.pictures[0].id, url:`${process.env.REACT_APP_API_URL}/${benfeitoria.pictures[0].url}`}]
                 setImages(img)
             }
         }

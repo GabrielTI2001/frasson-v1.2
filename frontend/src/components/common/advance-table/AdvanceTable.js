@@ -96,7 +96,7 @@ const AdvanceTable = ({
                       <SubtleBadge bg={row.original.status.color} className='fw-bold'>{row.original.status.text}</SubtleBadge>
                       : cell.value ? 
                       (isDateTime(cell.value) ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) 
-                      +' '+new Date(cell.value).toLocaleTimeString('pt-BR', {timeZone: 'UTC'}): 
+                      +' '+new Date(cell.value).toLocaleTimeString('pt-BR'): 
                       isDate(cell.value) ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 
                       isDecimal(cell.value) ? Number(cell.value).toLocaleString('pt-BR',{minimumFractionDigits: 2, maximumFractionDigits:2}) :
                       cell.render('Cell')) 

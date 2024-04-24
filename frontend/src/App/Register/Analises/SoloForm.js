@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col, OverlayTrigger, Tooltip} from 'react-bootstrap';
 import { FetchImoveisRurais} from '../Data';
@@ -8,7 +8,7 @@ import { fetchPessoal } from '../../Pipeline/Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { useAppContext } from '../../../Main';
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faCircleQuestion, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
@@ -22,7 +22,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
   const channel = new BroadcastChannel('meu_canal');
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const uuid = data.uuid;
+  const uuid = data ? data.uuid : '';
   const [defaultoptions, setDefaultOptions] = useState();
 
   const handleApi = async (dadosform) => {
@@ -47,13 +47,13 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
       }
       else if (response.status === 201 || response.status === 200){
         if (type === 'edit'){
-          submit('edit', {id:data.id, data_coleta:data.data_coleta, cliente:data.str_cliente, localizacao:data.localizacao,
-            status:{text:data.status.text, color:data.status.color}})
+          submit('edit', {id:data.id, uuid:data.uuid, data_coleta:data.data_coleta, str_cliente:data.str_cliente, 
+            localizacao:data.localizacao, status:{text:data.status.text, color:data.status.color}})
           toast.success("Registro Atualizado com Sucesso!")
         }
         else{
-          submit('add', {data_coleta:data.data_coleta, cliente:data.str_cliente, localizacao:data.localizacao,
-            status:{text:data.status.text, color:data.status.color}})
+          submit('add', {id:data.id, uuid:data.uuid, data_coleta:data.data_coleta, str_cliente:data.str_cliente, 
+            localizacao:data.localizacao, status:{text:data.status.text, color:data.status.color}})
           toast.success("Registro Efetuado com Sucesso!")
         }
       }
@@ -258,6 +258,15 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.file : ''}</label>
         </Form.Group>
+
+        {type === 'edit' && data.file && <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Label className='fw-bold mb-1'>Arquivo Atual</Form.Label>
+          <Col>
+            <Link to={`${data.file}`} target="__blank" className="btn btn-info py-0 px-2 ms-0 w-50">
+                <FontAwesomeIcon icon={faFilePdf} className="me-2"></FontAwesomeIcon>Visualizar
+            </Link>
+          </Col>
+        </Form.Group>}
 
         <hr className='ms-3'></hr>
         <h4 style={{fontSize:'14px'}} className='fw-700'>Resultados</h4>

@@ -7,7 +7,6 @@ import { faTrash, faPencil } from '@fortawesome/free-solid-svg-icons';
 //A prop images deve receber um objeto com id e url da imagem
 const PicturesGallery = ({ images, showactions, action }) => {
   const mudaarquivo = (e) =>{
-    // setFormData({...formData, [e.target.name]:e.target.files})
     action('edit', {id:e.target.id, file:e.target.files[0]})
   }
   return (
