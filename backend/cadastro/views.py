@@ -4,7 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
 from .serializers import selectMunicipio, ListMachinery, ListBenfeitorias, DetailBenfeitorias, ListTipoBenfeitoria, serPictureBenfeitoria
-from .serializers import ListAnalisesSolo, detailAnalisesSolo
+from .serializers import ListAnalisesSolo, detailAnalisesSolo, resultsAnalisesSolo
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
@@ -123,9 +123,15 @@ class PicturesBenfeitoriasView(viewsets.ModelViewSet):
 class AnalisesSoloView(viewsets.ModelViewSet):
     queryset = Analise_Solo.objects.all()
     serializer_class = detailAnalisesSolo
+    # permission_classes = (IsAuthenticated,)
     lookup_field = 'uuid'
     def get_serializer_class(self):
         if self.action == 'list':
             return ListAnalisesSolo
         else:
             return self.serializer_class
+class ResultAnalisesSoloView(viewsets.ModelViewSet):
+    queryset = Analise_Solo.objects.all()
+    serializer_class = resultsAnalisesSolo
+    # permission_classes = (IsAuthenticated,)
+    lookup_field = 'uuid'

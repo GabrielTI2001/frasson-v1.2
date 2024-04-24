@@ -47,6 +47,37 @@ class Frasson(object):
 
         return coordenadas_proximas.exists()
     
+    def avaliar_nivel_nutriente_solo(nutriente, valor):
+        """Função para avaliar o nível o nutriente no solo, conforme embrapa"""
+        niveis = {
+            'calcio': {'min': 2, 'max': 5},
+            'magnesio': {'min': 0.5, 'max': 1.5},
+            'potassio': {'min': 60, 'max': 180},
+            'fosforo': {'min': 10, 'max': 30},
+            'fosforo_rem': {'min': 40, 'max': 80},
+            'enxofre': {'min': 10, 'max': 20},
+            'materia_organica': {'min': 1.5, 'max': 3.0},
+            'zinco': {'min': 2, 'max': 4},
+            'boro': {'min': 0.4, 'max': 0.8},
+            'cobre': {'min': 1.2, 'max': 2.4},
+            'ferro': {'min': 40, 'max': 80},
+            'manganes': {'min': 20, 'max': 40},
+            'rel_ca_mg': {'min': 2, 'max': 5},
+            'rel_ca_K': {'min': 15, 'max': 20},
+            'rel_mg_k': {'min': 3, 'max': 5},
+            'pH_H2O': {'min': 6, 'max': 6.5},
+            'pH_CaCl': {'min': 5.5, 'max': 6.0},
+        }
+        
+        if valor is None:
+            {'value': '-', 'level': '-', 'color': '-'}
+        elif valor < niveis[nutriente]['min']:
+            return {'value': valor, 'level': 'BAIXO', 'color': 'warning'}
+        elif valor > niveis[nutriente]['max']:
+            return {'value': valor, 'level': 'ALTO', 'color': 'primary'}
+        else:
+            return {'value': valor, 'level': 'IDEAL', 'color': 'success'}
+    
 
 # GESTÃO DE WEBHOOKS
 def create_webhook_pipefy(id, action, url, name):

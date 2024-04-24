@@ -91,8 +91,12 @@ const GoogleMap = ({
     setActiveMarker(prevActiveMarker => (
       prevActiveMarker === coordId ? null : coordId
     ));
-
-    getInfo(coordId);
+    if (link){
+      getInfo(coordId);
+    }
+    else{
+      setInfoPonto(coordenadas.filter(c => c.id === coordId)[0])
+    }
   };
 
   if (!isLoaded) return <div>Loading...</div>;
@@ -115,7 +119,7 @@ const GoogleMap = ({
               lat: Number(coord.latitude_gd),
               lng: Number(coord.longitude_gd)
             }}
-            icon={{url: colorpoint ? `https://maps.google.com/mapfiles/ms/icons/${coord[colorpoint.acessor] == 'Vencido' ? 'yellow' : 'blue'}-dot.png` 
+            icon={{url: colorpoint ? `https://maps.google.com/mapfiles/ms/icons/${coord[colorpoint.acessor] === 'Vencido' ? 'yellow' : 'blue'}-dot.png` 
             : mapMarker, scaledSize: {height:32,width:32}}}
             key={coord.id}
           >

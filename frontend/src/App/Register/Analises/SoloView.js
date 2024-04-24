@@ -3,7 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import { RetrieveRecord } from '../../../helpers/Data';
 import { Link } from 'react-router-dom';
 import { Col, Row } from 'react-bootstrap';
-import Spinner from 'react-bootstrap';
+import {Spinner} from 'react-bootstrap';
+import { format } from 'date-fns';
+import ResultAnaliseSolo from './SoloResults';
+import GoogleMap from '../../../components/map/GoogleMap';
+import MapInfo from './MapInfo';
 
 const ViewAnaliseSolo = () => {
     const {uuid} = useParams()
@@ -16,7 +20,7 @@ const ViewAnaliseSolo = () => {
 
     useEffect(() =>{
         const getdata = async () =>{
-            const status = await RetrieveRecord(uuid, 'register/analysis-soil', setter)
+            const status = await RetrieveRecord(uuid, 'register/analysis-soil-results', setter)
             if(status === 401){
                 navigate("/auth/login")
             }
@@ -30,59 +34,51 @@ const ViewAnaliseSolo = () => {
     <>
     <ol className="breadcrumb breadcrumb-alt fs-xs mb-1">
         <li className="breadcrumb-item fw-bold">
-            <Link className="link-fx text-primary" to={'/register/analysis-soil'}>Análises Solo</Link>
+            <Link className="link-fx text-primary" to={'/register/analysis/soil'}>Análises Solo</Link>
         </li>
         <li className="breadcrumb-item fw-bold" aria-current="page">
             {analise && analise.localizacao}
         </li>  
     </ol>
-
+    {analise ? <>
     <Row className='mt-2' xs={1} lg={2} xxl={2}>
         <Col className='d-flex flex-column justify-content-between'>
             <div>
-                <div className='mb-1'><strong>Cliente: </strong></div>
-                <div className='mb-1'><strong>Localização: </strong></div>
-                <div className='mb-1'><strong>Data Coleta: </strong></div>
-                <div className='mb-1'><strong>Identificação Amostra: </strong></div>
-                <div className='mb-1'><strong>Responsável Coleta: </strong></div>
-                <div className='mb-1'><strong>Laboratório da Análise: </strong></div>
-                <div className='mb-1'><strong>Número da Amostra: </strong></div>
-                <div className='mb-1'><strong>Profundidade (cm): </strong></div>
-                <div className='mb-1'>Criado por</div>
+                <div className='mb-1'><strong>Cliente: </strong>{analise.str_cliente}</div>
+                <div className='mb-1'><strong>Localização: </strong>{analise.localizacao}</div>
+                <div className='mb-1'><strong>Data Coleta: </strong>{format(analise.data_coleta, 'dd/MM/yyyy')}</div>
+                <div className='mb-1'><strong>Identificação Amostra: </strong>{analise.identificacao_amostra}</div>
+                <div className='mb-1'><strong>Responsável Coleta: </strong>{analise.responsavel}</div>
+                <div className='mb-1'><strong>Laboratório da Análise: </strong>{analise.laboratorio_analise}</div>
+                <div className='mb-1'><strong>Número da Amostra: </strong>{analise.numero_controle ? analise.numero_controle : '-'}</div>
+                <div className='mb-1'><strong>Profundidade (cm): </strong>{Number(analise.profundidade).toLocaleString('pt-BR',
+                 {minimumFractionDigits: 2, maximumFractionDigits:2})}</div>
+                <div className='mb-1'>Criado por <span class="fw-semibold text-primary">{analise.creation.created_by} </span> 
+                {format(analise.creation.created_at, 'dd/MM/yyyy HH:mm')}</div>
             </div>
-            <hr class="mb-1 mt-2 d-flex" style={{height: '1px', color: 'black', opacity: '.2'}}></hr>
+            <hr className="mb-1 mt-2 d-flex" style={{height: '1px', color: 'black', opacity: '.2'}}></hr>
         </Col>
-        <Col>
-            <div className='row gy-1'>
-                <h4 className='mb-1' style={{fontSize:'14px'}}>Resultados</h4>
-                <Col xxl={6} lg={6}><strong>Ca<sup>2+</sup> (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Mg<sup>2+</sup> (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Al<sup>3+</sup> (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Na<sup>+</sup> (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>K (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>P (mg/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>P-rem. (mg/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>S (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Zn (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Fe (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Cu (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Mn (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>B (cmolc/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>H+Al:</strong></Col>
-                <Col xxl={6} lg={6}><strong>pH H<sub>2</sub>O:</strong></Col>
-                <Col xxl={6} lg={6}><strong>pH CaCl<sub>2</sub>:</strong></Col>
-                <Col xxl={6} lg={6}><strong>Matéria Orgânica (dag/dm<sup>3</sup>):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Areia (%):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Silte (%):</strong></Col>
-                <Col xxl={6} lg={6}><strong>Argila (%):</strong></Col>
-            </div>
-            <hr class="mb-1 mt-2" style={{color: 'black', opacity: '.2'}}></hr>
-        </Col>
+        <ResultAnaliseSolo dados={analise.results} />
     </Row>
     <Row xxl={2} lg={2}>
+        <Col>
+            <GoogleMap
+                initialCenter={{
+                    lat: Number(analise.latitude_gd),
+                    lng: Number(analise.longitude_gd)
+                }}
+                mapStyle="Default"
+                className="rounded-soft mt-2 google-maps container-map"
+                token_api={analise.token_apimaps}
+                mapTypeId='satellite'
+                coordenadas={[{id: analise.id,latitude_gd:analise.latitude_gd, longitude_gd:analise.longitude_gd}]}
+            >
+                <MapInfo/>
+            </GoogleMap>
+        </Col>
         <Col></Col>
-        <Col></Col>
-    </Row>
+    </Row></>
+    :<div className='text-center'><Spinner /></div>}
     </>
     );
 };
