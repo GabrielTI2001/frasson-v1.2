@@ -123,6 +123,7 @@ class PicturesBenfeitoriasView(viewsets.ModelViewSet):
 class AnalisesSoloView(viewsets.ModelViewSet):
     queryset = Analise_Solo.objects.all()
     serializer_class = detailAnalisesSolo
+    lookup_field = 'uuid'
     def get_serializer_class(self):
         if self.action == 'list':
             return ListAnalisesSolo

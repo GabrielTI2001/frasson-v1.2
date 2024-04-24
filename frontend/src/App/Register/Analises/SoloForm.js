@@ -3,7 +3,7 @@ import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col, OverlayTrigger, Tooltip} from 'react-bootstrap';
-import { fetchImoveisRurais} from '../Data';
+import { FetchImoveisRurais} from '../Data';
 import { fetchPessoal } from '../../Pipeline/Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import ModalGMS from '../../../components/Custom/ModalGMS';
@@ -51,7 +51,9 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           toast.success("Registro Atualizado com Sucesso!")
         }
         else{
-          submit('add', data)
+          submit('add', {data_coleta:data.data_coleta, cliente:data.str_cliente, status:{text:data.status.text, color:data.status.color,
+          localizacao:data.localizacao}})
+          // submit('add', data)
           toast.success("Registro Efetuado com Sucesso!")
         }
       }
@@ -71,7 +73,6 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         formDataToSend.append(key, formData[key]);
       }
     }
-    // submit('add', {data_coleta:formData.data_coleta, cliente:formData.cl})
     await handleApi(formDataToSend);
   };
 
@@ -124,7 +125,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} lg={3}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
-            <AsyncSelect loadOptions={fetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect loadOptions={FetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.fazenda : null) : null }
               onChange={(selected) => {
               setFormData((prevFormData) => ({

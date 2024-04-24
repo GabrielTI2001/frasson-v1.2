@@ -3,7 +3,7 @@ import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
-import { fetchImoveisRurais, fetchTipoBenfeitoria} from '../Data';
+import { FetchImoveisRurais, fetchTipoBenfeitoria} from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 
@@ -115,7 +115,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} lg={3}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
-            <AsyncSelect loadOptions={fetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect loadOptions={FetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.farm : null) : null }
               onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -181,7 +181,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.valor_estimado : ''}</label>
         </Form.Group>
 
-        {type == 'add' && <Form.Group className="mb-2" as={Col} lg={3}>
+        {type === 'add' && <Form.Group className="mb-2" as={Col} lg={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fotos*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Arquivo PDF' : ''}

@@ -13,7 +13,7 @@ import { Modal, CloseButton } from "react-bootstrap";
 
 const InitData = {
     'columns':columnsAnalisesSolo, 'urlapilist':'register/analysis-soil', 
-    'urlview':'/register/analysis/soil', 'title': 'Análises Solo'
+    'urlview':'/register/analysis/soil/', 'title': 'Análises Solo'
 }
 
 const IndexAnaliseSolo = () => {
@@ -21,14 +21,18 @@ const IndexAnaliseSolo = () => {
     const [showmodal, setShowModal] = useState(false)
     const navigate = useNavigate();
 
-    const onClick = () =>{
-
+    const onClick = (data, type) =>{
+        if (type === 'view'){
+            const url = `${InitData.urlview}${data.uuid}`
+            navigate(url)
+        }
     }
 
     const submit = (type, data) =>{
         if (type === 'add'){
             setSearchResults([...searchResults, data])
         }
+        setShowModal(false)
     }
 
     useEffect(()=>{
@@ -44,11 +48,6 @@ const IndexAnaliseSolo = () => {
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
         if (status === 401) navigate("/auth/login");
-        const getdata = async () =>{
-            const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
-        }
-        getdata()
     };
 
     return (

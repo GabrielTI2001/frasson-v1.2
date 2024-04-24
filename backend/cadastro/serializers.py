@@ -55,7 +55,7 @@ class ListAnalisesSolo(serializers.ModelSerializer):
         return status
     class Meta:
         model = Analise_Solo
-        fields = ['data_coleta', 'str_cliente', 'localizacao', 'status']
+        fields = ['id', 'uuid', 'data_coleta', 'str_cliente', 'localizacao', 'status']
 
 class detailAnalisesSolo(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()

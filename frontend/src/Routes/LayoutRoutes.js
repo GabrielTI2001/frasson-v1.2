@@ -12,6 +12,7 @@ import IndexBenfeitorias from '../App/Register/Benfeitorias/Index';
 import ViewBenfeitoria from '../App/Register/Benfeitorias/View';
 import BenfeitoriaEdit from '../App/Register/Benfeitorias/Edit';
 import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
+import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
 //Pipeline
 import IndexPessoal from '../App/Pipeline/Pessoal/Index';
 import ViewPessoal from '../App/Pipeline/Pessoal/View';
@@ -79,6 +80,7 @@ const LayoutRoutes = () => {
           <Route path='farm-assets/:uuid' element={<ViewBenfeitoria />}/>
           <Route path='farm-assets/edit/:uuid' element={<BenfeitoriaEdit />}/>
           <Route path='analysis/soil' element={<IndexAnaliseSolo />}/>
+          <Route path='analysis/soil/:uuid' element={<ViewAnaliseSolo />}/>
         </Route>
         <Route path="/pipeline">
           <Route path="pessoal" element={<IndexPessoal />}/>
