@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from pipefy.models import Regimes_Exploracao
 from backend.frassonUtilities import Frasson
+from backend.pipefyUtils import getTableRecordPipefy
 import locale
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 
@@ -12,3 +13,18 @@ class ListRegimes(serializers.ModelSerializer):
         fields = ['id', 'imovel', 'matricula_imovel', 'nome_imovel', 'regime', 'atividades_exploradas', 'data_inicio', 'data_termino',
                   'area_explorada']
 
+class detailRegimes(serializers.ModelSerializer):
+    token_apimaps = serializers.SerializerMethodField(read_only=True)
+    regime_data = serializers.SerializerMethodField(read_only=True)
+    farm_data = serializers.SerializerMethodField(read_only=True)
+    def get_token_apimaps(self, obj):
+        return TOKEN_GOOGLE_MAPS_API
+    def get_regime_data(self, obj):
+        data_regime = getTableRecordPipefy(obj.id)
+        return data_regime
+    def get_farm_data(self, obj):
+        data_farm = getTableRecordPipefy(obj.imovel.id)  
+        return data_farm
+    class Meta:
+        model = Regimes_Exploracao
+        fields = '__all__'

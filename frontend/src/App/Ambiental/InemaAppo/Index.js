@@ -23,14 +23,6 @@ const IndexAPPO = () => {
         navigate(url)
     }
 
-    useEffect(() => {
-        return () => {
-            // Limpar o estado quando o componente for desmontado
-            setSearchResults(null);
-        };
-    }, []);
-
-
     useEffect(()=>{
         if (!searchResults){
             handleSearch('') 

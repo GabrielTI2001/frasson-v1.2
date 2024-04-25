@@ -15,7 +15,7 @@ const InitData = {
 
 const IndexRegimes = () => {
     const [searchResults, setSearchResults] = useState();
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({loaded:false});
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate();
 
@@ -35,14 +35,24 @@ const IndexRegimes = () => {
             if (response.status === 401) {
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
+                navigate("/auth/login")
             } else if (response.status === 200) {
                 setSearchResults(data)
+                setFormData({...formData, loaded:true})
             }
             return response.status
         } catch (error) {
             console.error('Erro:', error);
         }
-      };
+    };
+    
+    if(formData.cliente && formData.instituicao && !formData.loaded){
+        Search(InitData.urlapilist, formData.cliente , formData.instituicao)
+    }
+
+    const click = (id) =>{
+        navigate(InitData.urlview+"/"+id)
+    }
    
     useEffect(()=>{
         const getdata = async () =>{
@@ -53,13 +63,6 @@ const IndexRegimes = () => {
         }
     },[])
 
-    const handleChange = async (value) => {
-        console.log("teste")
-        if(formData.cliente && formData.instituicao){
-            console.log("teste")
-        }
-    };
-
     return (
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
@@ -69,19 +72,29 @@ const IndexRegimes = () => {
         </ol>
         <Row>
             <Form.Group className="mb-2" as={Col} lg={4}>
-                <Form.Label className='fw-bold mb-1'>Nome cliente</Form.Label>
+                <Form.Label className='fw-bold mb-1'>Nome Cliente</Form.Label>
                 <AsyncSelect loadOptions={fetchPessoal} name='cliente' 
                     styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                     onChange={(selected) => {
                     setFormData((prevFormData) => ({
                         ...prevFormData,
-                        cliente: selected.value
+                        cliente: selected.value, loaded: !formData.instituicao
                     }));
-                    handleChange(selected)
+                }} />
+            </Form.Group>
+            <Form.Group className="mb-2" as={Col} lg={4}>
+                <Form.Label className='fw-bold mb-1'>Instituição Financeira ou Ambiental</Form.Label>
+                <AsyncSelect loadOptions={fetchInstituicoesRazaoSocial} name='instituicao' 
+                    styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+                    onChange={(selected) => {
+                    setFormData((prevFormData) => ({
+                        ...prevFormData,
+                        instituicao: selected.value, loaded: !formData.cliente
+                    }));
                 }} />
             </Form.Group>
         </Row>
-        {searchResults ? 
+        {searchResults && formData.loaded ? 
         <Table responsive>
             <thead className="bg-300">
                 <tr>
@@ -97,7 +110,8 @@ const IndexRegimes = () => {
             </thead>
             <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
             {searchResults.map(regime =>(
-            <tr key={regime.id} style={{cursor:'auto'}}>
+            <tr key={regime.id} style={{cursor:'pointer'}} onClick={() => click(regime.id)} 
+            className={`${theme === 'light' ? 'hover-table-light': 'hover-table-dark'}`}>
                 <td className="text-center">{regime.imovel}</td>
                 <td className="text-center">{regime.matricula_imovel}</td>
                 <td className="text-center">{regime.nome_imovel}</td>

@@ -2,6 +2,7 @@ import requests, json, environ
 from django.http import JsonResponse
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from webhooks.utilities import criar_registro_db
+from datetime import datetime
 
 env = environ.Env()
 environ.Env.read_env()
@@ -331,3 +332,25 @@ insert_webhooks = [
     {'id': 303917094, 'action': "card.field_update" , 'url': "'pipefy/database/303917094/update_record'", 'name': "Update Record Produtos"}, 
     {'id': 303917094, 'action': "card.delete" , 'url': "'pipefy/database/303917094/delete_record'", 'name': "Delete Record Contas Produtos"},
 ]
+
+def getTableRecordPipefy(id):
+    registro = {}
+    payload = {"query":"{table_record(id:" + str(id) + ") {id url record_fields {float_value native_value field{id type}}}}"}
+    headers = {"Authorization": TOKEN_PIPEFY_API, "Content-Type": "application/json"}
+    response = requests.post(URL_PIFEFY_API, json=payload, headers=headers)
+    obj = json.loads(response.text)
+
+    record_fields = obj["data"]["table_record"]["record_fields"]
+    registro['id'] = obj["data"]["table_record"]["id"]
+    registro['url'] = obj["data"]["table_record"]["url"]
+
+    for record in record_fields:
+        if record["field"]["type"] == 'number':
+            registro[record["field"]["id"]] = record["float_value"] if record["float_value"] != None else ''
+        elif record["field"]["type"] == 'date':
+            registro[record["field"]["id"]] = datetime.strptime(str(record["native_value"]), '%Y-%m-%d').strftime('%d/%m/%Y') if record["native_value"] != None else ''
+        else:
+            registro[record["field"]["id"]] = record["native_value"] if record["native_value"] != None else ''
+
+    return registro
+

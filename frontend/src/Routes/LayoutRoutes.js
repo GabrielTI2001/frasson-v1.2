@@ -7,6 +7,7 @@ import PasswordResetFom from '../components/authentication/PasswordResetForm';
 import { ProfileContext } from '../context/Context';
 //Analytics
 import IndexRegimes from '../App/Analytics/Regimes/Index';
+import ViewRegime from '../App/Analytics/Regimes/View';
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -76,6 +77,7 @@ const LayoutRoutes = () => {
       <Route element={<Default />}>
         <Route path="/analytics">
           <Route path="regime" element={<IndexRegimes />}/>
+          <Route path="regime/:id" element={<ViewRegime />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/register">
