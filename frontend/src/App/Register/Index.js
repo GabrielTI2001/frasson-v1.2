@@ -3,8 +3,8 @@ import { Card, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faTractor, faPersonDigging, faFlask} from "@fortawesome/free-solid-svg-icons";
-import { fetchPessoal } from "../Pipeline/Data";
-import { fetchBenfeitorias } from "./Data";
+import { fetchPessoal } from "../Pipefy/Data";
+import { fetchBenfeitorias, FetchAnaliseSolo } from "./Data";
 import { useAppContext } from "../../Main";
 
 const IndexCadGerais = () =>{
@@ -14,9 +14,11 @@ const IndexCadGerais = () =>{
     const [countRegs, setCountRegs] = useState();
     useEffect(()=>{
       const buscadados = async () =>{
-        const dadospessoal = await fetchPessoal()
-        const dadosbenfeitoria = await fetchBenfeitorias()
-        setCountRegs({...countRegs, 'pessoal':dadospessoal.length, 'benfeitoria':dadosbenfeitoria.length})
+        const dadospessoal = await fetchPessoal();
+        const dadosbenfeitoria = await fetchBenfeitorias();
+        const dadosanalise = await FetchAnaliseSolo();
+        setCountRegs({...countRegs, 'pessoal':dadospessoal.length, 'benfeitoria':dadosbenfeitoria.length,
+        'analisesolo':dadosanalise.length})
       }
       if(!countRegs){
         buscadados()
@@ -77,7 +79,7 @@ const IndexCadGerais = () =>{
                     <FontAwesomeIcon icon={faFlask} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
                   <h5 className="text-center text-white mt-2 fs-xs">Análises de Solo</h5>     
-                  <h5 className="text-center text-white">0 Registros</h5>                
+                  <h5 className="text-center text-white">{countRegs && countRegs.analisesolo} Registros</h5>                
                 </Card.Body>
                 </Link>
             </Card>

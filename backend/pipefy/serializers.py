@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal, Imoveis_Rurais
-from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes
+from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes, Instituicoes_Razao_Social
 
 class serializerCadastro_Pessoal(serializers.ModelSerializer):
     class Meta:
@@ -44,6 +44,11 @@ class serializerInstituicoes_Parceiras(serializers.ModelSerializer):
     class Meta:
         model = Instituicoes_Parceiras
         fields = ['id', 'razao_social', 'identificacao']
+
+class listInstituicoes_RazaoSocial(serializers.ModelSerializer):
+    class Meta:
+        model = Instituicoes_Razao_Social
+        fields = ['id', 'razao_social', 'cnpj']  
 
 class serializerDetalhamento_Servicos(serializers.ModelSerializer):
     class Meta:

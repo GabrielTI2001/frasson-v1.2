@@ -143,7 +143,7 @@ class Cadastro_Prospects(models.Model):
         return self.cliente
 
 class Instituicoes_Razao_Social(models.Model): 
-    id = models.AutoField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     razao_social = models.CharField(max_length=255, null=True, verbose_name='Razão Social')
     cnpj = models.CharField(max_length=255, null=True, verbose_name='CNPJ')
@@ -159,7 +159,7 @@ class Instituicoes_Razao_Social(models.Model):
 
 
 class Instituicoes_Parceiras(models.Model): 
-    id = models.AutoField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     instituicao = models.ForeignKey(Instituicoes_Razao_Social, on_delete=models.SET_NULL, null=True)
     identificacao  = models.CharField(max_length=255, null=True)

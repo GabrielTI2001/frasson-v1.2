@@ -5,6 +5,8 @@ import Default from '../Layouts/Default';
 import AuthSimpleLayout from "../Layouts/AuthSimpleLayout";
 import PasswordResetFom from '../components/authentication/PasswordResetForm';
 import { ProfileContext } from '../context/Context';
+//Analytics
+import IndexRegimes from '../App/Analytics/Regimes/Index';
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -14,8 +16,8 @@ import BenfeitoriaEdit from '../App/Register/Benfeitorias/Edit';
 import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
 import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
 //Pipeline
-import IndexPessoal from '../App/Pipeline/Pessoal/Index';
-import ViewPessoal from '../App/Pipeline/Pessoal/View';
+import IndexPessoal from '../App/Pipefy/Pessoal/Index';
+import ViewPessoal from '../App/Pipefy/Pessoal/View';
 //Ambiental
 import View from "../App/Ambiental/InemaOutorgas/View";
 import Edit from "../App/Ambiental/InemaOutorgas/Edit";
@@ -72,6 +74,9 @@ const LayoutRoutes = () => {
   return (
     <Routes>
       <Route element={<Default />}>
+        <Route path="/analytics">
+          <Route path="regime" element={<IndexRegimes />}/>
+        </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/register">
           <Route path="" element={<IndexCadGerais />}/>
