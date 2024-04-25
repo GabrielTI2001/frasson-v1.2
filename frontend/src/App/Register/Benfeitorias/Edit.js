@@ -12,6 +12,7 @@ import ModalDelete from "../../../components/Custom/ModalDelete";
 const BenfeitoriaEdit = () => {
     const {uuid} = useParams()
     const token = localStorage.getItem("token")
+    const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [benfeitoria, setBenfeitoria] = useState()
     const [images, setImages] = useState()
@@ -96,6 +97,9 @@ const BenfeitoriaEdit = () => {
             if(status === 401){
                 navigate("/auth/login")
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("change_benfeitorias_fazendas") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!benfeitoria){
             getdata()

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from pipefy.models import Regimes_Exploracao
+from pipefy.models import Regimes_Exploracao, Imoveis_Rurais
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
 import locale
@@ -28,3 +28,9 @@ class detailRegimes(serializers.ModelSerializer):
     class Meta:
         model = Regimes_Exploracao
         fields = '__all__'
+
+class ListFarms(serializers.ModelSerializer):
+    str_proprietario = serializers.CharField(source='proprietario.razao_social', read_only=True)
+    class Meta:
+        model = Imoveis_Rurais
+        fields = ['id', 'matricula', 'nome_imovel', 'str_proprietario', 'municipio_localizacao', 'area_total']

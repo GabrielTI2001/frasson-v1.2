@@ -21,12 +21,15 @@ const InitData = {
 
 const IndexBenfeitorias = () => {
     const [searchResults, setSearchResults] = useState();
+    const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
     const [modalDelete, setModalDelete] = useState({show:false, link:''})
 
     const onClick = (data, type) =>{
-
+        if ((user.permissions && user.permissions.indexOf("view_benfeitorias_fazendas") === -1) && !user.is_superuser){
+           navigate("/error/403")
+        }
         if (type === 'view'){
             const url = `${InitData.urlview}${data.uuid}`
             navigate(url)

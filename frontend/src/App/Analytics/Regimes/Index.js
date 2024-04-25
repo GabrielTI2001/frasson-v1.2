@@ -7,7 +7,6 @@ import customStyles, {customStylesDark} from '../../../components/Custom/SelectS
 import { useAppContext } from "../../../Main";
 import { fetchPessoal, fetchInstituicoesRazaoSocial } from "../../Pipefy/Data";
 
-
 const InitData = {
     'urlapilist':'analytics/regime', 
     'urlview':'/analytics/regime', 'title': 'Regimes de Exploração'
@@ -16,6 +15,7 @@ const InitData = {
 const IndexRegimes = () => {
     const [searchResults, setSearchResults] = useState();
     const [formData, setFormData] = useState({loaded:false});
+    const user = JSON.parse(localStorage.getItem("user"))
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate();
 
@@ -57,6 +57,9 @@ const IndexRegimes = () => {
     useEffect(()=>{
         const getdata = async () =>{
             Search(InitData.urlapilist)
+        }
+        if ((user.permissions && user.permissions.indexOf("view_regimes_exploracao") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!searchResults){
             getdata()

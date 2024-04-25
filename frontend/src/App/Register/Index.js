@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { Card, Row, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUsers, faTractor, faPersonDigging, faFlask} from "@fortawesome/free-solid-svg-icons";
 import { fetchPessoal } from "../Pipefy/Data";
@@ -8,10 +8,10 @@ import { fetchBenfeitorias, FetchAnaliseSolo } from "./Data";
 import { useAppContext } from "../../Main";
 
 const IndexCadGerais = () =>{
-    const {
-      config: { theme}
-    } = useAppContext();
+    const {config: { theme}} = useAppContext();
+    const user = JSON.parse(localStorage.getItem("user"))
     const [countRegs, setCountRegs] = useState();
+    const navigate = useNavigate()
     useEffect(()=>{
       const buscadados = async () =>{
         const dadospessoal = await fetchPessoal();
@@ -19,6 +19,9 @@ const IndexCadGerais = () =>{
         const dadosanalise = await FetchAnaliseSolo();
         setCountRegs({...countRegs, 'pessoal':dadospessoal.length, 'benfeitoria':dadosbenfeitoria.length,
         'analisesolo':dadosanalise.length})
+      }
+      if ((user.permissions && user.permissions.indexOf("ver_cadastros_gerais") === -1) && !user.is_superuser){
+        navigate("/error/403")
       }
       if(!countRegs){
         buscadados()

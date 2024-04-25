@@ -19,6 +19,7 @@ export const View = () => {
     const [appo, setAppo] = useState()
     const [coordenadas, setCoordenadas] = useState()
     const token = localStorage.getItem("token")
+    const user = JSON.parse(localStorage.getItem("user"))
     const [modal, setModal] = useState(false)
     const navigate = useNavigate();
     const link = `${process.env.REACT_APP_API_URL}/environmental/inema/appo/coordenadas-detail/`
@@ -105,6 +106,9 @@ export const View = () => {
             } catch (error){
                 console.error("Erro: ",error)
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("view_processos_appo") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!appo){
             getData()

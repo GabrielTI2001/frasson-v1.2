@@ -15,6 +15,7 @@ import { columnsAPPO } from "../Data";
 const IndexAPPO = () => {
     const [searchResults, setSearchResults] = useState();
     const token = localStorage.getItem("token")
+    const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
 
@@ -24,6 +25,9 @@ const IndexAPPO = () => {
     }
 
     useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_processos_appo") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
         if (!searchResults){
             handleSearch('') 
         }

@@ -17,6 +17,7 @@ const ViewPessoal = () => {
     const [pessoa, setPessoa] = useState()
     const [processos, setProcessos] = useState()
     const [operacoes, setOperacoes] = useState()
+    const user = JSON.parse(localStorage.getItem("user"))
     const token = localStorage.getItem("token")
     const navigate = useNavigate();
 
@@ -108,6 +109,9 @@ const ViewPessoal = () => {
             } catch (error){
                 console.error("Erro: ",error)
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("view_cadastro_pessoal") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!pessoa){
             getData()

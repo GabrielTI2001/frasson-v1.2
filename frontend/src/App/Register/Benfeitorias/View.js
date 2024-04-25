@@ -8,6 +8,7 @@ import { faTractor, faLayerGroup, faCalendarDays, faUpRightAndDownLeftFromCenter
 import { Link } from 'react-router-dom';
 
 const ViewBenfeitoria = () => {
+    const user = JSON.parse(localStorage.getItem("user"))
     const {uuid} = useParams()
     const [benfeitoria, setBenfeitoria] = useState()
     const [images, setImages] = useState()
@@ -21,6 +22,9 @@ const ViewBenfeitoria = () => {
             if(status === 401){
                 navigate("/auth/login")
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("view_benfeitorias_fazendas") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!benfeitoria){
             getdata()

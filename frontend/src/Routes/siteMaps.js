@@ -1,4 +1,5 @@
-import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip } 
+import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
+faMap } 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser } 
 from "@fortawesome/free-solid-svg-icons";
@@ -53,6 +54,13 @@ export const operacionalRoutes = {
           name: 'Regimes de Exploração',
           icon: faPersonArrowUpFromLine,
           to: '/analytics/regime',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Imóveis Rurais',
+          icon: faMap,
+          to: '/analytics/farms',
           exact: true,
           active: true
         },

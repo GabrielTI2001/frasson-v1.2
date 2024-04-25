@@ -3,6 +3,14 @@ from users.models import User
 from pipefy.models import Cadastro_Pessoal, Imoveis_Rurais
 import uuid, os
 
+class MyAppPermissions(models.Model):
+    class Meta:
+        managed = False  # No database table creation or deletion operations will be performed for this model.
+        permissions = [
+            ("ver_feedbacks_users", "Ver Feedbacks Users"),
+            ("ver_cadastros_gerais", "Ver Cadastros Gerais"),
+        ]
+
 class Municipios(models.Model):
     id = models.BigIntegerField(primary_key=True, verbose_name='Código Município')
     cod_uf = models.IntegerField(verbose_name='Código UF')

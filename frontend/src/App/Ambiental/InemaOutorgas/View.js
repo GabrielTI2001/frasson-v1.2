@@ -19,6 +19,7 @@ const View = () => {
     const [outorga, setOutorga] = useState()
     const [coordenadas, setCoordenadas] = useState()
     const token = localStorage.getItem("token")
+    const user = JSON.parse(localStorage.getItem("user"))
     const [modal, setModal] = useState(false)
     const navigate = useNavigate();
     const link = `${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/`
@@ -105,6 +106,9 @@ const View = () => {
                 setCoordenadas([])
                 console.error("Erro: ",error)
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("view_processos_outorga") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!outorga){
             getData()

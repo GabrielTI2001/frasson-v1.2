@@ -11,6 +11,7 @@ import { faFilePdf, faGlobeAmericas, faMagnifyingGlass } from '@fortawesome/free
 const ViewRegime = () => {
     const {id} = useParams()
     const navigate = useNavigate()
+    const user = JSON.parse(localStorage.getItem("user"))
     const [regime, setRegime] = useState()
 
     const setter = (data) =>{
@@ -23,6 +24,9 @@ const ViewRegime = () => {
             if(status === 401){
                 navigate("/auth/login")
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("view_regimes_exploracao") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!regime){
             getdata()

@@ -13,6 +13,7 @@ import { columnsPessoal } from "../Data";
 import { Modal, CloseButton } from "react-bootstrap";
 const IndexPessoal = () => {
     const [searchResults, setSearchResults] = useState();
+    const user = JSON.parse(localStorage.getItem("user"))
     const token = localStorage.getItem("token")
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
@@ -23,6 +24,9 @@ const IndexPessoal = () => {
     }
 
     useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_cadastro_pessoal") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
         if (!searchResults){
             handleSearch('') 
         }

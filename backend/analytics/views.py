@@ -19,6 +19,3 @@ class RegimesView(viewsets.ModelViewSet):
             return ListRegimes
         else:
             return self.serializer_class
-    
-def regime_kml(request, id):
-    pass

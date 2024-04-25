@@ -9,6 +9,7 @@ import GoogleMap from '../../../components/map/GoogleMap';
 import MapInfo from './MapInfo';
 
 const ViewAnaliseSolo = () => {
+    const user = JSON.parse(localStorage.getItem("user"))
     const {uuid} = useParams()
     const navigate = useNavigate()
     const [analise, setAnalise] = useState()
@@ -23,6 +24,9 @@ const ViewAnaliseSolo = () => {
             if(status === 401){
                 navigate("/auth/login")
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("view_analise_solo") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!analise){
             getdata()

@@ -19,6 +19,7 @@ const InitData = {
 }
 
 const IndexAnaliseSolo = () => {
+    const user = JSON.parse(localStorage.getItem("user"))
     const [searchResults, setSearchResults] = useState();
     const [analise, setAnalise] = useState();
     const [modaldelete, setModalDelete] = useState({show:false, link:''})
@@ -71,6 +72,9 @@ const IndexAnaliseSolo = () => {
         const getdata = async () =>{
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
             if (status === 401) navigate("/auth/login");
+        }
+        if ((user.permissions && user.permissions.indexOf("view_analise_solo") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!searchResults){
             getdata()

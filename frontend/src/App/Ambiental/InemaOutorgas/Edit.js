@@ -20,6 +20,7 @@ const Edit = () => {
     const channel = new BroadcastChannel('meu_canal');
     const {uuid} = useParams()
     const token = localStorage.getItem("token")
+    const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [ambientalState, ambientalDispatch] = useReducer(ambientalReducer, {modal:{show:false, content:{}}});
     const modal = ambientalState.modal;
@@ -95,6 +96,9 @@ const Edit = () => {
             } catch (error){
                 console.error("Erro: ",error)
             }
+        }
+        if ((user.permissions && user.permissions.indexOf("change_processos_outorga") === -1) && !user.is_superuser){
+            navigate("/error/403")
         }
         if (!outorga){
             getData()
