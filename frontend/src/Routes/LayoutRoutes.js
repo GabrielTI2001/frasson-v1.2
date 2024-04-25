@@ -87,7 +87,7 @@ const LayoutRoutes = () => {
           <Route path='analysis/soil' element={<IndexAnaliseSolo />}/>
           <Route path='analysis/soil/:uuid' element={<ViewAnaliseSolo />}/>
         </Route>
-        <Route path="/pipeline">
+        <Route path="/pipefy">
           <Route path="pessoal" element={<IndexPessoal />}/>
           <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
         </Route>

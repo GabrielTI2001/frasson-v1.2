@@ -12,7 +12,7 @@ const ListContas = ({contas, nome_pessoa}) => {
     const {config: {theme}} = useAppContext();
 
     const onClick = (id, uuid) =>{
-        const url = `/pipeline/pessoal/${uuid}`
+        const url = `/pipefy/pessoal/${uuid}`
         navigate(url)
     }
 

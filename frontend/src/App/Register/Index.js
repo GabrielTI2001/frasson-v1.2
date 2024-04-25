@@ -34,7 +34,7 @@ const IndexCadGerais = () =>{
         <Row className="gy-3 gx-4" xs={1} sm={3} lg={5} xl={6}>
           <Col>
             <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
-                <Link className="text-decoration-none" to={'/pipeline/pessoal'}>
+                <Link className="text-decoration-none" to={'/pipefy/pessoal'}>
                 <Card.Body as={Row} className="justify-content-between">
                   <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
                     <FontAwesomeIcon icon={faUsers} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>

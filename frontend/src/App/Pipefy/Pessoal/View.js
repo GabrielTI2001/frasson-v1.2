@@ -25,7 +25,7 @@ const ViewPessoal = () => {
         return Math.floor(idade/((1000 * 3600 * 24 * 365)))
     }
     const del = () =>{
-        navigate('/pipeline/pessoal/')
+        navigate('/pipefy/pessoal/')
     }
 
     channel.onmessage = function(event) {
