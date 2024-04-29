@@ -2,8 +2,8 @@ from rest_framework import serializers
 from pipefy.models import Regimes_Exploracao, Imoveis_Rurais
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
-import locale
-from backend.settings import TOKEN_GOOGLE_MAPS_API
+import locale, requests, json
+from backend.settings import TOKEN_GOOGLE_MAPS_API, TOKEN_PIPEFY_API, URL_PIFEFY_API
 
 class ListRegimes(serializers.ModelSerializer):
     matricula_imovel = serializers.CharField(source='imovel.matricula_imovel', read_only=True)
@@ -29,8 +29,30 @@ class detailRegimes(serializers.ModelSerializer):
         model = Regimes_Exploracao
         fields = '__all__'
 
-class ListFarms(serializers.ModelSerializer):
+class listFarms(serializers.ModelSerializer):
     str_proprietario = serializers.CharField(source='proprietario.razao_social', read_only=True)
     class Meta:
         model = Imoveis_Rurais
-        fields = ['id', 'matricula', 'nome_imovel', 'str_proprietario', 'municipio_localizacao', 'area_total']
+        fields = ['id', 'matricula_imovel', 'nome_imovel', 'str_proprietario', 'municipio_localizacao', 'area_total']
+
+class detailFarms(serializers.ModelSerializer):
+    str_proprietario = serializers.CharField(source='proprietario.razao_social', read_only=True)
+    kml = serializers.SerializerMethodField(read_only=True)
+    token_apimaps = serializers.SerializerMethodField(read_only=True)
+    def get_kml(self, obj):
+        kml = None
+        payload = {"query":"{table_record (id:" + str(obj.id) + ") {record_fields{native_value field{id}}}}"}
+        headers = {"Authorization": TOKEN_PIPEFY_API, "Content-Type": "application/json"}
+        response = requests.post(URL_PIFEFY_API, json=payload, headers=headers)
+        obj = json.loads(response.text)
+        record_fields = obj["data"]["table_record"]["record_fields"] 
+        for field in record_fields:
+            field_id = field["field"]["id"]
+            if field_id == "kml_da_matr_cula":
+                kml = field["native_value"]
+        return kml
+    def get_token_apimaps(self, obj):
+        return TOKEN_GOOGLE_MAPS_API
+    class Meta:
+        model = Imoveis_Rurais
+        fields = '__all__'

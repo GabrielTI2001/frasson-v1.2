@@ -21,6 +21,38 @@ export const fetchPessoal = async (inputValue) => {
   }
 };
 
+export const FetchImoveisRurais = async (inputValue) => {
+  const token = localStorage.getItem("token")
+  // const navigate = useNavigate()
+  try {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/analytics/farms?search=${inputValue}`;
+    const response = await fetch(apiUrl,{
+      headers:{
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+      }
+    });
+
+    const dataapi = await response.json();
+    if (response.status === 200){
+      const options = dataapi.length > 0 ? dataapi.map(b =>({
+          value: b.id,
+          label: b.nome_imovel
+      })) : []
+      return options
+    }
+    else if (response.status === 401){
+      localStorage.setItem("login", JSON.stringify(false));
+      localStorage.setItem('token', "");
+      // navigate("/auth/login")
+      return [];
+    }
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    return [];
+  }
+};
+
 export const fetchInstituicoesRazaoSocial = async (inputValue) => {
   const token = localStorage.getItem("token")
   const params = inputValue ? `search=${inputValue}` : 'all=1'

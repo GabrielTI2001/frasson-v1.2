@@ -5,7 +5,6 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'pessoal', views.PessoasView)
-router.register(r'farms', views.FarmsView)
 router.register(r'fases', views.FasesView)
 router.register(r'pipes/produtos', views.PipeView)
 router.register(r'fases', views.FasesView)

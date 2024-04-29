@@ -5,9 +5,9 @@ from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from .serializers import serializerPipe, serializerFase, serializerCard_Produtos, serializerDetalhamento_Servicos, serializerInstituicoes_Parceiras
 from .serializers import serializerContratos_Servicos, serializerCadastro_Pessoal, listCadastro_Pessoal, detailCadastro_Pessoal
-from .serializers import serOperacoesContratatadas, listFarms, detailFarms, listInstituicoes_RazaoSocial
+from .serializers import serOperacoesContratatadas, listInstituicoes_RazaoSocial
 from .models import Card_Produtos, Fase, Pipe, Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Parceiras, Contratos_Servicos
-from .models import Operacoes_Contratadas, Imoveis_Rurais, Instituicoes_Razao_Social
+from .models import Operacoes_Contratadas, Instituicoes_Razao_Social
 
 class PessoasView(viewsets.ModelViewSet):
     queryset = Cadastro_Pessoal.objects.all()
@@ -33,31 +33,6 @@ class PessoasView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return listCadastro_Pessoal
-        else:
-            return self.serializer_class
-
-class FarmsView(viewsets.ModelViewSet):
-    queryset = Imoveis_Rurais.objects.all()
-    serializer_class = detailFarms
-    # permission_classes = [IsAuthenticated]
-    lookup_field = 'uuid'
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_term = self.request.query_params.get('search', None)
-        all_term = self.request.query_params.get('all', None)
-        if search_term:
-            queryset = queryset.filter(
-                Q(nome_imovel__icontains=search_term)
-            )
-        elif all_term:
-            queryset = queryset.order_by('-created_at')
-        else:
-            if self.action == 'list':
-                queryset = queryset.order_by('-created_at')[:10]
-        return queryset
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return listFarms
         else:
             return self.serializer_class
 

@@ -3,8 +3,7 @@ import AsyncSelect from 'react-select/async';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col, OverlayTrigger, Tooltip} from 'react-bootstrap';
-import { FetchImoveisRurais} from '../Data';
-import { fetchPessoal } from '../../Pipefy/Data';
+import { fetchPessoal, FetchImoveisRurais } from '../../Pipefy/Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { useAppContext } from '../../../Main';
@@ -259,14 +258,16 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.file : ''}</label>
         </Form.Group>
 
-        {type === 'edit' && data.file && <Form.Group className="mb-2" as={Col} lg={3}>
-          <Form.Label className='fw-bold mb-1'>Arquivo Atual</Form.Label>
-          <Col>
-            <Link to={`${data.file}`} target="__blank" className="btn btn-info py-0 px-2 ms-0 w-50">
-                <FontAwesomeIcon icon={faFilePdf} className="me-2"></FontAwesomeIcon>Visualizar
-            </Link>
-          </Col>
-        </Form.Group>}
+        {type === 'edit' && data && data.file && 
+          <Form.Group className="mb-2" as={Col} lg={3}>
+            <Form.Label className='fw-bold mb-1'>Arquivo Atual</Form.Label>
+            <Col>
+              <Link to={`${data.file}`} target="__blank" className="btn btn-info py-0 px-2 ms-0 w-50">
+                  <FontAwesomeIcon icon={faFilePdf} className="me-2"></FontAwesomeIcon>Visualizar
+              </Link>
+            </Col>
+          </Form.Group>
+        }
 
         <hr className='ms-3'></hr>
         <h4 style={{fontSize:'14px'}} className='fw-700'>Resultados</h4>

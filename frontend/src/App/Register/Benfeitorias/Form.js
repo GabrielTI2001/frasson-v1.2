@@ -3,7 +3,8 @@ import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
-import { FetchImoveisRurais, fetchTipoBenfeitoria} from '../Data';
+import { FetchImoveisRurais } from '../../Pipefy/Data';
+import { fetchTipoBenfeitoria} from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal, Imoveis_Rurais
+from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal
 from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes, Instituicoes_Razao_Social
 
 class serializerCadastro_Pessoal(serializers.ModelSerializer):
@@ -28,16 +28,6 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
             'agencia': c.agencia,
             'conta': c.conta,
         }for c in ContasBancarias_Clientes.objects.filter(cliente=obj)]
-    
-class listFarms(serializers.ModelSerializer):
-    class Meta:
-        model = Imoveis_Rurais
-        fields = ['id', 'nome_imovel']
-
-class detailFarms(serializers.ModelSerializer):
-    class Meta:
-        model = Imoveis_Rurais
-        fields = '__all__'
 
 class serializerInstituicoes_Parceiras(serializers.ModelSerializer):
     razao_social = serializers.CharField(source='instituicao.razao_social', required=False, read_only=True)
