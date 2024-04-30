@@ -139,7 +139,7 @@ const BenfeitoriaEdit = () => {
             )}
             <hr></hr>
             <Form onSubmit={formImgsubmit}>
-                <Form.Group>
+                <Form.Group className="mb-3">
                     <Form.Control 
                         name="file"
                         type="file"

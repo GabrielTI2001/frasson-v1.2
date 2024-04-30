@@ -37,7 +37,7 @@ const ViewFarm = () => {
     <>
     <ol className="breadcrumb breadcrumb-alt fs-xs">
         <li className="breadcrumb-item fw-bold">
-            <Link className="link-fx text-primary" to={'/analytics/regime'}>Regimes de Exploração</Link>
+            <Link className="link-fx text-primary" to={'/analytics/farms'}>Imóveis Rurais</Link>
         </li>
         <li className="breadcrumb-item fw-bold" aria-current="page">
             {farm && farm.nome_imovel}
@@ -133,12 +133,16 @@ const ViewFarm = () => {
                 </Row>
             </div>
             <div className='d-block w-100'>
-                <Link to={farm.url_record} className='btn btn-primary py-0 px-2 me-2' target="_blank">
-                    <FontAwesomeIcon icon={faMagnifyingGlass} className='me-1'/>Pipefy
-                </Link>
-                <Link className='btn btn-secondary py-0 px-2' to={farm.kml}>
-                    <FontAwesomeIcon icon={faDownload} className='me-1' />KML
-                </Link>
+                {farm.url_record &&
+                    <Link to={farm.url_record} className='btn btn-primary py-0 px-2 me-2' target="_blank">
+                        <FontAwesomeIcon icon={faMagnifyingGlass} className='me-1'/>Pipefy
+                    </Link>
+                }
+                {farm.kml &&
+                    <Link className='btn btn-secondary py-0 px-2' to={farm.kml}>
+                        <FontAwesomeIcon icon={faDownload} className='me-1' />KML
+                    </Link>
+                }   
             </div>
         </Col>
     </Row>

@@ -159,7 +159,6 @@ class serOperacoesContratatadas(serializers.ModelSerializer):
             'data_vencimento']
 
 class serMonitoramentoPrazos(serializers.ModelSerializer): 
-    # avatar = serializers.CharField(source='created_by.profile.avatar.name', read_only=True)
     avatar = serializers.SerializerMethodField(read_only=True)
     def get_avatar(self, obj):
         path = MEDIA_URL+obj.created_by.profile.avatar.name
