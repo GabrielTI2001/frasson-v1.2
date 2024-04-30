@@ -42,17 +42,17 @@ const ModalDelete = ({show, close, link, update}) => {
       dialogClassName="mt-20"
     >
       <Modal.Body className="text-center">
-          <div className="swal2-icon swal2-warning swal2-icon-show mt-4" style={{display: 'flex'}}>
-            <div className="swal2-icon-content">!</div>
-          </div>
-          <h2 className="swal2-title mt-4" id="swal2-title" style={{display: 'block', fontSize:'18px'}}>Você tem certeza?</h2>
-          <div className="swal2-html-container mt-3" id="swal2-html-container" style={{display: 'block'}}>
-            <div style={{fontSize: '13px'}}>Esse registro será excluído!</div>
-          </div>
-          <div className="d-block sectionform mt-3">
-              <Button className="btn-danger w-30 m-1" onClick={deletePoint}>Sim, Excluir!</Button>
-              <Button className="btn-primary w-30 m-1" onClick={()=>{close()}}>Cancelar</Button>
-          </div>
+        <div className="swal2-icon swal2-warning swal2-icon-show mt-4" style={{display: 'flex'}}>
+          <div className="swal2-icon-content">!</div>
+        </div>
+        <h2 className="swal2-title mt-4" id="swal2-title" style={{display: 'block', fontSize:'18px'}}>Você tem certeza?</h2>
+        <div className="swal2-html-container mt-3" id="swal2-html-container" style={{display: 'block'}}>
+          <div style={{fontSize: '13px'}}>Esse registro será excluído!</div>
+        </div>
+        <div className="d-block sectionform mt-3">
+            <Button className="btn-danger w-30 m-1" onClick={deletePoint}>Sim, Excluir!</Button>
+            <Button className="btn-primary w-30 m-1" onClick={()=>{close()}}>Cancelar</Button>
+        </div>
       </Modal.Body>
     </Modal>
   )

@@ -1,21 +1,10 @@
-import { useState} from "react";
 import React from 'react';
 import {Spinner} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import {Table} from "react-bootstrap";
 
 const ListProcessos = ({processos, nome_pessoa}) => {
-    const token = localStorage.getItem("token")
-    const navigate = useNavigate();
-    const [showmodal, setShowModal] = useState(false)
     const {config: {theme}} = useAppContext();
-
-    const onClick = (id, uuid) =>{
-        const url = `/pipefy/pessoal/${uuid}`
-        navigate(url)
-    }
 
     return (
         <>

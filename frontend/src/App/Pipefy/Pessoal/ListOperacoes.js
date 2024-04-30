@@ -1,19 +1,10 @@
-import { useState} from "react";
 import React from 'react';
 import {Spinner} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import {Table} from "react-bootstrap";
 
 const ListOperacoes = ({operacoes, nome_pessoa}) => {
-    const navigate = useNavigate();
     const {config: {theme}} = useAppContext();
-
-    const onClick = (id, uuid) =>{
-        const url = `/analytics/credit/${uuid}`
-        navigate(url)
-    }
 
     return (
         <>

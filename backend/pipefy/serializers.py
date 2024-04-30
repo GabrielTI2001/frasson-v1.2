@@ -3,7 +3,7 @@ from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_
 from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes, Instituicoes_Razao_Social, Prospect_Monitoramento_Prazos
 from datetime import datetime
 import requests, json
-from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
+from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL
 from users.models import Profile
 
 class serializerCadastro_Pessoal(serializers.ModelSerializer):
@@ -79,7 +79,6 @@ class serializerCard_Produtos(serializers.ModelSerializer):
             'razao_social': ben.razao_social,
             'cpf_cnpj': ben.cpf_cnpj,
         }for ben in obj.beneficiario.all()]
-    
     def get_info_detalhamento(self, obj):
         if obj.detalhamento:
             return {
@@ -122,9 +121,9 @@ class detailCard_Prospects(serializers.ModelSerializer):
     monitoramentos = serializers.SerializerMethodField(read_only=True)
     pipefy = serializers.SerializerMethodField(read_only=True)
     def get_monitoramentos(self, obj):
-        monitoramentos_prazo = Prospect_Monitoramento_Prazos.objects.filter(prospect=obj)
-        monitoramentoslist = [{'id':m.id, 'data_venc': m.data_vencimento.strftime("%d/%m/%Y"), 'descricao': m.description,
-            'avatar':Profile.objects.get(user=m.created_by).avatar, 'user': m.created_by.first_name} for m in monitoramentos_prazo]
+        monitoramentos_prazo = Prospect_Monitoramento_Prazos.objects.filter(prospect_id=obj.id)
+        monitoramentoslist = [{'id':m.id, 'data_vencimento': m.data_vencimento.strftime("%d/%m/%Y"), 'description': m.description,
+            'avatar': MEDIA_URL+m.created_by.profile.avatar.name, 'user': m.created_by.first_name} for m in monitoramentos_prazo]
         return monitoramentoslist
     def get_pipefy(self, obj):
         payload = {"query":"{card (id:" + str(obj.id) + ") {age createdAt url due_date createdBy{name avatarUrl} current_phase{name} comments{created_at author{name avatarUrl} text} assignees{name avatarUrl} due_date}}"}
@@ -156,4 +155,20 @@ class serOperacoesContratatadas(serializers.ModelSerializer):
     name_item = serializers.CharField(source='item_financiado.item', required=False, read_only=True)
     class Meta:
         model = Operacoes_Contratadas
-        fields = ['id', 'data_emissao_cedula', 'numero_operacao', 'name_instituicao', 'name_item', 'taxa_juros', 'valor_operacao', 'data_vencimento']
+        fields = ['id', 'data_emissao_cedula', 'numero_operacao', 'name_instituicao', 'name_item', 'taxa_juros', 'valor_operacao', 
+            'data_vencimento']
+
+class serMonitoramentoPrazos(serializers.ModelSerializer): 
+    # avatar = serializers.CharField(source='created_by.profile.avatar.name', read_only=True)
+    avatar = serializers.SerializerMethodField(read_only=True)
+    def get_avatar(self, obj):
+        path = MEDIA_URL+obj.created_by.profile.avatar.name
+        return path
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['data_vencimento', 'prospect', 'description', 'created_by']:
+                field.required = True
+    class Meta:
+        model = Prospect_Monitoramento_Prazos
+        fields = '__all__'

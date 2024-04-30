@@ -2,9 +2,12 @@ import React,{useEffect, useState} from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { RetrieveRecord } from '../../../helpers/Data';
 import { Link } from 'react-router-dom';
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button, Col, Row, Card } from 'react-bootstrap';
 import {Placeholder, Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import ModalDelete from '../../../components/Custom/ModalDelete';
 
 const ViewProspect = () => {
     const {id} = useParams()
@@ -13,22 +16,24 @@ const ViewProspect = () => {
     const user = JSON.parse(localStorage.getItem("user"))
     const [card, setCard] = useState();
     const [monitoramentos, setMonitoramentos] = useState();
+    const [modal, setModal] = useState({show:false, link:''});
     const [message, setMessage] = useState();
     const [formData, setformData] = useState({created_by:user.id});
-    console.log(formData)
-    console.log(monitoramentos)
 
     const setter = (data) =>{
         setCard(data)
-        console.log(data)
-        setformData({...formData, prospect_id:data.id})
+        setformData({...formData, prospect:data.id})
         setMonitoramentos(data.monitoramentos)
     }
-    const submit = (data) =>{
-        setMonitoramentos([...monitoramentos, ...data])
+    const submit = (type, data) =>{
+        if (type === 'add') setMonitoramentos([...monitoramentos, data])
+        if (type === 'delete'){ 
+            setMonitoramentos(monitoramentos.filter(m => m.id !== parseInt(data)))
+        }
+
     }
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/register/machinery/`
+        const link = `${process.env.REACT_APP_API_URL}/pipefy/monitoramento-prazos/`
         const method = 'POST'
         try {
             const response = await fetch(link, {
@@ -49,7 +54,7 @@ const ViewProspect = () => {
               navigate("/auth/login");
             }
             else if (response.status === 201 || response.status === 200){
-                submit(data)
+                submit('add', data)
                 toast.success("Registro Atualizado com Sucesso!")
             }
         } catch (error) {
@@ -123,7 +128,7 @@ const ViewProspect = () => {
                     </Col>
                 )}
                 </Col>
-                <hr className='ms-3'></hr>
+                <hr className='ms-3 w-100'></hr>
             </Row>
             <Row>
                 <h6 style={{fontSize: '14px'}} className='fw-bold mb-2'>Alterar Prazo</h6>
@@ -134,6 +139,7 @@ const ViewProspect = () => {
                             onChange={handleFieldChange}
                             name='data_vencimento'
                         />
+                        <label className='text-danger'>{message ? message.data_vencimento : ''}</label>
                     </Form.Group>
                     <Form.Group as={Col} xl={10} className='mb-3'>
                         <Form.Label className='mb-0'>Descrição*</Form.Label>
@@ -141,6 +147,7 @@ const ViewProspect = () => {
                             onChange={handleFieldChange}
                             name='description'
                         />
+                        <label className='text-danger'>{message ? message.description : ''}</label>
                     </Form.Group>
                     <Form.Group as={Col} xl={10}>
                         <Button type='submit'>Registrar</Button>
@@ -149,7 +156,26 @@ const ViewProspect = () => {
             </Row>
         </Col>
         <Col className='d-flex flex-column'>
-
+            <h6 style={{fontSize: '14px'}} className='fw-bold mb-2'>Monitoramento Prazos</h6>
+            {monitoramentos && monitoramentos.map(m => 
+                <div className='mb-3 d-flex align-items-center' key={m.id}>
+                    <img className='p-0 rounded-circle me-2' style={{width: '42px', height: '38px'}} 
+                        src={`${process.env.REACT_APP_API_URL}${m.avatar}`}
+                    />
+                    <Card as={Col}>
+                        <Card.Header className='text-end py-1'>
+                            <span className='fw-bold me-2'>{m.data_vencimento}</span>
+                            <FontAwesomeIcon onClick={() => setModal({show:true, 
+                                link:`${process.env.REACT_APP_API_URL}/pipefy/monitoramento-prazos/${m.id}/`})} 
+                                icon={faTrash} className='text-danger ms-2 cursor-pointer'
+                            />
+                        </Card.Header>
+                        <Card.Body className='pt-0 pb-2'>
+                            {m.description}
+                        </Card.Body>
+                    </Card>
+                </div>
+            )}
         </Col>
     </Row>
     </>
@@ -162,6 +188,7 @@ const ViewProspect = () => {
             <Placeholder xs={7} /> <Placeholder xs={4} /> 
         </Placeholder>    
     </div>}
+    <ModalDelete show={modal.show} link={modal.link} close={() => setModal({...modal, show:false})} update={submit} />
     </>
     );
 };

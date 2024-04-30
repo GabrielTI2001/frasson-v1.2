@@ -14,7 +14,6 @@ const IndexPessoal = () => {
     const user = JSON.parse(localStorage.getItem("user"))
     const token = localStorage.getItem("token")
     const navigate = useNavigate();
-    const [showmodal, setShowModal] = useState(false)
 
     const onClick = (id, uuid) =>{
         const url = `/pipefy/pessoal/${uuid}`
@@ -72,17 +71,11 @@ const IndexPessoal = () => {
             pagination
             perPage={5}
         >
-        <Row className="flex-end-center justify-content-start mb-3">
-            <Col xs="auto" sm={6} lg={4}>
-                <AdvanceTableSearchBox table onSearch={handleSearch}/>
-            </Col>
-            <Col xs="auto" sm="auto" lg="auto" className="px-1">
-                <a className="text-decoration-none btn btn-primary shadow-none fs--1"
-                    style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
-                >Novo Cadastro</a>
-            </Col>
-        </Row>
-       
+            <Row className="flex-end-center justify-content-start mb-3">
+                <Col xs="auto" sm={6} lg={4}>
+                    <AdvanceTableSearchBox table onSearch={handleSearch}/>
+                </Col>
+            </Row>
         <AdvanceTable
             table
             headerClassName="text-nowrap align-middle fs-xs"
@@ -96,33 +89,14 @@ const IndexPessoal = () => {
         />
         <div className="mt-3">
             <AdvanceTableFooter
-            rowCount={searchResults.length}
-            table
-            rowInfo
-            navButtons
-            rowsPerPageSelection
+                rowCount={searchResults.length}
+                table
+                rowInfo
+                navButtons
+                rowsPerPageSelection
             />
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
-        <Modal
-            size="xl"
-            show={showmodal}
-            onHide={() => setShowModal(false)}
-            dialogClassName="mt-10"
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Pessoa
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
-                        {/* {type === 'appo' ? <APPOForm hasLabel type='add' /> : <OutorgaForm hasLabel type='add'></OutorgaForm>} */}
-                    </Row>
-            </Modal.Body>
-        </Modal>
         </>
     );
   };
