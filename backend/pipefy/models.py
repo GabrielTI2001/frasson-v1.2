@@ -1,10 +1,9 @@
 from django.db import models
 import uuid
-from users.models import Profile
+from users.models import Profile, User
 
 class Pipe(models.Model):
     id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     descricao = models.CharField(max_length=255, null=False, blank=False, verbose_name='Descricao  Pipe')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -14,8 +13,7 @@ class Pipe(models.Model):
         return self.descricao
 
 class Fase(models.Model):
-    id = models.AutoField(primary_key=True)
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    id = models.BigIntegerField(primary_key=True)
     pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE)
     descricao = models.CharField(max_length=255, null=False, blank=False, verbose_name='Nome Fase')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -319,3 +317,15 @@ class Regimes_Exploracao(models.Model):
         verbose_name_plural = 'Regimes Exploração'
     def __str__(self):
         return self.imovel.nome_imovel
+    
+class Prospect_Monitoramento_Prazos(models.Model):
+    prospect = models.ForeignKey(Card_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
+    data_vencimento = models.DateField(null=True, blank=False, verbose_name='Data Vencimento')
+    description = models.TextField(null=True, blank=False, verbose_name='Descrição')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Monitoramento Prazos Prospect'
+    def __str__(self):
+        return self.prospect.prospect

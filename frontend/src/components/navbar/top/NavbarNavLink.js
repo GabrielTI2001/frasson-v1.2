@@ -5,12 +5,15 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../../../Main';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import * as icons from 'react-bootstrap-icons';
 
-const NavbarNavLink = ({ title, route, icon }) => {
+const NavbarNavLink = ({ title, route, icon, icon2 }) => {
   const {
     config: { navbarCollapsed, showBurgerMenu },
     setConfig
   } = useAppContext();
+
+  const BootstrapIcon = icons[icon2];
 
   const handleClick = () => {
     if (route.name === 'Modal') {
@@ -38,6 +41,7 @@ const NavbarNavLink = ({ title, route, icon }) => {
       onClick={handleClick}
     >
       {icon && <FontAwesomeIcon icon={icon} className='me-2'></FontAwesomeIcon>}
+      {icon2 && <BootstrapIcon className='me-2'/>}
       {title ? title : route.name}
     </Nav.Link>
   );

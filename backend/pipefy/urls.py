@@ -15,6 +15,7 @@ router.register(r'instituicoes-razaosocial', views.Instituicoes_RazaosocialView)
 router.register(r'contratos', views.ContratosView)
 router.register(r'operacoes-contratadas', views.OperacoesContratadasView)
 router.register(r'cards/produtos', views.Card_ProdutosView)
+router.register(r'cards/prospects', views.Card_ProspectsView)
 
 urlpatterns = [
     path('cards/<int:pk>/update_beneficiarios/', views.Card_BeneficiariosView.as_view({'put': 'update_beneficiarios'}), name='update_beneficiarios'),

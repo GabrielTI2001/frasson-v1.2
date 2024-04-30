@@ -3,6 +3,7 @@ faMap }
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser } 
 from "@fortawesome/free-solid-svg-icons";
+import { } from 'react-bootstrap-icons';
 const user = JSON.parse(localStorage.getItem("user"));
 
 export const dashboardRoutes = {
@@ -65,8 +66,35 @@ export const operacionalRoutes = {
           active: true
         },
       ]
+    },
+    {
+      name: 'Processos Operacionais',
+      active: true,
+      children: [
+        {
+          name: 'Processos Prospects',
+          icon2: 'FunnelFill',
+          to: '/pipefy/pipes/301573049',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Processos Produtos',
+          icon2: 'GearFill',
+          to: '/pipefy/pipes/301573538',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Acompanhamento GAI',
+          icon2: 'CalendarCheck',
+          to: '/processes/followup',
+          exact: true,
+          active: true
+        }
+      ]
     }
-  ]
+  ],  
 };
 
 

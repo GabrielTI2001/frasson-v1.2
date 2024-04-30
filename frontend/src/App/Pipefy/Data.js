@@ -145,3 +145,41 @@ export const columnsPessoaProcesso = [
     headerProps: { className: 'text-900 p-1' }
   },
 ];
+
+export const columnsCardProspects = [
+  {
+    accessor: 'id',
+    Header: 'N° Prospect',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_prospect',
+    Header: 'Prospect',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'produto',
+    Header: 'Produto Interesse',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'responsaveis_list',
+    Header: 'Responsável',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'phase_name',
+    Header: 'Fase Atual',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'data_vencimento',
+    Header: 'Vencimento',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'status',
+    Header: 'Status',
+    headerProps: { className: 'text-900 p-1' }
+  },
+];

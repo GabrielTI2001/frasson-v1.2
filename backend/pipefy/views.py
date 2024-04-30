@@ -5,9 +5,9 @@ from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 from .serializers import serializerPipe, serializerFase, serializerCard_Produtos, serializerDetalhamento_Servicos, serializerInstituicoes_Parceiras
 from .serializers import serializerContratos_Servicos, serializerCadastro_Pessoal, listCadastro_Pessoal, detailCadastro_Pessoal
-from .serializers import serOperacoesContratatadas, listInstituicoes_RazaoSocial
+from .serializers import serOperacoesContratatadas, listInstituicoes_RazaoSocial, serializerCard_Prospects, detailCard_Prospects
 from .models import Card_Produtos, Fase, Pipe, Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Parceiras, Contratos_Servicos
-from .models import Operacoes_Contratadas, Instituicoes_Razao_Social
+from .models import Operacoes_Contratadas, Instituicoes_Razao_Social, Card_Prospects
 
 class PessoasView(viewsets.ModelViewSet):
     queryset = Cadastro_Pessoal.objects.all()
@@ -48,7 +48,7 @@ class FasesView(viewsets.ModelViewSet):
 
 class Card_ProdutosView(viewsets.ModelViewSet):
     queryset = Card_Produtos.objects.all()
-    serializer_class = serializerCard_Produtos
+    serializer_class = detailCard_Prospects
     permission_classes = [permissions.AllowAny]
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -62,6 +62,29 @@ class Card_ProdutosView(viewsets.ModelViewSet):
             if self.action == 'list':
                 queryset = queryset.order_by('-created_at')
         return queryset
+
+class Card_ProspectsView(viewsets.ModelViewSet):
+    queryset = Card_Prospects.objects.all()
+    serializer_class = detailCard_Prospects
+    permission_classes = [permissions.AllowAny]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(pk__icontains=search) | Q(prospect__cliente__icontains=search) | Q(phase__descricao__icontains=search) | 
+                Q(responsavel__user__first_name__icontains=search)
+            )
+        else:
+            if self.action == 'list':
+                queryset = queryset.order_by('-created_at')
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializerCard_Prospects
+        else:
+            return self.serializer_class
+
 
 class Card_BeneficiariosView(viewsets.ModelViewSet):
     queryset = Card_Produtos.objects.all()

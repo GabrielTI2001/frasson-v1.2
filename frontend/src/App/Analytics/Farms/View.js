@@ -25,7 +25,7 @@ const ViewFarm = () => {
                 navigate("/auth/login")
             }
         }
-        if ((user.permissions && user.permissions.indexOf("view_regimes_exploracao") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_imoveis_rurais") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!farm){

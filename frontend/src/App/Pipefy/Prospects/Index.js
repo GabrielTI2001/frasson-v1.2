@@ -7,9 +7,11 @@ import AdvanceTableFooter from '../../../components/common/advance-table/Advance
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
-import { columnsPessoal } from "../Data";
+import { columnsCardProspects } from "../Data";
+import { HandleSearch } from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
-const IndexPessoal = () => {
+
+const IndexProspects = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const token = localStorage.getItem("token")
@@ -17,8 +19,15 @@ const IndexPessoal = () => {
     const [showmodal, setShowModal] = useState(false)
 
     const onClick = (id, uuid) =>{
-        const url = `/pipefy/pessoal/${uuid}`
+        const url = `/pipefy/pipes/301573049/cards/${id}`
         navigate(url)
+    }
+
+    const setter = (data) =>{
+        setSearchResults(data)
+    }
+    const search = (value) =>{
+        HandleSearch(value, 'pipefy/cards/prospects', setter)
     }
 
     useEffect(()=>{
@@ -26,47 +35,20 @@ const IndexPessoal = () => {
             navigate("/error/403")
         }
         if (!searchResults){
-            handleSearch('') 
+            HandleSearch('', 'pipefy/cards/prospects', setter) 
         }
     },[])
-
-    const handleSearch = async (search) => {
-        const params = search === '' ? '' : `?search=${search}`
-        const url = `${process.env.REACT_APP_API_URL}/pipefy/pessoal/${params}`
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            const data = await response.json();
-            if (response.status === 401) {
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            } else if (response.status === 200) {
-                setSearchResults(data)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-      };
 
     return (
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                Cadastro Pessoal
+                Prospects Pipefy
             </li>  
         </ol>
         {searchResults ? 
         <AdvanceTableWrapper
-            columns={columnsPessoal}
+            columns={columnsCardProspects}
             data={searchResults}
             sortable
             pagination
@@ -74,7 +56,7 @@ const IndexPessoal = () => {
         >
         <Row className="flex-end-center justify-content-start mb-3">
             <Col xs="auto" sm={6} lg={4}>
-                <AdvanceTableSearchBox table onSearch={handleSearch}/>
+                <AdvanceTableSearchBox table onSearch={search}/>
             </Col>
             <Col xs="auto" sm="auto" lg="auto" className="px-1">
                 <a className="text-decoration-none btn btn-primary shadow-none fs--1"
@@ -91,16 +73,17 @@ const IndexPessoal = () => {
                 bordered: true,
                 striped: false,
                 className: 'fs-xs mb-0 overflow-hidden',
+                index_status:6
             }}
             Click={onClick}
         />
         <div className="mt-3">
             <AdvanceTableFooter
-            rowCount={searchResults.length}
-            table
-            rowInfo
-            navButtons
-            rowsPerPageSelection
+                rowCount={searchResults.length}
+                table
+                rowInfo
+                navButtons
+                rowsPerPageSelection
             />
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
@@ -127,5 +110,5 @@ const IndexPessoal = () => {
     );
   };
   
-  export default IndexPessoal;
+  export default IndexProspects;
   

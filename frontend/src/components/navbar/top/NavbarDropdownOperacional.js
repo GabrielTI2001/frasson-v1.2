@@ -12,7 +12,7 @@ const NavbarDropdownOperacional = ({ items }) => {
             <React.Fragment key={item.name}>
               <NavbarNavLink key={item.name} title={item.name}/>
               {item.children.map((li) =>(
-                <NavbarNavLink key={li.name} route={li} icon={li.icon} />
+                <NavbarNavLink key={li.name} route={li} icon={li.icon} icon2={li.icon2}/>
               ))}
             </React.Fragment>
           ))}

@@ -18,9 +18,11 @@ import ViewBenfeitoria from '../App/Register/Benfeitorias/View';
 import BenfeitoriaEdit from '../App/Register/Benfeitorias/Edit';
 import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
 import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
-//Pipeline
+//Pipefy
 import IndexPessoal from '../App/Pipefy/Pessoal/Index';
 import ViewPessoal from '../App/Pipefy/Pessoal/View';
+import IndexProspects from '../App/Pipefy/Prospects/Index';
+import ViewProspect from '../App/Pipefy/Prospects/View';
 //Ambiental
 import View from "../App/Ambiental/InemaOutorgas/View";
 import Edit from "../App/Ambiental/InemaOutorgas/Edit";
@@ -96,6 +98,8 @@ const LayoutRoutes = () => {
         <Route path="/pipefy">
           <Route path="pessoal" element={<IndexPessoal />}/>
           <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
+          <Route path="pipes/301573049" element={<IndexProspects />}/>
+          <Route path="pipes/301573049/cards/:id" element={<ViewProspect />}/>
         </Route>
         <Route path="/ambiental/inema">
           <Route path="outorgas" element={<IndexOutorgas />}/>

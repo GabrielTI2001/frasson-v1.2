@@ -1,6 +1,10 @@
 from rest_framework import serializers
-from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal
-from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes, Instituicoes_Razao_Social
+from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal, Card_Prospects
+from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes, Instituicoes_Razao_Social, Prospect_Monitoramento_Prazos
+from datetime import datetime
+import requests, json
+from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
+from users.models import Profile
 
 class serializerCadastro_Pessoal(serializers.ModelSerializer):
     class Meta:
@@ -94,6 +98,46 @@ class serializerCard_Produtos(serializers.ModelSerializer):
             }
         else:
             return None
+        
+class serializerCard_Prospects(serializers.ModelSerializer):
+    phase_name = serializers.CharField(source='phase.descricao', read_only=True)
+    str_prospect = serializers.CharField(source='prospect.cliente', read_only=True)
+    status = serializers.SerializerMethodField(read_only=True)
+    responsaveis_list = serializers.SerializerMethodField(read_only=True)
+    def get_status(self, obj):
+        data_prazo = obj.data_vencimento
+        status = {'text': 'Atrasado', 'color':'warning' } if data_prazo and datetime.now() > data_prazo else {'text': 'No Prazo', 'color':'success'}
+        return status
+    def get_responsaveis_list(self, obj):
+        respons = obj.responsavel.all()
+        responsaveis = f"{respons[0].user.first_name} {respons[0].user.last_name}" if len(respons) == 1 else '-' if len(respons) == 0 else ', '.join([f"{r.user.first_name} {r.user.last_name}" for r in respons])
+        return responsaveis
+    class Meta:
+        model = Card_Prospects
+        fields = '__all__'
+
+class detailCard_Prospects(serializers.ModelSerializer):
+    phase_name = serializers.CharField(source='phase.descricao', read_only=True)
+    str_prospect = serializers.CharField(source='prospect.cliente', read_only=True)
+    monitoramentos = serializers.SerializerMethodField(read_only=True)
+    pipefy = serializers.SerializerMethodField(read_only=True)
+    def get_monitoramentos(self, obj):
+        monitoramentos_prazo = Prospect_Monitoramento_Prazos.objects.filter(prospect=obj)
+        monitoramentoslist = [{'id':m.id, 'data_venc': m.data_vencimento.strftime("%d/%m/%Y"), 'descricao': m.description,
+            'avatar':Profile.objects.get(user=m.created_by).avatar, 'user': m.created_by.first_name} for m in monitoramentos_prazo]
+        return monitoramentoslist
+    def get_pipefy(self, obj):
+        payload = {"query":"{card (id:" + str(obj.id) + ") {age createdAt url due_date createdBy{name avatarUrl} current_phase{name} comments{created_at author{name avatarUrl} text} assignees{name avatarUrl} due_date}}"}
+        headers = {"Authorization": TOKEN_PIPEFY_API, "Content-Type": "application/json"}
+        response = requests.post(URL_PIFEFY_API, json=payload, headers=headers)
+        obj = json.loads(response.text)
+        data_objeto = datetime.strptime(obj["data"]["card"]["due_date"], "%Y-%m-%dT%H:%M:%S%z") if obj["data"]["card"]["due_date"] else '-'
+        data_formatada = data_objeto.strftime("%d/%m/%Y %H:%M")
+        return {'due_date': data_formatada, 'color_date': 'danger' if datetime.strptime(obj["data"]["card"]["due_date"][:19], "%Y-%m-%dT%H:%M:%S") < datetime.now() else 'success',
+            'responsavel': obj["data"]["card"]["assignees"]}     
+    class Meta:
+        model = Card_Prospects
+        fields = '__all__'
 
 class serializerFase(serializers.ModelSerializer):
     card_produtos_set = serializerCard_Produtos(many=True, read_only=True, required=False)
