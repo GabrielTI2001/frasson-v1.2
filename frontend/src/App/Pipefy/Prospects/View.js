@@ -2,7 +2,7 @@ import React,{useEffect, useState} from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { RetrieveRecord } from '../../../helpers/Data';
 import { Link } from 'react-router-dom';
-import { Button, Col, Row, Card } from 'react-bootstrap';
+import { Button, Col, Row, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import {Placeholder, Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -159,9 +159,17 @@ const ViewProspect = () => {
             <h6 style={{fontSize: '14px'}} className='fw-bold mb-2'>Monitoramento Prazos</h6>
             {monitoramentos && monitoramentos.map(m => 
                 <div className='mb-3 d-flex align-items-center' key={m.id}>
-                    <img className='p-0 rounded-circle me-2' style={{width: '42px', height: '38px'}} 
-                        src={`${process.env.REACT_APP_API_URL}${m.avatar}`}
-                    />
+                    <OverlayTrigger
+                        overlay={
+                            <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+                                {`${m.user}`}
+                            </Tooltip>
+                        }
+                    >
+                        <img className='p-0 rounded-circle me-2' style={{width: '42px', height: '38px'}} 
+                            src={`${process.env.REACT_APP_API_URL}${m.avatar}`}
+                        />
+                    </OverlayTrigger>
                     <Card as={Col}>
                         <Card.Header className='text-end py-1'>
                             <span className='fw-bold me-2'>{m.data_vencimento}</span>
