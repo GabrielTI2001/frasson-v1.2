@@ -5,11 +5,11 @@ from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 import requests, json
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
-from .serializers import serializerPipe, serializerFase, serializerCard_Produtos, serializerDetalhamento_Servicos, serializerInstituicoes_Parceiras
+from .serializers import detailCard_Produtos, serializerDetalhamento_Servicos, serializerInstituicoes_Parceiras
 from .serializers import serializerContratos_Servicos, serializerCadastro_Pessoal, listCadastro_Pessoal, detailCadastro_Pessoal
 from .serializers import serOperacoesContratatadas, listInstituicoes_RazaoSocial, serializerCard_Prospects, detailCard_Prospects
-from .serializers import serMonitoramentoPrazos
-from .models import Card_Produtos, Fase, Pipe, Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Parceiras, Contratos_Servicos
+from .serializers import serMonitoramentoPrazos, listCard_Produtos
+from .models import Card_Produtos, Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Parceiras, Contratos_Servicos
 from .models import Operacoes_Contratadas, Instituicoes_Razao_Social, Card_Prospects, Prospect_Monitoramento_Prazos
 
 class PessoasView(viewsets.ModelViewSet):
@@ -39,32 +39,32 @@ class PessoasView(viewsets.ModelViewSet):
         else:
             return self.serializer_class
 
-class PipeView(viewsets.ModelViewSet):
-    queryset = Pipe.objects.all()
-    serializer_class = serializerPipe
-    permission_classes = [permissions.AllowAny]
-
-class FasesView(viewsets.ModelViewSet):
-    queryset = Fase.objects.all()
-    serializer_class = serializerFase
-    permission_classes = [permissions.AllowAny]
-
 class Card_ProdutosView(viewsets.ModelViewSet):
     queryset = Card_Produtos.objects.all()
-    serializer_class = detailCard_Prospects
-    permission_classes = [IsAuthenticated]
+    serializer_class = detailCard_Produtos
+    # permission_classes = [IsAuthenticated]
     def get_queryset(self):
         queryset = super().get_queryset()
         benefic_search = self.request.query_params.get('beneficiario', None)
-        
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(pk__icontains=search) | Q(beneficiario__razao_social__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search) 
+                | Q(phase_name__icontains=search)
+            )
         if benefic_search:
             queryset = queryset.filter(
                 Q(beneficiario__in=[int(benefic_search)])
             )
         else:
             if self.action == 'list':
-                queryset = queryset.order_by('-created_at')
+                queryset = queryset.order_by('-created_at')[:20]
         return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCard_Produtos
+        else:
+            return self.serializer_class
 
 class Card_ProspectsView(viewsets.ModelViewSet):
     queryset = Card_Prospects.objects.all()
@@ -86,18 +86,6 @@ class Card_ProspectsView(viewsets.ModelViewSet):
             return serializerCard_Prospects
         else:
             return self.serializer_class
-
-class Card_BeneficiariosView(viewsets.ModelViewSet):
-    queryset = Card_Produtos.objects.all()
-    serializer_class = serializerCard_Produtos
-    permission_classes = [permissions.AllowAny]
-    def update_beneficiarios(self, request, pk=None):
-        card = self.get_object()
-        beneficiarios = request.data.get('beneficiario')
-        if beneficiarios is not None:
-            card.beneficiario.set(beneficiarios)
-        serializer = self.get_serializer(card)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 class BeneficiariosView(viewsets.ModelViewSet):
     queryset = Cadastro_Pessoal.objects.all()

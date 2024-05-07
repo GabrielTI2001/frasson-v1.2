@@ -1,5 +1,5 @@
 from django.db import models
-from pipefy.models import Cadastro_Pessoal, Fornecedores_Colaboradores, Contratos_Servicos, Detalhamento_Servicos, Fase
+from pipefy.models import Cadastro_Pessoal, Fornecedores_Colaboradores, Contratos_Servicos, Detalhamento_Servicos
 
 class MyAppPermissions(models.Model):
     class Meta:
@@ -44,7 +44,8 @@ class Pagamentos_Pipefy(models.Model):
     descricao = models.CharField(max_length=255, null=True, verbose_name='Descrição')
     detalhamento = models.TextField(null=True, verbose_name='Detalhamento Pagamento')
     categoria = models.ForeignKey(Categorias_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Categoria')
-    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase')
+    phase_id = models.BigIntegerField(null=True, verbose_name='Id da Fase Atual')
+    phase_name = models.CharField(max_length=255, null=True, verbose_name='Nome da Fase Atual')
     valor_pagamento = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
     data_pagamento = models.DateField(null=True, verbose_name='Data Pagamento')
@@ -66,7 +67,8 @@ class Cobrancas_Pipefy(models.Model):
     valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Contratado')
     percentual_contratado = models.DecimalField(max_digits=5, decimal_places=2, null=True, verbose_name='Percentual Contratado')
     saldo_devedor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Saldo Devedor')
-    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase')
+    phase_id = models.BigIntegerField(null=True, verbose_name='Id da Fase Atual')
+    phase_name = models.CharField(max_length=255, null=True, verbose_name='Nome da Fase Atual')
     data_previsao = models.DateField(null=True, verbose_name='Data Previsão Pagamento')
     caixa = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Caixa Entrada')
     valor_faturado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Faturado')

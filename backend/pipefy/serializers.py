@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal, Card_Prospects
+from .models import Card_Produtos, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal, Card_Prospects
 from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes, Instituicoes_Razao_Social, Prospect_Monitoramento_Prazos
 from datetime import datetime
 import requests, json
@@ -55,51 +55,89 @@ class serializerContratos_Servicos(serializers.ModelSerializer):
         model = Contratos_Servicos
         fields = ['id', 'contratante', 'produto']
 
-class serializerCard_Produtos(serializers.ModelSerializer):
-    list_beneficiarios = serializers.SerializerMethodField()
-    info_contrato = serializers.SerializerMethodField()
-    info_instituicao = serializers.SerializerMethodField()
-    info_detalhamento = serializers.SerializerMethodField()
-    phase_name = serializers.CharField(source='phase.descricao')
+class detailCard_Produtos(serializers.ModelSerializer):
+    history_phases = serializers.SerializerMethodField(read_only=True)
+    data_pipefy = serializers.SerializerMethodField(read_only=True)
+    detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
+    produto = serializers.CharField(source='detalhamento.produto', read_only=True)
+    str_instituicao = serializers.CharField(source='instituicao.instituicao.razao_social', read_only=True)
+    list_beneficiarios = serializers.SerializerMethodField(read_only=True)
+    comments = serializers.SerializerMethodField(read_only=True)
+    assignees = serializers.SerializerMethodField(read_only=True)
+    cardComments = None
+    cardAssignees = None
+    phasesHistory = None
+    def get_data_pipefy(self, obj):
+        payload = {"query":"{card (id:" + str(obj.id) + ") {age createdAt url createdBy{name avatarUrl} current_phase{name} phases_history{phase{name} duration lastTimeIn lastTimeOut} comments{created_at author{name avatarUrl} text} assignees{name avatarUrl} due_date}}"}
+        headers = {"Authorization": TOKEN_PIPEFY_API, "Content-Type": "application/json"}
+        response = requests.post(URL_PIFEFY_API, json=payload, headers=headers)
+        obj = json.loads(response.text)
+        created_at = datetime.strptime(str(obj["data"]["card"]["createdAt"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y às %H:%M")
+        created_by = obj["data"]["card"]["createdBy"]["name"]
+        due_date_str = datetime.strptime(str(obj["data"]["card"]["due_date"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
+        due_date = datetime.strptime(str(obj["data"]["card"]["due_date"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+        card_vencido = True if due_date < datetime.now() else False
+        self.cardComments = obj["data"]["card"]["comments"]
+        self.cardAssignees = obj["data"]["card"]["assignees"]
+        self.phasesHistory = obj["data"]["card"]["phases_history"]
+        age_card = round(int(obj["data"]["card"]["age"])/86400)   
+        return {'created_by':created_by, 'created_at':created_at, 'age_card':age_card, 'card_vencido':card_vencido, 'due_date':due_date_str}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance:  # Verifica se existe uma instância
+            self.get_data_pipefy(self.instance)
+    def get_history_phases(self, obj):
+        if obj.phase:
+            history_phases = []
+            for phase in self.phasesHistory:
+                lastTimeOut = phase["lastTimeOut"]
+                if lastTimeOut == None:
+                    lastTimeOut_corr = '-'
+                else:
+                    lastTimeOut_corr = datetime.strptime(str(phase["lastTimeOut"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
+                if phase["phase"]["name"] != 'Start form':
+                    history_phases.append({
+                        'name': phase["phase"]["name"],
+                        'days': int(phase["duration"]/86400),
+                        'lastTimeIn': datetime.strptime(str(phase["lastTimeIn"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M"),
+                        'lastTimeOut': lastTimeOut_corr
+                    })
+            return history_phases
+    def get_comments(self, obj):
+        comments = [{
+            'author': comment["author"]["name"],
+            'avatarUrl':comment["author"]["avatarUrl"],
+            'text': comment["text"],
+            'created_at': datetime.strptime(str(comment["created_at"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
+        } for comment in self.cardComments]
+        return comments
+    def get_assignees(self, obj):
+        assignees = [{
+            'name':assignee["name"],
+            'avatarUrl': assignee["avatarUrl"]
+        } for assignee in self.cardAssignees]
+        return assignees
+    def get_list_beneficiarios(self, obj):
+        beneficiarios = obj.beneficiario.all()
+        string = f"{beneficiarios[0].razao_social}" if len(beneficiarios) == 1 else '-' if len(beneficiarios) == 0 else ', '.join([f"{r.razao_social}" for r in beneficiarios])
+        return string
     class Meta:
         model = Card_Produtos
         fields = '__all__'
-    def get_info_instituicao(self, obj):
-        if obj.instituicao:
-            return {
-                'id': obj.instituicao.id,
-                'razao_social': obj.instituicao.instituicao.razao_social,
-                'identificacao': obj.instituicao.identificacao,
-            }
-        else:
-            return None
+        
+class listCard_Produtos(serializers.ModelSerializer):
+    list_beneficiarios = serializers.SerializerMethodField(read_only=True)
+    detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
+    str_instituicao = serializers.CharField(source='instituicao.instituicao.razao_social', read_only=True)
     def get_list_beneficiarios(self, obj):
-        return [{
-            'id': ben.id,
-            'razao_social': ben.razao_social,
-            'cpf_cnpj': ben.cpf_cnpj,
-        }for ben in obj.beneficiario.all()]
-    def get_info_detalhamento(self, obj):
-        if obj.detalhamento:
-            return {
-                'id': obj.detalhamento.id,
-                'detalhamento_servico': obj.detalhamento.detalhamento_servico,
-                'produto': obj.detalhamento.produto,
-            }
-        else:
-            return None
-    def get_info_contrato(self, obj):
-        if obj.contrato:
-            return {
-                'id': obj.contrato.id,
-                'contratante': obj.contrato.contratante.razao_social,
-                'produto': obj.contrato.produto,
-            }
-        else:
-            return None
+        beneficiarios = obj.beneficiario.all()
+        string = f"{beneficiarios[0].razao_social}" if len(beneficiarios) == 1 else '-' if len(beneficiarios) == 0 else ', '.join([f"{r.razao_social}" for r in beneficiarios])
+        return string
+    class Meta:
+        model = Card_Produtos
+        fields = ['id', 'list_beneficiarios', 'str_instituicao', 'detalhe', 'phase_name']
         
 class serializerCard_Prospects(serializers.ModelSerializer):
-    phase_name = serializers.CharField(source='phase.descricao', read_only=True)
     str_prospect = serializers.CharField(source='prospect.cliente', read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
     responsaveis_list = serializers.SerializerMethodField(read_only=True)
@@ -116,7 +154,6 @@ class serializerCard_Prospects(serializers.ModelSerializer):
         fields = '__all__'
 
 class detailCard_Prospects(serializers.ModelSerializer):
-    phase_name = serializers.CharField(source='phase.descricao', read_only=True)
     str_prospect = serializers.CharField(source='prospect.cliente', read_only=True)
     monitoramentos = serializers.SerializerMethodField(read_only=True)
     pipefy = serializers.SerializerMethodField(read_only=True)
@@ -136,18 +173,6 @@ class detailCard_Prospects(serializers.ModelSerializer):
             'responsavel': obj["data"]["card"]["assignees"]}     
     class Meta:
         model = Card_Prospects
-        fields = '__all__'
-
-class serializerFase(serializers.ModelSerializer):
-    card_produtos_set = serializerCard_Produtos(many=True, read_only=True, required=False)
-    class Meta:
-        model = Fase
-        fields = '__all__'
-
-class serializerPipe(serializers.ModelSerializer):
-    fase_set = serializerFase(many=True, read_only=True, required=False)
-    class Meta:
-        model = Pipe
         fields = '__all__'
 
 class serOperacoesContratatadas(serializers.ModelSerializer):

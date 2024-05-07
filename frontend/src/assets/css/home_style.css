@@ -1,8 +1,8 @@
 *{
   font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, Liberation Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !important;
 }
-.content label, .sectionform *:not(sub,svg,sup,.panel .card-title, h1, h2, h3, h4), 
-.conteudo .row *:not(sub,svg,sup,.panel .card-title, h1, h2, h3, h4, .badge), .conteudo .info *:not(sub,sup){
+.sectionform *:not(sub,svg,sup,.panel .card-title, h1, h2, h3, h4),
+.conteudo .row *:not(sub,svg,sup,.panel, .card * *, h1, h2, h3, h4, .badge), .conteudo .info *:not(sub,sup){
   font-size: 12px !important;
 }
 

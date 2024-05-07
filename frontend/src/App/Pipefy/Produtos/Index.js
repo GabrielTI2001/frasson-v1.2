@@ -7,33 +7,32 @@ import AdvanceTableFooter from '../../../components/common/advance-table/Advance
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
-import { columnsCardProspects } from "../Data";
+import { columnsCardProdutos } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
-import { Modal, CloseButton } from "react-bootstrap";
 
-const IndexProspects = () => {
+const IndexProdutos = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const token = localStorage.getItem("token")
     const navigate = useNavigate();
 
     const onClick = (id, uuid) =>{
-        const url = `/pipefy/pipes/301573049/cards/${id}`
+        const url = `/pipefy/pipes/301573538/cards/${id}`
         navigate(url)
     }
     const setter = (data) =>{
         setSearchResults(data)
     }
     const search = (value) =>{
-        HandleSearch(value, 'pipefy/cards/prospects', setter)
+        HandleSearch(value, 'pipefy/cards/produtos', setter)
     }
 
     useEffect(()=>{
-        if ((user.permissions && user.permissions.indexOf("view_card_prospects") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_card_produtos") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
-            HandleSearch('', 'pipefy/cards/prospects', setter) 
+            HandleSearch('', 'pipefy/cards/produtos', setter) 
         }
     },[])
 
@@ -41,12 +40,12 @@ const IndexProspects = () => {
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                Prospects Pipefy
+                Produtos Pipefy
             </li>  
         </ol>
         {searchResults ? 
         <AdvanceTableWrapper
-            columns={columnsCardProspects}
+            columns={columnsCardProdutos}
             data={searchResults}
             sortable
             pagination
@@ -66,7 +65,6 @@ const IndexProspects = () => {
                 bordered: true,
                 striped: false,
                 className: 'fs-xs mb-0 overflow-hidden',
-                index_status:6
             }}
             Click={onClick}
         />
@@ -84,5 +82,5 @@ const IndexProspects = () => {
     );
   };
   
-  export default IndexProspects;
+  export default IndexProdutos;
   

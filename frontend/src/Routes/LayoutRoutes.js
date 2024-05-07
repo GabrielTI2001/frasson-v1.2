@@ -23,6 +23,8 @@ import IndexPessoal from '../App/Pipefy/Pessoal/Index';
 import ViewPessoal from '../App/Pipefy/Pessoal/View';
 import IndexProspects from '../App/Pipefy/Prospects/Index';
 import ViewProspect from '../App/Pipefy/Prospects/View';
+import IndexProdutos from '../App/Pipefy/Produtos/Index';
+import ViewCardProduto from '../App/Pipefy/Produtos/View';
 //Ambiental
 import View from "../App/Ambiental/InemaOutorgas/View";
 import Edit from "../App/Ambiental/InemaOutorgas/Edit";
@@ -100,6 +102,8 @@ const LayoutRoutes = () => {
           <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
           <Route path="pipes/301573049" element={<IndexProspects />}/>
           <Route path="pipes/301573049/cards/:id" element={<ViewProspect />}/>
+          <Route path="pipes/301573538" element={<IndexProdutos />}/>
+          <Route path="pipes/301573538/cards/:id" element={<ViewCardProduto />}/>
         </Route>
         <Route path="/ambiental/inema">
           <Route path="outorgas" element={<IndexOutorgas />}/>

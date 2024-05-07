@@ -183,3 +183,31 @@ export const columnsCardProspects = [
     headerProps: { className: 'text-900 p-1' }
   },
 ];
+
+export const columnsCardProdutos = [
+  {
+    accessor: 'id',
+    Header: 'Processo',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'list_beneficiarios',
+    Header: 'Beneficiários',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'detalhe',
+    Header: 'Detalhe',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_instituicao',
+    Header: 'Instituição',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'phase_name',
+    Header: 'Fase Atual',
+    headerProps: { className: 'text-900 p-1' }
+  }
+];

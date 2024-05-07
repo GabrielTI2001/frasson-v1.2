@@ -12,17 +12,6 @@ class Pipe(models.Model):
     def __str__(self):
         return self.descricao
 
-class Fase(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE)
-    descricao = models.CharField(max_length=255, null=False, blank=False, verbose_name='Nome Fase')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Fases'
-    def __str__(self):
-        return self.descricao
-    
 class Itens_Financiados(models.Model):
     item = models.CharField(max_length=255, null=True, verbose_name='Item Financiado')
     tipo = models.CharField(max_length=255, null=True, verbose_name='Tipo Item Financiado')
@@ -179,7 +168,8 @@ class Card_Produtos(models.Model):
     contrato = models.ForeignKey(Contratos_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
     valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor da Operação')
     faturamento_estimado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Faturamento Estimado')
-    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase')
+    phase_id = models.BigIntegerField(null=True, verbose_name='Id da Fase Atual')
+    phase_name = models.CharField(max_length=255, null=True, verbose_name='Nome da Fase Atual')
     card_url = models.CharField(max_length=255, null=True, verbose_name='URL do Card')
     created_at = models.DateTimeField(null=True)
     updated_at = models.DateTimeField(null=True)
@@ -200,7 +190,8 @@ class Card_Prospects(models.Model):
     percentual_aprovado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Aprovado')
     data_vencimento = models.DateTimeField(null=True, verbose_name='Data de Vencimento')
     responsavel = models.ManyToManyField(Profile, verbose_name='Responsáveis')
-    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase')
+    phase_id = models.BigIntegerField(null=True, verbose_name='Id da Fase Atual')
+    phase_name = models.CharField(max_length=255, null=True, verbose_name='Nome da Fase Atual')
     card_url = models.CharField(max_length=255, null=True)
     created_at = models.DateTimeField(null=True)
     updated_at = models.DateTimeField(null=True)
