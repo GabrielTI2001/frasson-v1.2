@@ -21,8 +21,6 @@ class Processos_Andamento(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name_plural = 'Processos Gestão Ambiental'
-    def __str__(self):
-        return self.processo.beneficiario.razao_social
     
 
 class Status_Acompanhamento(models.Model):
@@ -48,5 +46,3 @@ class Acompanhamento_Processos(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name_plural = 'Registros de Acompanhamento'
-    def __str__(self):
-        return self.processo.processo.beneficiario.razao_social

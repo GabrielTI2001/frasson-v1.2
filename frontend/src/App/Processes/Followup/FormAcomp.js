@@ -1,24 +1,17 @@
 import React,{useEffect, useState} from 'react';
-import { useParams, useNavigate } from "react-router-dom";
-import { RetrieveRecord } from '../../../helpers/Data';
-import { Link } from 'react-router-dom';
-import { Button, Col, Row, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import {Placeholder, Form} from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
+import { Button, Col} from 'react-bootstrap';
+import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { fetchStatus } from '../Data';
-import ModalDelete from '../../../components/Custom/ModalDelete';
 
 const FormAcomp = ({data, submit}) => {
-    const {id} = useParams()
     const navigate = useNavigate()
     const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const [statuslist, setStatuslist] = useState();
     const [message, setMessage] = useState();
-    const [formData, setformData] = useState({created_by:user.id, processo:data.id});
-    console.log(formData)
+    const [formData, setformData] = useState({user:user.id, processo:data.id});
 
     const handleApi = async (dadosform) => {
         const link = `${process.env.REACT_APP_API_URL}/processes/acompanhamentos/`
@@ -41,7 +34,7 @@ const FormAcomp = ({data, submit}) => {
               navigate("/auth/login");
             }
             else if (response.status === 201 || response.status === 200){
-                submit('add', data)
+                submit('add', {...data, data: new Date(data.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'}), status:data.str_status})
                 toast.success("Registro Atualizado com Sucesso!")
             }
         } catch (error) {
@@ -62,6 +55,16 @@ const FormAcomp = ({data, submit}) => {
           ...formData,
           [e.target.name]: e.target.value
         });
+        if (formData.data){
+            let data = new Date(formData.data)
+            let dias_proxima_consulta = 15
+            data.setDate(data.getDate() + dias_proxima_consulta)
+            console.log("teste")
+            setformData({
+                ...formData,
+                proxima_consulta: data.toISOString().split('T')[0]
+            })
+        }
     };
     const handleFileChange = (e) => {
         setformData({...formData, [e.target.name]:e.target.files[0]})
@@ -105,10 +108,7 @@ const FormAcomp = ({data, submit}) => {
 
         <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='fw-bold mb-0'>Arquivo</Form.Label>
-            <Form.Control type='file' value={formData.file || ''} 
-                onChange={handleFileChange}
-                name='file'
-            />
+            <Form.Control type='file' onChange={handleFileChange} name='file'/>
             <label className='text-danger'>{message ? message.file : ''}</label>
         </Form.Group>
 

@@ -28,7 +28,7 @@ class detailFollowup(serializers.ModelSerializer):
             'data_formacao': data_formacao_str,
             'processo_inema': processo_inema.numero_processo if processo_inema.numero_processo != None else '-',
             'processo_sei': processo_inema.processo_sei if processo_inema.processo_sei != None else '-',
-            'proxima_consulta': datetime.strptime(str(proxima_consulta.proxima_consulta), '%Y-%m-%d').strftime("%d/%m/%Y") if proxima_consulta != None else '-'
+            'proxima_consulta': proxima_consulta.proxima_consulta.strftime("%d/%m/%Y") if proxima_consulta.proxima_consulta != None else '-'
         }
         return inema
     def get_acompanhamentos(self, obj):
@@ -38,7 +38,7 @@ class detailFollowup(serializers.ModelSerializer):
             'status': acomp.status.description,
             'updated_at': acomp.updated_at,
             'data': acomp.data.strftime("%d/%m/%Y") if acomp.data else '-',
-            'file': acomp.file if acomp.file else None,
+            'file': acomp.file.name if acomp.file else None,
             'user': acomp.user.first_name,
             'user_avatar': '/media/'+Profile.objects.get(user_id = acomp.user.id).avatar.name,
             'description': acomp.detalhamento
@@ -61,6 +61,15 @@ class detailFollowup(serializers.ModelSerializer):
         fields = '__all__'
 
 class detailAcompanhamentoProcessos(serializers.ModelSerializer):
+    user_avatar = serializers.SerializerMethodField(read_only=True)
+    str_status = serializers.CharField(source='status.description', required=False, read_only=True)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['data', 'status']:
+                field.required = True
+    def get_user_avatar(self, obj):
+        return '/media/'+obj.user.profile.avatar.name
     class Meta:
         model = Acompanhamento_Processos
         fields = '__all__'

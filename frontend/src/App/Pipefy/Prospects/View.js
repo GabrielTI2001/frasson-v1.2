@@ -3,11 +3,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import { RetrieveRecord } from '../../../helpers/Data';
 import { Link } from 'react-router-dom';
 import { Button, Col, Row, Card, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import {Placeholder, Form} from 'react-bootstrap';
+import {Placeholder, Modal, CloseButton} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
+import FormMonitoramento from './FormMonit';
 
 const ViewProspect = () => {
     const {id} = useParams()
@@ -17,12 +18,10 @@ const ViewProspect = () => {
     const [card, setCard] = useState();
     const [monitoramentos, setMonitoramentos] = useState();
     const [modal, setModal] = useState({show:false, link:''});
-    const [message, setMessage] = useState();
-    const [formData, setformData] = useState({created_by:user.id});
+    const [modalform, setModalform] = useState({show:false});
 
     const setter = (data) =>{
         setCard(data)
-        setformData({...formData, prospect:data.id})
         setMonitoramentos(data.monitoramentos)
     }
     const submit = (type, data) =>{
@@ -30,48 +29,10 @@ const ViewProspect = () => {
         if (type === 'delete'){ 
             setMonitoramentos(monitoramentos.filter(m => m.id !== parseInt(data)))
         }
+        setModalform({show:false})
 
     }
-    const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/pipefy/monitoramento-prazos/`
-        const method = 'POST'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dadosform)
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              navigate("/auth/login");
-            }
-            else if (response.status === 201 || response.status === 200){
-                submit('add', data)
-                toast.success("Registro Atualizado com Sucesso!")
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-    };
-    const handleSubmit = async e => {
-        setMessage(null)
-        e.preventDefault();
-        await handleApi(formData);
-    };
-    const handleFieldChange = e => {
-        setformData({
-          ...formData,
-          [e.target.name]: e.target.value
-        });
-      };
+
     useEffect(() =>{
         const getdata = async () =>{
             const status = await RetrieveRecord(id, 'pipefy/cards/prospects', setter)
@@ -130,30 +91,11 @@ const ViewProspect = () => {
                 </Col>
                 <hr className='ms-3 w-100'></hr>
             </Row>
-            <Row>
-                <h6 style={{fontSize: '14px'}} className='fw-bold mb-2'>Alterar Prazo</h6>
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group as={Col} xl={10} className='mb-3'>
-                        <Form.Label className='mb-0'>Data Vencimento*</Form.Label>
-                        <Form.Control type='date' value={formData.data_vencimento || ''} 
-                            onChange={handleFieldChange}
-                            name='data_vencimento'
-                        />
-                        <label className='text-danger'>{message ? message.data_vencimento : ''}</label>
-                    </Form.Group>
-                    <Form.Group as={Col} xl={10} className='mb-3'>
-                        <Form.Label className='mb-0'>Descrição*</Form.Label>
-                        <Form.Control as='textarea' value={formData.description || ''} 
-                            onChange={handleFieldChange}
-                            name='description'
-                        />
-                        <label className='text-danger'>{message ? message.description : ''}</label>
-                    </Form.Group>
-                    <Form.Group as={Col} xl={10}>
-                        <Button type='submit'>Registrar</Button>
-                    </Form.Group>
-                </Form>
-            </Row>
+            <div>
+                <Button className='col-auto btn-success btn-sm px-2' style={{fontSize:'10px'}} onClick={() => setModalform({show:true, type:'status'})}>
+                    Alterar Prazo
+                </Button>
+            </div>
         </Col>
         <Col className='d-flex flex-column'>
             <h6 style={{fontSize: '14px'}} className='fw-bold mb-2'>Monitoramento Prazos</h6>
@@ -197,6 +139,25 @@ const ViewProspect = () => {
         </Placeholder>    
     </div>}
     <ModalDelete show={modal.show} link={modal.link} close={() => setModal({...modal, show:false})} update={submit} />
+    <Modal
+        size="xl"
+        show={modalform.show}
+        onHide={() => setModalform({show:false})}
+        dialogClassName="mt-10"
+        aria-labelledby="example-modal-sizes-title-lg"
+    >
+        <Modal.Header>
+        <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
+            Adicionar Alteração de Prazo
+        </Modal.Title>
+            <CloseButton onClick={() => setModalform({show:false})}/>
+        </Modal.Header>
+        <Modal.Body>
+            <Row className="flex-center w-100 sectionform">
+                <FormMonitoramento hasLabel data={card} submit={submit}/>
+            </Row>
+        </Modal.Body>
+    </Modal>
     </>
     );
 };
