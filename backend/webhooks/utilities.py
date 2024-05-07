@@ -15,6 +15,7 @@ def createCardProdutos(obj):
         contrato_id = obj["contrato_vinculado"] if "contrato_vinculado" in obj else None,
         valor_operacao = obj["valor_da_opera_o"] if "valor_da_opera_o" in obj else None,
         phase_id = obj["current_phase_id"],
+        phase_name = obj["current_phase_name"],
         card_url = obj["url"],
         created_at = obj["createdAt"][:19],
         updated_at = obj["createdAt"][:19])            
@@ -61,6 +62,7 @@ def createCardProspects(obj):
         percentual_aprovado = obj["percentual_aprovado"] if "percentual_aprovado" in obj else None,
         data_vencimento = obj[fields_venc[obj["current_phase_name"]]][:19] if fields_venc[obj["current_phase_name"]] in obj else None,
         phase_id = int(obj["current_phase_id"]), card_url = obj["url"],
+        phase_name = obj["current_phase_name"],
         created_at = obj["createdAt"][:19], updated_at = obj["createdAt"][:19])
     listprofiles = Profile.objects.filter(pipefy_id__in=obj[fields_resps[obj["current_phase_name"]]]) if fields_resps[obj["current_phase_name"]] in obj else []
     current.responsavel.set([p.id for p in listprofiles])
@@ -105,7 +107,7 @@ def createCardPagamento(card):
         data_pagamento = card["data_pagamento"] if "data_pagamento" in card else None,
         caixa_id = card["caixa_sa_da"] if "caixa_sa_da" in card else None,
         categoria_id = card["categoria_pagamento"] if "categoria_pagamento" in card else None,
-        phase_id = card["current_phase_id"], card_url = card["url"],
+        phase_id = card["current_phase_id"], phase_name = card["current_phase_name"], card_url = card["url"],
         created_at = card["createdAt"][:19], updated_at = card["createdAt"][:19])  
     
 def updateCardPagamento(id_card, id_field_updated, new_value_updated):
@@ -135,7 +137,7 @@ def createCardCobrancas(card):
         saldo_devedor = card["saldo_devedor"] if "saldo_devedor" in card else None,
         valor_faturado = card["valor_final_faturado"] if "valor_final_faturado" in card else None,
         caixa_id = card["faturado_no_caixa"] if "faturado_no_caixa" in card else None,
-        phase_id = card["current_phase_id"],
+        phase_id = card["current_phase_id"], phase_name = card["current_phase_name"],
         card_url = card["url"],
         created_at = card["createdAt"][:19],
         updated_at = card["createdAt"][:19])

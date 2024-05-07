@@ -42,8 +42,8 @@ const IndexCadGerais = () =>{
                   <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
                     <FontAwesomeIcon icon={faUsers} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
                   </Row>
-                  <h5 className="text-center text-white mt-2 fs-xs">Cadastro Pessoal</h5>     
-                  <h5 className="text-center text-white">{countRegs && countRegs.pessoal} Registros</h5>                
+                  <h5 className="text-center text-white mt-2 fs--2">Cadastro Pessoal</h5>     
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.pessoal} Registros</h5>                
                 </Card.Body>
                 </Link>
             </Card>
@@ -55,8 +55,8 @@ const IndexCadGerais = () =>{
                   <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
                     <FontAwesomeIcon icon={faTractor} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
-                  <h5 className="text-center text-white mt-2 fs-xs">Máquinas e Equipamentos</h5>     
-                  <h5 className="text-center text-white">0 Registros</h5>                
+                  <h5 className="text-center text-white mt-2 fs--2">Máquinas e Equipamentos</h5>     
+                  <h5 className="text-center text-white fs--2">0 Registros</h5>                
                 </Card.Body>
                 </Link>
             </Card>
@@ -68,8 +68,8 @@ const IndexCadGerais = () =>{
                   <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
                     <FontAwesomeIcon icon={faPersonDigging} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
-                  <h5 className="text-center text-white mt-2 fs-xs">Benfeitorias Fazendas</h5>     
-                  <h5 className="text-center text-white">{countRegs && countRegs.benfeitoria} Registros</h5>                
+                  <h5 className="text-center text-white mt-2 fs--2">Benfeitorias Fazendas</h5>     
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.benfeitoria} Registros</h5>                
                 </Card.Body>
                 </Link>
             </Card>
@@ -81,8 +81,8 @@ const IndexCadGerais = () =>{
                   <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
                     <FontAwesomeIcon icon={faFlask} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
-                  <h5 className="text-center text-white mt-2 fs-xs">Análises de Solo</h5>     
-                  <h5 className="text-center text-white">{countRegs && countRegs.analisesolo} Registros</h5>                
+                  <h5 className="text-center text-white mt-2 fs--2">Análises de Solo</h5>     
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.analisesolo} Registros</h5>                
                 </Card.Body>
                 </Link>
             </Card>

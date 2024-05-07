@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'litec',
     'pipefy',
     'pipeline',
+    'processes',
     'services',
     'users',
     'webhooks',

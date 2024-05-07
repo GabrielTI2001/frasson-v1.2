@@ -2,6 +2,7 @@ import React from 'react';
 import NavbarDropdown from './NavbarDropdown';
 import {
   operacionalRoutes,
+  PipefyRoutes,
   dashboardRoutes,
   ambientalRoutes,
   creditoRoutes,
@@ -20,7 +21,8 @@ import NavbarDropdownFinanceiro from './NavbarDropdownFinanceiro';
 import NavbarDropdownAdmin from './NavbarDropdownAdmin';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Flex from '../../common/Flex';
-
+import NavbarDropdownPipefy from './NavbarDropdownPipefy';
+import { Kanban } from 'react-bootstrap-icons';
 
 const NavbarTopDropDownMenus = () => {
   const {
@@ -50,6 +52,14 @@ const NavbarTopDropDownMenus = () => {
         </NavbarDropdown>
       </Flex>
     }
+    <Flex>
+      <span className="nav-link-icon d-flex align-items-center">
+        <Kanban/>
+      </span>
+      <NavbarDropdown title="Pipefy">
+        <NavbarDropdownPipefy items={PipefyRoutes.children}/>
+      </NavbarDropdown>
+    </Flex>
     {user && ((user.permissions && user.permissions.indexOf("ver_menu_credito") !== -1) || user.is_superuser) &&
       <Flex>
         <span className="nav-link-icon d-flex align-items-center">

@@ -87,22 +87,21 @@ class detailCard_Produtos(serializers.ModelSerializer):
         if self.instance:  # Verifica se existe uma instância
             self.get_data_pipefy(self.instance)
     def get_history_phases(self, obj):
-        if obj.phase:
-            history_phases = []
-            for phase in self.phasesHistory:
-                lastTimeOut = phase["lastTimeOut"]
-                if lastTimeOut == None:
-                    lastTimeOut_corr = '-'
-                else:
-                    lastTimeOut_corr = datetime.strptime(str(phase["lastTimeOut"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
-                if phase["phase"]["name"] != 'Start form':
-                    history_phases.append({
-                        'name': phase["phase"]["name"],
-                        'days': int(phase["duration"]/86400),
-                        'lastTimeIn': datetime.strptime(str(phase["lastTimeIn"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M"),
-                        'lastTimeOut': lastTimeOut_corr
-                    })
-            return history_phases
+        history_phases = []
+        for phase in self.phasesHistory:
+            lastTimeOut = phase["lastTimeOut"]
+            if lastTimeOut == None:
+                lastTimeOut_corr = '-'
+            else:
+                lastTimeOut_corr = datetime.strptime(str(phase["lastTimeOut"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M")
+            if phase["phase"]["name"] != 'Start form':
+                history_phases.append({
+                    'name': phase["phase"]["name"],
+                    'days': int(phase["duration"]/86400),
+                    'lastTimeIn': datetime.strptime(str(phase["lastTimeIn"])[:19].replace('T', ' '), '%Y-%m-%d %H:%M:%S').strftime("%d/%m/%Y %H:%M"),
+                    'lastTimeOut': lastTimeOut_corr
+                })
+        return history_phases
     def get_comments(self, obj):
         comments = [{
             'author': comment["author"]["name"],

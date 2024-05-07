@@ -1,10 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Table } from 'react-bootstrap';
+import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen, faEye} from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from "../../../Main";
+import * as icons from 'react-bootstrap-icons';
 
 const AdvanceTable = ({
   getTableProps,
@@ -18,6 +19,11 @@ const AdvanceTable = ({
   Click
 }) => {
   const {config: {theme}} = useAppContext();
+
+  const renderIcon = (iconName, color) => {
+    const IconComponent = icons[iconName];
+    return <IconComponent className={'me-2 '+'text-'+color}/>;
+  }
 
   const isDate = (dado) =>{
     if (dado && typeof(dado) === "string"){
@@ -77,6 +83,9 @@ const AdvanceTable = ({
             {tableProps.showactions &&(
               <th className='text-center'>Ações</th>
             )}
+            {tableProps.followup &&
+              <th className='text-center'>Ações</th>
+            }
           </tr>
         </thead>
         <tbody className={`${bodyClassName} ${theme === 'light' ? 'bg-light': 'bg-200'}`}>
@@ -113,6 +122,17 @@ const AdvanceTable = ({
                     <FontAwesomeIcon icon={faTrashCan} className='btn btn-danger me-2 px-1' onClick={()=>{ Click(row.original, 'delete')}}></FontAwesomeIcon>
                   </td>
                 )}
+                {tableProps.followup &&
+                  <td className='text-center'>
+                    <OverlayTrigger overlay={
+                      <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+                        {row.original.needed_action_text}
+                      </Tooltip>
+                    }>
+                    {renderIcon(row.original.needed_action_icon, row.original.needed_action_color)}
+                    </OverlayTrigger>
+                  </td>      
+                }
               </tr>
             );
           })}

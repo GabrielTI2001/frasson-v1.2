@@ -39,14 +39,15 @@ def webhooks_pipe_move_card(request, id):
     obj = json.loads(request.body)
     id_card = obj["data"]["card"]["id"]
     new_phase_id = obj["data"]["to"]["id"]
+    new_phase_name = obj["data"]["to"]["name"]
     if id == 301573538:
-        Card_Produtos.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id})
+        Card_Produtos.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id, 'phase_name': new_phase_name})
     elif id == 301573049:
-        Card_Prospects.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id})
+        Card_Prospects.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id, 'phase_name': new_phase_name})
     elif id == 302757413:
-        Pagamentos_Pipefy.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id})
+        Pagamentos_Pipefy.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id, 'phase_name': new_phase_name})
     elif id == 302821542:
-        Cobrancas_Pipefy.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id})
+        Cobrancas_Pipefy.objects.filter(pk=id_card).update(**{'phase_id': new_phase_id, 'phase_name': new_phase_name})
     return JsonResponse({'message': 'Webhook status ok'})
 
 @csrf_exempt

@@ -35,22 +35,15 @@ export const dashboardRoutes = {
   ]
 };
 
-export const operacionalRoutes = {
-  label: 'Operacional',
+export const PipefyRoutes = {
+  label: 'Pipefy',
   labelDisable: true,
-  icon: faGear,
+  icon2: 'Kanban',
   children: [
     {
       name: 'Análise e Processamento',
       active: true,
       children: [
-        {
-          name: 'Cadastros Gerais',
-          icon: faDatabase,
-          to: '/register/',
-          exact: true,
-          active: true
-        },
         {
           name: 'Regimes de Exploração',
           icon: faPersonArrowUpFromLine,
@@ -85,6 +78,35 @@ export const operacionalRoutes = {
           exact: true,
           active: true
         },
+      ]
+    }
+  ],  
+};
+
+
+
+export const operacionalRoutes = {
+  label: 'Operacional',
+  labelDisable: true,
+  icon: faGear,
+  children: [
+    {
+      name: 'Análise e Processamento',
+      active: true,
+      children: [
+        {
+          name: 'Cadastros Gerais',
+          icon: faDatabase,
+          to: '/register/',
+          exact: true,
+          active: true
+        },
+      ]
+    },
+    {
+      name: 'Processos Operacionais',
+      active: true,
+      children: [
         {
           name: 'Acompanhamento GAI',
           icon2: 'CalendarCheck',
