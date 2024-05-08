@@ -5,6 +5,8 @@ import Default from '../Layouts/Default';
 import AuthSimpleLayout from "../Layouts/AuthSimpleLayout";
 import PasswordResetFom from '../components/authentication/PasswordResetForm';
 import { ProfileContext } from '../context/Context';
+//Alongamentos
+import IndexAlongamentos from '../App/Alongamentos/Index';
 //Analytics
 import IndexRegimes from '../App/Analytics/Regimes/Index';
 import ViewRegime from '../App/Analytics/Regimes/View';
@@ -28,7 +30,6 @@ import ViewCardProduto from '../App/Pipefy/Produtos/View';
 //Processes
 import IndexFollowup from '../App/Processes/Followup/Index';
 import ViewFollowup from '../App/Processes/Followup/View';
-
 //Ambiental
 import View from "../App/Ambiental/InemaOutorgas/View";
 import Edit from "../App/Ambiental/InemaOutorgas/Edit";
@@ -85,6 +86,9 @@ const LayoutRoutes = () => {
   return (
     <Routes>
       <Route element={<Default />}>
+      <Route path="/alongamentos">
+          <Route path="" element={<IndexAlongamentos />}/>
+        </Route>
         <Route path="/analytics">
           <Route path="regime" element={<IndexRegimes />}/>
           <Route path="regime/:id" element={<ViewRegime />}/>

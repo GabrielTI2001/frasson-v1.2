@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'administrator',
+    'alongamentos',
     'analytics',
     'cadastro',
     'dashboards',

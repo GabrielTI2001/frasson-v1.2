@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from .models import Processos_Andamento, Acompanhamento_Processos, Status_Acompanhamento
 from pipefy.models import Card_Produtos
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 import requests, json, locale
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL
 from users.models import Profile
@@ -73,6 +73,15 @@ class detailAcompanhamentoProcessos(serializers.ModelSerializer):
     class Meta:
         model = Acompanhamento_Processos
         fields = '__all__'
+    def save(self, **kwargs):
+        instance = super().save(**kwargs)
+        update_date = self.validated_data.get('data')
+        if update_date:
+            dias_proxima_consulta = 15
+            proxima_consulta = update_date + timedelta(days=dias_proxima_consulta)
+            instance.proxima_consulta = proxima_consulta
+            instance.save()
+        return instance
 
 class listStatus(serializers.ModelSerializer):
     class Meta:

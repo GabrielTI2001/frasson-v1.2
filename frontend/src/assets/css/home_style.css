@@ -133,3 +133,9 @@ input:focus{
     max-width: 100% !important;
 }
 }
+
+.tooltip{
+  position: fixed; 
+  font-size: 10px !important; 
+  padding: 2px !important
+}

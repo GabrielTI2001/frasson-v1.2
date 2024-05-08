@@ -103,7 +103,7 @@ const ViewProspect = () => {
                 <div className='mb-3 d-flex align-items-center' key={m.id}>
                     <OverlayTrigger
                         overlay={
-                            <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+                            <Tooltip id="overlay-trigger-example">
                                 {`${m.user}`}
                             </Tooltip>
                         }

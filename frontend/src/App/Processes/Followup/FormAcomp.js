@@ -55,16 +55,6 @@ const FormAcomp = ({data, submit}) => {
           ...formData,
           [e.target.name]: e.target.value
         });
-        if (formData.data){
-            let data = new Date(formData.data)
-            let dias_proxima_consulta = 15
-            data.setDate(data.getDate() + dias_proxima_consulta)
-            console.log("teste")
-            setformData({
-                ...formData,
-                proxima_consulta: data.toISOString().split('T')[0]
-            })
-        }
     };
     const handleFileChange = (e) => {
         setformData({...formData, [e.target.name]:e.target.files[0]})

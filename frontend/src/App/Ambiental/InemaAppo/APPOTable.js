@@ -62,7 +62,7 @@ const APPOTable = ({
                       {tableProps.index_status && index === tableProps.index_status && row.original.data_vencimento ? 
                       <OverlayTrigger
                         overlay={
-                          <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+                          <Tooltip id="overlay-trigger-example">
                             {`${row.original.status.text === 'Vigente' ? 'Vence' : 'Venceu' } em 
                             ${new Date(row.original.data_vencimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}`}
                           </Tooltip>
@@ -78,7 +78,7 @@ const APPOTable = ({
                 <td>  
                   <OverlayTrigger
                     overlay={
-                      <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+                      <Tooltip id="overlay-trigger-example">
                         {`${new Date(row.original.renovacao.data) > new Date() ? 'Vence' : 'Venceu'} em 
                           ${new Date(row.original.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}`}
                       </Tooltip>

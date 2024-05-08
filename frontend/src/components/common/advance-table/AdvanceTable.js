@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { Table, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrashCan, faPen, faEye} from '@fortawesome/free-solid-svg-icons';
+import { faTrashCan, faPen, faEye, faFilePdf, faCloudArrowDown} from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from "../../../Main";
 import * as icons from 'react-bootstrap-icons';
+import { Link } from 'react-router-dom';
 
 const AdvanceTable = ({
   getTableProps,
@@ -86,6 +87,9 @@ const AdvanceTable = ({
             {tableProps.followup &&
               <th className='text-center'>Ações</th>
             }
+            {tableProps.alongamento &&
+              <th className='text-center'>Ações</th>
+            }
           </tr>
         </thead>
         <tbody className={`${bodyClassName} ${theme === 'light' ? 'bg-light': 'bg-200'}`}>
@@ -93,7 +97,7 @@ const AdvanceTable = ({
             prepareRow(row);
             return (
               <tr key={i} className={rowClassName+`${theme === 'light'? ' hover-table-light' : ' hover-table-dark'}`} {...row.getRowProps()} onClick={() => !tableProps.showactions 
-              && (Click(row.original.id, row.original.uuid))}>
+              && !tableProps.alongamento && (Click(row.original.id, row.original.uuid))}>
                 {row.cells.map((cell, index) => {
                   return (
                     <td
@@ -125,12 +129,35 @@ const AdvanceTable = ({
                 {tableProps.followup &&
                   <td className='text-center'>
                     <OverlayTrigger overlay={
-                      <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+                      <Tooltip id="overlay-trigger-example">
                         {row.original.needed_action_text}
                       </Tooltip>
                     }>
                     {renderIcon(row.original.needed_action_icon, row.original.needed_action_color)}
                     </OverlayTrigger>
+                  </td>      
+                }
+                {tableProps.alongamento &&
+                  <td className='text-center'>
+                    <OverlayTrigger overlay={
+                      <Tooltip id="overlay-trigger-example">
+                        PDF Alongamento
+                      </Tooltip>
+                    }>
+                      <Link to={`${process.env.REACT_APP_API_URL}/alongamentos/pdf/${row.original.id}`}>
+                        <FontAwesomeIcon icon={faFilePdf} className='text-danger me-1'/>
+                      </Link>
+                    </OverlayTrigger>
+
+                    <OverlayTrigger overlay={
+                      <Tooltip className='tooltip-a'>
+                        Download Páginas PDF
+                      </Tooltip>
+                    }>
+                      <FontAwesomeIcon icon={faCloudArrowDown} className='text-primary me-1' onClick={()=>{ Click(row.original, 'download')}}/>
+                    </OverlayTrigger>
+                    <FontAwesomeIcon icon={faPen} className='text-info me-1' onClick={()=>{ Click(row.original, 'edit')}}/>
+                    <FontAwesomeIcon icon={faTrashCan} className='text-danger me-1' onClick={()=>{ Click(row.original, 'delete')}}/>
                   </td>      
                 }
               </tr>

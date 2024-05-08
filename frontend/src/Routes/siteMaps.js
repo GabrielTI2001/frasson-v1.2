@@ -1,5 +1,5 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
-faMap } 
+faMap, faWheatAwn} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser } 
 from "@fortawesome/free-solid-svg-icons";
@@ -41,7 +41,7 @@ export const PipefyRoutes = {
   icon2: 'Kanban',
   children: [
     {
-      name: 'Análise e Processamento',
+      name: 'Databases',
       active: true,
       children: [
         {
@@ -61,7 +61,7 @@ export const PipefyRoutes = {
       ]
     },
     {
-      name: 'Processos Operacionais',
+      name: 'Pipes',
       active: true,
       children: [
         {
@@ -79,7 +79,7 @@ export const PipefyRoutes = {
           active: true
         },
       ]
-    }
+    },
   ],  
 };
 
@@ -114,6 +114,39 @@ export const operacionalRoutes = {
           exact: true,
           active: true
         }
+      ]
+    },
+    {
+      name: 'LITEC',
+      active: true,
+      children: [
+        {
+          name: 'Produção Agrícola e Pecuária',
+          icon: faWheatAwn,
+          to: '/litec/glebas',
+          exact: true,
+          active: true
+        },
+      ]
+    },
+    {
+      name: 'Comprovações e Alongamentos',
+      active: true,
+      children: [
+        {
+          name: 'Comprovações',
+          icon2: 'PencilSquare',
+          to: '/comprovacoes',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Alongamentos',
+          icon2: 'Calendar2Check',
+          to: '/alongamentos',
+          exact: true,
+          active: true
+        },
       ]
     }
   ],  

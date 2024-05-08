@@ -275,7 +275,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Ca<sup>2+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Cálcio no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -295,7 +295,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Mg<sup>2+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Magnésio no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -315,7 +315,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>K<sup>2+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Potássio no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -335,7 +335,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>P (mg/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Fósforo no resultado da amostra (Estimado pelo extrator Mehlich-1). Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -355,7 +355,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>P-rem. (mg/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Fósforo Remanescente no resultado da amostra. O P-rem é a quantidade de fósforo adicionado que fica na solução de equilíbrio, 
                   após certo tempo de contato com o solo, em resposta a uma aplicação de P. Atente-se para a unidade.
               </Tooltip>
@@ -376,7 +376,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Al<sup>3+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Alumínio no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -396,7 +396,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>S (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Enxofre no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -416,7 +416,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Zn (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Zinco no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -436,7 +436,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fe (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Ferro no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -456,7 +456,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Cu (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Cobre no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -476,7 +476,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Mn (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Manganês no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -496,7 +496,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>B (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor de Boro no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -516,7 +516,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>H+Al
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor total de Acidez Potencial no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -536,7 +536,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={4} xl={3} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Matéria Orgânica (dag/dm<sup>3</sup>)
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o teor Matéria Orgânica no resultado da amostra. Atente-se para a unidade de medida.
               </Tooltip>
             }>
@@ -556,7 +556,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>pH H<sub>2</sub>O
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o pH em Água.
               </Tooltip>
             }>
@@ -576,7 +576,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>pH CaCl<sub>2</sub>
             <OverlayTrigger overlay={
-              <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+              <Tooltip id="overlay-trigger-example">
                 Informe aqui o pH em CaCl.
               </Tooltip>
             }>

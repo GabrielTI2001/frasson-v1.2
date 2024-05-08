@@ -47,7 +47,7 @@ const ViewFollowup = () => {
                 navigate("/auth/login")
             }
         }
-        if ((user.permissions && user.permissions.indexOf("view_imoveis_rurais") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_processos_andamento") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!card){
@@ -123,13 +123,17 @@ const ViewFollowup = () => {
                 </Col>
                 <Col className='mt-2 mb-1'>
                     <div>
+                    {((user.permissions && user.permissions.indexOf("change_processos_andamento") !== -1) | user.is_superuser) ?
                         <Button className='col-auto btn-success btn-sm px-2 me-1' style={{fontSize:'10px'}} onClick={() => setModalform({show:true, type:'process'})}>
                             <FontAwesomeIcon icon={faPencil} className='me-2' /> Editar Acompanhamento
-                        </Button>
+                        </Button> : null
+                    }
+                    {((user.permissions && user.permissions.indexOf("delete_processos_andamento") !== -1) | user.is_superuser) ?
                         <Button className='col-auto btn-danger btn-sm px-2' style={{fontSize:'10px'}} 
                             onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/processes/followup/${id}/`})}>
                             <FontAwesomeIcon icon={faTrash} className='me-2' />Excluir Acompanhamento
-                        </Button>
+                        </Button> : null
+                    }
                     </div>
                 </Col>
                 <hr className='my-1 ms-3' style={{width:'95%'}}></hr>
@@ -146,7 +150,7 @@ const ViewFollowup = () => {
                 <div className='mb-3 d-flex align-items-center' key={a.id}>
                     <OverlayTrigger
                         overlay={
-                            <Tooltip style={{ position: 'fixed', fontSize: '10px', padding: '2px !important' }} id="overlay-trigger-example">
+                            <Tooltip id="overlay-trigger-example">
                                 {`${a.user}`}
                             </Tooltip>
                         }
@@ -207,8 +211,10 @@ const ViewFollowup = () => {
         </Modal.Header>
         <Modal.Body>
             <Row className="flex-center w-100 sectionform">
-                {modalform.type == 'status' ? <FormAcomp hasLabel data={card} submit={submit}/> 
-                : <FormProcesso data={card} type='edit' submit={submit2} />}
+            {modalform.type == 'status' 
+                ? <FormAcomp hasLabel data={card} submit={submit}/> 
+                : <FormProcesso data={card} type='edit' submit={submit2} />
+            }
             </Row>
         </Modal.Body>
     </Modal>

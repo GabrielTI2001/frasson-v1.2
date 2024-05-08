@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import User
-from pipefy.models import Cadastro_Pessoal, Imoveis_Rurais
+from pipefy.models import Cadastro_Pessoal, Imoveis_Rurais, Instituicoes_Razao_Social
 import uuid, os
 
 class MyAppPermissions(models.Model):
@@ -23,6 +23,26 @@ class Municipios(models.Model):
         verbose_name_plural = 'Municípios'
     def __str__(self):
         return f"{self.nome_municipio} - {self.sigla_uf}"
+    
+class Agencias_Bancarias(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    instituicao = models.ForeignKey(Instituicoes_Razao_Social, on_delete=models.CASCADE, null=True, verbose_name='Instituição')
+    descricao_agencia = models.CharField(max_length=150, null=True, verbose_name='Descrição da Agência')
+    numero_agencia = models.CharField(max_length=30, null=True, default=None, verbose_name='Número Agência')
+    municipio_agencia = models.ForeignKey(Municipios, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Município Agência')
+    cep_agencia = models.CharField(max_length=30, null=True, default=None, verbose_name='CEP Agência')
+    endereco_agencia = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='Endereço Agência')
+    telefone_agencia =  models.CharField(max_length=50, null=True, blank=True, default=None, verbose_name='Telefone Contato Agência')
+    email_agencia =  models.CharField(max_length=100, null=True, blank=True, default=None, verbose_name='E-mail Contato Agência')
+    gerente_agencia = models.CharField(max_length=255, null=True, blank=True, default=None, verbose_name='Nome Gerente Agência')
+    email_gerente = models.CharField(max_length=100, null=True, blank=True, default=None, verbose_name='E-mail Gerente Agência')
+    telefone_gerente = models.CharField(max_length=50, null=True, blank=True, default=None, verbose_name='Telefone Gerente Agência')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Agências Bancárias'
+    def __str__(self):
+        return self.descricao_agencia
 
 class Tipo_Maquina_Equipamento(models.Model):
     description = models.CharField(max_length=255, null=True, verbose_name='Descrição Tipo')

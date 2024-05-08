@@ -29,7 +29,7 @@ const IndexFollowup = () => {
     }
 
     useEffect(()=>{
-        if ((user.permissions && user.permissions.indexOf("view_card_prospects") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_processos_andamento") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){

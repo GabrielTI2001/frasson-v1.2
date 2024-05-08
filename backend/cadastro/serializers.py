@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Tipo_Benfeitorias, Pictures_Benfeitorias, Analise_Solo
+from .models import Agencias_Bancarias
 from backend.frassonUtilities import Frasson
 import locale
 from backend.settings import TOKEN_GOOGLE_MAPS_API
@@ -185,3 +186,8 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
         model = Analise_Solo
         fields = ['id', 'uuid', 'latitude_gd', 'longitude_gd', 'data_coleta', 'str_cliente', 'localizacao', 'identificacao_amostra',
         'responsavel', 'laboratorio_analise', 'numero_controle', 'profundidade', 'creation', 'token_apimaps', 'results', 'other_info']
+
+class listAgenciasBancarias(serializers.ModelSerializer):
+    class Meta:
+        model = Agencias_Bancarias
+        fields = ['id', 'descricao_agencia']

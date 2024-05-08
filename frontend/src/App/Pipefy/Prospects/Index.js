@@ -6,10 +6,8 @@ import AdvanceTable from '../../../components/common/advance-table/AdvanceTable'
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
-import { Link } from "react-router-dom";
 import { columnsCardProspects } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
-import { Modal, CloseButton } from "react-bootstrap";
 
 const IndexProspects = () => {
     const [searchResults, setSearchResults] = useState();

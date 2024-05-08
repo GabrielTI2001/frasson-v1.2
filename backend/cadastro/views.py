@@ -3,8 +3,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
+from .models import Agencias_Bancarias
 from .serializers import selectMunicipio, ListMachinery, ListBenfeitorias, DetailBenfeitorias, ListTipoBenfeitoria, serPictureBenfeitoria
-from .serializers import ListAnalisesSolo, detailAnalisesSolo, resultsAnalisesSolo
+from .serializers import ListAnalisesSolo, detailAnalisesSolo, resultsAnalisesSolo, listAgenciasBancarias
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
@@ -147,3 +148,7 @@ class ResultAnalisesSoloView(viewsets.ModelViewSet):
     serializer_class = resultsAnalisesSolo
     # permission_classes = (IsAuthenticated,)
     lookup_field = 'uuid'
+
+class AgenciasBancariasView(viewsets.ModelViewSet):
+    queryset = Agencias_Bancarias.objects.all()
+    serializer_class = listAgenciasBancarias
