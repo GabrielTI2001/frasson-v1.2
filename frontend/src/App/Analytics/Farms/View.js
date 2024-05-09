@@ -151,7 +151,7 @@ const ViewFarm = () => {
         className="rounded-soft mt-0 google-maps-s container-map-l"
         token_api={farm.token_apimaps}
         mapTypeId='satellite'
-        url={farm.kml}
+        urls={[farm.kml]}
     />
     </>
     :<div className='text-center'><Spinner /></div>}

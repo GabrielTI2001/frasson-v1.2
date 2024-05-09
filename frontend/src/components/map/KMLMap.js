@@ -16,7 +16,7 @@ const KMLMap = ({
   className,
   children,
   token_api,
-  url
+  urls
 }) => {
 
   const mapMarker = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
@@ -72,7 +72,7 @@ const KMLMap = ({
         }}
         className='col'
       >
-        <KmlLayer url={url} options={{ preserveViewport: false, suppressInfoWindows:true }}/>
+        {urls.map(url => <KmlLayer url={url} options={{ preserveViewport: false, suppressInfoWindows:true }}/>)}
       </ReactGoogleMap>
     </div>
   );

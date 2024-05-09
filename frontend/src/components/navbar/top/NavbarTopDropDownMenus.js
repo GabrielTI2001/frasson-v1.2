@@ -84,18 +84,8 @@ const NavbarTopDropDownMenus = () => {
         <span className="nav-link-icon d-flex align-items-center">
           <FontAwesomeIcon icon={dashboardRoutes.icon} />
         </span>
-        <NavbarDropdown title="dashboard">
-          {dashboardRoutes.children[0].children.map(route => (
-            <Dropdown.Item
-              key={route.name}
-              as={Link}
-              className={route.active ? 'link-600' : 'text-500'}
-              to={route.to}
-              onClick={handleDropdownItemClick}
-            >
-              {route.name}
-            </Dropdown.Item>
-          ))}
+        <NavbarDropdown title="Dashboard">
+          <NavbarDropdownCredito items={dashboardRoutes.children} />
         </NavbarDropdown>
       </Flex>
       <NavbarDropdown title="Serviços">

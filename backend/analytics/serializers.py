@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from pipefy.models import Regimes_Exploracao, Imoveis_Rurais
+from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Operacoes_Contratadas
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
 import locale, requests, json

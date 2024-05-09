@@ -12,6 +12,7 @@ import IndexRegimes from '../App/Analytics/Regimes/Index';
 import ViewRegime from '../App/Analytics/Regimes/View';
 import IndexFarms from '../App/Analytics/Farms/Index';
 import ViewFarm from '../App/Analytics/Farms/View';
+import IndexCredit from '../App/Analytics/Credit/Index';
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -94,6 +95,7 @@ const LayoutRoutes = () => {
           <Route path="regime/:id" element={<ViewRegime />}/>
           <Route path="farms" element={<IndexFarms />}/>
           <Route path="farms/:id" element={<ViewFarm />}/>
+          <Route path="credit" element={<IndexCredit />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/register">

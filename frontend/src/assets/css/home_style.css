@@ -2,7 +2,7 @@
   font-family: Inter, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, Liberation Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji !important;
 }
 .sectionform *:not(sub,svg,sup,.panel .card-title, h1, h2, h3, h4), .conteudo .info *:not(sub,sup),
-.conteudo .row *:not(sub,svg,sup,.panel, .card * *, h1, h2, h3, h4, .badge){
+.conteudo .row *:not(sub,svg,sup,.panel, .card *, h1, h2, h3, h4, .badge), .col *{
   font-size: 12px;
 }
 
@@ -115,7 +115,7 @@ input:focus{
 }
 
 .dropdown-menu{
-  width: 18rem;
+  width: 20rem;
 }
 
 .msg-lg{

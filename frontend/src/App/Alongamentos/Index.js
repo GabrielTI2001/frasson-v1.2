@@ -8,13 +8,14 @@ import AdvanceTableSearchBox from '../../components/common/advance-table/Advance
 import AdvanceTableWrapper from '../../components/common/advance-table/AdvanceTableWrapper';
 import { columnsAlongamento } from "./Data";
 import { HandleSearch } from "../../helpers/Data";
+import ModalDelete from "../../components/Custom/ModalDelete";
 import Edit from "./Edit";
 
 const IndexAlongamentos = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const [modalform, setModalForm] = useState({show:false, id:null})
-    const [modaldelete, setModalDelete] = useState(false)
+    const [modaldelete, setModalDelete] = useState({show:false, link:null})
     const navigate = useNavigate();
 
     const onClick = (dados, type) =>{
@@ -46,11 +47,28 @@ const IndexAlongamentos = () => {
             });
         }
         if (type == 'edit'){
-            setModalForm({show:true, id:dados.id})
+            if ((user.permissions && user.permissions.indexOf("change_operacoes_credito") !== -1) || user.is_superuser){
+                setModalForm({show:true, id:dados.id})
+            }
+        }
+        if (type == 'delete'){
+            if ((user.permissions && user.permissions.indexOf("delete_operacoes_credito") !== -1) || user.is_superuser){
+                setModalDelete({show:true, link:`${process.env.REACT_APP_API_URL}/alongamentos/index/${dados.id}/`})
+            }
         }
     }
     const setter = (data) =>{
         setSearchResults(data)
+    }
+    const update = (type, data) =>{
+        if (type == 'delete'){
+            setModalDelete({show:false})
+            setSearchResults(searchResults.filter(s => s.id !== parseInt(data)))
+        }
+        else{
+            setModalForm({show:false})
+        }
+
     }
     const search = (value) =>{
         HandleSearch(value, 'alongamentos/index', setter)
@@ -132,10 +150,11 @@ const IndexAlongamentos = () => {
             </Modal.Header>
             <Modal.Body>
                 <div className="w-100">
-                    <Edit id={modalform.id}/>
+                    <Edit id={modalform.id} update={update}/>
                 </div>
             </Modal.Body>
         </Modal>
+        <ModalDelete show={modaldelete.show} link={modaldelete.link} close={() => setModalDelete({...modaldelete, show:false})} update={update} />
         </>
     );
   };

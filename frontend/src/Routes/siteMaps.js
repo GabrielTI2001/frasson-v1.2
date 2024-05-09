@@ -12,12 +12,13 @@ export const dashboardRoutes = {
   icon: faChartLine,
   children: [
     {
-      name: 'Dashboard',
+      name: 'Operações de Crédito',
       active: true,
       children: [
         {
-          name: 'Default',
-          to: '/',
+          name: 'Dashboard Oper. Contratadas',
+          to: '/dashboard/credit',
+          icon2:'Speedometer',
           exact: true,
           active: true
         },
@@ -58,6 +59,13 @@ export const PipefyRoutes = {
           exact: true,
           active: true
         },
+        {
+          name: 'Operações Contratadas',
+          to: '/analytics/credit',
+          icon2: 'CashCoin',
+          exact: true,
+          active: true
+        }
       ]
     },
     {
@@ -159,21 +167,16 @@ export const creditoRoutes = {
   icon: faMoneyBill,
   children: [
     {
-      name: 'Teste',
+      name: 'Operações de Crédito',
       active: true,
       children: [
         {
-          name: 'Sub1',
+          name: 'Teste',
           to: '/',
+          icon2: 'CashCoin',
           exact: true,
           active: true
-        },
-        {
-          name: 'Sub2',
-          to: '/',
-          exact: true,
-          active: true
-        },
+        }
       ]
     }
   ]

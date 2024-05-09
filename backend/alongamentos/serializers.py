@@ -1,6 +1,5 @@
 from rest_framework import serializers
-from pipefy.models import Regimes_Exploracao, Imoveis_Rurais
-from .models import Operacoes_Credito, Produto_Agricola
+from .models import Operacoes_Credito, Produto_Agricola, Tipo_Armazenagem, Tipo_Classificacao
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
 import locale, requests, json
@@ -21,6 +20,33 @@ class ListAlongamentos(serializers.ModelSerializer):
             'valor_total', 'str_tipo_armazenagem']
 
 class detailAlongamentos(serializers.ModelSerializer):
+    info_operacao = serializers.SerializerMethodField(read_only=True)
+    str_fiel_depositario = serializers.CharField(source='fiel_depositario.razao_social', read_only=True)
+    str_testemunha01 = serializers.CharField(source='testemunha01.razao_social', read_only=True)
+    str_testemunha02 = serializers.CharField(source='testemunha02.razao_social', read_only=True)
+    str_propriedade = serializers.SerializerMethodField(read_only=True)
+    str_municipio = serializers.SerializerMethodField(read_only=True)
+    produto = serializers.CharField(source='produto_agricola.description', read_only=True)
+    def get_info_operacao(self, obj):
+        if obj.operacao:
+            return {
+                'numero_operacao': obj.operacao.numero_operacao, 'valor_operacao':obj.operacao.valor_operacao, 
+                'instituicao':obj.operacao.instituicao.instituicao.abreviatura, 'taxa_juros': obj.operacao.taxa_juros,
+                'beneficiario':obj.operacao.beneficiario.razao_social, 'cpf':obj.operacao.beneficiario.cpf_cnpj,
+                'imovel':obj.operacao.imovel_beneficiado, 'matricula':obj.operacao.matricula_imovel,
+                'safra': obj.operacao.safra, 'primeiro_vencimento':obj.operacao.data_primeiro_vencimento,
+                'item': obj.operacao.item_financiado.item if obj.operacao.item_financiado else None, 'url': obj.operacao.url_record
+            }
+        else:
+            return None
+    def get_str_municipio(self, obj):
+        if obj.municipio_propriedade:
+            return f"{obj.municipio_propriedade.nome_municipio} - {obj.municipio_propriedade.sigla_uf}"
+        else:
+            return None
+    def get_str_propriedade(self, obj):
+        propriedades = obj.propriedade.all()
+        return [{'value':p.id, 'label':p.nome_imovel} for p in propriedades]
     class Meta:
         model = Operacoes_Credito
         fields = '__all__'
@@ -28,4 +54,14 @@ class detailAlongamentos(serializers.ModelSerializer):
 class listProdutos(serializers.ModelSerializer):
     class Meta:
         model = Produto_Agricola
+        fields = '__all__'
+
+class listTipoArmazenagem(serializers.ModelSerializer):
+    class Meta:
+        model = Tipo_Armazenagem
+        fields = '__all__'
+
+class listTipoClassificacao(serializers.ModelSerializer):
+    class Meta:
+        model = Tipo_Classificacao
         fields = '__all__'

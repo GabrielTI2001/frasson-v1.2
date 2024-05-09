@@ -5,19 +5,20 @@ import { getFlatRoutes } from '../../../helpers/utils';
 import NavbarNavLink from './NavbarNavLink';
 
 const NavbarDropdownCredito = ({ items }) => {
-  const routes = getFlatRoutes(items);
-  
   return (
-    <Row>{routes.teste && (
+    <Row>
       <Col xs={12} md={12}>
         <Nav className="flex-column">
-          <NavbarNavLink label="Teste" title="Teste"/>
-          {routes.teste.slice(0,2).map(route => (
-            <NavbarNavLink key={route.name} route={route} />
+          {items.map(filho=>(
+            <React.Fragment key={filho.name}>
+              <NavbarNavLink key={filho.name} title={filho.name}/>
+              {filho.children.map((item) =>(
+                <NavbarNavLink key={item.name} route={item} icon={item.icon} icon2={item.icon2} />
+              ))}
+            </React.Fragment>
           ))}
         </Nav>
       </Col>
-      )}
     </Row>
   );
 };

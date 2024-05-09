@@ -43,6 +43,50 @@ export const fetchAgenciasBancarias = async (inputValue) => {
   }
 };
 
+export const fetchTipoArmazenagem = async (inputValue) => {
+  const token = localStorage.getItem("token")
+  const params = inputValue ? `search=${inputValue}` : ''
+  try {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/alongamentos/tipo-armazenagem/?${params}`;
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    const dataapi = await response.json();
+    const options = dataapi.length > 0 ? dataapi.map(b =>({
+      value: b.id,
+      label: b.description
+    })) : []
+    return options
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+  }
+};
+
+export const fetchTipoClassificacao = async (inputValue) => {
+  const token = localStorage.getItem("token")
+  const params = inputValue ? `search=${inputValue}` : ''
+  try {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/alongamentos/tipo-classificacao/?${params}`;
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    const dataapi = await response.json();
+    const options = dataapi.length > 0 ? dataapi.map(b =>({
+      value: b.id,
+      label: b.description
+    })) : []
+    return options
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+  }
+};
+
 export const columnsAlongamento = [
   {
     accessor: 'numero_operacao',

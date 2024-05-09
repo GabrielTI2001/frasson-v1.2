@@ -5,7 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
 import { FetchImoveisRurais, fetchPessoal} from '../Pipefy/Data';
-import { fetchAgenciasBancarias, fetchProdutoAgricola } from './Data';
+import { fetchAgenciasBancarias, fetchProdutoAgricola, fetchTipoArmazenagem, fetchTipoClassificacao } from './Data';
 import { fetchMunicipio } from '../Ambiental/Data';
 import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
@@ -14,7 +14,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({created_by: user.id});
+  const [formData, setFormData] = useState({user: user.id});
   const [message, setMessage] = useState()
   const token = localStorage.getItem("token")
   const [defaultoptions, setDefaultOptions] = useState()
@@ -46,10 +46,12 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         }
         else if (response.status === 201 || response.status === 200){
           if (type === 'edit'){
-            toast.success("Registro Atualização com Sucesso!")
+            toast.success("Registro Atualizado com Sucesso!")
+            submit(data)
           }
           else{
             toast.success("Registro Efetuado com Sucesso!")
+            submit(data)
           }
         }
     } catch (error) {
@@ -78,8 +80,14 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
 
   useEffect(()=>{
     const loadFormData = async () => {
-      setFormData({...formData, ...data})
-      setDefaultOptions({municipio:data.municipio_propriedade}); 
+      const {info_operacao, ...rest} = data;
+      setFormData({...formData, ...rest})
+      setDefaultOptions({municipio:{value:data.municipio_propriedade, label: data.str_municipio}, 
+        propriedade: data.str_propriedade, 
+        testemunha01:{value:data.testemunha01, label:data.str_testemunha01}, 
+        testemunha02:{value:data.testemunha02,label:data.str_testemunha02},
+        fiel_depositario:{value:data.fiel_depositario,label:data.str_fiel_depositario},
+      }); 
     
     }
     const buscar = async () =>{
@@ -87,6 +95,10 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
       setAgencias(data_agencias)
       const dado_produtos = await fetchProdutoAgricola()
       setProdutos(dado_produtos)
+      const armazenagem = await fetchTipoArmazenagem()
+      setTipoarmazenagens(armazenagem)
+      const dados_c = await fetchTipoClassificacao()
+      setTipoclassificacoes(dados_c)
     }
     buscar()
     if (type === 'edit' && (!defaultoptions)){

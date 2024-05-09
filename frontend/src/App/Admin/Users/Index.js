@@ -13,7 +13,6 @@ const IndexUsers = () => {
     const token = localStorage.getItem("token")
     const [users, setUsers] = useState()
     const [allowedEmails, setAllowedEmails] = useState()
-    console.log()
     const navigate = useNavigate()
 
     const update = (type, dados) =>{

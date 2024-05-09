@@ -9,6 +9,7 @@ router.register(r'regime', views.RegimesView)
 router.register(r'farms', views.FarmsView)
 
 urlpatterns = [
-
+    path('credit-data', views.creditData, name='credit.data'),
+    path('credit/convert-to-xls', views.convert_html_table_to_excel, name='credit.xls'),
 ]
 urlpatterns += router.urls

@@ -7,8 +7,8 @@ import requests, json
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from .serializers import detailCard_Produtos, serializerDetalhamento_Servicos, serializerInstituicoes_Parceiras
 from .serializers import serializerContratos_Servicos, serializerCadastro_Pessoal, listCadastro_Pessoal, detailCadastro_Pessoal
-from .serializers import serOperacoesContratatadas, listInstituicoes_RazaoSocial, serializerCard_Prospects, detailCard_Prospects
-from .serializers import serMonitoramentoPrazos, listCard_Produtos
+from .serializers import listOperacoes, listInstituicoes_RazaoSocial, serializerCard_Prospects, detailCard_Prospects
+from .serializers import serMonitoramentoPrazos, listCard_Produtos, detailOperacoes
 from .models import Card_Produtos, Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Parceiras, Contratos_Servicos
 from .models import Operacoes_Contratadas, Instituicoes_Razao_Social, Card_Prospects, Prospect_Monitoramento_Prazos
 
@@ -154,18 +154,28 @@ class MonitoramentoPrazosView(viewsets.ModelViewSet):
 
 class OperacoesContratadasView(viewsets.ModelViewSet):
     queryset = Operacoes_Contratadas.objects.all()
-    serializer_class = serOperacoesContratatadas
-    permission_classes = [permissions.AllowAny]
+    serializer_class = detailOperacoes
+    # permission_classes = [permissions.AllowAny]
     def get_queryset(self):
         queryset = super().get_queryset()
-        benefic_search = self.request.query_params.get('beneficiario', None)
-        
-        if benefic_search:
-            queryset = queryset.filter(
-                Q(beneficiario=int(benefic_search))
-            )
-        else:
-            if self.action == 'list':
-                queryset = queryset.order_by('-created_at')
-
+        search = self.request.query_params.get('search', None) 
+        search_year = self.request.query_params.get('year', None)   
+        search_month = self.request.query_params.get('month', None)  
+        search_bank = self.request.query_params.get('month', None)  
+        query = Q()
+        if search_year:
+            query &= Q(data_emissao_cedula__year=search_year)
+            if search_month:
+                query &= Q(data_emissao_cedula__month=search_month)
+        if search_bank:
+            query &= Q(instituicao__instituicao_id=search_bank)      
+        if search:
+            query &= Q(beneficiario__razao_social__icontains=search)
+        queryset = queryset.filter(query).order_by('beneficiario__razao_social', 'data_emissao_cedula')
         return queryset
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listOperacoes
+        else:
+            return self.serializer_class

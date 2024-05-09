@@ -145,7 +145,7 @@ const AdvanceTable = ({
                       </Tooltip>
                     }>
                       <Link to={`${process.env.REACT_APP_API_URL}/alongamentos/pdf/${row.original.id}`}>
-                        <FontAwesomeIcon icon={faFilePdf} className='text-danger me-1'/>
+                        <FontAwesomeIcon icon={faFilePdf} className='text-danger me-2'/>
                       </Link>
                     </OverlayTrigger>
 
@@ -154,10 +154,10 @@ const AdvanceTable = ({
                         Download Páginas PDF
                       </Tooltip>
                     }>
-                      <FontAwesomeIcon icon={faCloudArrowDown} className='text-primary me-1' onClick={()=>{ Click(row.original, 'download')}}/>
+                      <FontAwesomeIcon icon={faCloudArrowDown} className='text-primary me-2' onClick={()=>{ Click(row.original, 'download')}}/>
                     </OverlayTrigger>
-                    <FontAwesomeIcon icon={faPen} className='text-info me-1' onClick={()=>{ Click(row.original, 'edit')}}/>
-                    <FontAwesomeIcon icon={faTrashCan} className='text-danger me-1' onClick={()=>{ Click(row.original, 'delete')}}/>
+                    <FontAwesomeIcon icon={faPen} className='text-info me-2' onClick={()=>{ Click(row.original, 'edit')}}/>
+                    <FontAwesomeIcon icon={faTrashCan} className='text-danger me-2' onClick={()=>{ Click(row.original, 'delete')}}/>
                   </td>      
                 }
               </tr>

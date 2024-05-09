@@ -2,8 +2,8 @@ from django.shortcuts import render, HttpResponse
 from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets
-from .serializers import ListAlongamentos, detailAlongamentos, listProdutos
-from .models import Operacoes_Credito, Produto_Agricola
+from .serializers import ListAlongamentos, detailAlongamentos, listProdutos, listTipoArmazenagem, listTipoClassificacao
+from .models import Operacoes_Credito, Produto_Agricola, Tipo_Classificacao, Tipo_Armazenagem
 import locale
 from num2words import num2words
 from reportlab.lib.pagesizes import letter, landscape
@@ -693,3 +693,11 @@ def download_pdf_page_03(request, id):
 class ProdutoView(viewsets.ModelViewSet):
     queryset = Produto_Agricola.objects.all()
     serializer_class = listProdutos
+
+class TipoArmazenagemView(viewsets.ModelViewSet):
+    queryset = Tipo_Armazenagem.objects.all()
+    serializer_class = listTipoArmazenagem
+
+class TipoClassificacaoView(viewsets.ModelViewSet):
+    queryset = Tipo_Classificacao.objects.all()
+    serializer_class = listTipoClassificacao

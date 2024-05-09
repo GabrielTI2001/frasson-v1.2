@@ -7,6 +7,8 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'index', views.AlongamentosView)
 router.register(r'produtos-agricolas', views.ProdutoView)
+router.register(r'tipo-armazenagem', views.TipoArmazenagemView)
+router.register(r'tipo-classificacao', views.TipoClassificacaoView)
 
 urlpatterns = [
     path('pdf/<int:id>', views.create_pdf_alongamento, name='pdf.alongamento'),

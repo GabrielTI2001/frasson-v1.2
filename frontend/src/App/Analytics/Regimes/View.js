@@ -168,7 +168,7 @@ const ViewRegime = () => {
         className="rounded-soft mt-0 google-maps-s container-map-l"
         token_api={regime.token_apimaps}
         mapTypeId='satellite'
-        url={regime.farm_data.kml_da_matr_cula}
+        urls={[regime.farm_data.kml_da_matr_cula]}
     />
     </>
     :<div className='text-center'><Spinner /></div>}
