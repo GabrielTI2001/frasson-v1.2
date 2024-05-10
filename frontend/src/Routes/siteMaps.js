@@ -23,13 +23,14 @@ export const dashboardRoutes = {
           active: true
         },
         {
-          name: 'Support desk',
-          to: '/dashboard/support-desk',
+          name: 'Dashboard Oper. em Andamento',
+          to: '/dashboard/credit/progress',
+          icon2:'Speedometer',
           active: true,
-          badge: {
-            type: 'success',
-            text: 'New'
-          }
+          // badge: {
+          //   type: 'success',
+          //   text: 'New'
+          // }
         }
       ]
     }

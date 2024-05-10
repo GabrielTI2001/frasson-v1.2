@@ -6,14 +6,12 @@ import AdvanceTable from '../../../components/common/advance-table/AdvanceTable'
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
-import { Link } from "react-router-dom";
 import { columnsCardProdutos } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 
-const IndexProdutos = () => {
+const IndexProdutos = ({phasename}) => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
-    const token = localStorage.getItem("token")
     const navigate = useNavigate();
 
     const onClick = (id, uuid) =>{
@@ -32,7 +30,7 @@ const IndexProdutos = () => {
             navigate("/error/403")
         }
         if (!searchResults){
-            HandleSearch('', 'pipefy/cards/produtos', setter) 
+            HandleSearch(`${phasename ? phasename : ''}`, 'pipefy/cards/produtos', setter) 
         }
     },[])
 
@@ -51,12 +49,13 @@ const IndexProdutos = () => {
             pagination
             perPage={5}
         >
-        <Row className="flex-end-center justify-content-start mb-3">
-            <Col xs="auto" sm={6} lg={4}>
-                <AdvanceTableSearchBox table onSearch={search}/>
-            </Col>
-        </Row>
-       
+            <Row className="flex-end-center justify-content-start mb-3">
+            {!phasename && 
+                <Col xs="auto" sm={6} lg={4}>
+                    <AdvanceTableSearchBox table onSearch={search}/>
+                </Col>
+            }
+            </Row>
         <AdvanceTable
             table
             headerClassName="text-nowrap align-middle fs-xs"

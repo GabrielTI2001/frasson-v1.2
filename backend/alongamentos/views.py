@@ -297,7 +297,7 @@ def create_pdf_alongamento(request, id):
         return response
 
     except ObjectDoesNotExist:
-        return render(request, 'erros/404.html')
+        return HttpResponse()
 
 def download_pdf_page_01(request, id):
     #CRIA ARQUIVO PDF DO ALONGAMENTO
@@ -437,7 +437,7 @@ def download_pdf_page_01(request, id):
         return response
 
     except ObjectDoesNotExist:
-        return render('erros/404.html')
+        return HttpResponse(404)
     
 def download_pdf_page_02(request, id):
     #CRIA ARQUIVO PDF DO ALONGAMENTO
@@ -588,7 +588,7 @@ def download_pdf_page_02(request, id):
         return response
 
     except ObjectDoesNotExist:
-        return render('erros/404.html')
+        return HttpResponse(404)
 
 def download_pdf_page_03(request, id):
     #CRIA ARQUIVO PDF DO ALONGAMENTO
@@ -686,9 +686,9 @@ def download_pdf_page_03(request, id):
             response.write(pdf)
             return response
         else:
-            return HttpResponse()
+            return HttpResponse(404)
     except ObjectDoesNotExist:
-        return render('erros/404.html')
+        return None
     
 class ProdutoView(viewsets.ModelViewSet):
     queryset = Produto_Agricola.objects.all()

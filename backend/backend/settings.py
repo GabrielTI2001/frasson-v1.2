@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'dashboards',
     'environmental',
     'finances',
+    'kpi',
     'litec',
     'pipefy',
     'pipeline',

@@ -106,7 +106,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
     }
     else{
       if(!defaultoptions){
-        setDefaultOptions({propriedade:{}, finalidade:{}})
+        setDefaultOptions({propriedade:{}, finalidade:{}, municipio:{}, testemunha01:{}, testemunha02:{}, fiel_depositario:{}})
       }
     }
 

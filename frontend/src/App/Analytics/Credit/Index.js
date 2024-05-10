@@ -1,10 +1,9 @@
-import { useState, useEffect, useRef} from "react";
+import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Spinner, Table, Form, Button} from 'react-bootstrap';
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { fetchCreditData } from "../Data";
-import { SendArrowUp } from "react-bootstrap-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 
@@ -18,7 +17,7 @@ const meses = [{'number': 1, 'name': 'JAN'}, {'number': 2, 'name': 'FEV'}, {'num
     {'number': 9, 'name': 'SET'}, {'number': 10, 'name': 'OUT'}, {'number': 11, 'name': 'NOV'}, {'number': 12, 'name': 'DEZ'}
 ];
 
-const IndexCredit = () => {
+const IndexCredit = ({mes, ano}) => {
     const [searchResults, setSearchResults] = useState();
     const [formData, setFormData] = useState({loaded:false});
     const [somaDosValores, setSomadosValores] = useState()
@@ -33,6 +32,8 @@ const IndexCredit = () => {
         let query = '';
         if (formData.ano) query = query + 'year='+formData.ano+'&'
         if (formData.mes) query = query + 'month='+formData.mes+'&'
+        if (mes) query = query + 'month='+mes+'&'
+        if (ano) query = query + 'year='+ano+'&'
         if (formData.search) query = query + 'search='+formData.search+'&'
         if (formData.banco) query = query + 'bank='+formData.bank+'&'
 
@@ -116,9 +117,6 @@ const IndexCredit = () => {
         if ((user.permissions && user.permissions.indexOf("view_operacoes_contratadas") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!searchResults){
-            getdata()
-        }
         if (!metadata){
             getmetadata()
         }
@@ -129,6 +127,7 @@ const IndexCredit = () => {
                 setSomadosValores(soma);
             }
         } else {
+            getdata()
             setSomadosValores(0);
         }
     },[searchResults])
@@ -141,7 +140,7 @@ const IndexCredit = () => {
             </li>  
         </ol>
         <Row className="mb-2">
-            {metadata && <>
+            {metadata && (!mes && !ano) && <>
                 <Form.Group className="mb-1" as={Col} lg={2}>
                     <Form.Select name='ano' onChange={handleFieldChange} value={formData.ano || ''}>
                         <option value=''>----</option>
@@ -166,16 +165,16 @@ const IndexCredit = () => {
                         ))}
                     </Form.Select>
                 </Form.Group>
+                <Form.Group className="mb-1" as={Col} lg={3}>
+                    <Form.Control
+                        value={formData.search || ''}
+                        name="search"
+                        onChange={handleFieldChange}
+                        type="text"
+                    />
+                </Form.Group>
             </>}
-            <Form.Group className="mb-1" as={Col} lg={3}>
-                <Form.Control
-                    value={formData.search || ''}
-                    name="search"
-                    onChange={handleFieldChange}
-                    type="text"
-                />
-            </Form.Group>
-            <Col className="mb-1 justify-content-end d-flex align-items-center" lg={2}>
+            <Col className={`mb- d-flex align-items-center ${mes || ano ? 'justify-content-start' : 'justify-content-end'}`} lg={2}>
                 <span className="fw-bold fs-0 text-primary">{somaDosValores ? Number(somaDosValores).toLocaleString('pt-BR', 
                     {style: 'currency', currency: 'BRL'}) : ''}
                 </span>

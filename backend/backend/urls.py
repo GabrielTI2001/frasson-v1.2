@@ -15,6 +15,7 @@ urlpatterns = [
     path('administrator/', include('administrator.urls')),
     path('alongamentos/', include('alongamentos.urls')),
     path('analytics/', include('analytics.urls')),
+    path('dashboard/', include('dashboards.urls')),
     path('register/', include('cadastro.urls')),
     path('pipefy/', include('pipefy.urls')),
     path('processes/', include('processes.urls')),

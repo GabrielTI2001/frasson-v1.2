@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@fortawesome/fontawesome-svg-core/styles.css";  
 import { faChartColumn, faArrowTrendDown, faArrowTrendUp, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../../Main";
-import { LineChart } from "../../../components/Custom/ChartsLine";
+import { LineChart } from "../../../components/Custom/Charts";
 
 const Commodities = () =>{
     const {config: {theme}} = useAppContext();

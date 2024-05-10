@@ -13,6 +13,10 @@ import ViewRegime from '../App/Analytics/Regimes/View';
 import IndexFarms from '../App/Analytics/Farms/Index';
 import ViewFarm from '../App/Analytics/Farms/View';
 import IndexCredit from '../App/Analytics/Credit/Index';
+import ViewCredit from '../App/Analytics/Credit/View';
+//Dashboard
+import DashCredit from '../App/Dashboard/Credit/Index';
+import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -96,6 +100,11 @@ const LayoutRoutes = () => {
           <Route path="farms" element={<IndexFarms />}/>
           <Route path="farms/:id" element={<ViewFarm />}/>
           <Route path="credit" element={<IndexCredit />}/>
+          <Route path="credit/:id" element={<ViewCredit />}/>
+        </Route>
+        <Route path="/dashboard">
+          <Route path="credit" element={<DashCredit />}/>
+          <Route path="credit/progress" element={<DashGestaoCredito />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/register">

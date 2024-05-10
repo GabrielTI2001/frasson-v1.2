@@ -4,7 +4,7 @@ from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancari
 from alongamentos.models import Operacoes_Credito
 from datetime import datetime
 import requests, json, locale, re
-from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL
+from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL, TOKEN_GOOGLE_MAPS_API
 from users.models import Profile
 
 class serializerCadastro_Pessoal(serializers.ModelSerializer):
@@ -189,10 +189,10 @@ class listOperacoes(serializers.ModelSerializer):
 class detailOperacoes(serializers.ModelSerializer):
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
     cpf_beneficiario = serializers.CharField(source='beneficiario.cpf_cnpj', read_only=True)
-    name_instituicao = serializers.CharField(source='instituicao.instituicao.razao_social', required=False, read_only=True)
-    name_item = serializers.CharField(source='item_financiado.item', required=False, read_only=True)
+    rg_beneficiario = serializers.CharField(source='beneficiario.numero_rg', read_only=True)
     pipefy = serializers.SerializerMethodField(read_only=True)
     alongamento = serializers.SerializerMethodField(read_only=True)
+    token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
     def get_pipefy(self, obj):
         operacao = {}
         payload = {"query":"{table_record(id:" + str(obj.id) + ") {id url created_at created_by{name} record_fields{array_value native_value float_value field{id type}}}}"}
@@ -244,6 +244,8 @@ class detailOperacoes(serializers.ModelSerializer):
         else:
             operacao['along'] = False
         return operacao
+    def get_token_apimaps(self, obj):
+        return TOKEN_GOOGLE_MAPS_API
 
     class Meta:
         model = Operacoes_Contratadas

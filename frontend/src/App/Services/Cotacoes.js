@@ -21,7 +21,7 @@ const Cotacoes = () =>{
                 <Link className="text-decoration-none" to={'commodity'}>
                 <Card.Body as={Row} className="justify-content-between">
                   <Col lg={9} sm={9} className="ps-0">
-                    <Card.Title className="fw-bold fs-xs">Commodities</Card.Title>  
+                    <Card.Title className="fw-bold fs--1">Commodities</Card.Title>  
                     <p className="mb-0 fw-600">Agrícola, Pecuária</p>
                   </Col>
                   <Col lg={2} sm={2} className="px-0 text-end">
@@ -34,7 +34,7 @@ const Cotacoes = () =>{
                 <Link className="text-decoration-none" to={'exchange'}>
                 <Card.Body as={Row} className="justify-content-between">
                   <Col lg={9} sm={9} className="ps-0">
-                    <Card.Title className="fw-bold fs-2">Moedas Estrangeiras</Card.Title>  
+                    <Card.Title className="fw-bold fs--1">Moedas Estrangeiras</Card.Title>  
                     <p className="mb-0 fw-600">BRL, USD, BTC</p>
                   </Col>
                   <Col lg={2} sm={2} className="px-0 text-end">
