@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { ColumnLineChart, BarChart, ColumnChart } from "../../../components/Custom/Charts";
 import IndexCredit from "../../Analytics/Credit/Index";
-import IndexProdutos from "../../Pipefy/Produtos/Index";
+import { HandleSearch } from "../../../helpers/Data";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -23,40 +23,31 @@ const DashCredit = () =>{
     const [data, setData] = useState()
     const token = localStorage.getItem("token")
 
+    const setter = (responsedata) => {
+        setData(responsedata)
+        setData({...responsedata,
+            realizado_ultimo_ano:{
+                'JAN': 20
+            },
+            tipos_operacao:{
+                'Teste': 10,
+                'Teste2': 15
+            },
+
+        })
+    }
+
     useEffect(()=>{
         if (!data){
-            handleSearch('')
+            HandleSearch('', 'dashboard/credit', setter)
         }
         setFormData({mes:new Date().getMonth()+1, ano:new Date().getFullYear()})
     }, [])
 
-    const handleSearch = async (search) => {
-        const url = `${process.env.REACT_APP_API_URL}/dashboard/credit?${search}`
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            const data = await response.json();
-            if (response.status === 401) {
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            } else if (response.status === 200) {
-                setData(data)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-    };
-
     if (formData && (formData.ano && formData.mes)){
         if(!data){
-            const params = `year=${formData.ano}&month=${formData.mes}`
-            handleSearch(params)
+            const params = `?year=${formData.ano}&month=${formData.mes}`
+            HandleSearch('', 'dashboard/credit', setter, params)
         }
     }
 
@@ -218,7 +209,7 @@ const DashCredit = () =>{
                             </Card>
                         </Col>
                     }
-                    {data.tipos_operacao && !data.realizado_ultimo_ano.null &&
+                    {data.realizado_ultimo_ano && !data.realizado_ultimo_ano.null &&
                         <Col>
                             <Card as={Col}>
                                 <ColumnChart type='column' 

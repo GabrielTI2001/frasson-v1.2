@@ -17,6 +17,8 @@ import ViewCredit from '../App/Analytics/Credit/View';
 //Dashboard
 import DashCredit from '../App/Dashboard/Credit/Index';
 import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
+import DashProspects from '../App/Dashboard/Pipefy/Prospects';
+import DashProdutos from '../App/Dashboard/Pipefy/Produtos';
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -44,6 +46,7 @@ import IndexAPPO from '../App/Ambiental/InemaAppo/Index';
 import IndexOutorgas from '../App/Ambiental/InemaOutorgas/Index';
 import { View as ViewAppo } from "../App/Ambiental/InemaAppo/View";
 import { Edit as EditAppo } from "../App/Ambiental/InemaAppo/Edit";
+import IndexASV from '../App/Ambiental/InemaASV/Index';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
 //Services
@@ -105,6 +108,8 @@ const LayoutRoutes = () => {
         <Route path="/dashboard">
           <Route path="credit" element={<DashCredit />}/>
           <Route path="credit/progress" element={<DashGestaoCredito />}/>
+          <Route path="prospects" element={<DashProspects />}/>
+          <Route path="products" element={<DashProdutos />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/register">
@@ -137,6 +142,7 @@ const LayoutRoutes = () => {
           <Route path="appos/:uuid" element={<ViewAppo />} />
           <Route path="appos/edit/:uuid" element={<EditAppo />} />
           <Route path="appo/map" element={<MapaPontos key='appo' type='appo' />} />
+          <Route path="asv" element={<IndexASV/>}/>
         </Route>
         <Route path="/services">
           <Route path="currency" element={<Cotacoes />}/>

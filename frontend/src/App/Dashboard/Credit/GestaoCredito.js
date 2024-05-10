@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from "react";
 import { Card, Row, Col, Spinner, Modal, CloseButton} from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { BarChart, ColumnChart, PieChart } from "../../../components/Custom/Charts";
 import IndexProdutos from "../../Pipefy/Produtos/Index";
+import { HandleSearch } from "../../../helpers/Data";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -17,42 +18,21 @@ const meses = [
 const DashGestaoCredito = () =>{
     const [modal, setModal] = useState({show:false, fase:null})
     const {config: {theme}} = useAppContext();
-    const navigate = useNavigate();
     const [data, setData] = useState()
-    const token = localStorage.getItem("token")
+
+    const setter = (responsedata) => {
+        setData(responsedata)
+        setData({...responsedata, processos_gc:[{phase_name:'TESTE', total:10}, {phase_name:'TESTE2', total:5}],
+            cards_current_year:[{jan:7}, {fev:11}], cards_last_year:[{jan:7}, {fev:15}],
+            total_beneficiarios:[{'Teste':5000}], total_bancos:[{'Teste':5000}, {'Teste2':4000}]
+        })
+    }
 
     useEffect(()=>{
         if (!data){
-            handleSearch()
+            HandleSearch('','dashboard/credit-management', setter)
         }
     }, [])
-
-    const handleSearch = async () => {
-        const url = `${process.env.REACT_APP_API_URL}/dashboard/credit-management`
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            const responsedata = await response.json();
-            if (response.status === 401) {
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            } else if (response.status === 200) {
-                setData(responsedata)
-                setData({...responsedata, processos_gc:[{phase_name:'TESTE', total:10}, {phase_name:'TESTE2', total:5}],
-                    cards_current_year:[{jan:7}, {fev:11}], cards_last_year:[{jan:7}, {fev:15}],
-                    total_beneficiarios:[{'Teste':5000}], total_bancos:[{'Teste':5000}, {'Teste2':4000}]
-                })
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-    };
 
     return (
         <>

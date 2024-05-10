@@ -1,9 +1,8 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
 faMap, faWheatAwn} 
 from "@fortawesome/free-solid-svg-icons";
-import { faChartSimple, faUser } 
+import { faChartSimple, faUser, faChartColumn } 
 from "@fortawesome/free-solid-svg-icons";
-import { } from 'react-bootstrap-icons';
 const user = JSON.parse(localStorage.getItem("user"));
 
 export const dashboardRoutes = {
@@ -31,6 +30,25 @@ export const dashboardRoutes = {
           //   type: 'success',
           //   text: 'New'
           // }
+        }
+      ]
+    },
+    {
+      name: 'Fluxos Pipefy',
+      active: true,
+      children: [
+        {
+          name: 'Dashboard Prospects',
+          to: '/dashboard/prospects',
+          icon: faChartColumn,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Dashboard Produtos',
+          to: '/dashboard/products',
+          icon: faChartColumn,
+          active: true,
         }
       ]
     }

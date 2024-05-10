@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from datetime import date
 import locale, json
 from django.core import serializers
-from pipefy.models import Operacoes_Contratadas, Card_Produtos
+from pipefy.models import Operacoes_Contratadas, Card_Produtos, Card_Prospects
 from kpi.models import Indicadores_Frasson, Metas_Realizados
 
 # Create your views here.
@@ -159,7 +159,6 @@ def dashboard_operacoes_contratadas(request):
         'total_projecao': locale.currency(total_projecao, grouping=True), 
         'show_projecao': True if searched_year == current_year else False
     }
-
     return JsonResponse(context)
 
 
@@ -238,11 +237,93 @@ def dashboard_gestao_credito(request):
         'produtos': produtos,
         'cards_current_year': cards_created_current_year,
         'cards_last_year': cards_created_last_year,
-        'current_year': current_year,
         'last_year': last_year,
         'total_beneficiarios': beneficiarios_operacoes,
         'total_bancos': total_bancos,
         'total_operacoes_em_aberto': locale.currency(total_operacoes_em_aberto, grouping=True)
+    }
+    return JsonResponse(context)
+
+def dashboard_prospects(request):
+    #DASHBOARD PROSPECTS
+    current_year = date.today().year
+
+    #fases de START a FORMALIZAÇÃO
+    prospects_phases = [310425915, 310425916, 310425917, 310426145, 310426175, 310426184, 310426296, 312006210, 310426297]
+    prospects = Card_Prospects.objects.filter(phase_id__in=prospects_phases)
+    prospects_pv = Card_Prospects.objects.filter(phase_id=310426184)
+    total_pv_inicial =  prospects_pv.aggregate(total=Sum('proposta_inicial'))['total'] or 0
+    media_pv_inicial = prospects_pv.aggregate(media=Avg('percentual_inicial'))['media'] or 0
+    
+    #CONTAGEM DE PROSPECTS POR PRODUTO, CLASSIFICAÇÃO E POR FASE
+    produtos_db = prospects.values('produto').annotate(count=Count('produto'))
+    classificacao_db = prospects.values('classificacao').annotate(count=Count('classificacao'))
+    fases_db = prospects.values('phase_name').annotate(count=Count('phase_name')).order_by('-count')  
+
+    produtos = [{
+        'produto': prod['produto'],
+        'total': prod['count']
+    } for prod in produtos_db]
+
+    classificacao = [{
+        'classificacao': classif['classificacao'],
+        'total': classif['count']
+    } for classif in classificacao_db]
+
+    fases = [{
+        'fase': fase['phase_name'],
+        'total': fase['count']
+    } for fase in fases_db]
+
+    context = {
+        'qtd_prospects': prospects.count(),
+        'qtd_proposta_valor': prospects_pv.count(),
+        'valor_proposta_valor': f"R$ {locale.format_string('%.2f', total_pv_inicial, True)}",
+        'media_proposta_valor': locale.format_string('%.2f', media_pv_inicial, True),
+        'produtos': produtos,
+        'classificacao': classificacao,
+        'fases': fases,
+    }
+    return JsonResponse(context)
+
+def dashboard_produtos(request):
+    current_year = date.today().year
+    type_card = "Principal"
+    produto_gc = 864795372
+    produto_gai = 864795466
+    processos = Card_Produtos.objects.exclude(phase_id__in=[310429136, 310429228]).filter(card=type_card)
+    fatu_estimado_total = processos.aggregate(total=Sum('faturamento_estimado'))['total'] or 0
+    concluidos_gc = Card_Produtos.objects.filter(phase_id=310429136, card=type_card, detalhamento__produto=produto_gc, created_at__year=current_year).count()
+    concluidos_gai = Card_Produtos.objects.filter(phase_id=310429136, card=type_card, detalhamento__produto=produto_gai, created_at__year=current_year).count()
+
+    fatu_estimado_gai = processos.values('phase_name').filter(detalhamento__produto=produto_gai).annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    faturamento_estimado_gai = [{
+        'fase': fatu['phase_name'],
+        'total': float(fatu['total'] or 0),
+    } for fatu in fatu_estimado_gai]
+
+    fatu_estimado_gc = processos.values('phase_name').filter(detalhamento__produto=produto_gc).annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    faturamento_estimado_gc = [{
+        'fase': fatu['phase_name'],
+        'total': float(fatu['total'] or 0),
+    } for fatu in fatu_estimado_gc]
+
+    total_operacoes_andamento = processos.values('phase_name').filter(detalhamento__produto=produto_gc).annotate(total=Sum('valor_operacao')).order_by('-total')
+    operacoes_andamento = [{
+        'fase': operacao['phase_name'],
+        'total': float(operacao['total'] or 0),
+    } for operacao in total_operacoes_andamento]
+
+    context = {
+        'qtd_processos': processos.count(),
+        'qtd_gestao_ambiental': processos.filter(detalhamento__produto=produto_gai).count(),
+        'qtd_gestao_credito': processos.filter(detalhamento__produto=produto_gc).count(),
+        'fatu_estimado_total': locale.currency(fatu_estimado_total, grouping=True),
+        'faturamento_estimado_gai': faturamento_estimado_gai,
+        'faturamento_estimado_gc': faturamento_estimado_gc,
+        'concluidos_gc': concluidos_gc,
+        'concluidos_gai': concluidos_gai,
+        'operacoes_andamento': operacoes_andamento,
     }
 
     return JsonResponse(context)

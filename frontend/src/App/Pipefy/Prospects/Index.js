@@ -27,11 +27,17 @@ const IndexProspects = () => {
     }
 
     useEffect(()=>{
+        const getdata = async () =>{
+            const status = await HandleSearch('', 'pipefy/cards/prospects', setter)
+            if (status === 401){
+             navigate("/auth/login")
+            } 
+        }
         if ((user.permissions && user.permissions.indexOf("view_card_prospects") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
-            HandleSearch('', 'pipefy/cards/prospects', setter) 
+            getdata()
         }
     },[])
 

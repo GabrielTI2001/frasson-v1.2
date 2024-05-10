@@ -66,7 +66,7 @@ const NavbarTopDropDownMenus = () => {
           <FontAwesomeIcon icon={creditoRoutes.icon} />
         </span>
         <NavbarDropdown title="Crédito Rural">
-          <NavbarDropdownCredito items={creditoRoutes.children} />
+          <NavbarDropdownCredito items={creditoRoutes.children} key={1}/>
         </NavbarDropdown>
       </Flex>
     }
@@ -85,7 +85,7 @@ const NavbarTopDropDownMenus = () => {
           <FontAwesomeIcon icon={dashboardRoutes.icon} />
         </span>
         <NavbarDropdown title="Dashboard">
-          <NavbarDropdownCredito items={dashboardRoutes.children} />
+          <NavbarDropdownCredito items={dashboardRoutes.children} key={2}/>
         </NavbarDropdown>
       </Flex>
       <NavbarDropdown title="Serviços">

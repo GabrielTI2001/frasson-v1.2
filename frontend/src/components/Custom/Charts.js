@@ -13,11 +13,8 @@ export const PieChart = ({ values, labels, title, height }) => {
       text: title,
       align: 'left',
       style: {
-        color: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor do título
+        color: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor do título
       }
-    },
-    grid: {
-      borderColor: '#242b33', // Cor da borda da grade
     },
     dataLabels: {
       enabled: true,
@@ -35,7 +32,7 @@ export const PieChart = ({ values, labels, title, height }) => {
         radius: 12,
       },
       labels:{
-        colors: [theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)']
+        colors: [theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)']
       }
     },
   };
@@ -75,7 +72,7 @@ export const LineChart = ({values, columns, name, title}) => {
         text: title,
         align: 'left',
         style: {
-          color: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor do título
+          color: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor do título
         }
       },
       grid: {
@@ -89,7 +86,7 @@ export const LineChart = ({values, columns, name, title}) => {
         categories: columns,
         labels: {
           style: {
-              colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
+              colors: theme === 'dark' ? '##fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
           }
         }
       },
@@ -99,7 +96,7 @@ export const LineChart = ({values, columns, name, title}) => {
           min: Math.min(...values) - 2,
           labels: {
               style: {
-                  colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
+                  colors: theme === 'dark' ? '##fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
               }
           }
       }
@@ -161,7 +158,7 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
       text: title,
       align: 'left',
       style: {
-        color: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor do título
+        color: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor do título
     }
     },
     grid: {
@@ -176,14 +173,14 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
     },
     legend:{
       labels:{
-        colors: [theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)']
+        colors: [theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)']
       }
     },
     xaxis: {
       categories: columns,
       labels: {
         style: {
-            colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
+            colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
         }
       }
     },
@@ -193,7 +190,7 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
         min: (Math.min(...valuesline) - 2) > 0 ? Math.min(...valuesline) - 2 : 0,
         labels: {
             style: {
-                colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo y)
+                colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo y)
             }
         }
     }
@@ -225,7 +222,7 @@ export const BarChart = ({columns, title, height, series, hidescale}) => {
       text: title,
       align: 'left',
       style: {
-        color: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor do título
+        color: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor do título
     }
     },
     grid: {
@@ -234,15 +231,16 @@ export const BarChart = ({columns, title, height, series, hidescale}) => {
         opacity: 0.5
       },
       borderColor: theme === 'dark' ? '#242b33' : 'rgba(124, 130, 148, 0.2)',
+      show: !hidescale
     },
     plotOptions: {
       bar: {
-        horizontal: true
+        horizontal: true, // Para gráfico de barras horizontais
       }
     },
     fill: {
       colors: [theme === 'dark' ? '#0441c4' : 'rgba(12, 23, 56, 1)'],
-      borderColor: 'transpar'
+      borderColor: 'transparent'
     },
     stroke: {
       curve: 'straight',
@@ -252,14 +250,15 @@ export const BarChart = ({columns, title, height, series, hidescale}) => {
     },
     legend:{
       labels:{
-        colors: [theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)']
+        colors: [theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)']
       }
     },
     xaxis: {
       categories: columns,
       labels: {
+        show: !hidescale,
         style: {
-            colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
+            colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
         }
       },
       axisTicks: {
@@ -275,9 +274,9 @@ export const BarChart = ({columns, title, height, series, hidescale}) => {
       min: (Math.min(...series[0].data) - 2) > 0 ? Math.min(...series[0].data) - 2 : 0,
       labels: {
           style: {
-              colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
+              colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
           }
-      }
+      },
     }
   }
 
@@ -321,7 +320,6 @@ export const ColumnChart = ({columns, title, series, height}) => {
     },
     fill: {
       colors: theme === 'dark' ? ['#0441c4', '#11ad3c'] : ['rgba(12, 23, 56, 1)', '#136b2b']
-      
     },
     stroke: {
       curve: 'straight',

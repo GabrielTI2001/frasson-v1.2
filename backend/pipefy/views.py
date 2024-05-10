@@ -47,10 +47,15 @@ class Card_ProdutosView(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         benefic_search = self.request.query_params.get('beneficiario', None)
         search = self.request.query_params.get('search', None)
+        phase = self.request.query_params.get('phase', None)
         if search:
             queryset = queryset.filter(
                 Q(pk__icontains=search) | Q(beneficiario__razao_social__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search) 
                 | Q(phase_name__icontains=search)
+            )
+        if phase:
+            queryset = queryset.filter(
+                Q(phase_name__icontains=phase)
             )
         if benefic_search:
             queryset = queryset.filter(

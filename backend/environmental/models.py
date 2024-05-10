@@ -147,7 +147,6 @@ class Processos_APPO(models.Model):
     def __str__(self):
         return self.nome_requerente
 
-
 class Processos_APPO_Coordenadas(models.Model):
     processo = models.ForeignKey(Processos_APPO, on_delete=models.CASCADE)
     numero_poco = models.IntegerField(null=True, verbose_name='Número Poço')
@@ -166,6 +165,64 @@ class Processos_APPO_Coordenadas(models.Model):
         verbose_name_plural = 'Processos APPO - Coordenadas'
     def __str__(self):
         return self.processo.nome_requerente
+
+class Empresas_Consultoria(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    razao_social = models.CharField(max_length=255, null=True, verbose_name='Razão Social')
+    cnpj = models.CharField(max_length=40, null=True, blank=True, unique=True, verbose_name='CNPJ', error_messages={'unique': 'CNPJ já cadastrado!'})
+    municipio = models.ForeignKey(Municipios, on_delete=models.CASCADE, null=True, verbose_name='Município')
+    endereco = models.TextField(null=True, blank=True, verbose_name='Endereço Empresa')
+    contato_telefone = models.CharField(max_length=255, null=True, blank=True, verbose_name='Contato Telefone')
+    contato_email = models.CharField(max_length=255, null=True, blank=True, verbose_name='Contato Email')
+    responsavel = models.CharField(max_length=255, null=True, blank=True, verbose_name='Contato Email')
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    updated_at = models.DateTimeField(auto_now=True, null=True)
+    class Meta:
+        verbose_name_plural = 'Empresas Consultoria'  
+    def __str__(self):
+        return self.razao_social
+
+def upload_to_asv(instance, filename):
+    #gera o nome do file com o uuid
+    ext = filename.split('.')[-1]
+    uuid = str(instance.uuid)
+    filename = f'{uuid}.{ext}'
+    return os.path.join('inema/asv/portarias/', filename)
+class Processos_ASV(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    processo = models.CharField(max_length=255, null=True, unique=True,  verbose_name='Número Processo', error_messages={'unique': 'Processo já cadastrado!'})
+    requerente = models.CharField(max_length=255, null=True, blank=True, verbose_name='Nome Requerente')
+    cpf_cnpj = models.CharField(max_length=40, null=True, blank=True, verbose_name='CPF/CNPJ')
+    portaria = models.CharField(max_length=30, null=True, blank=True, verbose_name='Portaria')
+    data_publicacao = models.DateField(null=True, blank=True, verbose_name='Data Publicação')
+    data_vencimento = models.DateField(null=True, blank=True, verbose_name='Data Publicação')
+    area_total = models.DecimalField(max_digits=15, decimal_places=4, null=True, verbose_name='Área Total ASV')
+    localidade = models.CharField(max_length=255, null=True, blank=True, verbose_name='Localidade')
+    municipio = models.ForeignKey(Municipios, on_delete=models.SET_NULL, null=True, verbose_name='Município')
+    rendimento = models.DecimalField(max_digits=15, decimal_places=4, null=True, verbose_name='Rendimento Lenhoso')
+    empresa = models.ForeignKey(Empresas_Consultoria, on_delete=models.SET_NULL, null=True, verbose_name='Empresa Consultoria')
+    data_formacao = models.DateField(null=True, blank=True, verbose_name='Data Formação')
+    tecnico = models.CharField(max_length=255, null=True, blank=True, verbose_name='Técnico responsável')
+    file = models.FileField(upload_to=upload_to_asv, null=True, default=None, verbose_name='Arquivo PDF')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Criado Por')  
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Processos ASV'
+    def __str__(self):
+        return self.requerente
+
+class Processos_ASV_Areas(models.Model):
+    processo = models.ForeignKey(Processos_ASV, on_delete=models.CASCADE, null=True, verbose_name='Processo ASV')
+    identificacao_area = models.CharField(max_length=100, null=True, blank=True, verbose_name='Identificação da Área')
+    file = models.FileField(upload_to='inema/asv/kml', null=True, default=None, verbose_name='Arquivo PDF')
+    area_total = models.DecimalField(max_digits=15, decimal_places=4, null=True, verbose_name='Área Total')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Áreas Processos ASV'
+    def __str__(self):
+        return self.processo
 
 class Atos_Administrativos(models.Model):
     description = models.CharField(max_length=255, null=True)

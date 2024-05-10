@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Processos_Outorga, Processos_Outorga_Coordenadas, Prazos_Renovacao, Finalidade_APPO, Tipo_Captacao
-from .models import Processos_APPO, Processos_APPO_Coordenadas, Aquifero_APPO
+from .models import Processos_APPO, Processos_APPO_Coordenadas, Aquifero_APPO, Processos_ASV, Processos_ASV_Areas
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 from datetime import timedelta, date, datetime
 from backend.frassonUtilities import Frasson
@@ -338,7 +338,24 @@ class CoordenadaAPPO(serializers.ModelSerializer):
         model = Processos_APPO_Coordenadas
         fields = '__all__'
 
-
+class listASV(serializers.ModelSerializer):
+    str_empresa = serializers.CharField(source='empresa.razao_social', required=False, read_only=True)
+    status = serializers.SerializerMethodField(required=False, read_only=True)
+    def get_status(self, obj):
+        if obj.data_vencimento:
+            return {
+                'color': 'danger' if obj.data_vencimento < date.today() else 'success', 
+                'text': 'Vencido' if obj.data_vencimento < date.today() else 'Vigente'
+            }
+        else:           
+            return {
+                'color': 'dark', 
+                'text': '-'
+            }
+        
+    class Meta:
+        model = Processos_ASV
+        fields = ['uuid', 'requerente', 'cpf_cnpj', 'portaria', 'data_publicacao', 'str_empresa', 'area_total', 'status']
 
 
 class serializerCaptacao(serializers.ModelSerializer):

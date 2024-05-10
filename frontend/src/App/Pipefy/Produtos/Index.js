@@ -26,11 +26,17 @@ const IndexProdutos = ({phasename}) => {
     }
 
     useEffect(()=>{
+        const getdata = async () =>{
+            const status = await HandleSearch('', 'pipefy/cards/produtos', setter, `${phasename ? '?phase='+phasename : null}`)
+            if (status === 401){
+             navigate("/auth/login")
+            } 
+        }
         if ((user.permissions && user.permissions.indexOf("view_card_produtos") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
-            HandleSearch(`${phasename ? phasename : ''}`, 'pipefy/cards/produtos', setter) 
+            getdata()
         }
     },[])
 

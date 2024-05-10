@@ -13,6 +13,7 @@ router.register(r'inema/outorga/coordenadas-detail', views.detailCoordenadaOutor
 router.register(r'inema/appos', views.APPOView)
 router.register(r'inema/appo/coordenadas', views.CoordenadaAPPOView)
 router.register(r'inema/appo/coordenadas-detail', views.detailCoordenadaAPPOView)
+router.register(r'inema/asvs', views.OutorgaView)
 
 urlpatterns = [
     path('inema/appo/kml/<int:id>', views.kml_processo_appo, name='kml.processo.appo'),

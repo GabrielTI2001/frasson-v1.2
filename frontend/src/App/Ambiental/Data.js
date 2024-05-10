@@ -209,3 +209,41 @@ export const columnsPontoAPPO = [
     headerProps: { className: 'text-900 p-1' }
   },
 ];
+
+
+export const columnsASV = [
+  {
+    accessor: 'requerente',
+    Header: 'Requerente',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'cpf_cnpj',
+    Header: 'CPF/CNPJ',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'portaria',
+    Header: 'Nº Portaria',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'data_publicacao',
+    Header: 'Data Publicação',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_empresa',
+    Header: 'Empresa Consultora',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'area_total',
+    Header: 'Área (ha)',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    Header: 'Status',
+    headerProps: { className: 'text-900 p-3' }
+  },
+];

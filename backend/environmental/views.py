@@ -1,8 +1,7 @@
 from django.db.models import Q
 from .models import Processos_Outorga, Processos_Outorga_Coordenadas, Tipo_Captacao, Finalidade_APPO, Processos_APPO
-from .models import Aquifero_APPO, Processos_APPO_Coordenadas
-from .serializers import serializerOutorga, detailOutorga, detailCoordenadaOutorga, serializerCoordenadaOutorga, serializerCaptacao, serializerFinalidade
-from .serializers import detailCoordenadaOutorga, CoordenadaOutorga, listAPPO, serializerAquifero, detailAPPO, listCoordenadaAPPO, detailCoordenadaAPPO, CoordenadaAPPO
+from .models import Aquifero_APPO, Processos_APPO_Coordenadas, Processos_ASV
+from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
@@ -46,7 +45,7 @@ class OutorgaView(viewsets.ModelViewSet):
 class CoordenadaOutorgaView(viewsets.ModelViewSet):
     queryset = Processos_Outorga_Coordenadas.objects.all()
     serializer_class = serializerCoordenadaOutorga
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         municipios_oeste = [2908101, 2917359, 2909307, 2928901, 2919553, 2903201, 2926202, 2911105, 2901403, 2907400, 2909703, 2902500, 2930907, 2928109,
@@ -73,7 +72,7 @@ class CoordenadaOutorgaView(viewsets.ModelViewSet):
 class detailCoordenadaOutorgaView(viewsets.ModelViewSet):
     queryset = Processos_Outorga_Coordenadas.objects.all()
     serializer_class = detailCoordenadaOutorga
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -136,7 +135,7 @@ class APPOView(viewsets.ModelViewSet):
 class CoordenadaAPPOView(viewsets.ModelViewSet):
     queryset = Processos_APPO_Coordenadas.objects.all()
     serializer_class = listCoordenadaAPPO
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -157,7 +156,7 @@ class CoordenadaAPPOView(viewsets.ModelViewSet):
 class detailCoordenadaAPPOView(viewsets.ModelViewSet):
     queryset = Processos_APPO_Coordenadas.objects.all()
     serializer_class = detailCoordenadaAPPO
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -172,7 +171,26 @@ class detailCoordenadaAPPOView(viewsets.ModelViewSet):
         else:
             return self.serializer_class
 
-
+class ASVView(viewsets.ModelViewSet):
+    queryset = Processos_ASV.objects.all()
+    serializer_class = listASV
+    # permission_classes = (IsAuthenticated,)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)
+        if search:
+            queryset = queryset.filter(
+                Q(requerente__icontains=search) | Q(cpf_cnpj__icontains=search) | Q(municipio__nome_municipio__icontains=search) |
+                Q(processo__icontains=search) | Q(empresa__razao_social__icontains=search) | Q(tecnico__icontains=search)
+            )
+        else:
+            queryset = queryset.order_by('-created_at')[:10]
+        return queryset
+    def get_serializer_class(self):
+        if self.request.query_params.get('infoappo', None):
+            return listASV
+        else:
+            return self.serializer_class
 
 class CaptacaoView(viewsets.ModelViewSet):
     queryset = Tipo_Captacao.objects.all()
