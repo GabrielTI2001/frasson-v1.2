@@ -80,12 +80,12 @@ const IndexAPPO = () => {
                 <AdvanceTableSearchBox table onSearch={handleSearch}/>
             </Col>
             <Col xl={'auto'} sm={'auto'} xs={'auto'}>
-                <a className="text-decoration-none btn btn-primary shadow-none fs--1"
+                <a className="text-decoration-none btn btn-primary shadow-none fs--2"
                     style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
                 >Novo Processo</a>
             </Col>
             <Col xl={'auto'} sm='auto' xs={'auto'}>
-                <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
+                <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
                 style={{padding: '2px 5px'}} to={'../appo/map'}>
                     <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa
                     </Link>

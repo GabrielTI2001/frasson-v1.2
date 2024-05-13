@@ -1,9 +1,28 @@
 from rest_framework import serializers
 from .models import Processos_Outorga, Processos_Outorga_Coordenadas, Prazos_Renovacao, Finalidade_APPO, Tipo_Captacao
-from .models import Processos_APPO, Processos_APPO_Coordenadas, Aquifero_APPO, Processos_ASV, Processos_ASV_Areas
+from .models import Processos_APPO, Processos_APPO_Coordenadas, Aquifero_APPO, Processos_ASV, Processos_ASV_Areas, Empresas_Consultoria
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 from datetime import timedelta, date, datetime
 from backend.frassonUtilities import Frasson
+from pykml import parser
+
+def parse_element_kml(element):
+    coordinates = []
+
+    for child in element.getchildren():
+
+        if hasattr(child, 'Polygon'):
+            #get only first child of tag polygon
+            coords = str(child[0].Polygon.outerBoundaryIs.LinearRing.coordinates).strip().split()
+            for coord in coords:
+                coordinates.append({'lat': float(coord.split(",")[1]), 'lng': float(coord.split(",")[0])})
+            break
+
+        else:
+            # Recursively handle complex elements like Placemark or Folder
+            coordinates.extend(parse_element_kml(child))
+
+    return coordinates
 
 class serializerOutorga(serializers.ModelSerializer):
     str_tipo_captacao = serializers.CharField(source='captacao.description', required=False, read_only=True)
@@ -357,18 +376,111 @@ class listASV(serializers.ModelSerializer):
         model = Processos_ASV
         fields = ['uuid', 'requerente', 'cpf_cnpj', 'portaria', 'data_publicacao', 'str_empresa', 'area_total', 'status']
 
+class detailASV(serializers.ModelSerializer):
+    info_user = serializers.SerializerMethodField(read_only=True, required=False)
+    token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
+    nome_municipio = serializers.SerializerMethodField()
+    str_empresa = serializers.SerializerMethodField()
+
+    def get_nome_municipio(self, obj):
+        return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}"
+    def get_str_empresa(self, obj):
+        if obj.empresa:
+            return obj.empresa.razao_social
+        else:
+            return None
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in [ 'info_user', 'token_apimaps', 'nome_municipio']:
+                field.required = True
+    def get_info_user(self, obj):
+        if obj.created_by:
+            return {
+                'id': obj.created_by.id,
+                'first_name': obj.created_by.first_name,
+                'last_name': obj.created_by.last_name,
+            }
+        else:
+            return None     
+    def get_token_apimaps(self, obj):
+        return TOKEN_GOOGLE_MAPS_API
+    def validate_data_validade(self, value):
+        data_publi = self.initial_data.get('data_publicacao')
+        data_publi  = datetime.strptime(data_publi, "%Y-%m-%d").date()    
+        if data_publi and value and data_publi > value:
+            raise serializers.ValidationError("A Data de Vencimento não pode ser menor que a Data de Publicação.") 
+        return value
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['portaria', 'processo', 'requerente', 'cpf_cnpj', 'data_publicacao', 'localidade', 'municipio', 'area_ha']:
+                field.required = True
+            else:
+                field.required = False
+    
+    class Meta:
+        model = Processos_ASV
+        fields = '__all__'
+
+class listAreasASV(serializers.ModelSerializer):
+    kml = serializers.SerializerMethodField(read_only=True, required=False)
+    def get_kml(self, obj):
+        if obj.file:
+            kml_file = obj.file.file
+            kml_file.seek(0)
+            root = parser.parse(kml_file).getroot().Document
+            kml = parse_element_kml(root)
+            kml_file.close()
+        else:
+            kml = None
+        return kml
+    class Meta:
+        model = Processos_ASV_Areas
+        fields = ['kml', 'id']
+
+class detailAreasASV(serializers.ModelSerializer):
+    kml = serializers.SerializerMethodField(read_only=True, required=False)
+    def get_kml(self, obj):
+        if obj.file:
+            kml_file = obj.file.file
+            kml_file.seek(0)
+            root = parser.parse(kml_file).getroot().Document
+            kml = parse_element_kml(root)
+            kml_file.close()
+        else:
+            kml = None
+        return kml
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name == 'file':
+                if not self.instance:
+                    field.required = True
+            if field_name in ['area_total', 'identificacao_area', 'processo']:
+                field.required = True
+            else:
+                field.required = False
+    class Meta:
+        model = Processos_ASV_Areas
+        fields = '__all__'
 
 class serializerCaptacao(serializers.ModelSerializer):
-        class Meta:
-            model = Tipo_Captacao
-            fields = ['id', 'description']
+    class Meta:
+        model = Tipo_Captacao
+        fields = ['id', 'description']
 
 class serializerAquifero(serializers.ModelSerializer):
-        class Meta:
-            model = Aquifero_APPO
-            fields = ['id', 'description']
+    class Meta:
+        model = Aquifero_APPO
+        fields = ['id', 'description']
 
 class serializerFinalidade(serializers.ModelSerializer):
-        class Meta:
-            model = Finalidade_APPO
-            fields = ['id', 'description']
+    class Meta:
+        model = Finalidade_APPO
+        fields = ['id', 'description']
+
+class listEmpresa(serializers.ModelSerializer):
+    class Meta:
+        model = Empresas_Consultoria
+        fields = ['id', 'razao_social']

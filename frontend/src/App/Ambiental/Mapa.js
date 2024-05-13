@@ -150,7 +150,7 @@ const MapaPontos = ({type}) => {
                         variant="outline-secondary"
                         className="border-300 hover-border-secondary"
                     >
-                        <FontAwesomeIcon icon={faSearch} className="fs--1" />
+                        <FontAwesomeIcon icon={faSearch} className="fs--2" />
                     </Button>
                 </InputGroup>
             </Col>

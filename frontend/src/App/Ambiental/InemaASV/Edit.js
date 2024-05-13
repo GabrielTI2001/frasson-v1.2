@@ -4,8 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Row, Col, Button } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Placeholder } from "react-bootstrap";
-import OutorgaForm from "./OutorgaForm";
-import PontoForm from "./PontoForm";
+import AreaForm from "./AreaForm";
 import AdvanceTable from "../../../components/common/advance-table/AdvanceTable";
 import AdvanceTableFooter from "../../../components/common/advance-table/AdvanceTableFooter";
 import AdvanceTableWrapper from "../../../components/common/advance-table/AdvanceTableWrapper";
@@ -14,9 +13,10 @@ import { Modal } from "react-bootstrap";
 import { CloseButton } from 'react-bootstrap';
 import { AmbientalContext } from "../../../context/Context";
 import {ambientalReducer} from '../../../reducers/ambientalReducer'
-import { columnsPontoOutorga } from "./../Data";
+import { columnsPontoASV } from "./../Data";
+import ASVForm from "./Form";
 
-const Edit = () => {
+const EditASV = () => {
     const channel = new BroadcastChannel('meu_canal');
     const {uuid} = useParams()
     const token = localStorage.getItem("token")
@@ -24,12 +24,12 @@ const Edit = () => {
     const navigate = useNavigate();
     const [ambientalState, ambientalDispatch] = useReducer(ambientalReducer, {modal:{show:false, content:{}}});
     const modal = ambientalState.modal;
-    const outorga = ambientalState.outorga;
-    const coordenadas = ambientalState.outorga ? ambientalState.outorga.coordenadas : [];
+    const asv = ambientalState.asv;
+    const areas = ambientalState.asv ? ambientalState.asv.areas : [];
 
     const onClickPoint = (dados, type) =>{
         if (type === 'delete'){
-            ambientalDispatch({type:'OPEN_MODAL', payload:{type:'delete', data:dados}})
+            ambientalDispatch({type:'OPEN_MODAL', payload:{type:'delete', data:dados.id}})
         }
         else if (type === 'add'){
             ambientalDispatch({type:'OPEN_MODAL', payload:{type:'add', data:dados}})
@@ -40,14 +40,14 @@ const Edit = () => {
     }
 
     const posdelete = () =>{
-        ambientalDispatch({type:'REMOVE_PONTO',payload:{id:modal.content.data}})
-        channel.postMessage({ tipo: 'remover_coordenada', id:modal.content.data, outorga_id:outorga.id})
+        ambientalDispatch({type:'REMOVE_PONTO_ASV',payload:{id:modal.content.data}})
+        channel.postMessage({ tipo: 'remover_coordenada', id:modal.content.data, asv_id:asv.id})
     }
 
     useEffect(() =>{
         const getCoordenadas = async (id) => {
             try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/?processo=${id}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas-detail/?processo=${id}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const Edit = () => {
                 else if (response.status === 200){
                     const data = await response.json();
                     ambientalDispatch({type:'SET_DATA', payload:{
-                        outorga:{...outorga, coordenadas:data}
+                        asv:{...asv, areas:data}
                     }})
                 }
                 
@@ -73,7 +73,7 @@ const Edit = () => {
 
         const getData = async () => {
             try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/environmental/inema/outorgas/${uuid}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/environmental/inema/asvs/${uuid}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -87,9 +87,8 @@ const Edit = () => {
                 }
                 else if (response.status === 200){
                     const data = await response.json();
-                    // setOutorga(data)
                     ambientalDispatch({type:'SET_DATA', payload:{
-                        outorga:{...data}
+                        asv:{...data}
                     }})
                 }
                 
@@ -97,30 +96,30 @@ const Edit = () => {
                 console.error("Erro: ",error)
             }
         }
-        if ((user.permissions && user.permissions.indexOf("change_processos_outorga") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("change_processos_asv") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!outorga){
+        if (!asv){
             getData()
         }
         else{
-            if (!coordenadas){
-                getCoordenadas(outorga.id)
+            if (!areas){
+                getCoordenadas(asv.id)
             }
         }
-    }, [outorga])
+    }, [asv])
 
     return (
     <>
     <AmbientalContext.Provider value={{ambientalState, ambientalDispatch}}>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/ambiental/inema/outorgas'}>Processos Outorga</Link>
+                <Link className="link-fx text-primary" to={'/ambiental/inema/asv'}>Processos ASV</Link>
             </li>
-            {outorga && (
+            {asv && (
             <>
                 <li className="breadcrumb-item fw-bold">
-                    <Link className="link-fx text-primary" to={`/ambiental/inema/outorgas/${uuid}`}>Outorga {outorga.numero_processo}</Link>
+                    <Link className="link-fx text-primary" to={`/ambiental/inema/asv/${uuid}`}>ASV {asv.numero_processo}</Link>
                 </li>
                <li className="breadcrumb-item fw-bold" aria-current="page">
                     Editar Portaria 
@@ -129,23 +128,23 @@ const Edit = () => {
             )}
         </ol>
         <div className="fs--1 sectionform">
-            {/* FORMULÁRIO DE OUTORGA */}
-            {outorga && (
+            {/* FORMULÁRIO DE ASV */}
+            {asv && (
             <>
-                <OutorgaForm hasLabel type={'edit'} data={outorga}></OutorgaForm>
+                <ASVForm hasLabel type={'edit'} data={asv} />
                 <hr></hr>
-                {/* BOTÃO ADD PONTO */}
+                {/* BOTÃO ADD ÁREA */}
                 <Row className="text-end">
-                    <Col><Button onClick={()=> onClickPoint(null, 'add')}>Adicionar Ponto</Button></Col>
+                    <Col><Button onClick={()=> onClickPoint(null, 'add')}>Adicionar Área</Button></Col>
                 </Row>
             </>
             )}
             <hr></hr>
             {/* TABELA DE PONTOS */}
-            {coordenadas ? (coordenadas.length > 0 ?
+            {areas ? (areas.length > 0 ?
                 <AdvanceTableWrapper
-                    columns={columnsPontoOutorga}
-                    data={coordenadas}
+                    columns={columnsPontoASV}
+                    data={areas}
                     sortable
                     pagination
                     perPage={5}
@@ -164,7 +163,7 @@ const Edit = () => {
                     />
                     <div className="mt-3">
                         <AdvanceTableFooter
-                            rowCount={coordenadas.length}
+                            rowCount={areas.length}
                             table
                             rowInfo
                             navButtons
@@ -172,7 +171,7 @@ const Edit = () => {
                         />
                     </div>
                 </AdvanceTableWrapper> 
-                : <div className="text-danger msg-lg" style={{fontSize:'18px'}}>Nenhum Ponto Cadastrado! Necessário Adicionar</div>)
+                : <div className="text-danger msg-lg" style={{fontSize:'18px'}}>Nenhuma Área Cadastrada!</div>)
                 :             
                 <div>
                 <Placeholder animation="glow">
@@ -194,20 +193,20 @@ const Edit = () => {
             >
                 <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {modal.content.type === 'edit' ? "Editar " : "Adicionar "}Ponto
+                    {modal.content.type === 'edit' ? "Editar " : "Adicionar "}Área
                 </Modal.Title>
                     <CloseButton onClick={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}}/>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center w-100 sectionform">
-                        <PontoForm hasLabel data={modal.content.data} type={modal.content.type}></PontoForm>
+                        <AreaForm hasLabel data={modal.content.data} type={modal.content.type} />
                     </Row>
                 </Modal.Body>
             </Modal>
         )}
         {modal.content && (
             <ModalDelete show={modal.show && modal.content.type === 'delete'} close={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}} 
-                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/${modal.content.data}/`}
+                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas-detail/${modal.content.data}/`}
             />
         )}
 
@@ -216,5 +215,5 @@ const Edit = () => {
     );
   };
   
-  export default Edit;
+  export default EditASV;
   

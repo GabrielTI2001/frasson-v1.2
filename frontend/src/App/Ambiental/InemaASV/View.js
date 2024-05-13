@@ -3,7 +3,6 @@ import React from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import {Spinner} from "react-bootstrap";
 import { Placeholder } from "react-bootstrap";
 import GoogleMap from "../../../components/map/GoogleMap";
 import SubtleBadge from '../../../components/common/SubtleBadge';
@@ -12,49 +11,31 @@ import { faPen, faTrashCan, faDownload } from "@fortawesome/free-solid-svg-icons
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import MapInfo from "../MapInfo";
 import Info from "../../../components/Custom/Info";
+import { RetrieveRecord } from "../../../helpers/Data";
+import PolygonMap from "../../../components/map/PolygonMap";
 
-const View = () => {
-    const channel = new BroadcastChannel('meu_canal');
+const ViewASV = () => {
     const {uuid} = useParams()
-    const [outorga, setOutorga] = useState()
+    const [asv, setASV] = useState()
     const [coordenadas, setCoordenadas] = useState()
     const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const [modal, setModal] = useState(false)
     const navigate = useNavigate();
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/`
-
-    const dif = (data_ren) => {
-        const dif = parseInt((new Date(data_ren) - new Date())/(1000 * 60 * 60 * 24))
-        const v = dif <= 0 ? 0 : dif;
-        return v;
-    }
+    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/asv/coordenadas-detail/`
 
     const del = () =>{
-        navigate('/ambiental/inema/outorgas/')
+        navigate('/ambiental/inema/asvs/')
     }
 
-    channel.onmessage = function(event) {
-        if (coordenadas && event.data.outorga_id === outorga.id){
-            if(event.data.tipo === 'adicionar_coordenada'){
-                setCoordenadas([...coordenadas, {...event.data.reg}])
-                setOutorga({...outorga, qtd_pontos:outorga.qtd_pontos+1})
-            }
-            if(event.data.tipo === 'remover_coordenada'){
-                setCoordenadas(coordenadas.filter(ponto => ponto.id !== event.data.id))
-                setOutorga({...outorga, qtd_pontos:outorga.qtd_pontos-1})
-            }
-            if(event.data.tipo === 'atualizar_outorga'){
-                setOutorga({...event.data.reg})
-            }
-        }
-
-    };
+    const setter = (data) =>{
+        setASV(data)
+    }
 
     useEffect(() =>{
         const getCoordenadas = async (id) => {
             try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas/?processo=${id}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas/?processo=${id}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -68,7 +49,7 @@ const View = () => {
                 }
                 else if (response.status === 200){
                     const data = await response.json();
-                    setCoordenadas(data)
+                    setCoordenadas([...data.map(d => d.kml)])
                 }
                 else if (response.status === 404){
                     setCoordenadas([])
@@ -80,125 +61,91 @@ const View = () => {
         }
 
         const getData = async () => {
-            try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/environmental/inema/outorgas/${uuid}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                });
-                if (response.status === 401){
-                    localStorage.setItem("login", JSON.stringify(false));
-                    localStorage.setItem('token', "");
-                    navigate("/auth/login");
-                }
-                else if (response.status === 200){
-                    const data = await response.json();
-                    setOutorga(data)
-                }
-                else if (response.status === 404){
-                    const data = await response.json();
-                    navigate("/error/404")
-                }
-            } catch (error){
-                setOutorga([])
-                setCoordenadas([])
-                console.error("Erro: ",error)
-            }
+            const status = await RetrieveRecord(uuid, 'environmental/inema/asvs', setter)
+            if (status === 401) navigate("auth/login")
         }
-        if ((user.permissions && user.permissions.indexOf("view_processos_outorga") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_processos_asv") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!outorga){
+        if (!asv){
             getData()
         }
         else{
             if (!coordenadas){
-                getCoordenadas(outorga.id)
+                getCoordenadas(asv.id)
             }
         }
-    }, [outorga])
+    }, [asv])
 
     return (
     <>
         <ol className="breadcrumb breadcrumb-alt mb-2">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/ambiental/inema/outorgas'}>Processos Outorga</Link>
+                <Link className="link-fx text-primary" to={'/ambiental/inema/asv'}>Processos ASV</Link>
             </li>
-            {outorga && (
+            {asv && (
                <li className="breadcrumb-item fw-bold" aria-current="page">
-                    Portaria {outorga.numero_portaria}
+                    Portaria {asv.portaria}
                </li>             
             )}
         </ol>
-        { outorga ? (
-            <Row>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Portaria" description={outorga.numero_portaria} />
+        { asv ? (
+            <Row className="mb-2">
+                <Col xl={2} sm={4}>
+                    <Info title="Portaria" description={asv.portaria} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Data Publicação" description={new Date(outorga.data_publicacao).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
+                <Col xl={2} sm={4}>
+                    <Info title="Data Formação" description={asv.data_formacao ? asv.data_formacao : '-'} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Data Validade" description={new Date(outorga.data_validade).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
+                <Col xl={2} sm={4}>
+                    <Info title="Data Validade" description={asv.data_vencimento ? asv.data_vencimento : '-'} />
                 </Col>
-                <Col lg={3} xl={3} sm={3}>
-                    <Info title="Processo INEMA" description={outorga.numero_processo} />
+                <Col xl={2} sm={4}>
+                    <Info title="Data Validade" description={asv.data_vencimento ? asv.data_vencimento : '-'} />
                 </Col>
-                <Col lg={3} xl={3} sm={3}>
-                    <Info title="Nome Requerente" description={outorga.nome_requerente} />
+                <Col xl={4} sm={4}>
+                    <Info title="Processo INEMA" description={asv.processo ? asv.processo : '-'} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="CPF/CNPJ" description={outorga.cpf_cnpj} />
+                <Col xl={4} sm={4}>
+                    <Info title="Nome Requerente" description={asv.requerente ? asv.requerente : '-'} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Tipo Captação" description={outorga.str_tipo_captacao} />
+                <Col xl={2} sm={4}>
+                    <Info title="CPF/CNPJ Requerente" description={asv.cpf_cnpj ? asv.cpf_cnpj : '-'} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Finalidade" description={outorga.str_finalidade} />
+                <Col xl={2} sm={4}>
+                    <Info title="Localidade" description={asv.localidade ? asv.localidade : '-'} />
                 </Col>
-                <Col lg={3} xl={3} sm={3}>
-                    <Info title="Nome Propriedade" description={outorga.nome_propriedade} />
+                <Col xl={4} sm={4}>
+                    <Info title="Município" description={asv.nome_municipio ? asv.nome_municipio : '-'} />
                 </Col>
-                <Col lg={3} xl={3} sm={3}>
-                    <Info title="Municipio" description={outorga.nome_municipio ? (outorga.nome_municipio) :"-"} />
+                <Col xl={2} sm={4}>
+                    <Info title="Área Total ASV (ha)" description={asv.area_total ? asv.area_total : '-'} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Área (ha)" description={outorga.area_ha} />
+                <Col xl={2} sm={4}>
+                    <span className="fw-bold text-dark" style={{fontSize: '12px'}}>Rendimento (m<sup>3</sup>)</span>
+                    <Info description={asv.rendimento ? asv.rendimento : '-'} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Conduzido Frasson?" description={outorga.processo_frasson ? "Sim" : "Não"} />
+                <Col xl={2} sm={4}>
+                    <Info title="Empresa Consultora" description={asv.str_empresa ? asv.str_empresa : '-'} />
                 </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <Info title="Bacia Hidrográfica" description={outorga.bacia_hidro} />
+                <Col xl={2} sm={4}>
+                    <Info title="Técnico Responsável" description={asv.tecnico ? asv.tecnico : '-'} />
                 </Col>
-                <Col lg={3} xl={3} sm={2}>
-                    <Info title="Pontos Outorgados" description={outorga.qtd_pontos} />
-                </Col>
-                <Col lg={2} xl={3} sm={3}>
-                <h6 className="fs-0 mb-0"><span className="fw-bold" style={{fontSize: '12px'}}>Status Portaria</span></h6>
-                    {new Date(outorga.data_validade) < new Date()
+                <Col xl={2} sm={3}>
+                    <h6 className="mb-0"><span className="fw-bold" style={{fontSize: '12px'}}>Status Portaria</span></h6>
+                    {asv.data_vencimento ? new Date(asv.data_vencimento) < new Date()
                         ?<SubtleBadge bg='danger'>Vencida</SubtleBadge>
                         :<SubtleBadge bg='success'>Vigente</SubtleBadge>
+                        :<span>-</span>
                     }
-                </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    {outorga.renovacao && <Info title="Data RENOUT" description={new Date(outorga.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}/>}
-                </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    <h6 className="fs-0 mb-0"><span className="fw-bold" style={{fontSize: '12px'}}>Status Renovação</span></h6>
-                    {outorga.renovacao && new Date(outorga.renovacao.data) < new Date()
-                        ?<SubtleBadge bg='danger'>Vencida</SubtleBadge>
-                        :<SubtleBadge bg='success'>Vigente</SubtleBadge>
-                    }
-                </Col>
-                <Col lg={2} xl={2} sm={2}>
-                    {outorga.renovacao &&<Info title="Dias p/ Renovação" description={dif(outorga.renovacao.data)} />}
                 </Col>
                 <Col lg={4} xl={4} sm={4}>
-                    <Info title="Criado Por" description={outorga.info_user.first_name + " " +outorga.info_user.last_name + " em " + 
-                    new Date(outorga.created_at).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} />
+                    <span>
+                        <strong className="text-primary">{asv.info_user.first_name} {asv.info_user.last_name}</strong>
+                        {" em " + 
+                            new Date(asv.created_at).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+" às "+
+                            new Date(asv.created_at).toLocaleTimeString('pt-BR', {timeZone: 'UTC'})}
+                        </span>
                 </Col>
             </Row>
         ) : (
@@ -210,43 +157,41 @@ const View = () => {
             </Placeholder>    
         </div>   
         )}
-        <Row className="d-flex">
-          {outorga && coordenadas && coordenadas.length > 0 &&
-            <Col lg={'auto'} xxl={'auto'} className="me-0 pe-0">
-                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/kml/${outorga.id}`} 
-                 className="btn btn-info py-0 px-2 ms-0">
+        <Row className="d-flex gy-1 gx-1">
+          {asv && coordenadas && coordenadas.length > 0 &&
+            <Col lg={'auto'} xxl={'auto'} className="">
+                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/asv/kml/${asv.id}`} 
+                 className="btn btn-info py-0 ms-0">
                     <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>KML
                 </Link>
              </Col>        
           }
-            <Col lg={'auto'} xxl={'auto'} className="pe-0 ps-2">
-                <Link to={`/ambiental/inema/outorgas/edit/${uuid}`} className="btn btn-primary py-0 px-2 ms-0">
+            <Col lg={'auto'} xxl={'auto'} className="">
+                <Link to={`/ambiental/inema/asv/edit/${uuid}`} className="btn btn-primary py-0 px-2 ms-0">
                     <FontAwesomeIcon icon={faPen} className="me-2"></FontAwesomeIcon>Editar Portaria
                 </Link>
             </Col>
-            <Col lg={'auto'} xxl={'auto'} className="ps-2">
+            <Col lg={'auto'} xxl={'auto'} className="">
                 <a className="btn btn-danger py-0 px-2" onClick={() => {setModal(true)}}>
                     <FontAwesomeIcon icon={faTrashCan} className="me-2"></FontAwesomeIcon>Excluir Portaria
                 </a>
             </Col>
         </Row>
-      {outorga && coordenadas ? (
-        coordenadas.length > 0 && (
-            <GoogleMap
-                initialCenter={{
-                    lat: Number(coordenadas[0].latitude_gd),
-                    lng: Number(coordenadas[0].longitude_gd)
-                }}
-                mapStyle="Default"
-                className="rounded-soft mt-2 google-maps container-map"
-                token_api={outorga.token_apimaps}
-                mapTypeId='satellite'
-                coordenadas={coordenadas}
-                link={link}
-            >
-                <MapInfo/>
-            </GoogleMap>
-        ))
+      {asv && coordenadas ? 
+        <PolygonMap
+            initialCenter={{
+                lat: coordenadas.length > 0 ? Number(coordenadas[0][0]['lat']) : -13.7910,
+                lng: coordenadas.length > 0 ? Number(coordenadas[0][0]['lng']) : -45.6814
+            }}
+            mapStyle="Default"
+            className="rounded-soft mt-2 google-maps container-map"
+            token_api={asv.token_apimaps}
+            mapTypeId='satellite'
+            polygons={coordenadas}
+            link={link}
+        >
+            <MapInfo/>
+        </PolygonMap>
         :    
         <div>
             <Placeholder animation="glow">
@@ -256,8 +201,8 @@ const View = () => {
             </Placeholder>    
         </div>   
       }
-      {outorga && (
-        <ModalDelete show={modal} link={`${process.env.REACT_APP_API_URL}/environmental/inema/outorgas/${outorga.uuid}`} 
+      {asv && (
+        <ModalDelete show={modal} link={`${process.env.REACT_APP_API_URL}/environmental/inema/asvs/${asv.uuid}`} 
             close={() => setModal(false)} update={del}
         />
       )}
@@ -266,5 +211,5 @@ const View = () => {
     );
   };
   
-  export default View;
+  export default ViewASV;
   

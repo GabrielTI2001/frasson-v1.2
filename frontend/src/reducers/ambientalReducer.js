@@ -6,14 +6,16 @@ export const ambientalReducer = (state, action) => {
       return {
         ...state,
         outorga: payload.outorga,
-        appo: payload.appo
+        appo: payload.appo,
+        asv: payload.asv,
       };
 
     case 'CLEAR_DATA':
       return {
         ...state,
         outorga: null,
-        appo: null
+        appo: null,
+        asv: null
       };
 
     case 'OPEN_MODAL':
@@ -46,6 +48,12 @@ export const ambientalReducer = (state, action) => {
         ...state,
         appo: { ...state.appo, coordenadas: [...state.appo.coordenadas, payload.novoponto] }
     };
+
+    case 'ADD_PONTO_ASV':
+      return {
+        ...state,
+        asv: { ...state.asv, areas: [...state.asv.areas, payload.novaarea] }
+    };
   
 
     case 'UPDATE_PONTO':
@@ -70,6 +78,17 @@ export const ambientalReducer = (state, action) => {
         )}
       };
 
+    case 'UPDATE_PONTO_ASV':
+      return {
+        ...state,
+        asv:
+        {...state.asv, areas:state.asv.areas.map( area =>
+          area.id === payload.id
+          ? payload.updatedArea
+          : area
+        )}
+      };
+
     case 'REMOVE_PONTO':
       return {
         ...state,
@@ -85,6 +104,16 @@ export const ambientalReducer = (state, action) => {
         appo: {
             ...state.appo,
             coordenadas: state.appo.coordenadas.filter(ponto => ponto.id !== payload.id)
+        }
+      };
+    
+    case 'REMOVE_PONTO_ASV':
+      console.log(payload)
+      return {
+        ...state,
+        asv: {
+            ...state.asv,
+            areas: state.asv.areas.filter(area => area.id !== payload.id)
         }
       };
       

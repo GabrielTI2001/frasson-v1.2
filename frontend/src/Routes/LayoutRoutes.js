@@ -47,6 +47,8 @@ import IndexOutorgas from '../App/Ambiental/InemaOutorgas/Index';
 import { View as ViewAppo } from "../App/Ambiental/InemaAppo/View";
 import { Edit as EditAppo } from "../App/Ambiental/InemaAppo/Edit";
 import IndexASV from '../App/Ambiental/InemaASV/Index';
+import ViewASV from '../App/Ambiental/InemaASV/View';
+import EditASV from '../App/Ambiental/InemaASV/Edit';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
 //Services
@@ -143,6 +145,8 @@ const LayoutRoutes = () => {
           <Route path="appos/edit/:uuid" element={<EditAppo />} />
           <Route path="appo/map" element={<MapaPontos key='appo' type='appo' />} />
           <Route path="asv" element={<IndexASV/>}/>
+          <Route path="asv/:uuid" element={<ViewASV/>}/>
+          <Route path="asv/edit/:uuid" element={<EditASV />} />
         </Route>
         <Route path="/services">
           <Route path="currency" element={<Cotacoes />}/>

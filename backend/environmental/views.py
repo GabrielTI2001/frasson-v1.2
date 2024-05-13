@@ -1,6 +1,6 @@
 from django.db.models import Q
 from .models import Processos_Outorga, Processos_Outorga_Coordenadas, Tipo_Captacao, Finalidade_APPO, Processos_APPO
-from .models import Aquifero_APPO, Processos_APPO_Coordenadas, Processos_ASV
+from .models import Aquifero_APPO, Processos_APPO_Coordenadas, Processos_ASV, Empresas_Consultoria
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
@@ -10,7 +10,6 @@ import os
 from pykml.factory import KML_ElementMaker as KML
 from pykml import parser
 from lxml import etree
-
 
 class OutorgaView(viewsets.ModelViewSet):
     queryset = Processos_Outorga.objects.all()
@@ -173,7 +172,8 @@ class detailCoordenadaAPPOView(viewsets.ModelViewSet):
 
 class ASVView(viewsets.ModelViewSet):
     queryset = Processos_ASV.objects.all()
-    serializer_class = listASV
+    serializer_class = detailASV
+    lookup_field = 'uuid'
     # permission_classes = (IsAuthenticated,)
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -184,13 +184,55 @@ class ASVView(viewsets.ModelViewSet):
                 Q(processo__icontains=search) | Q(empresa__razao_social__icontains=search) | Q(tecnico__icontains=search)
             )
         else:
-            queryset = queryset.order_by('-created_at')[:10]
+            if self.action == 'list':
+                queryset = queryset.order_by('-created_at')[:20]
         return queryset
     def get_serializer_class(self):
-        if self.request.query_params.get('infoappo', None):
+        if self.action == 'list':
             return listASV
         else:
             return self.serializer_class
+
+class AreasASVView(viewsets.ModelViewSet):
+    queryset = Processos_ASV_Areas.objects.all()
+    serializer_class = listAreasASV
+    # permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get_queryset(self):
+        municipios_oeste = [2908101, 2917359, 2909307, 2928901, 2919553, 2903201, 2926202, 2911105, 2901403, 2907400, 2909703, 2902500, 2930907, 2928109,
+        2909109,  2910776, 2907103, 2930154, 2929057, 2930758, 2928208]
+        queryset = super().get_queryset()
+        processo = self.request.query_params.get('processo', None)
+        search = self.request.query_params.get('search', None)
+
+        if processo:
+            queryset = queryset.filter(processo_id=processo)
+        elif search:
+            queryset = queryset.filter(
+                Q(processo__nome_requerente__icontains=search) |
+                Q(processo__cpf_cnpj__icontains=search) |
+                Q(processo__numero_processo__icontains=search) |
+                Q(processo__municipio__nome_municipio__icontains=search)
+            )
+        # else:
+        #     queryset = queryset.filter(
+        #         Q(processo__municipio__id__in=municipios_oeste)
+        #     )
+        return queryset
+    
+class detailAreaASVView(viewsets.ModelViewSet):
+    queryset = Processos_ASV_Areas.objects.all()
+    serializer_class = detailAreasASV
+    # permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('processo', None)
+        if search_term:
+            queryset = queryset.filter(processo_id=search_term)
+        return queryset
 
 class CaptacaoView(viewsets.ModelViewSet):
     queryset = Tipo_Captacao.objects.all()
@@ -209,6 +251,17 @@ class FinalidadeView(viewsets.ModelViewSet):
         search_term = self.request.query_params.get('search', None)   
         if search_term:
             queryset = queryset.filter(description__icontains=search_term)
+        return queryset
+
+class EmpresaView(viewsets.ModelViewSet):
+    queryset = Empresas_Consultoria.objects.all()
+    serializer_class = listEmpresa
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)   
+        if search_term:
+            queryset = queryset.filter(razao_social__icontains=search_term)
         return queryset
 
 def kml_processo_appo(request, id):
@@ -259,6 +312,8 @@ def kml_processo_appo(request, id):
 
     return response
 
+
+
 def kml_processo_outorga(request, id):
     # Create a KML document with a Folder
     doc = KML.kml(
@@ -296,6 +351,64 @@ def kml_processo_outorga(request, id):
     response['Content-Disposition'] = f'attachment; filename="{file_name}"'
 
     return response
+
+
+
+def kml_processo_asv(request, id):
+    folders = []
+    areas = Processos_ASV_Areas.objects.filter(processo=id)
+    file_name = Processos_ASV.objects.get(pk=id).portaria
+    for area in areas:
+        kml_file = area.file
+        kml_file.seek(0)
+        root = parser.parse(kml_file).getroot().Document
+        coordinates = parse_element_kml(root)
+
+        folders.append({
+            "name": area.identificacao_area,
+            "area": area.area_total,
+            "points": coordinates
+        })
+        kml_file.close() #close kml file
+
+    # Create a KML document
+    doc = KML.kml(
+        KML.Document()
+    )
+    for folder_data in folders:
+        folder = KML.Folder(
+            KML.name(folder_data["name"])
+        )
+        # Define coordinates for a Polygon
+        coord_str = []
+        for coord in folder_data["points"]:
+            str_coord = f"{coord['lng']},{coord['lat']}"
+            coord_str.append(str_coord)
+        coordenadas_poligono = " ".join(coord_str)
+        # Create Polygon from coordinates
+        polygon_placemark = KML.Placemark(
+            KML.name(f"{folder_data['area']} ha"),
+            KML.Polygon(
+                KML.extrude(0),
+                KML.altitudeMode('clampToGround'),
+                KML.outerBoundaryIs(
+                    KML.LinearRing(
+                        KML.coordinates(coordenadas_poligono)
+                    )
+                )
+            )
+        )  
+        folder.append(polygon_placemark)
+        doc.Document.append(folder)
+    # Convert to string
+    kml_str = etree.tostring(doc, pretty_print=True)
+    # Create a response with the KML type
+    response = HttpResponse(kml_str, content_type='application/vnd.google-earth.kml+xml')
+    # Add a file attachment header
+    response['Content-Disposition'] = f'attachment; filename="Portaria {file_name}.kml"'
+    return response
+
+
 
 def kml_dashboard_processos_appo(request):
     #cria o arquivo kml dos processos de appo pesquisados
@@ -352,6 +465,8 @@ def kml_dashboard_processos_appo(request):
     response['Content-Disposition'] = 'attachment; filename="Processos_APPO_INEMA.kml"'
     
     return response
+
+
 
 def kml_dashboard_processos_outorga(request):
     folders = []

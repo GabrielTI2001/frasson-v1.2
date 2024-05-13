@@ -8,7 +8,7 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsASV } from "../Data";
-import OutorgaForm from "./OutorgaForm";
+import APPOForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
@@ -34,13 +34,13 @@ const IndexASV = () => {
 
     const handleChange = async (value) => {
         setIsLoading(true)
-        const status = await HandleSearch(value, '/environmental/inema/asvs', setter)
+        const status = await HandleSearch(value, 'environmental/inema/asvs', setter)
         if (status === 401){ navigate("/auth/login")}
     };
 
 
     useEffect(()=>{
-        if ((user.permissions && user.permissions.indexOf("view_processos_outorga") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_processos_asv") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
@@ -68,12 +68,12 @@ const IndexASV = () => {
                     <AdvanceTableSearchBox table onSearch={handleChange}/>
                 </Col>
                 <Col xl={'auto'} sm={'auto'} xs={'auto'}>
-                    <a className="text-decoration-none btn btn-primary shadow-none fs--1"
+                    <a className="text-decoration-none btn btn-primary shadow-none fs--2"
                         style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
                     >Nova Portaria</a>
                 </Col>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
+                    <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
                     style={{padding: '2px 5px'}} to={'../asv/map'}>
                         <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa ASV
                         </Link>
@@ -119,7 +119,7 @@ const IndexASV = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center w-100 sectionform">
-                       <OutorgaForm hasLabel type='add'></OutorgaForm>
+                       <APPOForm hasLabel type='add' />
                     </Row>
             </Modal.Body>
         </Modal>

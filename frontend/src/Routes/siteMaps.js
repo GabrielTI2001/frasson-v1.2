@@ -1,5 +1,5 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
-faMap, faWheatAwn} 
+faMap, faWheatAwn, faCannabis} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn } 
 from "@fortawesome/free-solid-svg-icons";
@@ -225,7 +225,13 @@ export const ambientalRoutes = {
               to: '/ambiental/inema/appos',
               icon: faLocationDot,
               active: true
-            } : null
+            } : null,
+            {
+              name: 'Processos ASV',
+              to: '/ambiental/inema/asv',
+              icon: faCannabis,
+              active: true
+            }
           ].filter(Boolean)
         },
         {

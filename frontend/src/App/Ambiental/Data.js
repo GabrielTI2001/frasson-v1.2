@@ -29,32 +29,32 @@ export const fetchMunicipio = async (inputValue) => {
     }
   };
 
-  export const fetchCaptacao = async () => {
-    try {
-      const apiUrl = `${process.env.REACT_APP_API_URL}/environmental/inema/captacao`;
-      const response = await fetch(apiUrl,{
-        headers:{
-            'Content-Type': 'application/json'
-        }
-       }
-      );
-      const dataapi = await response.json();
-      if (response.status === 200){
-        const options = dataapi.length > 0 ? dataapi.map(b =>({
-            value: b.id,
-            label: b.description
-        })) : []
-        return {dados: options, status: response.status}
+export const fetchCaptacao = async () => {
+  try {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/environmental/inema/captacao`;
+    const response = await fetch(apiUrl,{
+      headers:{
+          'Content-Type': 'application/json'
       }
-      else if (response.status === 401){
-        localStorage.setItem("login", JSON.stringify(false));
-        localStorage.setItem('token', "");
-        return [];
       }
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
+    );
+    const dataapi = await response.json();
+    if (response.status === 200){
+      const options = dataapi.length > 0 ? dataapi.map(b =>({
+          value: b.id,
+          label: b.description
+      })) : []
+      return {dados: options, status: response.status}
+    }
+    else if (response.status === 401){
+      localStorage.setItem("login", JSON.stringify(false));
+      localStorage.setItem('token', "");
       return [];
     }
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    return [];
+  }
 };
 
 export const fetchAquifero = async () => {
@@ -83,6 +83,21 @@ export const fetchAquifero = async () => {
       console.error('Erro ao carregar dados:', error);
       return [];
     }
+};
+
+export const fetchEmpresa = async (inputValue) => {
+  try {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/environmental/inema/empresas/?search=${inputValue}`;
+    const response = await fetch(apiUrl);
+    const dataapi = await response.json();
+    const options = dataapi.length > 0 ? dataapi.map(d =>({
+      value: d.id,
+      label: d.razao_social,
+    })) : []
+    return options
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+  }
 };
 
 export const columnsPontoOutorga = [
@@ -148,6 +163,19 @@ export const columnsOutorga = [
       Header: 'Status',
       headerProps: { className: 'text-900 p-3' }
   },
+];
+
+export const columnsPontoASV = [
+  {
+    accessor: 'identificacao_area',
+    Header: 'Identificação',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'area_total',
+    Header: 'Área (ha)',
+    headerProps: { className: 'text-900 p-1' }
+  }
 ];
 
 export const columnsAPPO = [

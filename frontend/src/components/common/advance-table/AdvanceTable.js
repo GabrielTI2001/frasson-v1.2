@@ -120,10 +120,10 @@ const AdvanceTable = ({
                 {tableProps.showactions &&(
                   <td className='text-center'>
                     {tableProps.showview && 
-                    <FontAwesomeIcon icon={faEye} className='btn btn-success me-2 px-1' onClick={()=>{ Click(row.original, 'view')}}></FontAwesomeIcon>
+                    <FontAwesomeIcon icon={faEye} className='btn btn-success me-2 fs--2 px-1' onClick={()=>{ Click(row.original, 'view')}}></FontAwesomeIcon>
                     }
-                    <FontAwesomeIcon icon={faPen} className='btn btn-primary me-2 px-1' onClick={()=>{ Click(row.original, 'edit')}}/>
-                    <FontAwesomeIcon icon={faTrashCan} className='btn btn-danger me-2 px-1' onClick={()=>{ Click(row.original, 'delete')}}></FontAwesomeIcon>
+                    <FontAwesomeIcon icon={faPen} className='btn btn-primary me-2 fs--2 px-1' onClick={()=>{ Click(row.original, 'edit')}}/>
+                    <FontAwesomeIcon icon={faTrashCan} className='btn btn-danger me-2 fs--2 px-1' onClick={()=>{ Click(row.original, 'delete')}}></FontAwesomeIcon>
                   </td>
                 )}
                 {tableProps.followup &&
