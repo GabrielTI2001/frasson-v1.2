@@ -23,6 +23,6 @@ urlpatterns = [
     path('inema/outorga/kml/<int:id>', views.kml_processo_outorga, name='kml.processo.outorga'),
     path('inema/asv/kml/<int:id>', views.kml_processo_asv, name='kml.processo.asv'),
     path('inema/outorga/map/kml/', views.kml_dashboard_processos_outorga, name='kml.outorga'),
-    path('inema/appo/map/kml/', views.kml_dashboard_processos_appo, name='kml.appo'),
+    path('inema/appo/map/kml/', views.kml_dashboard_processos_appo, name='kml.appo')
 ]
 urlpatterns += router.urls

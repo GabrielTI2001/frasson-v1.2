@@ -47,6 +47,17 @@ class detailAlongamentos(serializers.ModelSerializer):
     def get_str_propriedade(self, obj):
         propriedades = obj.propriedade.all()
         return [{'value':p.id, 'label':p.nome_imovel} for p in propriedades]
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['str_municipio', 'str_propriedade', 'processo', 'info_operacao', 'str_fiel_depositario', 'produto', 
+            'str_testemunha01', 'str_testemunha02']:
+                field.required = False
+            else:
+                field.required = True
+        
+        print(self.fields.items())
     class Meta:
         model = Operacoes_Credito
         fields = '__all__'

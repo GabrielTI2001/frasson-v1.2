@@ -49,6 +49,7 @@ import { Edit as EditAppo } from "../App/Ambiental/InemaAppo/Edit";
 import IndexASV from '../App/Ambiental/InemaASV/Index';
 import ViewASV from '../App/Ambiental/InemaASV/View';
 import EditASV from '../App/Ambiental/InemaASV/Edit';
+import MapaAreasASV from '../App/Ambiental/InemaASV/Mapa';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
 //Services
@@ -147,6 +148,7 @@ const LayoutRoutes = () => {
           <Route path="asv" element={<IndexASV/>}/>
           <Route path="asv/:uuid" element={<ViewASV/>}/>
           <Route path="asv/edit/:uuid" element={<EditASV />} />
+          <Route path="asv/map" element={<MapaAreasASV />} />
         </Route>
         <Route path="/services">
           <Route path="currency" element={<Cotacoes />}/>

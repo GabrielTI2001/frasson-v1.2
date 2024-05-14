@@ -8,7 +8,7 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsASV } from "../Data";
-import APPOForm from "./Form";
+import ASVForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
@@ -119,7 +119,7 @@ const IndexASV = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center w-100 sectionform">
-                       <APPOForm hasLabel type='add' />
+                       <ASVForm hasLabel type='add' />
                     </Row>
             </Modal.Body>
         </Modal>

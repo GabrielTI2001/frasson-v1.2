@@ -414,7 +414,7 @@ class detailASV(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name in ['portaria', 'processo', 'requerente', 'cpf_cnpj', 'data_publicacao', 'localidade', 'municipio', 'area_ha']:
+            if field_name in ['portaria', 'processo', 'requerente', 'cpf_cnpj', 'data_publicacao', 'localidade', 'municipio', 'area_total']:
                 field.required = True
             else:
                 field.required = False
@@ -437,10 +437,22 @@ class listAreasASV(serializers.ModelSerializer):
         return kml
     class Meta:
         model = Processos_ASV_Areas
-        fields = ['kml', 'id']
+        fields = ['kml', 'id', 'area_total']
 
 class detailAreasASV(serializers.ModelSerializer):
     kml = serializers.SerializerMethodField(read_only=True, required=False)
+    info_processo = serializers.SerializerMethodField(read_only=True, required=False)
+    def get_info_processo(self, obj):
+        if obj.processo:
+            obj = {
+                'requerente': obj.processo.requerente,
+                'cpf_cnpj': obj.processo.cpf_cnpj,
+                'requerente': obj.processo.requerente,
+                'processo': obj.processo.processo,
+                'str_municipio': f"{obj.processo.municipio.nome_municipio} - {obj.processo.municipio.sigla_uf}",
+                'area_total_asv': obj.processo.area_total,
+            }
+        return obj
     def get_kml(self, obj):
         if obj.file:
             kml_file = obj.file.file
@@ -454,13 +466,14 @@ class detailAreasASV(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name == 'file':
-                if not self.instance:
-                    field.required = True
             if field_name in ['area_total', 'identificacao_area', 'processo']:
                 field.required = True
             else:
                 field.required = False
+        if not self.instance:  # Verifica se está criando um novo registro
+            self.fields['file'].required = True
+        else:
+            self.fields['file'].required = False
     class Meta:
         model = Processos_ASV_Areas
         fields = '__all__'

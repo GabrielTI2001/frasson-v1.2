@@ -15,8 +15,6 @@ const AreaForm = ({ hasLabel, type, data}) => {
     processo: asv.id
   });
 
-  console.log(formData)
-
   const [showModal, setShowModal] = useState({show:false, type:''});
   
   const [message, setMessage] = useState();

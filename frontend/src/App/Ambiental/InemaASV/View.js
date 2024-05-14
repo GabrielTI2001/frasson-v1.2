@@ -9,7 +9,7 @@ import SubtleBadge from '../../../components/common/SubtleBadge';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPen, faTrashCan, faDownload } from "@fortawesome/free-solid-svg-icons";
 import ModalDelete from "../../../components/Custom/ModalDelete";
-import MapInfo from "../MapInfo";
+import { MapInfoDetailASV } from "./MapInfo";
 import Info from "../../../components/Custom/Info";
 import { RetrieveRecord } from "../../../helpers/Data";
 import PolygonMap from "../../../components/map/PolygonMap";
@@ -22,7 +22,7 @@ const ViewASV = () => {
     const user = JSON.parse(localStorage.getItem("user"))
     const [modal, setModal] = useState(false)
     const navigate = useNavigate();
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/asv/coordenadas-detail/`
+    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas-detail/`
 
     const del = () =>{
         navigate('/ambiental/inema/asvs/')
@@ -49,7 +49,7 @@ const ViewASV = () => {
                 }
                 else if (response.status === 200){
                     const data = await response.json();
-                    setCoordenadas([...data.map(d => d.kml)])
+                    setCoordenadas([...data.map(d => d)])
                 }
                 else if (response.status === 404){
                     setCoordenadas([])
@@ -180,8 +180,8 @@ const ViewASV = () => {
       {asv && coordenadas ? 
         <PolygonMap
             initialCenter={{
-                lat: coordenadas.length > 0 ? Number(coordenadas[0][0]['lat']) : -13.7910,
-                lng: coordenadas.length > 0 ? Number(coordenadas[0][0]['lng']) : -45.6814
+                lat: coordenadas.length > 0 ? Number(coordenadas[0].kml[0]['lat']) : -13.7910,
+                lng: coordenadas.length > 0 ? Number(coordenadas[0].kml[0]['lng']) : -45.6814
             }}
             mapStyle="Default"
             className="rounded-soft mt-2 google-maps container-map"
@@ -190,7 +190,7 @@ const ViewASV = () => {
             polygons={coordenadas}
             link={link}
         >
-            <MapInfo/>
+            <MapInfoDetailASV />
         </PolygonMap>
         :    
         <div>

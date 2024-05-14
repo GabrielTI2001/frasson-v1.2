@@ -210,9 +210,9 @@ class AreasASVView(viewsets.ModelViewSet):
             queryset = queryset.filter(processo_id=processo)
         elif search:
             queryset = queryset.filter(
-                Q(processo__nome_requerente__icontains=search) |
+                Q(processo__requerente__icontains=search) |
                 Q(processo__cpf_cnpj__icontains=search) |
-                Q(processo__numero_processo__icontains=search) |
+                Q(processo__processo__icontains=search) |
                 Q(processo__municipio__nome_municipio__icontains=search)
             )
         # else:
