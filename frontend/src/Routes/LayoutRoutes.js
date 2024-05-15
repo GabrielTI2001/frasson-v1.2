@@ -54,6 +54,9 @@ import IndexRequerimentos from '../App/Ambiental/Requerimentos/Index';
 import MapaPontosRequerimento from '../App/Ambiental/Requerimentos/Mapa';
 import NewRequerimento from '../App/Ambiental/Requerimentos/New';
 import ViewRequerimentoAPPO from '../App/Ambiental/Requerimentos/View';
+//Licenses
+import IndexLicenses from '../App/Licenses/Index';
+import ViewLicenca from '../App/Licenses/View';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
 //Services
@@ -119,6 +122,10 @@ const LayoutRoutes = () => {
           <Route path="products" element={<DashProdutos />}/>
         </Route>
         <Route path="/home" element={<Home />} />
+        <Route path="/licenses">
+          <Route path="" element={<IndexLicenses />}/>
+          <Route path=":uuid" element={<ViewLicenca />}/>
+        </Route>
         <Route path="/register">
           <Route path="" element={<IndexCadGerais />}/>
           <Route path='machinery' element={<IndexMachinery />}/>

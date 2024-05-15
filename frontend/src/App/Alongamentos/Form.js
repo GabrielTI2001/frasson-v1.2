@@ -342,7 +342,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
             onChange={(selected) => {
               setFormData((prevFormData) => ({
                 ...prevFormData,
-                propriedade: selected.value
+                propriedade: selected
               }));
             }}>
           </AsyncSelect>

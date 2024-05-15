@@ -96,7 +96,7 @@ const Edit = ({id, update}) => {
             <Link className="fw-bold text-info" to={alongamento.info_operacao.url} target="__blank"> Clique Aqui</Link> para alterar esta operação.
         </div>
         <hr className="my-1"></hr>
-        <FormAlongamento hasLabel type={'edit'} data={alongamento} submit={submit}/>
+        <FormAlongamento hasLabel type='edit' data={alongamento} submit={submit}/>
         </>
     )}
     </>

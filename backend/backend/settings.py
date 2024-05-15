@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'finances',
     'kpi',
     'litec',
+    'licenses',
     'pipefy',
     'pipeline',
     'processes',

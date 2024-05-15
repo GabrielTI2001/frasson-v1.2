@@ -21,6 +21,29 @@ export const fetchPessoal = async (inputValue) => {
   }
 };
 
+export const fetchDetalhamentoServicos = async (inputValue) => {
+  const token = localStorage.getItem("token")
+  const params = inputValue ? `search=${inputValue}` : 'all=1'
+  try {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/pipefy/detalhamentos/?${params}`;
+    const response = await fetch(apiUrl, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+    });
+    const dataapi = await response.json();
+    const options = dataapi.length > 0 ? dataapi.map(b =>({
+      value: b.id,
+      label: b.detalhamento_servico
+    })) : []
+    return options
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+  }
+};
+
+
 export const FetchImoveisRurais = async (inputValue) => {
   const token = localStorage.getItem("token")
   // const navigate = useNavigate()

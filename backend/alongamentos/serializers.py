@@ -56,8 +56,6 @@ class detailAlongamentos(serializers.ModelSerializer):
                 field.required = False
             else:
                 field.required = True
-        
-        print(self.fields.items())
     class Meta:
         model = Operacoes_Credito
         fields = '__all__'
