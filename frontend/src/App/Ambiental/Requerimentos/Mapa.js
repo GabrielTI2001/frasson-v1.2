@@ -1,41 +1,28 @@
 import { useEffect, useState} from "react";
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, InputGroup, FormControl, Row, Col } from "react-bootstrap";
+import { Button, InputGroup, FormControl, Row, Col, Modal, CloseButton } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Placeholder } from "react-bootstrap";
-import GoogleMap from "../../components/map/GoogleMap";
+import GoogleMap from "../../../components/map/GoogleMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetail} from "./MapInfo";
-import { Card } from "react-bootstrap";
+import RequerimentoAPPOForm from "./Form";
 
-const initData = {'appo': {title:'Processos APPO', textpoint: 'Poços '}, 
-    'outorga': {title:'Processos Outorga', textpoint: 'pontos de outorga '}
+const initData = {'appo': {title:'APPO', textpoint: 'Poços '}, 
+    'outorga': {title:'Outorga', textpoint: 'pontos de outorga '}
 }
 
-const MapaPontos = ({type}) => {
-    const channel = new BroadcastChannel('meu_canal');
+const MapaPontosRequerimento = ({type}) => {
     const [processos, setProcessos] = useState()
     const [coordenadas, setCoordenadas] = useState()
     const [search, setSearch] = useState('')
     const token = localStorage.getItem("token")
+    const user = JSON.parse(localStorage.getItem("user"))
     const [tokenmaps, setTokenMaps] = useState()
     const navigate = useNavigate();
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/${type}/coordenadas-detail/` 
-    const params = type === 'appo' ? '?infoappo=sim' : '?infooutorga=sim'
-
-    channel.onmessage = function(event) {
-        if (coordenadas){
-            if(event.data.tipo === 'adicionar_coordenada'){
-                setCoordenadas([...coordenadas, {...event.data.reg}])
-            }
-            if(event.data.tipo === 'remover_coordenada'){
-                setCoordenadas(coordenadas.filter(ponto => ponto.id !== event.data.id))
-            }
-        }
-
-    };
+    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/requerimento/${type}/coordenadas-detail/` 
 
     const handleChange = (event) => {
         const { value } = event.target;
@@ -44,11 +31,11 @@ const MapaPontos = ({type}) => {
           getCoordenadas(value); 
           getprocessos(value)
         }
-      };
+    };
 
     const getCoordenadas = async (search) => {
         const link = search ? `?search=${search}` : '';
-        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/${type}/coordenadas/${link}`
+        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/requerimento/${type}/coordenadas/${link}`
         try{
             const response = await fetch(url, {
                 method: 'GET',
@@ -61,6 +48,9 @@ const MapaPontos = ({type}) => {
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
                 navigate("/auth/login");
+            }
+            if ((user.permissions && user.permissions.indexOf("view_requerimentos_appo") === -1) && !user.is_superuser){
+                navigate("/error/403")
             }
             else if (response.status === 200){
                 const data = await response.json();
@@ -76,7 +66,7 @@ const MapaPontos = ({type}) => {
     }
 
     const getprocessos = async (search) =>{
-        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/${type}s/?search=${search}`
+        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/requerimento/${type}s/?search=${search}`
         try{
             const response = await fetch(url, {
                 method: 'GET',
@@ -127,13 +117,13 @@ const MapaPontos = ({type}) => {
     <>
         <ol className="breadcrumb breadcrumb-alt mb-2">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={`/ambiental/inema/${type}s`}>{initData[type].title}</Link>
+                <Link className="link-fx text-primary" to={`/ambiental/inema/requerimentos`}>Requerimentos Inema</Link>
             </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                Mapa
+                {initData[type].title}
             </li>             
         </ol>
-        <Row className="flex-end-center justify-content-start mb-3">
+        <Row className="flex-end-center justify-content-start mb-3 gy-1">
             <Col lg={6} xxl={6}>
                 <InputGroup className='position-relative'>
                     <FormControl
@@ -141,31 +131,29 @@ const MapaPontos = ({type}) => {
                         onChange={handleChange}
                         size="sm"
                         id="search"
-                        placeholder='Requerente, CPF/CNPJ, N° Processo, Município...'
+                        placeholder='Requerente, CPF/CNPJ, Requerimento, N° Processo, Município, Email...'
                         type="search"
                         className="shadow-none"
                     />
-                    <Button
-                        size="xl"
-                        variant="outline-secondary"
-                        className="border-300 hover-border-secondary"
-                    >
-                        <FontAwesomeIcon icon={faSearch} className="fs--2" />
-                    </Button>
                 </InputGroup>
+            </Col>
+            <Col>
+                <Link className="btn btn-sm btn-primary" to={`/ambiental/inema/requerimentos/new`}>
+                    <FontAwesomeIcon className="me-2" icon={faLocationDot} />Novo Requerimento
+                </Link>
             </Col>
         </Row>
         <div className='text-end info p-2 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
         {search !== '' &&
             <Col lg={'auto'} xxl={'auto'} className="me-0 pe-0">
-                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/${type}/map/kml/?search=${search}`} 
+                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/requerimentos/${type}/map/kml/?search=${search}`} 
                  className="btn btn-info py-0 px-2 ms-0">
                     <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>KML
                 </Link>
              </Col>        
           }
-            <Col className="fw-bold">{coordenadas && (coordenadas.length)} {initData[type].textpoint} 
-            em {processos && (processos.length)} Processos</Col>
+            <Col className="fw-bold">{coordenadas && (coordenadas.length)} pontos
+            em {processos && (processos.length)} requerimentos</Col>
         </div>
         {coordenadas && tokenmaps ? ( coordenadas.length > 0 && (
             <GoogleMap
@@ -179,8 +167,6 @@ const MapaPontos = ({type}) => {
                 mapTypeId='satellite'
                 coordenadas={coordenadas}
                 link={link}
-                colorpoint={{active:true, acessor:'status_processo'}}
-                urlparams={params}
             >
                 < MapInfoDetail type={type}/>
             </GoogleMap>
@@ -197,5 +183,5 @@ const MapaPontos = ({type}) => {
     );
   };
   
-  export default MapaPontos;
+  export default MapaPontosRequerimento;
   

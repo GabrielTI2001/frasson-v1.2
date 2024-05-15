@@ -22,12 +22,6 @@ def remover_arquivo_antigo(sender, instance, **kwargs):
         except Processos_ASV_Areas.DoesNotExist:
             pass 
 
-@receiver(pre_delete, sender=Processos_APPO)
-def excluir_arquivo_no_delete(sender, instance, **kwargs):
-    if instance.file:
-        if os.path.isfile(instance.file.path):
-            os.remove(instance.file.path)
-
 @receiver(pre_save, sender=Processos_APPO)
 def remover_arquivo_antigo(sender, instance, **kwargs):
     if instance.pk:  # Verifica se é uma atualização

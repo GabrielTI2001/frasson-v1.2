@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Processos_Outorga, Processos_Outorga_Coordenadas, Prazos_Renovacao, Finalidade_APPO, Tipo_Captacao
 from .models import Processos_APPO, Processos_APPO_Coordenadas, Aquifero_APPO, Processos_ASV, Processos_ASV_Areas, Empresas_Consultoria
+from .models import Requerimentos_APPO, Requerimentos_APPO_Coordenadas
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 from datetime import timedelta, date, datetime
 from backend.frassonUtilities import Frasson
@@ -445,9 +446,9 @@ class detailAreasASV(serializers.ModelSerializer):
     def get_info_processo(self, obj):
         if obj.processo:
             obj = {
+                'uuid': obj.processo.uuid,
                 'requerente': obj.processo.requerente,
                 'cpf_cnpj': obj.processo.cpf_cnpj,
-                'requerente': obj.processo.requerente,
                 'processo': obj.processo.processo,
                 'str_municipio': f"{obj.processo.municipio.nome_municipio} - {obj.processo.municipio.sigla_uf}",
                 'area_total_asv': obj.processo.area_total,
@@ -476,6 +477,65 @@ class detailAreasASV(serializers.ModelSerializer):
             self.fields['file'].required = False
     class Meta:
         model = Processos_ASV_Areas
+        fields = '__all__'
+
+class listRequerimentosAPPO(serializers.ModelSerializer):
+    class Meta:
+        model = Requerimentos_APPO
+        fields = ['uuid', 'nome_requerente', 'numero_requerimento']
+
+class detailRequerimentosAPPO(serializers.ModelSerializer):
+    nome_municipio = serializers.SerializerMethodField(read_only=True)
+    token_apimaps = serializers.SerializerMethodField(read_only=True)
+    info_user = serializers.SerializerMethodField(read_only=True)
+    qtd_pontos = serializers.SerializerMethodField(required=False, read_only=True)
+    def get_qtd_pontos(self, obj):
+        qtd = Requerimentos_APPO_Coordenadas.objects.filter(requerimento=obj).count()   
+        return qtd
+    def get_info_user(self, obj):
+        if obj.created_by:
+            return {
+                'id': obj.created_by.id,
+                'first_name': obj.created_by.first_name,
+                'last_name': obj.created_by.last_name,
+            }
+        else:
+            return None
+    def get_nome_municipio(self, obj):
+        return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}"
+    def get_token_apimaps(self, obj):
+        return TOKEN_GOOGLE_MAPS_API
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = True
+    class Meta:
+        model = Requerimentos_APPO
+        fields = '__all__'
+
+class listCoordenadaRequerimentoAPPO(serializers.ModelSerializer):
+    class Meta:
+        model = Requerimentos_APPO_Coordenadas
+        fields = ['id', 'latitude_gd', 'longitude_gd']
+
+class detailCoordenadaRequerimentoAPPO(serializers.ModelSerializer):
+    info_processo = serializers.SerializerMethodField(read_only=True, required=False)
+    def get_info_processo(self, obj):
+        if obj.requerimento:
+            obj = {
+                'uuid': obj.requerimento.uuid,
+                'requerente': obj.requerimento.nome_requerente,
+                'cpf_cnpj': obj.requerimento.cpf_cnpj,
+                'data_requerimento': obj.requerimento.data_requerimento,
+                'processo': obj.requerimento.numero_processo,
+                'str_municipio': f"{obj.requerimento.municipio.nome_municipio} - {obj.requerimento.municipio.sigla_uf}",
+                'numero_requerimento': obj.requerimento.numero_requerimento,
+                'data_formacao': obj.requerimento.data_formacao,
+                'email': obj.requerimento.email,
+            }
+        return obj
+    class Meta:
+        model = Requerimentos_APPO_Coordenadas
         fields = '__all__'
 
 class serializerCaptacao(serializers.ModelSerializer):

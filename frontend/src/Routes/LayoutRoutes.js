@@ -50,6 +50,10 @@ import IndexASV from '../App/Ambiental/InemaASV/Index';
 import ViewASV from '../App/Ambiental/InemaASV/View';
 import EditASV from '../App/Ambiental/InemaASV/Edit';
 import MapaAreasASV from '../App/Ambiental/InemaASV/Mapa';
+import IndexRequerimentos from '../App/Ambiental/Requerimentos/Index';
+import MapaPontosRequerimento from '../App/Ambiental/Requerimentos/Mapa';
+import NewRequerimento from '../App/Ambiental/Requerimentos/New';
+import ViewRequerimentoAPPO from '../App/Ambiental/Requerimentos/View';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
 //Services
@@ -149,6 +153,10 @@ const LayoutRoutes = () => {
           <Route path="asv/:uuid" element={<ViewASV/>}/>
           <Route path="asv/edit/:uuid" element={<EditASV />} />
           <Route path="asv/map" element={<MapaAreasASV />} />
+          <Route path="requerimentos" element={<IndexRequerimentos />} />
+          <Route path="requerimentos/appo" element={<MapaPontosRequerimento key='appo' type='appo' />} />
+          <Route path="requerimentos/new" element={<NewRequerimento key='appo' type='appo' />} />
+          <Route path="requerimentos/appo/:uuid" element={<ViewRequerimentoAPPO />} />
         </Route>
         <Route path="/services">
           <Route path="currency" element={<Cotacoes />}/>

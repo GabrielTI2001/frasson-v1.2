@@ -112,7 +112,7 @@ const GoogleMap = ({
         }}
         className='col'
       >
-        {coordenadas.map(coord => (
+        {coordenadas.map((coord, index) => (
           <Marker
             onClick={() => handleMarkerClick(coord.id)}
             position={{
@@ -121,9 +121,9 @@ const GoogleMap = ({
             }}
             icon={{url: colorpoint ? `https://maps.google.com/mapfiles/ms/icons/${coord[colorpoint.acessor] === 'Vencido' ? 'yellow' : 'blue'}-dot.png` 
             : mapMarker, scaledSize: {height:32,width:32}}}
-            key={coord.id}
+            key={index}
           >
-            {activeMarker === coord.id && (
+            {activeMarker === coord.id && link &&(
               <InfoWindow
                 onCloseClick={() => setActiveMarker(null)}
                 className='bg-info'

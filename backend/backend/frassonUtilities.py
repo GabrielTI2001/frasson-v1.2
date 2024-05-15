@@ -1,5 +1,5 @@
 from django.db.models import Q
-import requests, json, environ
+import requests, json, environ, math
 from django.http import JsonResponse, HttpResponse
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from environmental.models import Processos_Outorga_Coordenadas, Processos_APPO_Coordenadas
@@ -77,6 +77,26 @@ class Frasson(object):
             return {'value': valor, 'level': 'ALTO', 'color': 'primary'}
         else:
             return {'value': valor, 'level': 'IDEAL', 'color': 'success'}
+        
+    def convert_dd_to_dms(lat=None, long=None):
+        """Converts Latitude and Longitude from decimal degrees to degrees, minutes and seconds."""
+        str_result = ""
+
+        if lat != None:
+            lat_graus = abs(math.trunc(lat))
+            lat_min = math.trunc((abs(lat) - abs(math.trunc(lat))) * 60)
+            lat_sec = "{:.2f}".format(round((((abs(lat) - abs(math.trunc(lat))) * 60) - math.trunc(lat_min)) * 60, 2))
+            lat_direction = 'N' if lat >= 0 else 'S'
+            str_result += f'''{lat_graus}°{lat_min}'{lat_sec}"{lat_direction} '''
+        
+        if long != None:
+            lng_graus = abs(math.trunc(long))
+            lng_min = math.trunc((abs(long) - abs(math.trunc(long))) * 60)
+            lng_sec = "{:.2f}".format(round((((abs(long) - abs(math.trunc(long))) * 60) - math.trunc(lng_min)) * 60, 2))
+            lng_direction = 'E' if long >= 0 else 'W'
+            str_result += f'''{lng_graus}°{lng_min}'{lng_sec}"{lng_direction} '''
+        
+        return str_result
     
 
 # GESTÃO DE WEBHOOKS
