@@ -21,7 +21,7 @@ const DashCredit = () =>{
     const [modal, setModal] = useState({show:false, mes:null, ano:null})
     const navigate = useNavigate();
     const [data, setData] = useState()
-    const token = localStorage.getItem("token")
+    const user = JSON.parse(localStorage.getItem("user"))
 
     const setter = (responsedata) => {
         setData(responsedata)
@@ -38,6 +38,9 @@ const DashCredit = () =>{
     }
 
     useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_operacoes_contratadas") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
         if (!data){
             HandleSearch('', 'dashboard/credit', setter)
         }

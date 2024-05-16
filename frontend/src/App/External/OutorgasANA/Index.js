@@ -8,15 +8,13 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsOutorga } from "../Data";
-import OutorgaForm from "./OutorgaForm";
 import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 
-const IndexOutorgas = () => {
+const IndexOutorgasANA = () => {
     const [searchResults, setSearchResults] = useState();
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
@@ -27,20 +25,20 @@ const IndexOutorgas = () => {
         navigate(url)
     }
     const setter = (data) => {
-        setSearchResults(data)
+        setSearchResults(data.outorgas)
         setIsLoading(false)
     }
     const handleChange = async (value) => {
         setIsLoading(true)
-        HandleSearch(value, 'licenses/index', setter)
+        HandleSearch(value, 'external/ana/outorgas', setter)
     };
 
     useEffect(()=>{
-        if ((user.permissions && user.permissions.indexOf("view_processos_outorga") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("ver_outorgas_ana") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         const Search = async () => {
-            const status = await HandleSearch('', 'environmental/inema/outorgas', setter) 
+            const status = await HandleSearch('', 'external/ana/outorgas', setter) 
             if (status === 401) navigate("/auth/login");
         }
         if (!searchResults){
@@ -51,11 +49,8 @@ const IndexOutorgas = () => {
     return (
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/home'}>Home</Link>
-            </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                Processos Outorga
+                Outorgas ANA
             </li>  
         </ol>
         {searchResults ? 
@@ -68,18 +63,13 @@ const IndexOutorgas = () => {
         >
         <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
             <Col xl={4} sm={6} xs={12}>
-                <AdvanceTableSearchBox table onSearch={handleChange}/>
-            </Col>
-            <Col xl={'auto'} sm={'auto'} xs={'auto'}>
-                <a className="text-decoration-none btn btn-primary shadow-none fs--2"
-                    style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
-                >Nova Portaria</a>
+                {/* <AdvanceTableSearchBox table onSearch={handleChange}/> */}
             </Col>
             <Col xl={'auto'} sm='auto' xs={'auto'}>
                 <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
                 style={{padding: '2px 5px'}} to={'../outorga/map'}>
-                    <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa
-                    </Link>
+                    <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa Outorgas
+                </Link>
             </Col>
         </Row>
         {isloading ? <div className="text-center"><Spinner></Spinner></div> :
@@ -90,8 +80,7 @@ const IndexOutorgas = () => {
                 tableProps={{
                     bordered: true,
                     striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden',
-                    index_status: 6
+                    className: 'fs-xs mb-0 overflow-hidden'
                 }}
                 Click={onClick}
             />
@@ -99,36 +88,17 @@ const IndexOutorgas = () => {
 
         <div className="mt-3">
             <AdvanceTableFooter
-            rowCount={searchResults.length}
-            table
-            rowInfo
-            navButtons
-            rowsPerPageSelection
+                rowCount={searchResults.length}
+                table
+                rowInfo
+                navButtons
+                rowsPerPageSelection
             />
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
-        <Modal
-            size="xl"
-            show={showmodal}
-            onHide={() => setShowModal(false)}
-            dialogClassName="mt-10"
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Portaria
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
-                       <OutorgaForm hasLabel type='add'></OutorgaForm>
-                    </Row>
-            </Modal.Body>
-        </Modal>
         </>
     );
   };
   
-  export default IndexOutorgas;
+  export default IndexOutorgasANA;
   

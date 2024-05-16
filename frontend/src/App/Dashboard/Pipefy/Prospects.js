@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, Row, Col, Spinner} from "react-bootstrap";
 import { useAppContext } from "../../../Main";
 import { BarChart, PieChart } from "../../../components/Custom/Charts";
@@ -9,6 +10,8 @@ import { faFilter, faFilterCircleDollar, faPercent } from "@fortawesome/free-sol
 const DashProspects = () =>{
     const {config: {theme}} = useAppContext();
     const [data, setData] = useState()
+    const user = JSON.parse(localStorage.getItem("user"))
+    const navigate = useNavigate()
 
     const setter = (data) => {
         setData(data)
@@ -27,6 +30,9 @@ const DashProspects = () =>{
     }
 
     useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_card_prospects") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
         if (!data){
             HandleSearch('','dashboard/prospects', setter)
         }

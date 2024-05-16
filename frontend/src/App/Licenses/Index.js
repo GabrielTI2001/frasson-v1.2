@@ -7,11 +7,12 @@ import AdvanceTableFooter from '../../components/common/advance-table/AdvanceTab
 import AdvanceTableSearchBox from '../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../components/common/advance-table/AdvanceTableWrapper';
 import { columnsLicenca } from "./Data";
+import { HandleSearch } from "../../helpers/Data";
 import FormLicenca from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
+
 const IndexLicenses = () => {
     const [searchResults, setSearchResults] = useState();
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
@@ -21,49 +22,33 @@ const IndexLicenses = () => {
         const url = `/licenses/${uuid}`
         navigate(url)
     }
-
     const submit = (type, data) => {
         if (type == 'add'){
             setShowModal(false)
             setSearchResults([...searchResults, data])
         }
     }
+    const setter = (data) => {
+        setSearchResults(data)
+        setIsLoading(false)
+    }
+    const handleChange = async (value) => {
+        setIsLoading(true)
+        HandleSearch(value, 'licenses/index', setter)
+    };
 
     useEffect(()=>{
+        const Search = async () => {
+            const status = await HandleSearch('', 'licenses/index', setter) 
+            if (status === 401) navigate("/auth/login");
+        }
         if ((user.permissions && user.permissions.indexOf("view_cadastro_licencas") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
-            handleSearch('') 
+            Search()
         }
     },[])
-
-
-    const handleSearch = async (search) => {
-        setIsLoading(true)
-        const params = search === '' ? '' : `?search=${search}`
-        const url = `${process.env.REACT_APP_API_URL}/licenses/index/${params}`
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            const data = await response.json();
-            if (response.status === 401) {
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            } else if (response.status === 200) {
-                setSearchResults(data)
-                setIsLoading(false)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-      };
 
     return (
         <>
@@ -82,7 +67,7 @@ const IndexLicenses = () => {
         >
         <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
             <Col xl={4} sm={6} xs={12}>
-                <AdvanceTableSearchBox table onSearch={handleSearch}/>
+                <AdvanceTableSearchBox table onSearch={handleChange}/>
             </Col>
             <Col xl={'auto'} sm={'auto'} xs={'auto'}>
                 <a className="text-decoration-none btn btn-primary shadow-none fs--2"

@@ -187,7 +187,7 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
     yaxis: {
         max: Math.max(...valuesline) > Math.max(...valuescolumn) ? Math.max(...valuesline) + 2 : Math.max(...valuescolumn), // Definindo o valor máximo personalizado
         tickAmount: 4,
-        min: (Math.min(...valuesline) - 2) > 0 ? Math.min(...valuesline) - 2 : 0,
+        min: 0,
         labels: {
             style: {
                 colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo y)
@@ -271,7 +271,7 @@ export const BarChart = ({columns, title, height, series, hidescale}) => {
     yaxis: {
       max: Math.max(...series[0].data) + 2, // Definindo o valor máximo personalizado
       tickAmount: 4,
-      min: (Math.min(...series[0].data) - 2) > 0 ? Math.min(...series[0].data) - 2 : 0,
+      min: 0,
       labels: {
           style: {
               colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
@@ -343,7 +343,7 @@ export const ColumnChart = ({columns, title, series, height}) => {
     yaxis: {
         max: Math.max(...series[0].data) + 2, // Definindo o valor máximo personalizado
         tickAmount: 4,
-        min: (Math.min(...series[0].data) - 2) > 0 ? Math.min(...series[0].data) - 2 : 0,
+        min: 0,
         labels: {
             style: {
                 colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)

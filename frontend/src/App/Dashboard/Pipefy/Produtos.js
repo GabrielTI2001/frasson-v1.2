@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, Row, Col, Spinner} from "react-bootstrap";
 import { useAppContext } from "../../../Main";
 import { BarChart, PieChart } from "../../../components/Custom/Charts";
 import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilter, faFilterCircleDollar, faPercent, faGear, faMoneyBill, faMoneyBills, faSeedling } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faMoneyBills, faSeedling } from "@fortawesome/free-solid-svg-icons";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -18,7 +19,8 @@ const meses = [
 const DashProdutos = () =>{
     const {config: {theme}} = useAppContext();
     const [data, setData] = useState()
-    console.log(data)
+    const user = JSON.parse(localStorage.getItem("user"))
+    const navigate = useNavigate()
 
     const setter = (data) => {
         setData(data)
@@ -57,6 +59,9 @@ const DashProdutos = () =>{
     }
 
     useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_card_produtos") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
         if (!data){
             HandleSearch('','dashboard/products', setter)
         }

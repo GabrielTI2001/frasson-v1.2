@@ -12,6 +12,8 @@ import APPOTable from "./APPOTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { columnsAPPO } from "../Data";
+import { HandleSearch } from "../../../helpers/Data";
+
 const IndexAPPO = () => {
     const [searchResults, setSearchResults] = useState();
     const token = localStorage.getItem("token")
@@ -23,39 +25,25 @@ const IndexAPPO = () => {
         const url = `/ambiental/inema/appos/${uuid}`
         navigate(url)
     }
+    const setter = (data) => {
+        setSearchResults(data)
+    }
+    const handleChange = async (value) => {
+        HandleSearch(value, 'environmental/inema/appos', setter)
+    };
 
     useEffect(()=>{
         if ((user.permissions && user.permissions.indexOf("view_processos_appo") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
+        const Search = async () => {
+            const status = await HandleSearch('', 'environmental/inema/appos', setter) 
+            if (status === 401) navigate("/auth/login");
+        }
         if (!searchResults){
-            handleSearch('') 
+            Search()
         }
     },[])
-
-    const handleSearch = async (search) => {
-        const params = search === '' ? '' : `?search=${search}`
-        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/appos/${params}`
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            const data = await response.json();
-            if (response.status === 401) {
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            } else if (response.status === 200) {
-                setSearchResults(data)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-      };
 
     return (
         <>
@@ -77,7 +65,7 @@ const IndexAPPO = () => {
         >
         <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
             <Col xl={4} sm={6} xs={12}>
-                <AdvanceTableSearchBox table onSearch={handleSearch}/>
+                <AdvanceTableSearchBox table onSearch={handleChange}/>
             </Col>
             <Col xl={'auto'} sm={'auto'} xs={'auto'}>
                 <a className="text-decoration-none btn btn-primary shadow-none fs--2"

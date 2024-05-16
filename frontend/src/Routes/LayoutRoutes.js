@@ -19,6 +19,10 @@ import DashCredit from '../App/Dashboard/Credit/Index';
 import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
 import DashProspects from '../App/Dashboard/Pipefy/Prospects';
 import DashProdutos from '../App/Dashboard/Pipefy/Produtos';
+import DashAmbiental from '../App/Dashboard/Ambiental/Index';
+//External
+import IndexOutorgasANA from '../App/External/OutorgasANA/Index';
+
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -104,7 +108,7 @@ const LayoutRoutes = () => {
   return (
     <Routes>
       <Route element={<Default />}>
-      <Route path="/alongamentos">
+        <Route path="/alongamentos">
           <Route path="" element={<IndexAlongamentos />}/>
         </Route>
         <Route path="/analytics">
@@ -115,7 +119,13 @@ const LayoutRoutes = () => {
           <Route path="credit" element={<IndexCredit />}/>
           <Route path="credit/:id" element={<ViewCredit />}/>
         </Route>
+        <Route path="/api">
+          <Route path="ana">
+            <Route path="outorgas" element={<IndexOutorgasANA />}/>
+          </Route>
+        </Route>
         <Route path="/dashboard">
+          <Route path="ambiental" element={<DashAmbiental />}/>
           <Route path="credit" element={<DashCredit />}/>
           <Route path="credit/progress" element={<DashGestaoCredito />}/>
           <Route path="prospects" element={<DashProspects />}/>

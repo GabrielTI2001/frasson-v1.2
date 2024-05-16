@@ -12,6 +12,7 @@ import { columnsMachinery} from "../Data";
 import MachineryForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { HandleSearch } from "../../../helpers/Data";
 
 const InitData = {
     'columns':columnsMachinery, 'urlapilist':'register/machinery', 
@@ -29,17 +30,26 @@ const IndexMachinery = () => {
         const url = `${InitData.urlview}${uuid}`
         navigate(url)
     }
+    // const submit = (type, data) => {
 
-    const submit = (type, data) => {
-
+    // }
+    const setter = (data) => {
+        setSearchResults(data)
     }
+    const handleChange = async (value) => {
+        HandleSearch(value, InitData.urlapilist, setter)
+    };
 
     useEffect(()=>{
         if ((user.permissions && user.permissions.indexOf("view_maquinas_equipamentos") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
+        const Search = async () => {
+            const status = await HandleSearch('', InitData.urlapilist, setter) 
+            if (status === 401) navigate("/auth/login");
+        }
         if (!searchResults){
-            handleSearch('')
+            Search()
         }
     },[])
 
@@ -87,7 +97,7 @@ const IndexMachinery = () => {
         >
             <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
                 <Col xl={4} sm={6} xs={12}>
-                    <AdvanceTableSearchBox table onSearch={handleSearch}/>
+                    <AdvanceTableSearchBox table onSearch={handleChange}/>
                 </Col>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
                     <a className="text-decoration-none btn btn-primary shadow-none fs--2"

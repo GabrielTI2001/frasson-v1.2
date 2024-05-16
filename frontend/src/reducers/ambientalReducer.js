@@ -108,7 +108,6 @@ export const ambientalReducer = (state, action) => {
       };
     
     case 'REMOVE_PONTO_ASV':
-      console.log(payload)
       return {
         ...state,
         asv: {

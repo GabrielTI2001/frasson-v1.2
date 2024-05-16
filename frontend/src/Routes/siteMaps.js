@@ -51,6 +51,19 @@ export const dashboardRoutes = {
           active: true,
         }
       ]
+    },
+    {
+      name: 'Ambiental',
+      active: true,
+      children: [
+        {
+          name: 'Dashboard Ambiental',
+          to: '/dashboard/ambiental',
+          icon: faChartSimple,
+          exact: true,
+          active: true
+        }
+      ]
     }
   ]
 };
@@ -244,13 +257,24 @@ export const ambientalRoutes = {
           name: 'LICENCIAMENTO AMBIENTAL',
           active: true,
           children: [
-            
             {
               name: 'Cadastro Licenças',
               to: '/licenses',
               icon: faFaucetDrip,
               active: true
             },
+            {
+              name: 'Outorgas ANA',
+              to: '/api/ana/outorgas',
+              icon: faDroplet,
+              active: true
+            },
+            {
+              name: 'Outorgas SEMAD GO',
+              to: '',
+              icon: faDroplet,
+              active: true
+            }
           ]
         },
         {

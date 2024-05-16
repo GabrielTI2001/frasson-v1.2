@@ -8,50 +8,36 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsPessoal } from "../Data";
-import { Modal, CloseButton } from "react-bootstrap";
+import { HandleSearch } from "../../../helpers/Data";
+
 const IndexPessoal = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
-    const token = localStorage.getItem("token")
     const navigate = useNavigate();
 
     const onClick = (id, uuid) =>{
         const url = `/pipefy/pessoal/${uuid}`
         navigate(url)
     }
+    const setter = (data) => {
+        setSearchResults(data)
+    }
+    const handleChange = async (value) => {
+        HandleSearch(value, 'pipefy/pessoal', setter)
+    };
 
     useEffect(()=>{
+        const Search = async () => {
+            const status = await HandleSearch('', 'pipefy/pessoal', setter) 
+            if (status === 401) navigate("/auth/login");
+        }
         if ((user.permissions && user.permissions.indexOf("view_cadastro_pessoal") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
-            handleSearch('') 
+            Search()
         }
     },[])
-
-    const handleSearch = async (search) => {
-        const params = search === '' ? '' : `?search=${search}`
-        const url = `${process.env.REACT_APP_API_URL}/pipefy/pessoal/${params}`
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            const data = await response.json();
-            if (response.status === 401) {
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            } else if (response.status === 200) {
-                setSearchResults(data)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-      };
 
     return (
         <>
@@ -73,7 +59,7 @@ const IndexPessoal = () => {
         >
             <Row className="flex-end-center justify-content-start mb-3">
                 <Col xs="auto" sm={6} lg={4}>
-                    <AdvanceTableSearchBox table onSearch={handleSearch}/>
+                    <AdvanceTableSearchBox table onSearch={handleChange}/>
                 </Col>
             </Row>
         <AdvanceTable

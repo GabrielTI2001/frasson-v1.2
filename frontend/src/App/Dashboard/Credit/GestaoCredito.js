@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { Card, Row, Col, Spinner, Modal, CloseButton} from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { BarChart, ColumnChart, PieChart } from "../../../components/Custom/Charts";
 import IndexProdutos from "../../Pipefy/Produtos/Index";
@@ -19,6 +19,8 @@ const DashGestaoCredito = () =>{
     const [modal, setModal] = useState({show:false, fase:null})
     const {config: {theme}} = useAppContext();
     const [data, setData] = useState()
+    const user = JSON.parse(localStorage.getItem("user"))
+    const navigate = useNavigate()
 
     const setter = (responsedata) => {
         setData(responsedata)
@@ -29,6 +31,9 @@ const DashGestaoCredito = () =>{
     }
 
     useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_operacoes_contratadas") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
         if (!data){
             HandleSearch('','dashboard/credit-management', setter)
         }

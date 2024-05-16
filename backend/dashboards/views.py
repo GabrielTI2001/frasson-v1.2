@@ -3,9 +3,12 @@ from django.db.models import Avg, Sum, Count, DecimalField
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from datetime import date
-import locale, json
+import locale, json, statistics
 from django.core import serializers
 from pipefy.models import Operacoes_Contratadas, Card_Produtos, Card_Prospects
+from environmental.models import Processos_APPO_Coordenadas, Processos_Outorga_Coordenadas
+from irrigation.models import Cadastro_Pivots
+from processes.models import Processos_Andamento
 from kpi.models import Indicadores_Frasson, Metas_Realizados
 
 # Create your views here.
@@ -324,6 +327,76 @@ def dashboard_produtos(request):
         'concluidos_gc': concluidos_gc,
         'concluidos_gai': concluidos_gai,
         'operacoes_andamento': operacoes_andamento,
+    }
+
+    return JsonResponse(context)
+
+def dashboard_gestao_ambiental(request):
+    #DASHBOARD GESTÃO AMBIENTAL E IRRIGAÇÃO
+    processos = {}
+    abertos = []
+    abertos_last = []
+    faturamento = {}
+    produto_gai = 864795466
+    card_type = "Principal"
+    current_year = date.today().year
+    last_year = int(current_year - 1)
+    phases_produtos = [310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179]
+    phases_produtos_fatu_estimado = [310429134, 310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179, 310429196]
+
+    processos_instituicoes = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('instituicao__instituicao__abreviatura').annotate(count=Count('id')).order_by('-count')
+
+    for processo in processos_instituicoes:
+        processos[processo['instituicao__instituicao__abreviatura']] = processo['count']
+
+    faturamento_fases = Card_Produtos.objects.filter(phase_id__in=phases_produtos_fatu_estimado, card=card_type, detalhamento__produto=produto_gai).values('phase_name').annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    
+    for phase in faturamento_fases:
+        faturamento[phase['phase_name']] = float(phase['total']) if phase['total'] != None else 0
+    
+    processos_abertos = Card_Produtos.objects.filter(created_at__year=current_year, phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
+    processos_abertos_last = Card_Produtos.objects.filter(created_at__year=last_year, phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
+
+    for processo in processos_abertos:
+        abertos.append(processo['count'])
+
+    for processo in processos_abertos_last:
+        abertos_last.append(processo['count'])
+
+    qtd_processos = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).count()
+    qtd_pocos = Processos_APPO_Coordenadas.objects.all().count()
+    qtd_outorgas = Processos_Outorga_Coordenadas.objects.all().count()
+    qtd_pivots = Cadastro_Pivots.objects.all().count()
+
+    days_processos = Processos_Andamento.objects.filter(processo__card=card_type, processo__detalhamento__produto=produto_gai)
+    tempo_dias_requerimento = []
+    tempo_dias_formacao = []
+    tempo_dias_formacao_aberto = []
+    
+    for p in days_processos:
+        x = (p.data_requerimento - p.processo.created_at.date()).days if p.data_requerimento != None else 0
+        y = (p.data_formacao - p.data_requerimento).days if p.data_formacao != None else 0
+        z = (p.data_formacao - p.processo.created_at.date()).days if p.data_formacao != None else 0
+        tempo_dias_requerimento.append(x) if x > 0 else None
+        tempo_dias_formacao.append(y) if y > 0 else None
+        tempo_dias_formacao_aberto.append(z) if z > 0 else None
+
+    dias_requerimento = int(statistics.mean(tempo_dias_requerimento)) if len(tempo_dias_requerimento) > 0 else 0
+    dias_formacao = int(statistics.mean(tempo_dias_formacao) or 0) if len(tempo_dias_formacao) > 0 else 0
+    dias_formacao_aberto = int(statistics.mean(tempo_dias_formacao_aberto) or 0) if len(tempo_dias_formacao_aberto) > 0 else 0
+
+    context = {
+        'processos': processos,
+        'faturamentos': faturamento,
+        'abertos': abertos,
+        'abertos_last': abertos_last,
+        'qtd_processos': locale.format_string('%.0f', qtd_processos, True),
+        'qtd_appo': locale.format_string('%.0f', qtd_pocos, True),
+        'qtd_outorgas': locale.format_string('%.0f', qtd_outorgas, True),
+        'qtd_pivots': locale.format_string('%.0f', qtd_pivots, True),
+        'tempo_dias_requerimento': f"{dias_requerimento} {'dias' if dias_requerimento > 1 else 'dia'}" if dias_requerimento > 0 else '-',
+        'tempo_dias_formacao': f"{dias_formacao} {'dias' if dias_formacao > 1 else 'dia'}" if dias_formacao > 0 else '-',
+        'tempo_dias_formacao_aberto': f"{dias_formacao_aberto} {'dias' if dias_formacao_aberto > 1 else 'dia'}" if dias_formacao_aberto > 0 else '-'
     }
 
     return JsonResponse(context)
