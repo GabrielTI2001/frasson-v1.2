@@ -3,21 +3,22 @@ import PropTypes from 'prop-types';
 import googleMapStyles from '../../helpers/googleMapStyles';
 import {
   GoogleMap as ReactGoogleMap,
-  Polygon,
+  Circle,
   InfoWindow,
   useJsApiLoader
 } from '@react-google-maps/api';
 import { useAppContext } from '../../Main';
 import { useNavigate } from 'react-router-dom';
 
-const PolygonMap = ({
+const CircleMap = ({
   mapStyle,
   initialCenter,
   darkStyle,
   className,
   children,
+  zoom,
   token_api,
-  polygons,
+  circles,
   link,
   urlparams
 }) => {
@@ -37,7 +38,7 @@ const PolygonMap = ({
     streetViewControl: false,
     fullscreenControl: true,
     zoomControl: true,
-    zoom: 8,
+    zoom: zoom || 12,
     center: initialCenter,
     styles: googleMapStyles[mapStyles]
   });
@@ -46,7 +47,7 @@ const PolygonMap = ({
   const token = localStorage.getItem("token")
   const [infoWindowPosition, setInfoWindowPosition] = useState(null);
   const navigate = useNavigate();
-
+  
   useEffect(() => {
     if (darkStyle && isDark) setMapStyles(darkStyle);
     else setMapStyles(mapStyle);
@@ -101,20 +102,22 @@ const PolygonMap = ({
         }}
         className='col'
       >
-        {polygons && polygons.map((c, index) =>
-          <Polygon 
+        {circles && circles.map((c, index) =>
+          <Circle 
             key={index}
-            path={c.kml}
+            center={c.center}
+            radius={c.radius}
             options={{
-              strokeColor: '#0c4106',
+              strokeColor: 'rgb(21, 141, 13)',
               strokeWeight: 1,
-              fillColor: '#6be95d'
+              fillColor: 'rgb(36, 243, 22)',
+              FillOpacity: .8
             }}
             onClick={(event) => handlePolygonClick(event, c.id)}
           >
-          </Polygon>
+          </Circle>
         )}
-        {infoPonto && (
+        {infoPonto && link &&(
           <InfoWindow
             position={infoWindowPosition} 
             onCloseClick={() => setInfoPonto(null)}
@@ -127,7 +130,7 @@ const PolygonMap = ({
   );
 };
 
-PolygonMap.propTypes = {
+CircleMap.propTypes = {
   mapStyle: PropTypes.oneOf([
     'Default',
     'Gray',
@@ -158,4 +161,4 @@ PolygonMap.propTypes = {
   })
 };
 
-export default PolygonMap;
+export default CircleMap;

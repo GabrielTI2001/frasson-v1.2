@@ -22,7 +22,11 @@ import DashProdutos from '../App/Dashboard/Pipefy/Produtos';
 import DashAmbiental from '../App/Dashboard/Ambiental/Index';
 //External
 import IndexOutorgasANA from '../App/External/OutorgasANA/Index';
-
+//Irrigation
+import IndexIrrigacao from '../App/Irrigacao/Index';
+import IndexPivots from '../App/Irrigacao/Pivots/Index';
+import ViewPivot from '../App/Irrigacao/Pivots/View';
+import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -132,6 +136,12 @@ const LayoutRoutes = () => {
           <Route path="products" element={<DashProdutos />}/>
         </Route>
         <Route path="/home" element={<Home />} />
+        <Route path="/irrigation">
+          <Route path="" element={<IndexIrrigacao />}/>
+          <Route path="pivots" element={<IndexPivots />}/>
+          <Route path="pivots/:uuid" element={<ViewPivot />}/>
+          <Route path="pivots/map" element={<MapaPivots />}/>
+        </Route>
         <Route path="/licenses">
           <Route path="" element={<IndexLicenses />}/>
           <Route path=":uuid" element={<ViewLicenca />}/>

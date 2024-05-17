@@ -166,3 +166,36 @@ class Analise_Solo(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class Feedbacks_Category(models.Model):
+    description = models.CharField(max_length=150, verbose_name='Descrição Categoria')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Categorias Feedbacks'
+    def __str__(self):
+        return self.description
+
+
+class Feedbacks_System(models.Model):
+    category = models.ForeignKey(Feedbacks_Category, on_delete=models.CASCADE, verbose_name='Categoria')
+    description = models.TextField(null=True,verbose_name='Detalhamento Feedback')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Criado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Feedbacks Sistema'
+    def __str__(self):
+        return self.user.first_name
+
+
+class Feedbacks_Replies(models.Model):
+    feedback = models.ForeignKey(Feedbacks_System, on_delete=models.CASCADE, null=True, verbose_name='Feedback')
+    text = models.TextField(null=True, verbose_name='Texto de Resposta')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Respostas Feedback'
+    def __str__(self):
+        return self.feedback.category

@@ -284,7 +284,7 @@ export const ambientalRoutes = {
             
             {
               name: 'Irrigação',
-              to: '',
+              to: '/irrigation',
               icon: faFaucetDrip,
               active: true
             },

@@ -8,33 +8,28 @@ import GoogleMap from "../../../components/map/GoogleMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetail} from "./MapInfo";
+import CircleMap from "../../../components/map/CircleMap";
 
-const initData = {'appo': {title:'APPO', textpoint: 'Poços '}, 
-    'outorga': {title:'Outorga', textpoint: 'pontos de outorga '}
-}
-
-const MapaPontosRequerimento = ({type}) => {
-    const [processos, setProcessos] = useState()
+const MapaPivots = () => {
     const [coordenadas, setCoordenadas] = useState()
     const [search, setSearch] = useState('')
     const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const [tokenmaps, setTokenMaps] = useState()
     const navigate = useNavigate();
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/requerimento/${type}/coordenadas-detail/` 
+    const link = `${process.env.REACT_APP_API_URL}/irrigation/pivots-points/` 
 
     const handleChange = (event) => {
         const { value } = event.target;
         setSearch(value);
         if (value !== ''){
           getCoordenadas(value); 
-          getprocessos(value)
         }
     };
 
     const getCoordenadas = async (search) => {
         const link = search ? `?search=${search}` : '';
-        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/requerimento/${type}/coordenadas/${link}`
+        const url = `${process.env.REACT_APP_API_URL}/irrigation/pivots-points/${link}`
         try{
             const response = await fetch(url, {
                 method: 'GET',
@@ -48,7 +43,7 @@ const MapaPontosRequerimento = ({type}) => {
                 localStorage.setItem('token', "");
                 navigate("/auth/login");
             }
-            if ((user.permissions && user.permissions.indexOf("view_requerimentos_appo") === -1) && !user.is_superuser){
+            if ((user.permissions && user.permissions.indexOf("view_cadastro_pivots") === -1) && !user.is_superuser){
                 navigate("/error/403")
             }
             else if (response.status === 200){
@@ -59,30 +54,6 @@ const MapaPontosRequerimento = ({type}) => {
                 setCoordenadas([])
             }
             
-        } catch (error){
-            console.error("Erro: ",error)
-        }
-    }
-
-    const getprocessos = async (search) =>{
-        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/requerimento/${type}s/?search=${search}`
-        try{
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            if (response.status === 401){
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            }
-            else if (response.status === 200){
-                const data = await response.json();
-                setProcessos(data)
-            }
         } catch (error){
             console.error("Erro: ",error)
         }
@@ -105,7 +76,6 @@ const MapaPontosRequerimento = ({type}) => {
 
         if (!coordenadas){
             getCoordenadas()
-            getprocessos('')
         }
         if (!tokenmaps){
             getTokenMaps()
@@ -116,10 +86,10 @@ const MapaPontosRequerimento = ({type}) => {
     <>
         <ol className="breadcrumb breadcrumb-alt mb-2">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={`/ambiental/inema/requerimentos`}>Requerimentos Inema</Link>
+                <Link className="link-fx text-primary" to={`/irrigation/pivots`}>Pivots</Link>
             </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                {initData[type].title}
+                Mapa Pivots
             </li>             
         </ol>
         <Row className="flex-end-center justify-content-start mb-3 gy-1">
@@ -137,39 +107,41 @@ const MapaPontosRequerimento = ({type}) => {
                 </InputGroup>
             </Col>
             <Col>
-                <Link className="btn btn-sm btn-primary" to={`/ambiental/inema/requerimentos/new`}>
-                    <FontAwesomeIcon className="me-2" icon={faLocationDot} />Novo Requerimento
+                <Link className="btn btn-sm btn-primary">
+                    <FontAwesomeIcon className="me-2" icon={faLocationDot} />Novo Pivot
                 </Link>
             </Col>
         </Row>
         <div className='text-end info p-2 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
         {search !== '' &&
             <Col lg={'auto'} xxl={'auto'} className="me-0 pe-0">
-                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/requerimentos/${type}/map/kml/?search=${search}`} 
+                <Link to={`${process.env.REACT_APP_API_URL}/pivot/dashboard/kml/?search=${search}`} 
                  className="btn btn-info py-0 px-2 ms-0">
                     <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>KML
                 </Link>
              </Col>        
           }
-            <Col className="fw-bold">{coordenadas && (coordenadas.length)} pontos
-            em {processos && (processos.length)} requerimentos</Col>
+            <Col className="fw-bold">{coordenadas && (coordenadas.length)} pivots</Col>
         </div>
-        {coordenadas && tokenmaps ? ( coordenadas.length > 0 && (
-            <GoogleMap
+        {tokenmaps && coordenadas && coordenadas.length > 0 ?
+            <CircleMap
                 initialCenter={{
-                    lat: Number(coordenadas[0].latitude_gd),
-                    lng: Number(coordenadas[0].longitude_gd)
+                    lat: Number(coordenadas[0].lat_center_gd),
+                    lng: Number(coordenadas[0].long_center_gd)
                 }}
                 mapStyle="Default"
                 className="rounded-soft mt-0 google-maps-l container-map-l"
                 token_api={tokenmaps}
                 mapTypeId='satellite'
-                coordenadas={coordenadas}
+                circles={[...coordenadas.map(c => ({id:c.id, radius:Number(c.raio_irrigado_m), 
+                    center:{lat:Number(c.lat_center_gd), lng:Number(c.long_center_gd)}
+                }))]}
+                zoom={10}
                 link={link}
             >
-                < MapInfoDetail type={type}/>
-            </GoogleMap>
-            )) : 
+                < MapInfoDetail/>
+            </CircleMap>
+            : 
             <div>
                 <Placeholder animation="glow">
                     <Placeholder xs={7} /> <Placeholder xs={4} /> 
@@ -182,5 +154,5 @@ const MapaPontosRequerimento = ({type}) => {
     );
   };
   
-  export default MapaPontosRequerimento;
+  export default MapaPivots;
   

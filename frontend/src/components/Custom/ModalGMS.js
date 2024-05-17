@@ -3,16 +3,16 @@ import { Modal, CloseButton } from "react-bootstrap";
 import { Button, Form, Row, Col} from 'react-bootstrap';
 import { convertGMStoGD } from '../../helpers/utils';
 
-const ModalGMS = ({show, type, formData, changeform, changemodal}) =>{
+const ModalGMS = ({show, type, formData, changeform, changemodal, fields=['latitude_gd', 'longitude_gd']}) =>{
     const [gmsform, setGMSform] = useState({})
 
     const submit = () =>{
         const valor = convertGMStoGD(gmsform.graus, gmsform.minutos, gmsform.segundos)
         if (type === 'latitude'){
-            changeform({...formData, latitude_gd:valor})
+            changeform({...formData, [fields[0]]:valor})
         }
         else{
-            changeform({...formData, longitude_gd:valor})
+            changeform({...formData, [fields[1]]:valor})
         }
         setGMSform({})
         changemodal({show:false, type:type})

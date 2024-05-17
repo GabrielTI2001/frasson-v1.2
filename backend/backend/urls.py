@@ -17,6 +17,7 @@ urlpatterns = [
     path('alongamentos/', include('alongamentos.urls')),
     path('analytics/', include('analytics.urls')),
     path('dashboard/', include('dashboards.urls')),
+    path('irrigation/', include('irrigation.urls')),
     path('licenses/', include('licenses.urls')),
     path('register/', include('cadastro.urls')),
     path('pipefy/', include('pipefy.urls')),

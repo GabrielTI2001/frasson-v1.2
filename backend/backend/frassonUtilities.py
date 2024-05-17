@@ -4,6 +4,8 @@ from django.http import JsonResponse, HttpResponse
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from environmental.models import Processos_Outorga_Coordenadas, Processos_APPO_Coordenadas
 from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, init_data
+from pygc import great_circle
+import numpy as np
 
 env = environ.Env()
 environ.Env.read_env()
@@ -97,6 +99,15 @@ class Frasson(object):
             str_result += f'''{lng_graus}°{lng_min}'{lng_sec}"{lng_direction} '''
         
         return str_result
+    
+    def createLatLongPointsPivot(lat, lng, radius, quant):
+        """Função que cria vários pontos em torno de uma coordenada, conforme distância do raio"""
+        coordinates = []
+        offset_degrees = 360 / quant
+        for i in np.arange(0, 360, offset_degrees):
+            new_point = great_circle(distance=radius, azimuth=i, latitude=lat, longitude=lng)
+            coordinates.append({'lat': new_point['latitude'], 'lng': new_point['longitude']})
+        return coordinates
     
 
 # GESTÃO DE WEBHOOKS

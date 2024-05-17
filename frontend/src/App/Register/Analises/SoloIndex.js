@@ -147,7 +147,11 @@ const IndexAnaliseSolo = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Benfeitorias
+                    
+                    {showmodal.type === 'add' 
+                        ? 'Adicionar Análise de Solo'
+                        : 'Editar Análise de Solo'
+                    }  
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
