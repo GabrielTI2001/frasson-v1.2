@@ -39,7 +39,7 @@ def index_administrator_panel(request):
         'users_count': users_count,
     }
 
-    return render(request, 'index.html', context)
+    return JsonResponse(context)
 
 @login_required
 @permission_required('administrator.ver_administrator', raise_exception=True)
@@ -55,7 +55,7 @@ def index_administrator_tests(request):
     context = {
         'pipes': pipes,
     }
-    return render(request, 'index_tests.html', context)
+    return JsonResponse(context)
 
 
 # @login_required

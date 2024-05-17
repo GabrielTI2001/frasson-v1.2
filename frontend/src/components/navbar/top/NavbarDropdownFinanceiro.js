@@ -11,7 +11,7 @@ const NavbarDropdownFinanceiro = ({ items }) => {
       <Col xs={12} md={12}>
         <Nav className="flex-column">
           <NavbarNavLink label="Teste" title="Teste"/>
-          {routes.teste.slice(0,2).map(route => (
+          {routes.teste.map(route => (
             <NavbarNavLink key={route.name} route={route} />
           ))}
         </Nav>

@@ -1,7 +1,7 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
 faMap, faWheatAwn, faCannabis, faFilePen} 
 from "@fortawesome/free-solid-svg-icons";
-import { faChartSimple, faUser, faChartColumn } 
+import { faChartSimple, faUser, faChartColumn, faComments, faToolbox } 
 from "@fortawesome/free-solid-svg-icons";
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -265,7 +265,7 @@ export const ambientalRoutes = {
             },
             {
               name: 'Outorgas ANA',
-              to: '/api/ana/outorgas',
+              to: '/external-api/ana/outorgas',
               icon: faDroplet,
               active: true
             },
@@ -329,9 +329,23 @@ export const servicosRoutes = {
       active: true,
       children: [
         {
-          name: 'Cotações',
-          to: '/services/currency',
+          name: 'Registrar Feedback',
+          to: '/register/feedback/new',
+          icon: faComments,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'APIs de Terceiros',
+          to: '/external-api',
           icon: faChartSimple,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Ferramentas Frasson',
+          to: '/services/tools',
+          icon: faToolbox,
           exact: true,
           active: true
         },

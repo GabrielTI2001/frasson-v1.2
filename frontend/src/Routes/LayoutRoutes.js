@@ -22,6 +22,7 @@ import DashProdutos from '../App/Dashboard/Pipefy/Produtos';
 import DashAmbiental from '../App/Dashboard/Ambiental/Index';
 //External
 import IndexOutorgasANA from '../App/External/OutorgasANA/Index';
+import Exchange from '../App/Services/Currency/Exchange';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -35,6 +36,7 @@ import ViewBenfeitoria from '../App/Register/Benfeitorias/View';
 import BenfeitoriaEdit from '../App/Register/Benfeitorias/Edit';
 import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
 import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
+import NewFeedback from '../App/Register/Feedbacks/New';
 //Pipefy
 import IndexPessoal from '../App/Pipefy/Pessoal/Index';
 import ViewPessoal from '../App/Pipefy/Pessoal/View';
@@ -68,8 +70,11 @@ import ViewLicenca from '../App/Licenses/View';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
 //Services
-import Cotacoes from '../App/Services/Cotacoes';
+import ExternalAPIs from '../App/Services/API';
 import Commodities from '../App/Services/Currency/Commodities';
+import ConsultaCNPJ from '../App/Services/CNPJ';
+import ToolsIndex from '../App/Services/Tools/Index';
+import KMLToCoordinate from '../App/Services/Tools/KMLToCoordinate';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -124,9 +129,7 @@ const LayoutRoutes = () => {
           <Route path="credit/:id" element={<ViewCredit />}/>
         </Route>
         <Route path="/api">
-          <Route path="ana">
-            <Route path="outorgas" element={<IndexOutorgasANA />}/>
-          </Route>
+
         </Route>
         <Route path="/dashboard">
           <Route path="ambiental" element={<DashAmbiental />}/>
@@ -154,6 +157,7 @@ const LayoutRoutes = () => {
           <Route path='farm-assets/edit/:uuid' element={<BenfeitoriaEdit />}/>
           <Route path='analysis/soil' element={<IndexAnaliseSolo />}/>
           <Route path='analysis/soil/:uuid' element={<ViewAnaliseSolo />}/>
+          <Route path='feedback/new' element={<NewFeedback />}/>
         </Route>
         <Route path="/pipefy">
           <Route path="pessoal" element={<IndexPessoal />}/>
@@ -185,9 +189,18 @@ const LayoutRoutes = () => {
           <Route path="requerimentos/new" element={<NewRequerimento key='appo' type='appo' />} />
           <Route path="requerimentos/appo/:uuid" element={<ViewRequerimentoAPPO />} />
         </Route>
+        <Route path="/external-api">
+          <Route path="ana">
+            <Route path="outorgas" element={<IndexOutorgasANA />}/>
+          </Route>
+          <Route path="" element={<ExternalAPIs />}/>
+          <Route path="cnpj" element={<ConsultaCNPJ />}/>
+          <Route path="currency/commodity" element={<Commodities />}/>
+          <Route path="currency/exchange" element={<Exchange />}/>
+        </Route>
         <Route path="/services">
-          <Route path="currency" element={<Cotacoes />}/>
-          <Route path="currency/commodity" element={<Commodities/>}/>
+          <Route path="tools" element={<ToolsIndex />}/>
+          <Route path="tools/kml-to-coordinates" element={<KMLToCoordinate />}/>
         </Route>
         <Route path="/admin">
           <Route path="users" element={<IndexUsers />}/>

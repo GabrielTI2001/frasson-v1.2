@@ -20,7 +20,8 @@ const GoogleMap = ({
   coordenadas,
   link,
   urlparams,
-  colorpoint
+  colorpoint,
+  infounlink
 }) => {
 
   const mapMarker = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
@@ -95,7 +96,7 @@ const GoogleMap = ({
       getInfo(coordId);
     }
     else{
-      setInfoPonto(coordenadas.filter(c => c.id === coordId)[0])
+      if (infounlink) setInfoPonto(coordenadas.filter(c => c.id === coordId)[0])
     }
   };
 
@@ -123,7 +124,7 @@ const GoogleMap = ({
             : mapMarker, scaledSize: {height:32,width:32}}}
             key={index}
           >
-            {activeMarker === coord.id && link &&(
+            {activeMarker === coord.id && (link || infounlink) &&(
               <InfoWindow
                 onCloseClick={() => setActiveMarker(null)}
                 className='bg-info'
@@ -139,6 +140,7 @@ const GoogleMap = ({
   );
 };
 
+//Sempre passar os atributos latitude_gd, longitude_gd e id para as coordenadas
 GoogleMap.propTypes = {
   mapStyle: PropTypes.oneOf([
     'Default',

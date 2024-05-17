@@ -28,6 +28,7 @@ urlpatterns = [
     path('inema/outorga/map/kml/', views.kml_dashboard_processos_outorga, name='kml.outorga'),
     path('inema/appo/map/kml/', views.kml_dashboard_processos_appo, name='kml.appo'),
     path('inema/requerimento/appo/read/pdf/', views.requerimentos_appo_read_pdf, name='kml.read.pdf'),
-    path('inema/requerimento/appo/kml/<int:id>', views.kml_requerimento_appo, name='kml.requerimento.appo')
+    path('inema/requerimento/appo/kml/<int:id>', views.kml_requerimento_appo, name='kml.requerimento.appo'),
+    path('inema/requerimento/appo/map/kml/', views.kml_mapa_requerimento_appo, name='kml.mapa.requerimento.appo'),
 ]
 urlpatterns += router.urls

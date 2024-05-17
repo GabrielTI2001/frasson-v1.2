@@ -705,3 +705,60 @@ def kml_requerimento_appo(request, id):
     response['Content-Disposition'] = f'attachment; filename="{file_name}"'
 
     return response
+
+
+def kml_mapa_requerimento_appo(request):
+    #download do kml dos requerimentos da busca
+    folders = []
+    search = request.GET.get('search')
+    # Create a KML document
+    doc = KML.kml(
+        KML.Document()
+    )
+
+    query_search = (Q(nome_requerente__icontains=search) | Q(cpf_cnpj__icontains=search) | Q(numero_processo__icontains=search) | 
+        Q(numero_requerimento__icontains=search) | Q(email__icontains=search) | Q(municipio__nome_municipio__icontains=search))
+    requerimentos = Requerimentos_APPO.objects.exclude(numero_processo__in=Subquery(Processos_APPO.objects.values('numero_processo'))).filter(query_search)
+
+    #Creating a list of folders, each with a list of coordinates
+    for requerimento in requerimentos:
+        coordenadas = Requerimentos_APPO_Coordenadas.objects.exclude(requerimento__numero_processo__in=Subquery(Processos_APPO.objects.values('numero_processo'))).filter(requerimento=requerimento.id)
+        points = []
+        for coord in coordenadas:
+            str_coordenada = str(coord.longitude_gd) + ',' + str(coord.latitude_gd)
+            points.append((str_coordenada, coord.numero_poco))
+            
+        folders.append({
+            "name": f"{requerimento.nome_requerente} ({requerimento.numero_requerimento})",
+            "points": points
+        })
+
+    # Create a Folder for each item in the list
+    for folder_data in folders:
+        folder = KML.Folder(
+            KML.name(folder_data["name"])
+        )
+
+        # Add a Placemark for each point in the folder
+        for coordinate, name in folder_data["points"]:
+            placemark = KML.Placemark(
+                KML.name(name),
+                KML.Point(
+                    KML.coordinates(coordinate)
+                )
+            )
+            folder.append(placemark)
+
+        # Add the Folder to the Document
+        doc.Document.append(folder)
+
+    # Convert to string
+    kml_str = etree.tostring(doc, pretty_print=True)
+
+    # Create a response with the KML type
+    response = HttpResponse(kml_str, content_type='application/vnd.google-earth.kml+xml')
+
+    # Add a file attachment header
+    response['Content-Disposition'] = 'attachment; filename="Requerimentos_INEMA.kml"'
+    
+    return response

@@ -145,7 +145,7 @@ const MapaPontosRequerimento = ({type}) => {
         <div className='text-end info p-2 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
         {search !== '' &&
             <Col lg={'auto'} xxl={'auto'} className="me-0 pe-0">
-                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/requerimentos/${type}/map/kml/?search=${search}`} 
+                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/requerimento/${type}/map/kml/?search=${search}`} 
                  className="btn btn-info py-0 px-2 ms-0">
                     <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>KML
                 </Link>

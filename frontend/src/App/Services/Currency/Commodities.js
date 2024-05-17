@@ -56,6 +56,11 @@ const Commodities = () =>{
             handleSearch(params)
         }
     }
+    else{
+        if(!searchResults){
+            setSearchResults([])
+        }  
+    }
 
     const loadFormdata = async () => {
         const url1 = `${process.env.REACT_APP_API_URL}/services/currency/locations/`
@@ -103,7 +108,7 @@ const Commodities = () =>{
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/services/currency'}>Cotações</Link>
+                <Link className="link-fx text-primary" to={'/external-api'}>API de Terceiros</Link>
             </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
                 Commodities

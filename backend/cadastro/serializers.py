@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Tipo_Benfeitorias, Pictures_Benfeitorias, Analise_Solo
-from .models import Agencias_Bancarias
+from .models import Agencias_Bancarias, Feedbacks_System, Feedbacks_Category
 from backend.frassonUtilities import Frasson
 import locale
 from backend.settings import TOKEN_GOOGLE_MAPS_API
@@ -191,3 +191,18 @@ class listAgenciasBancarias(serializers.ModelSerializer):
     class Meta:
         model = Agencias_Bancarias
         fields = ['id', 'descricao_agencia']
+
+class ListFeedbacks(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['category', 'description']:
+                field.required = True
+    class Meta:
+        model = Feedbacks_System
+        fields = '__all__'
+
+class ListFeedbacksCategory(serializers.ModelSerializer):
+    class Meta:
+        model = Feedbacks_Category
+        fields = '__all__'

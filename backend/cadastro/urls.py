@@ -13,6 +13,8 @@ router.register(r'analysis-soil-results', views.ResultAnalisesSoloView)
 router.register(r'types-farm-assets', views.TipoBenfeitoriaView)
 router.register(r'picture-farm-assets', views.PicturesBenfeitoriasView)
 router.register(r'agencias-bancarias', views.AgenciasBancariasView)
+router.register(r'feedbacks', views.FeedbackView)
+router.register(r'feedbacks-category', views.CategoryFeedbackView)
 
 urlpatterns = []
 urlpatterns += router.urls

@@ -6,6 +6,7 @@ from environmental.models import Processos_Outorga_Coordenadas, Processos_APPO_C
 from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, init_data
 from pygc import great_circle
 import numpy as np
+from pyproj import Transformer
 
 env = environ.Env()
 environ.Env.read_env()
@@ -108,6 +109,37 @@ class Frasson(object):
             new_point = great_circle(distance=radius, azimuth=i, latitude=lat, longitude=lng)
             coordinates.append({'lat': new_point['latitude'], 'lng': new_point['longitude']})
         return coordinates
+    
+    def convert_decimal_degrees_to_utm(lat, lon):
+        """Convert from Decimal Degrees to UTM"""
+        # Calculate the UTM zone from longitude
+        zone = int((lon + 180) // 6) + 1
+        # Determine if the point is in the Northern or Southern Hemisphere
+        south = lat < 0
+        # Create a Transformer
+        transformer = Transformer.from_crs(
+            f"+proj=latlong +datum=WGS84",
+            f"+proj=utm +zone={zone} +datum=WGS84 {'+south' if south else ''}",
+            always_xy=True
+        )
+        # Transform the point to UTM
+        easting, northing = transformer.transform(lon, lat)
+        # Return the UTM coordinates
+        return {
+            'lng': round(easting, 2),
+            'lat': round(northing, 2)
+        }
+
+    def getElevationGoogleMapsAPI(locations):
+        """Função que retorna altitude em metros de uma determinada coordenada geográfica"""
+        locations_str = "|".join([f"{lat},{lng}" for lat, lng in locations])
+        url = f'https://maps.googleapis.com/maps/api/elevation/json?locations={locations_str}&key=AIzaSyAa8GzPJUNm1Sz79Jf4FjS727zeSOBo1L0' #utilizando f strings
+        headers = {"Content-Type": "application/json"}
+        response = requests.request("GET", url, headers=headers)
+        obj = json.loads(response.text) 
+        elevation = obj["results"]
+        return elevation
+
     
 
 # GESTÃO DE WEBHOOKS

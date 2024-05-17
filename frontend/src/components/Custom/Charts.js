@@ -1,5 +1,6 @@
 import Chart from "react-apexcharts";
 import { useAppContext } from "../../Main";
+import { colors } from "../../helpers/utils";
 
 export const PieChart = ({ values, labels, title, height }) => {
   const {config: {theme}} = useAppContext();
@@ -47,7 +48,7 @@ export const PieChart = ({ values, labels, title, height }) => {
   );
 };
 
-export const LineChart = ({values, columns, name, title}) => {
+export const LineChart = ({values, columns, name, title, area, background, height}) => {
     const {config: {theme}} = useAppContext();
     const series = [{
         name: name,
@@ -57,16 +58,24 @@ export const LineChart = ({values, columns, name, title}) => {
     const options = {
       chart: {
         height: 350,
-        type: 'line',
         zoom: {
           enabled: false
-        }
+        },
+        background: 'transparent'
       },
       dataLabels: {
         enabled: false
       },
+      toolbar: {
+        show: false
+      },
       stroke: {
-        curve: 'straight'
+        curve: 'straight',
+        colors: !area ? '#0d3aa3' : 'transparent',
+      },
+      fill: {
+        opacity: 1,
+        colors: area && (background || '#0d3aa3')// Cor de fundo por baixo da linha
       },
       title: {
         text: title,
@@ -85,18 +94,22 @@ export const LineChart = ({values, columns, name, title}) => {
       xaxis: {
         categories: columns,
         labels: {
+          show: !area,
           style: {
-              colors: theme === 'dark' ? '##fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
+              colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
           }
-        }
+        },
+        axisTicks: {
+          show: !area
+        },
       },
       yaxis: {
-          max: Math.max(...values) + 2, // Definindo o valor máximo personalizado
+          max: area ? Math.max(...values) + 0.01 : Math.max(...values) + 2, // Definindo o valor máximo personalizado
           tickAmount: 4,
-          min: Math.min(...values) - 2,
+          min: area ? Math.min(...values) - 0.01 : 0,
           labels: {
               style: {
-                  colors: theme === 'dark' ? '##fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
+                  colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
               }
           }
       }
@@ -105,9 +118,9 @@ export const LineChart = ({values, columns, name, title}) => {
     return (
       <Chart
         options={options}
-        series={values}
-        type="line"
-        height="350"
+        series={series}
+        type={area ? "area" : "line"}
+        height={height || "350"}
       />
     );
 };
