@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     'administrator',
     'alongamentos',
     'analytics',
+    'assessments',
     'cadastro',
     'dashboards',
     'environmental',

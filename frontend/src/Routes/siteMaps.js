@@ -349,6 +349,20 @@ export const servicosRoutes = {
           exact: true,
           active: true
         },
+        {
+          name: 'Mapas',
+          to: '/services/maps',
+          icon: faMap,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Meus Indicadores',
+          to: '/kpi/myindicators',
+          icon2: 'Speedometer',
+          exact: true,
+          active: true
+        },
       ]
     }
   ]

@@ -12,7 +12,7 @@ const NavbarDropdownServicos = ({ items }) => {
       <Col xs={12} md={12}>
         <Nav className="flex-column">
           {routes.servicos.map(route => (
-            <NavbarNavLink key={route.name} route={route} icon={route.icon}/>
+            <NavbarNavLink key={route.name} route={route} icon={route.icon} icon2={route.icon2}/>
           ))}
         </Nav>
       </Col>

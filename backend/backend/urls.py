@@ -13,6 +13,7 @@ router.register(r'users', CustomUserViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('administrator/', include('administrator.urls')),
+    path('assessments/', include('assessments.urls')),
     path('external/', include('external.urls')),
     path('alongamentos/', include('alongamentos.urls')),
     path('analytics/', include('analytics.urls')),

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import googleMapStyles from '../../helpers/googleMapStyles';
 import {
   GoogleMap as ReactGoogleMap,
-  Marker,
+  Marker, Polygon,
   InfoWindow,
   useJsApiLoader
 } from '@react-google-maps/api';
@@ -18,6 +18,7 @@ const GoogleMap = ({
   children,
   token_api,
   coordenadas,
+  polygons,
   link,
   urlparams,
   colorpoint,
@@ -113,7 +114,7 @@ const GoogleMap = ({
         }}
         className='col'
       >
-        {coordenadas.map((coord, index) => (
+        {coordenadas && coordenadas.map((coord, index) => (
           <Marker
             onClick={() => handleMarkerClick(coord.id)}
             position={{
@@ -135,6 +136,18 @@ const GoogleMap = ({
             )}
           </Marker>
         ))}
+        {polygons && polygons.map((p, index) =>
+          <Polygon 
+            key={index}
+            path={p.points}
+            options={{
+              strokeColor: '#0c4106',
+              strokeWeight: 1,
+              fillColor: '#6be95d'
+            }}
+          >
+          </Polygon>
+        )}
       </ReactGoogleMap>
     </div>
   );

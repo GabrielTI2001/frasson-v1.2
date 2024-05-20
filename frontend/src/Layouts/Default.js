@@ -7,8 +7,6 @@ import { useAppContext } from '../Main';
 
 const App = () => {
     const { hash, pathname } = useLocation();
-    const isKanban = pathname.includes('kanban');
-  
     const {
       config: { isFluid }
     } = useAppContext();
@@ -31,7 +29,7 @@ const App = () => {
     return (
       <>
         <div className={isFluid ? 'container-fluid' : 'container'}>
-          <div className={classNames('content', { 'pb-0': isKanban })}>
+          <div className={classNames('content', 'pb-0')}>
               <NavbarTop />
               <hr className="my-0 d-lg-block"></hr>
               <div className="container-fluid mt-2 px-3 conteudo">

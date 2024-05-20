@@ -5,12 +5,12 @@ import { useAppContext } from '../../../Main';
 import GoogleMap from '../../../components/map/GoogleMap';
 import MapInfo from './MapInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { faFileExcel, faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 
-const KMLToCoordinate = () => {
+const PivotCoordinates = () => {
   const {config: {theme}} = useAppContext();
   const [isLoading, setIsLoading] = useState(false)
-  const [formKML, setFormKML] = useState({})
+  const [formData, setFormData] = useState({})
   const [message, setMessage] = useState()
   const navigate = useNavigate();
   const token = localStorage.getItem("token")
@@ -18,7 +18,7 @@ const KMLToCoordinate = () => {
   const [tokenmaps, setTokenMaps] = useState()
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/services/tools/kml/coordenadas`
+    const link = `${process.env.REACT_APP_API_URL}/services/tools/pivot`
 
     const method = 'POST'
     try {
@@ -48,19 +48,19 @@ const KMLToCoordinate = () => {
   };
 
 
-  const handleKMLsubmit = async e => {
+  const handleSubmit = async e => {
     setMessage(null)
     setIsLoading(true)
     e.preventDefault();
     const formDataToSend = new FormData();
-    for (const key in formKML) {
-      formDataToSend.append(key, formKML[key]);
+    for (const key in formData) {
+      formDataToSend.append(key, formData[key]);
     }
     await handleApi(formDataToSend);
   };
 
-  const handleFilechange = (e) => {
-    setFormKML({...formKML, [e.target.name]:e.target.files[0]})
+  const handleFieldchange = (e) => {
+    setFormData({...formData, [e.target.name]:e.target.value})
   };
 
   useEffect(()=>{
@@ -90,53 +90,79 @@ const KMLToCoordinate = () => {
           <Link className="link-fx text-primary" to={'/services/tools'}>Ferramentas</Link>
         </li>
         <li className="breadcrumb-item fw-bold" aria-current="page">
-          Extrair Coordenadas
+          Gerar Coordenadas Pivot
         </li>    
       </ol>
       <div className='fs--2 mb-3' style={{marginTop: '-0.3rem'}}>
-        Esta ferramenta executa a extração das coordenadas de um arquivo KML, podendo ser Polígono, Caminho ou Pontos.
+        Esta ferramenta gera uma quantidade específica de coordenadas no limite da área do pivô.
       </div>
-      <Form onSubmit={handleKMLsubmit} className='row' encType='multipart/form-data'>
-        <Form.Group className="mb-0" as={Col} lg={5}>
-          <Form.Label className='fw-bold mb-1'>Arquivo KML*</Form.Label>
+      <Form onSubmit={handleSubmit} className='row mb-2' encType='multipart/form-data'>
+        <Form.Group className="mb-0" as={Col} xl={2}>
+          <Form.Label className='fw-bold mb-1'>Latitude Centro (GD)*</Form.Label>
           <Form.Control
-            name="file"
-            onChange={handleFilechange}
-            type="file"
+            name="latitude_gd"
+            onChange={handleFieldchange}
+            type="text"
           />
-          <label className='text-danger'>{message ? message.file : ''}</label>
+          <label className='text-danger'>{message ? message.latitude_gd : ''}</label>
         </Form.Group>
-        <Form.Group className={`d-flex align-items-center`} as={Col} lg={3}>
+        <Form.Group className="mb-0" as={Col} xl={2}>
+          <Form.Label className='fw-bold mb-1'>Longitude Centro (GD)*</Form.Label>
+          <Form.Control
+            name="longitude_gd"
+            onChange={handleFieldchange}
+            type="text"
+          />
+          <label className='text-danger'>{message ? message.longitude_gd : ''}</label>
+        </Form.Group>
+        <Form.Group className="mb-0" as={Col} xl={2}>
+          <Form.Label className='fw-bold mb-1'>Área (GD)*</Form.Label>
+          <Form.Control
+            name="area_ha"
+            onChange={handleFieldchange}
+            type="number"
+          />
+          <label className='text-danger'>{message ? message.area_ha : ''}</label>
+        </Form.Group>
+        <Form.Group className="mb-0" as={Col} xl={2}>
+          <Form.Label className='fw-bold mb-1'>Quantidade Pontos*</Form.Label>
+          <Form.Control
+            name="quantidade"
+            onChange={handleFieldchange}
+            type="number"
+          />
+          <label className='text-danger'>{message ? message.quantidade : ''}</label>
+        </Form.Group>
+        <Form.Group className={`d-flex align-items-center`} as={Col} xl={2}>
           {!isLoading ?
           <Button
             className="w-40"
             type="submit"
-            style={{marginTop: '0px'}}
           >
-            Extrair Coordenadas
+            Gerar Coordenadas
           </Button>
           : <div className="text-center"><Spinner></Spinner></div>}
         </Form.Group>    
       </Form>
       <div className="mb-2 d-flex justify-content-start mt-1">
-        <form action={`${process.env.REACT_APP_API_URL}/services/tools/convert/kmlToxlsx`} method="POST" class="col-auto me-2">
+        <form action={`${process.env.REACT_APP_API_URL}/services/tools/convert/kmlToxlsx`} method="POST" className="col-auto me-2">
             <input type="hidden" id="html_content" name="html_content" value="" />
-            <button type="submit" class="badge btn btn-sm btn-success shadow-none fs-xs fw-normal"
+            <button type="submit" className="badge btn btn-sm btn-success shadow-none fs-xs fw-normal"
               disabled={dados.coordinates.length === 0}
             >
               <FontAwesomeIcon icon={faFileExcel} className='me-1'/>Download Excel
             </button>
         </form>
-        <form action={`${process.env.REACT_APP_API_URL}/services/tools/convert/toxlsbnb`} method="POST">
+        <form action={`${process.env.REACT_APP_API_URL}/services/tools/pivot/downloadKML`} method="POST">
             <input type="hidden" id="html_content2" name="html_content" value="" />
-            <button type="submit" class="badge btn btn-sm btn-success shadow-none fs-xs fw-normal"
+            <button type="submit" className="badge btn btn-sm btn-primary shadow-none fs-xs fw-normal"
               disabled={dados.coordinates.length === 0}
             >
-              <FontAwesomeIcon icon={faFileExcel} className='me-1'/>Download Formato BNB
+              <FontAwesomeIcon icon={faCloudArrowDown} className='me-1'/>Download KML
             </button>
         </form>
       </div>
-      {!isLoading ?
+      {!isLoading ? 
       <Row xl={2} sm={1} style={{height: '66vh'}} className='gy-1 d-flex align-items-start mt-2'>
         <Col>
           <Table responsive>
@@ -199,4 +225,4 @@ const KMLToCoordinate = () => {
   );
 };
 
-export default KMLToCoordinate;
+export default PivotCoordinates;

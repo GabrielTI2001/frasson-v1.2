@@ -75,6 +75,10 @@ import Commodities from '../App/Services/Currency/Commodities';
 import ConsultaCNPJ from '../App/Services/CNPJ';
 import ToolsIndex from '../App/Services/Tools/Index';
 import KMLToCoordinate from '../App/Services/Tools/KMLToCoordinate';
+import PivotCoordinates from '../App/Services/Tools/PivotCoordinates';
+import InsertPoints from '../App/Services/Tools/InsertPoints';
+import KMLPolygon from '../App/Services/Tools/KMLPolygon';
+import ServicesMaps from '../App/Services/Maps';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -199,8 +203,12 @@ const LayoutRoutes = () => {
           <Route path="currency/exchange" element={<Exchange />}/>
         </Route>
         <Route path="/services">
+          <Route path="maps" element={<ServicesMaps />}/>
           <Route path="tools" element={<ToolsIndex />}/>
           <Route path="tools/kml-to-coordinates" element={<KMLToCoordinate />}/>
+          <Route path="tools/pivot" element={<PivotCoordinates />}/>
+          <Route path="tools/LatLong" element={<InsertPoints />}/>
+          <Route path="tools/kml/polygon" element={<KMLPolygon />}/>
         </Route>
         <Route path="/admin">
           <Route path="users" element={<IndexUsers />}/>
