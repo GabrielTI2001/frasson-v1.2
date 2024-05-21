@@ -8,13 +8,13 @@ from .serializers import *
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 import os, json
+from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, Count
 
 def my_assessments(request):
     myavaliacoes = []
     if request.method == 'GET':
         user = request.GET.get('user')
-        print(user)
         if user:
             query_avaliacoes = Avaliacao_Colaboradores.objects.filter(is_active=True).filter(colaboradores=user)
             query_notas = Notas_Avaliacao.objects.values('avaliacao').filter(ponderador=user).annotate(total = Count('id')).filter(ponderador=user)
@@ -42,7 +42,9 @@ def my_assessments(request):
     }
     return JsonResponse(context)
 
+@csrf_exempt
 def quiz(request, uuid):
+    context = {}
     questions = []
     user = request.GET.get('user')
     if not user:
@@ -52,6 +54,30 @@ def quiz(request, uuid):
         return JsonResponse(status=404)
     perguntas = Questionario.objects.all().order_by('-type')
     avaliados = current_avaliacao.colaboradores.all()
+    if request.method == "POST":
+        for a in avaliados:
+            fields_error = {}
+            if str("av"+str(a.id)) in request.POST:
+                total = Notas_Avaliacao.objects.filter(avaliacao=current_avaliacao).filter(avaliado=a).filter(ponderador=user)
+                if total.count() >= perguntas.count():
+                    return JsonResponse(status=404)
+                contador = 0
+                for q in perguntas:
+                    idp = str(q.id)
+                    if request.POST.get(idp):
+                        contador+=1
+                    else:
+                        fields_error[idp] = "Campo obrigatório"
+                if contador == perguntas.count():
+                    for q in perguntas:
+                        idp = str(q.id)
+                        Notas_Avaliacao.objects.create(
+                            avaliacao_id= current_avaliacao.id, nota= float(request.POST.get(idp)),
+                            avaliado=a, ponderador_id= int(user), questionario=q
+                        )
+                else:
+                    context['fields_error']=fields_error
+                    return JsonResponse(context, status=400)
     for a in avaliados:
         total = Notas_Avaliacao.objects.filter(avaliacao=current_avaliacao).filter(avaliado=a).filter(ponderador=user)
         if total.count() >= perguntas.count():
@@ -78,35 +104,10 @@ def quiz(request, uuid):
                     'choices': choices
                 })
         questions.append({
-            'avaliado': {'id':a.id, 'nome':a.first_name},
+            'avaliado': {'id':a.id, 'nome':a.first_name, 'nome_completo': a.first_name+' '+a.last_name, 'avatar':a.profile.avatar.name},
             'questionsq':formsq,
             'questionsn':formsn,
         })
 
-    if request.method == "POST":
-        for a in avaliados:
-            fields_error = {}
-            if str("av"+str(a.id)) in request.POST:
-                total = Notas_Avaliacao.objects.filter(avaliacao=current_avaliacao).filter(avaliado=a).filter(ponderador=user)
-                if total.count() >= perguntas.count():
-                    return JsonResponse(status=404)
-                contador = 0
-                for q in perguntas:
-                    idp = str(q.id)
-                    if request.POST.get(idp):
-                        contador+=1
-                    else:
-                        fields_error[idp] = "Campo obrigatório"
-                if contador == perguntas.count():
-                    for q in perguntas:
-                        idp = str(q.id)
-                        Notas_Avaliacao.objects.create(
-                            avaliacao_id= current_avaliacao, nota= float(request.POST.get(idp)),
-                            avaliado=a, ponderador_id= int(user), questionario=q
-                        )
-                    return JsonResponse(201)
-                else:
-                    context = {'questions':questions, 'fields_error':fields_error}
-                    return JsonResponse(context, status=400)
     context = {'questions':questions}
     return JsonResponse(context)

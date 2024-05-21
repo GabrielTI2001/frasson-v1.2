@@ -125,7 +125,7 @@ export const LineChart = ({values, columns, name, title, area, background, heigh
     );
 };
 
-export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title}) => {
+export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title, height}) => {
   const {config: {theme}} = useAppContext();
   const series = [
     {
@@ -151,7 +151,6 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
     dataLabels: {
       enabled: false
     },
-    colors:['green', 'blue'],
     stroke: {
       curve: 'straight',
       width: [3, 0],
@@ -213,7 +212,7 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
     <Chart
       options={options}
       series={series}
-      height="350"
+      height={height || "350"}
     />
   );
 };

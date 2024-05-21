@@ -12,7 +12,6 @@ const ConsultaCNPJ = () =>{
     const [cnpj, setCNPJ] = useState()
     const navigate = useNavigate();
     const token = localStorage.getItem("token")
-    console.log(formData)
 
     const handleApi = async (cnpj) => {
         const link = `${process.env.REACT_APP_API_URL}/external/cnpj/?search=${cnpj}`

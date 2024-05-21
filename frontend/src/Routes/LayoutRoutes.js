@@ -14,6 +14,9 @@ import IndexFarms from '../App/Analytics/Farms/Index';
 import ViewFarm from '../App/Analytics/Farms/View';
 import IndexCredit from '../App/Analytics/Credit/Index';
 import ViewCredit from '../App/Analytics/Credit/View';
+//Assessments
+import Quiz from '../App/Assessments/Quiz';
+import MyAssessments from '../App/Assessments/My';
 //Dashboard
 import DashCredit from '../App/Dashboard/Credit/Index';
 import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
@@ -28,6 +31,9 @@ import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
 import ViewPivot from '../App/Irrigacao/Pivots/View';
 import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
+//KPI
+import IndexMyIndicators from '../App/Kpi/Index';
+import ViewIndicator from '../App/Kpi/View';
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -132,8 +138,9 @@ const LayoutRoutes = () => {
           <Route path="credit" element={<IndexCredit />}/>
           <Route path="credit/:id" element={<ViewCredit />}/>
         </Route>
-        <Route path="/api">
-
+        <Route path="/assessments">
+          <Route path="quiz/:uuid" element={<Quiz />}/>
+          <Route path="my" element={<MyAssessments />}/>
         </Route>
         <Route path="/dashboard">
           <Route path="ambiental" element={<DashAmbiental />}/>
@@ -148,6 +155,10 @@ const LayoutRoutes = () => {
           <Route path="pivots" element={<IndexPivots />}/>
           <Route path="pivots/:uuid" element={<ViewPivot />}/>
           <Route path="pivots/map" element={<MapaPivots />}/>
+        </Route>
+        <Route path="/kpi">
+          <Route path="myindicators" element={<IndexMyIndicators />}/>
+          <Route path="indicators/:uuid" element={<ViewIndicator />}/>
         </Route>
         <Route path="/licenses">
           <Route path="" element={<IndexLicenses />}/>
