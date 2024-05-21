@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { Card, Row, Col, Spinner} from "react-bootstrap";
 import { useAppContext } from "../../../Main";
 import { BarChart, PieChart, ColumnChart } from "../../../components/Custom/Charts";
@@ -57,18 +57,18 @@ const DashAmbiental = () =>{
                 <Card className="shadow-sm px-0 pt-1 pb-0 panel w-100">
                     <Card.Body as={Row} className="justify-content-between pt-3 pb-0 px-3 gy-2">
                         <Col className="px-3 pb-3">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_outorgas}</Card.Title>
-                            <h3 className="px-0 fw-normal mb-0 text-secondary" style={{fontSize:'0.75rem'}}>Pontos de outorga mapeados</h3>
+                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_processos}</Card.Title>
+                            <h3 className="px-0 fw-normal mb-0 text-secondary" style={{fontSize:'0.75rem'}}>Processos Gestão Ambiental</h3>
                         </Col>
                         <Col xl='auto' className="d-flex align-items-center">
                             <FontAwesomeIcon icon={faLeaf} className="fs-2 text-success-emphasis"/>
                         </Col>
-                        <Col xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
-                            onClick={() =>{}}
+                        <Link as={Col} xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
+                            to={'/pipefy/pipes/301573538'}
                         >
                             <span className="col text-primary fw-semibold">Ver Processos</span>
                             <FontAwesomeIcon icon={faArrowAltCircleRight} className="fs--1 px-1 col-auto opacity-25"/>
-                        </Col>
+                        </Link>
                     </Card.Body>
                 </Card>  
             </Col>
@@ -82,12 +82,12 @@ const DashAmbiental = () =>{
                         <Col xl='auto' className="d-flex align-items-center">
                             <FontAwesomeIcon icon={faMapLocationDot} className="fs-2"/>
                         </Col>
-                        <Col xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
-                            onClick={() =>{}}
+                        <Link as={Col} xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
+                            to={'/ambiental/inema/appos'}
                         >
                             <span className="col text-primary fw-semibold">Ver Processos</span>
                             <FontAwesomeIcon icon={faArrowAltCircleRight} className="fs--1 px-1 col-auto opacity-25"/>
-                        </Col>
+                        </Link>
                     </Card.Body>
                 </Card>  
             </Col>
@@ -95,18 +95,18 @@ const DashAmbiental = () =>{
                 <Card className="shadow-sm px-0 pt-1 pb-0 panel w-100">
                     <Card.Body as={Row} className="justify-content-between pt-3 pb-0 px-3 gy-2">
                         <Col className="px-3 pb-3">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_appo}</Card.Title>
-                            <h3 className="px-0 fw-normal mb-0 text-secondary" style={{fontSize:'0.75rem'}}>Poços mapeados</h3>
+                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_outorgas}</Card.Title>
+                            <h3 className="px-0 fw-normal mb-0 text-secondary" style={{fontSize:'0.75rem'}}>Pontos de outorga mapeados</h3>
                         </Col>
                         <Col xl='auto' className="d-flex align-items-center">
                             <FontAwesomeIcon icon={faDroplet} className="fs-2 text-primary"/>
                         </Col>
-                        <Col xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
-                            onClick={() =>{}}
+                        <Link as={Col} xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
+                            to={'/ambiental/inema/outorgas'}
                         >
                             <span className="col text-primary fw-semibold">Ver Processos</span>
                             <FontAwesomeIcon icon={faArrowAltCircleRight} className="fs--1 px-1 col-auto opacity-25"/>
-                        </Col>
+                        </Link>
                     </Card.Body>
                 </Card>  
             </Col>
@@ -120,12 +120,12 @@ const DashAmbiental = () =>{
                         <Col xl='auto' className="d-flex align-items-center">
                             <FontAwesomeIcon icon={faCircleNotch} className="fs-2 text-danger"/>
                         </Col>
-                        <Col xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
-                            onClick={() =>{}}
+                        <Link as={Col} xl={12} className="d-flex align-items-between rounded-1 mb-0 py-2 px-3 bg-100 cursor-pointer" 
+                            to={'/irrigation/pivots'}
                         >
                             <span className="col text-primary fw-semibold">Ver Processos</span>
                             <FontAwesomeIcon icon={faArrowAltCircleRight} className="fs--1 px-1 col-auto opacity-25"/>
-                        </Col>
+                        </Link>
                     </Card.Body>
                 </Card>  
             </Col>

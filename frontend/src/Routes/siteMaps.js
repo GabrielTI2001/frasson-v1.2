@@ -1,7 +1,7 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
 faMap, faWheatAwn, faCannabis, faFilePen} 
 from "@fortawesome/free-solid-svg-icons";
-import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye } 
+import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins } 
 from "@fortawesome/free-solid-svg-icons";
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -59,6 +59,26 @@ export const dashboardRoutes = {
         {
           name: 'Dashboard Ambiental',
           to: '/dashboard/ambiental',
+          icon: faChartSimple,
+          exact: true,
+          active: true
+        }
+      ]
+    },
+    {
+      name: 'Financeiro',
+      active: true,
+      children: [
+        {
+          name: 'Dashboard Pagamentos',
+          to: '/dashboard/finances/billings',
+          icon: faChartSimple,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Dashboard Cobranças',
+          to: '/dashboard/finances/revenues',
           icon: faChartSimple,
           exact: true,
           active: true
@@ -300,18 +320,20 @@ export const financeiroRoutes = {
   labelDisable: true,
   children: [
     {
-      name: 'Teste',
+      name: 'Financeiro',
       active: true,
       children: [
         {
-          name: 'Sub1',
-          to: '/',
+          name: 'DRE Consolidado',
+          to: '/finances/dre/actual',
+          icon: faCoins,
           exact: true,
           active: true
         },
         {
-          name: 'Sub2',
-          to: '/',
+          name: 'DRE Provisionado',
+          to: '/finances/dre/forecast',
+          icon: faChartLine,
           exact: true,
           active: true
         },

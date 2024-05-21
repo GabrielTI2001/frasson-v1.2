@@ -1,17 +1,16 @@
 from django.shortcuts import render
-from django.db.models import Avg, Sum, Count, DecimalField
+from django.db.models import Avg, Sum, Count, DecimalField, Case, When, Q
 from django.db.models.functions import Coalesce
 from django.http import JsonResponse
 from datetime import date
-import locale, json, statistics
+import locale, json, statistics, uuid
 from django.core import serializers
 from pipefy.models import Operacoes_Contratadas, Card_Produtos, Card_Prospects
 from environmental.models import Processos_APPO_Coordenadas, Processos_Outorga_Coordenadas
+from finances.models import Pagamentos_Pipefy, Cobrancas_Pipefy
 from irrigation.models import Cadastro_Pivots
 from processes.models import Processos_Andamento
 from kpi.models import Indicadores_Frasson, Metas_Realizados
-
-# Create your views here.
 
 def dashboard_operacoes_contratadas(request):
     #CARREGA A DASHBOARD DE OPERAÇÕES CONTRATADAS (! IMPORTANTE !)
@@ -328,7 +327,6 @@ def dashboard_produtos(request):
         'concluidos_gai': concluidos_gai,
         'operacoes_andamento': operacoes_andamento,
     }
-
     return JsonResponse(context)
 
 def dashboard_gestao_ambiental(request):
@@ -398,5 +396,153 @@ def dashboard_gestao_ambiental(request):
         'tempo_dias_formacao': f"{dias_formacao} {'dias' if dias_formacao > 1 else 'dia'}" if dias_formacao > 0 else '-',
         'tempo_dias_formacao_aberto': f"{dias_formacao_aberto} {'dias' if dias_formacao_aberto > 1 else 'dia'}" if dias_formacao_aberto > 0 else '-'
     }
+    return JsonResponse(context)
 
+
+def pagamentos_pipefy_dashboard(request):
+    #DASHBOARD DE PAGAMENTOS
+    categorias = {}
+    current_year = int(date.today().year)
+    current_month = int(date.today().month)
+    search_year = request.GET.get('year')
+    search_month = request.GET.get('month')
+
+    if search_year and search_month:
+        query_search = (Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) & (Q(data_vencimento__month=search_month) | Q(data_pagamento__month=search_month))
+        searched_year = int(search_year)
+        searched_month = int(search_month)
+    else:
+        query_search = (Q(data_vencimento__year=current_year) | Q(data_pagamento__year=current_year)) & (Q(data_vencimento__month=current_month) | Q(data_pagamento__month=current_month))
+        searched_year = current_year
+        searched_month = current_month
+
+    anos = Pagamentos_Pipefy.objects.values_list('data_vencimento__year', flat=True).distinct()
+    meses = [{'number': 1, 'abrev': 'JAN', 'name': 'janeiro'},
+        {'number': 2, 'abrev': 'FEV', 'name': 'fevereiro'},
+        {'number': 3, 'abrev': 'MAR', 'name': 'março'},
+        {'number': 4, 'abrev': 'ABR', 'name': 'abril'},
+        {'number': 5, 'abrev': 'MAI', 'name': 'maio'},
+        {'number': 6, 'abrev': 'JUN', 'name': 'junho'},
+        {'number': 7, 'abrev': 'JUL', 'name': 'julho'},
+        {'number': 8, 'abrev': 'AGO', 'name': 'agosto'},
+        {'number': 9, 'abrev': 'SET', 'name': 'setembro'},
+        {'number': 10, 'abrev': 'OUT', 'name': 'outubro'},
+        {'number': 11, 'abrev': 'NOV', 'name': 'novembro'},
+        {'number': 12, 'abrev': 'DEZ', 'name': 'dezembro'}
+    ]
+    #TOTAL DE PAGAMENTOS POR FASE
+    query_pagamentos_fases = Pagamentos_Pipefy.objects.filter(query_search).aggregate(
+        conferencia=Sum(Case(When(phase_id=317163730, then='valor_pagamento'), default=0, output_field=DecimalField())),
+        agendado=Sum(Case(When(phase_id=317163731, then='valor_pagamento'), default=0, output_field=DecimalField())),
+        pago=Sum(Case(When(phase_id=317163732, then='valor_pagamento'), default=0, output_field=DecimalField())))
+    
+    total_conferencia = query_pagamentos_fases.get('conferencia', 0) or 0
+    total_agendado = query_pagamentos_fases.get('agendado', 0) or 0
+    total_pago = query_pagamentos_fases.get('pago', 0) or 0
+    total_pagamentos = total_conferencia + total_agendado + total_pago
+
+    #PERCENTUAL DE PAGAMENTOS POR FASE
+    percentual_conferencia = round((total_conferencia / total_pagamentos) * 100, 1) if total_pagamentos != 0 else 0
+    percentual_agendado = round((total_agendado / total_pagamentos) * 100, 1) if total_pagamentos != 0 else 0
+    percentual_pago = round((total_pago / total_pagamentos) * 100, 1) if total_pagamentos != 0 else 0
+ 
+    #PAGAMENTOS POR CATEGORIA
+    pagamentos_categoria = Pagamentos_Pipefy.objects.filter(query_search).values('categoria__category').annotate(total=Sum('valor_pagamento')).order_by('-total')[:10]
+    for pagamento in pagamentos_categoria:
+        categorias[pagamento['categoria__category']] = pagamento['total']
+
+    context = {
+        'conferencia':  locale.currency(total_conferencia, grouping=True),
+        'agendado': locale.currency(total_agendado, grouping=True),
+        'pago': locale.currency(total_pago, grouping=True),
+        'total_pagamentos': locale.currency(total_pagamentos, grouping=True),
+        'percentual_conferencia': percentual_conferencia,
+        'percentual_agendado': percentual_agendado,
+        'percentual_pago': percentual_pago,
+        'categorias': categorias,
+        # 'meses': meses,
+        'anos': list(anos),
+        # 'searched_month': searched_month,
+        # 'searched_year': searched_year,
+        'uuid': uuid.uuid4()
+    }
+    return JsonResponse(context)
+
+
+def cobrancas_pipefy_dashboard(request):
+    #VISUALIZAR DASHBOARD DE COBRANÇAS
+    current_year = int(date.today().year)
+    produto_gc = 864795372
+    produto_gai = 864795466
+    produto_avaliacao = 864795628
+    produto_tecnologia = 864795734
+    #COBRANÇAS ABERTAS
+    query_cobrancas_abertas= Cobrancas_Pipefy.objects.aggregate(
+        aguardando=Sum(Case(When(phase_id=317532037, then='saldo_devedor'), default=0, output_field=DecimalField())),
+        notificacao=Sum(Case(When(phase_id=317532038, then='saldo_devedor'), default=0, output_field=DecimalField())),
+        faturamento=Sum(Case(When(phase_id=318663454, then='saldo_devedor'), default=0, output_field=DecimalField())),
+        confirmacao=Sum(Case(When(phase_id=317532040, then='saldo_devedor'), default=0, output_field=DecimalField())))
+
+    total_aguardando_distribuicao = query_cobrancas_abertas.get('aguardando', 0) or 0
+    total_notificacao = query_cobrancas_abertas.get('notificacao', 0) or 0
+    total_faturamento = query_cobrancas_abertas.get('faturamento', 0) or 0
+    total_confirmacao = query_cobrancas_abertas.get('confirmacao', 0) or 0
+    total_cobrancas_abertas = total_aguardando_distribuicao + total_notificacao + total_faturamento + total_confirmacao
+    #id das fases de cobranças abertas (não pagas - AD, Not, Fatu e Conf)
+    id_phases_cobracas_abertas = [317532037, 317532038, 318663454, 317532040]
+    #CÁLCULO TOTAL ABERTO POR PRODUTO
+    query_aberto_produtos= Cobrancas_Pipefy.objects.filter(phase_id__in=id_phases_cobracas_abertas).aggregate(
+        gc=Sum(Case(When(detalhamento__produto=produto_gc, then='saldo_devedor'), default=0, output_field=DecimalField())),
+        gai=Sum(Case(When(detalhamento__produto=produto_gai, then='saldo_devedor'), default=0, output_field=DecimalField())),
+        ava=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='saldo_devedor'), default=0, output_field=DecimalField())),
+        tec=Sum(Case(When(detalhamento__produto=produto_tecnologia, then='saldo_devedor'), default=0, output_field=DecimalField())))
+
+    aberto_gc = query_aberto_produtos.get('gc', 0) or 0
+    aberto_gai = query_aberto_produtos.get('gai', 0) or 0
+    aberto_avaliacao = query_aberto_produtos.get('ava', 0) or 0
+    aberto_tecnologia = query_aberto_produtos.get('tec', 0) or 0
+
+    #CÁLCULO VALOR TOAL FATURADO (CONSOLIDADO) POR PRODUTO - ANO ATUAL
+    query_faturamento_consolidado= Cobrancas_Pipefy.objects.filter(phase_id=317532039, data_pagamento__year=current_year).aggregate(
+        gc=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
+        gai=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
+        ava=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),
+        tec=Sum(Case(When(detalhamento__produto=produto_tecnologia, then='valor_faturado'), default=0, output_field=DecimalField())))
+
+    faturado_gc = query_faturamento_consolidado.get('gc', 0) or 0
+    faturado_gai = query_faturamento_consolidado.get('gai', 0) or 0
+    faturado_avaliacao = query_faturamento_consolidado.get('ava', 0) or 0
+    faturado_tecnologia = query_faturamento_consolidado.get('tec', 0) or 0
+    faturado_total = faturado_gc + faturado_gai + faturado_avaliacao + faturado_tecnologia
+    #PREVISÃO DE FATURAMENTO ANUAL
+    previsao_faturamento = faturado_total + total_cobrancas_abertas
+    context = {
+        'total_aguardando_distribuicao': locale.currency(total_aguardando_distribuicao, grouping=True),
+        'total_notificacao': locale.currency(total_notificacao, grouping=True),
+        'total_faturamento': locale.currency(total_faturamento, grouping=True),
+        'total_confirmacao': locale.currency(total_confirmacao, grouping=True),
+        'percentual_aguardando': round(total_aguardando_distribuicao / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'percentual_notificacao': round(total_notificacao / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'percentual_faturamento': round(total_faturamento / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'percentual_confirmacao': round(total_confirmacao / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'aberto_gc': locale.currency(aberto_gc, grouping=True),
+        'percentual_aberto_gc': round(aberto_gc / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'aberto_gai': locale.currency(aberto_gai, grouping=True),
+        'percentual_aberto_gai': round(aberto_gai / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'aberto_avaliacao': locale.currency(aberto_avaliacao, grouping=True),
+        'percentual_aberto_avaliacao': round(aberto_avaliacao / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'aberto_tecnologia': locale.currency(aberto_tecnologia, grouping=True),
+        'percentual_aberto_tecnologia': round(aberto_tecnologia / total_cobrancas_abertas * 100, 1) if total_cobrancas_abertas > 0 else 0,
+        'faturado_gc': locale.currency(faturado_gc, grouping=True),
+        'faturado_gai': locale.currency(faturado_gai, grouping=True),
+        'faturado_avaliacao': locale.currency(faturado_avaliacao, grouping=True),
+        'faturado_tecnologia': locale.currency(faturado_tecnologia, grouping=True),
+        'faturado_total': locale.currency(faturado_total, grouping=True),
+        'aberto_total': locale.currency(total_cobrancas_abertas, grouping=True),
+        'percentual_faturado_gc': round(faturado_gc / faturado_total * 100, 1) if faturado_total > 0 else 0,
+        'percentual_faturado_gai': round(faturado_gai / faturado_total * 100, 1) if faturado_total > 0 else 0,
+        'percentual_faturado_avaliacao': round(faturado_avaliacao / faturado_total * 100, 1) if faturado_total > 0 else 0,
+        'percentual_faturado_tecnologia': round(faturado_tecnologia / faturado_total * 100, 1) if faturado_total > 0 else 0,
+        'previsao_faturamento_anual': locale.currency(previsao_faturamento, grouping=True)
+    }
     return JsonResponse(context)

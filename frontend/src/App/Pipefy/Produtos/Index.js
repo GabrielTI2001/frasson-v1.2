@@ -27,7 +27,7 @@ const IndexProdutos = ({phasename}) => {
 
     useEffect(()=>{
         const getdata = async () =>{
-            const status = await HandleSearch('', 'pipefy/cards/produtos', setter, `${phasename ? '?phase='+phasename : null}`)
+            const status = await HandleSearch('', 'pipefy/cards/produtos', setter, `${phasename ? '?phase='+phasename : ''}`)
             if (status === 401){
              navigate("/auth/login")
             } 

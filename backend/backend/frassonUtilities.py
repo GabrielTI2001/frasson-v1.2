@@ -1,8 +1,9 @@
-from django.db.models import Q
+from django.db.models import Q, Sum, Case, When, DecimalField
 import requests, json, environ, math
 from django.http import JsonResponse, HttpResponse
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from environmental.models import Processos_Outorga_Coordenadas, Processos_APPO_Coordenadas
+from finances.models import Saldos_Iniciais, Cobrancas_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Pagamentos_Pipefy
 from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, init_data
 from pygc import great_circle
 import numpy as np
@@ -139,6 +140,36 @@ class Frasson(object):
         obj = json.loads(response.text) 
         elevation = obj["results"]
         return elevation
+    
+    def saldoInicialAno(year):
+        """Função que retorna o saldo inicial do ano de busca"""
+        years = list(range(2020, year)) #cria uma lista de anos, iniciando em 2021 até o ano de busca
+
+        #CALCULA SOMÁTORIO DO SALDO INICIAL
+        saldos = Saldos_Iniciais.objects.select_related('caixa').values('caixa__caixa', 'valor')
+        saldos_iniciais = {saldo['caixa__caixa']: float(saldo['valor']) for saldo in saldos}
+        total_saldo_inicial = sum(saldos_iniciais.values())
+
+        #TOTAL COBRANÇAS E PAGAMENTOS
+        cobrancas = Cobrancas_Pipefy.objects.filter(phase_id=317532039, data_pagamento__year__in=years).aggregate(total=Sum('valor_faturado'))['total'] or 0
+        pagamentos = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year__in=years).aggregate(total=Sum('valor_pagamento'))['total'] or 0
+        
+        #TOTAL RESULTADOS FINANCEIROS
+        query_resultados_financeiros = Resultados_Financeiros.objects.filter(data__year__in=years).aggregate(
+            total_receitas_mov=Sum(Case(When(tipo__tipo='R', then='valor'), default=0, output_field=DecimalField())),
+            total_despesas_mov=Sum(Case(When(tipo__tipo='D', then='valor'), default=0, output_field=DecimalField())))
+        
+        receitas_mov = query_resultados_financeiros.get('total_receitas_mov', 0) or 0
+        despesas_mov = query_resultados_financeiros.get('total_despesas_mov', 0) or 0
+        
+        #TOTAL REEMBOLSOS
+        reembolsos = Reembolso_Cliente.objects.filter(data__year__in=years).aggregate(total=Sum('valor'))['total'] or 0
+        
+        #CALCULA O SALDO INICIAL DO ANO
+        saldo_inicial_ano = float(total_saldo_inicial) + float(cobrancas) - float(pagamentos) + float(receitas_mov) - float(despesas_mov) + float(reembolsos)
+
+        return round(saldo_inicial_ano, 2)
+
 
     
 

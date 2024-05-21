@@ -1,5 +1,6 @@
 from django.db import models
 from pipefy.models import Cadastro_Pessoal, Fornecedores_Colaboradores, Contratos_Servicos, Detalhamento_Servicos
+from users.models import User
 
 class MyAppPermissions(models.Model):
     class Meta:
@@ -25,6 +26,26 @@ class Caixas_Frasson(models.Model):
         verbose_name_plural = 'Caixas Frasson'
     def __str__(self):
         return self.caixa
+    
+class Saldos_Iniciais(models.Model):
+    caixa = models.OneToOneField(Caixas_Frasson, on_delete=models.CASCADE, null=True, verbose_name='Caixa')
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    data_referencia = models.DateField(null=True, verbose_name='Data Referência')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Saldos Iniciais'
+    def __str__(self):
+        return self.caixa.caixa
+
+class Status_Pagamentos(models.Model):
+    description = models.CharField(max_length=255, verbose_name='Status do Pagamento')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Status Pagamento'
+    def __str__(self):
+        return self.description
     
 class Categorias_Pagamentos(models.Model):
     id = models.BigIntegerField(primary_key=True)
@@ -80,3 +101,61 @@ class Cobrancas_Pipefy(models.Model):
         verbose_name_plural = 'Cobranças Pipefy'
     def __str__(self):
         return self.cliente.razao_social
+    
+class Tipo_Receita_Despesa(models.Model):
+    TIPO_CHOICES = (
+        ("R", "Receita"),
+        ("D", "Despesa")
+    )
+
+    tipo = models.CharField(max_length=1, choices=TIPO_CHOICES, null=True, verbose_name='Receita ou Despesa')
+    description = models.CharField(max_length=255, null=True, verbose_name='Descrição da Receita ou Despesa')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Tipos de Receita ou Despesa'
+    def __str__(self):
+        return self.description
+
+
+class Resultados_Financeiros(models.Model):
+    data = models.DateField(null=True, verbose_name='Data da Movimentação')
+    tipo = models.ForeignKey(Tipo_Receita_Despesa, on_delete=models.SET_NULL, null=True, verbose_name='Tipo de Receita ou Despesa')
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor da Movimentação')
+    caixa = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Caixa')
+    description = models.CharField(max_length=255, null=True, verbose_name='Descrição da Movimentação')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Movimentações Financeiras'
+    def __str__(self):
+        return self.tipo.description
+
+
+class Transferencias_Contas(models.Model):
+    caixa_origem = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, related_name='caixa_origem_id')
+    caixa_destino = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, related_name='caixa_destino_id')
+    description = models.TextField(null=True, blank=True)
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    data = models.DateField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Transferências Entre Contas'
+    def __str__(self):
+        return self.caixa_origem
+
+class Reembolso_Cliente(models.Model):
+    caixa_destino = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True)
+    description = models.TextField(null=True, blank=True)
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    data = models.DateField(null=True)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Reembolsos Clientes'
+    def __str__(self):
+        return self.caixa_destino

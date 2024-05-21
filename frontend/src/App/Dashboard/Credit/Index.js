@@ -74,7 +74,7 @@ const DashCredit = () =>{
         </ol>
         <Form className='row mb-2'>
             <Form.Group className="mb-1" as={Col} xl={2} sm={4}>
-                <Form.Select name='mes' onChange={handleFieldChange} value={formData ? formData.ano : ''}>
+                <Form.Select name='ano' onChange={handleFieldChange} value={formData ? formData.ano : ''}>
                     {data && data.anos.map(ano =>(
                         <option key={ano} value={ano}>{ano}</option>
                     ))}

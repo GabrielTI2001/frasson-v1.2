@@ -23,9 +23,14 @@ import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
 import DashProspects from '../App/Dashboard/Pipefy/Prospects';
 import DashProdutos from '../App/Dashboard/Pipefy/Produtos';
 import DashAmbiental from '../App/Dashboard/Ambiental/Index';
+import DashBillings from '../App/Dashboard/Finances/Payments';
+import DashRevenues from '../App/Dashboard/Finances/Revenues';
 //External
 import IndexOutorgasANA from '../App/External/OutorgasANA/Index';
 import Exchange from '../App/Services/Currency/Exchange';
+//Finances
+import DREConsolidado from '../App/Finances/DREActual';
+import DREProvisionado from '../App/Finances/DREForecast';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -148,6 +153,12 @@ const LayoutRoutes = () => {
           <Route path="credit/progress" element={<DashGestaoCredito />}/>
           <Route path="prospects" element={<DashProspects />}/>
           <Route path="products" element={<DashProdutos />}/>
+          <Route path="finances/billings" element={<DashBillings />}/>
+          <Route path="finances/revenues" element={<DashRevenues />}/>
+        </Route>
+        <Route path="/finances">
+          <Route path="dre/actual" element={<DREConsolidado />}/>
+          <Route path="dre/forecast" element={<DREProvisionado />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/irrigation">

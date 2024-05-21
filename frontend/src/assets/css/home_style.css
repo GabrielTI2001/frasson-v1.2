@@ -139,3 +139,21 @@ input:focus{
   font-size: 10px !important; 
   padding: 2px !important
 }
+.accordion-button:focus {
+  box-shadow: none !important;
+}
+.accordion-button:not(.collapsed) {
+  color: inherit !important; 
+}
+.accordion-button {
+  padding: 0.3rem 0.4rem !important;
+  padding-right: 0.5rem !important;
+}
+.disabled{
+  pointer-events: none !important;
+  height: auto !important;
+}
+
+.disabled .accordion-button::after {
+  visibility: hidden !important;
+}
