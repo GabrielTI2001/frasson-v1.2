@@ -1,7 +1,7 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
 faMap, faWheatAwn, faCannabis, faFilePen} 
 from "@fortawesome/free-solid-svg-icons";
-import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins } 
+import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -115,6 +115,13 @@ export const PipefyRoutes = {
           name: 'Operações Contratadas',
           to: '/analytics/credit',
           icon2: 'CashCoin',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Cadastro Pessoal',
+          to: '/pipefy/pessoal',
+          icon: faPerson,
           exact: true,
           active: true
         }
@@ -334,6 +341,13 @@ export const financeiroRoutes = {
           name: 'DRE Provisionado',
           to: '/finances/dre/forecast',
           icon: faChartLine,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Automação de Pagamentos',
+          to: '/finances/automation/payments',
+          icon: faRobot,
           exact: true,
           active: true
         },

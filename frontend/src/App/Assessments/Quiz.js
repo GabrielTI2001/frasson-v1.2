@@ -11,8 +11,6 @@ const Quiz = () =>{
     const [formData, setFormData] = useState()
     const [index, setIndex] = useState(0)
     const {uuid} = useParams()
-    console.log(dados)
-
 
     const sendData = async (form) => {
         const link = `${process.env.REACT_APP_API_URL}/assessments/quiz/${uuid}?user=${user.id}`
@@ -41,7 +39,6 @@ const Quiz = () =>{
         }
     };
     const handleSubmit = (e, avaliadoid) => {
-        console.log(dados.filter(d => d.avaliado.id !== avaliadoid))
         setMessage(null)
         e.preventDefault();
         const formDataToSend = new FormData();

@@ -1,14 +1,12 @@
 import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import { Button, Form, Col} from 'react-bootstrap';
 import { fetchMunicipio } from '../../Ambiental/Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { useAppContext } from '../../../Main';
-import { faCircleQuestion, faFilePdf } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SelectSearchOptions } from '../../../helpers/Data';
 
 const PivotForm = ({ hasLabel, type, submit, data}) => {

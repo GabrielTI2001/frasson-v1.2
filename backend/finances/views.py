@@ -1,12 +1,51 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Cobrancas_Pipefy, Pagamentos_Pipefy, Reembolso_Cliente, Resultados_Financeiros
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .serializers import *
+from .models import Cobrancas_Pipefy, Pagamentos_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Lancamentos_Automaticos_Pagamentos
 from pipefy.models import Card_Produtos, Card_Prospects
 from django.db.models import Sum, Q, Case, When, DecimalField
 from backend.frassonUtilities import Frasson
 from datetime import date
 from collections import defaultdict
 import locale, uuid
+
+class AutomPagamentosView(viewsets.ModelViewSet):
+    queryset = Lancamentos_Automaticos_Pagamentos.objects.all()
+    serializer_class = detailAutomPagamentos
+    # permission_classes = [IsAuthenticated]
+    lookup_field = 'uuid'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)   
+        if search:
+            queryset = queryset.filter(Q(beneficiario__razao_social__icontains=search) | Q(categoria_pagamento__category__icontains=search) | 
+                Q(descricao__icontains=search)
+            )
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listAutomPagamentos
+        else:
+            return self.serializer_class
+        
+class CategoriaPagamentosView(viewsets.ModelViewSet):
+    queryset = Categorias_Pagamentos.objects.all()
+    serializer_class = listCategoriaPagamentos
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)   
+        if search:
+            queryset = queryset.filter(Q(category__icontains=search) | Q(sub_category__icontains=search))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCategoriaPagamentos
+        else:
+            return self.serializer_class
+
 
 def index_dre_consolidado(request):
     #DRE CONSOLIDADO

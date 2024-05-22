@@ -6,6 +6,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'pessoal', views.PessoasView)
 router.register(r'beneficiarios', views.BeneficiariosView)
+router.register(r'forncolab', views.FornColabView)
 router.register(r'detalhamentos', views.Detalhamento_ServicosView)
 router.register(r'instituicoes', views.Instituicoes_ParceirasView)
 router.register(r'instituicoes-razaosocial', views.Instituicoes_RazaosocialView)

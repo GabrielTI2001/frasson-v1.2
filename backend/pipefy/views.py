@@ -5,10 +5,7 @@ from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 import requests, json
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
-from .serializers import detailCard_Produtos, serializerDetalhamento_Servicos, serializerInstituicoes_Parceiras
-from .serializers import serializerContratos_Servicos, serializerCadastro_Pessoal, listCadastro_Pessoal, detailCadastro_Pessoal
-from .serializers import listOperacoes, listInstituicoes_RazaoSocial, serializerCard_Prospects, detailCard_Prospects
-from .serializers import serMonitoramentoPrazos, listCard_Produtos, detailOperacoes
+from .serializers import *
 from .models import Card_Produtos, Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Parceiras, Contratos_Servicos
 from .models import Operacoes_Contratadas, Instituicoes_Razao_Social, Card_Prospects, Prospect_Monitoramento_Prazos
 
@@ -182,5 +179,30 @@ class OperacoesContratadasView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return listOperacoes
+        else:
+            return self.serializer_class
+
+class FornColabView(viewsets.ModelViewSet):
+    queryset = Fornecedores_Colaboradores.objects.all()
+    serializer_class = listFornColab
+    # permission_classes = [IsAuthenticated]
+    lookup_field = 'uuid'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        all_term = self.request.query_params.get('all', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(razao_social__icontains=search_term)
+            )
+        elif all_term:
+            queryset = queryset.order_by('-created_at')
+        else:
+            if self.action == 'list':
+                queryset = queryset.order_by('-created_at')[:10]
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listFornColab
         else:
             return self.serializer_class

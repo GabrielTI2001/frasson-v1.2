@@ -1,14 +1,12 @@
 import React, {useState, useEffect} from "react";
-import { Card, Row, Col, Form, Spinner, Accordion} from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
-import { useAppContext } from "../../Main";
+import { Card, Row, Col, Spinner, Accordion} from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilterCircleDollar, faMoneyBillTrendUp, faSackDollar, faArrowTrendDown } 
+import { faMoneyBillTrendUp, faSackDollar, faArrowTrendDown } 
 from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";
 
 const DREProvisionado = () =>{
-    const {config: {theme}} = useAppContext();
     const navigate = useNavigate();
     const [data, setData] = useState()
     const user = JSON.parse(localStorage.getItem("user"))
@@ -38,7 +36,7 @@ const DREProvisionado = () =>{
         <Row xs={1} sm={1} xl={2} className="gx-4 gy-3 d-flex"> 
             <Col>
                 <Accordion defaultActiveKey={['0']}>
-                    <Accordion.Item eventKey="2">
+                    <Accordion.Item eventKey="1">
                         <Accordion.Header className="p-0">
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold fs--1 text-primary" xl={8}>
@@ -52,31 +50,23 @@ const DREProvisionado = () =>{
                         <Accordion.Body className="ps-2 py-0">
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>Gestão de Crédito</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_gc}
-                                    <span className="fw-normal ms-1">({data.percentual_faturado_gc})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.faturado_gc}</Col>
                             </div>
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>Gestão Ambiental e Irrigação</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_gai}
-                                    <span className="fw-normal ms-1">({data.percentual_faturado_gai})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.faturado_gai}</Col>
                             </div>
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>Avaliação de Imóvel</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_avaliacao}
-                                    <span className="fw-normal ms-1">({data.percentual_faturado_avaliacao})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.faturado_avaliacao}</Col>
                             </div>
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>Tecnologia e Inovação</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_tecnologia}
-                                    <span className="fw-normal ms-1">({data.percentual_faturado_avaliacao})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.faturado_tecnologia}</Col>
                             </div>
                         </Accordion.Body>
                     </Accordion.Item>
-                    <Accordion.Item eventKey="3">
+                    <Accordion.Item eventKey="2">
                         <Accordion.Header className="p-0">
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold fs--1 text-primary" xl={8}>
@@ -90,24 +80,88 @@ const DREProvisionado = () =>{
                         <Accordion.Body className="ps-2 py-0">
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>ISS</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_iss}
-                                    <span className="fw-normal ms-1">({data.percentual_iss})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.total_iss}</Col>
                             </div>
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>PIS</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_pis}
-                                    <span className="fw-normal ms-1">({data.percentual_pis})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.total_pis}</Col>
                             </div>
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>COFINS</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_cofins}
-                                    <span className="fw-normal ms-1">({data.percentual_cofins})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.total_cofins}</Col>
                             </div>
                         </Accordion.Body>
                     </Accordion.Item>
+                    <Accordion.Item eventKey="3">
+                        <Accordion.Header className="p-0">
+                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold fs--1 text-primary" xl={8}>
+                                    (+) Cobranças Abertas
+                                </Col>
+                                <Col className={`fw-bold text-end fs--1 text-success`} xl={4}>
+                                    {data.aberto_total}
+                                </Col>
+                            </div>            
+                        </Accordion.Header>
+                        <Accordion.Body className="ps-2 py-0">
+                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold" xl={8}>Gestão de Crédito</Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.aberto_gc}</Col>
+                            </div>
+                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold" xl={8}>Gestão Ambiental e Irrigação</Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.aberto_gai}</Col>
+                            </div>
+                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold" xl={8}>Avaliação de Imóvel</Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.aberto_avaliacao}</Col>
+                            </div>
+                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold" xl={8}>Tecnologia e Inovação</Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.aberto_tecnologia}</Col>
+                            </div>
+                        </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="4">
+                        <Accordion.Header className="p-0">
+                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold fs--1 text-primary" xl={8}>
+                                    (+) Receita Provisionada
+                                </Col>
+                                <Col className={`fw-bold text-end fs--1 text-success`} xl={4}>
+                                    {data.receita_provisionada}
+                                </Col>
+                            </div>            
+                        </Accordion.Header>
+                        <Accordion.Body className="ps-2 py-0">
+                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>    
+                                <Col className="fw-bold" xl={8}>
+                                    Proposta de valor GAI <span className="fw-normal">({data.percentual_proposta_valor})</span>
+                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.total_pv_prospect}</Col>
+                            </div>
+                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold" xl={8}>Operações de crédito em andamento <span className="fw-normal">(0,8%)</span></Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.faturamento_provisionado_gc}</Col>
+                            </div>
+                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold" xl={8}>Faturamento GAI em andamento</Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.faturamento_provisionado_gai}</Col>
+                            </div>
+                        </Accordion.Body>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="0" className="disabled">
+                        <Accordion.Header>
+                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold fs--1 text-primary" xl={8}>
+                                    (-)	Impostos Sobre Serviços (Estimativa)
+                                </Col>
+                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
+                                    {data.total_previsao_impostos_indiretos}
+                                </Col>
+                            </div>
+                        </Accordion.Header>
+                    </Accordion.Item> 
                     <Accordion.Item eventKey="0" className="disabled">
                         <Accordion.Header>
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
@@ -136,6 +190,19 @@ const DREProvisionado = () =>{
                         <Accordion.Header>
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold fs--1 text-primary" xl={8}>
+                                    (-)	Estimativa Custo 
+                                    <span className="fw-normal text-secondary ms-1 fs--2">(Até dezembro {new Date().getFullYear()})</span>                          
+                                </Col>
+                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
+                                    {data.total_custos_estimativa}
+                                </Col>
+                            </div>
+                        </Accordion.Header>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="0" className="disabled">
+                        <Accordion.Header>
+                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold fs--1 text-primary" xl={8}>
                                     (=) Lucro Bruto
                                 </Col>
                                 <Col className={`fw-bold text-end fs--1 text-${data.lucro_bruto > 0 ? 'success' : 'danger'}`} xl={4}>
@@ -144,7 +211,7 @@ const DREProvisionado = () =>{
                             </div>
                         </Accordion.Header>
                     </Accordion.Item>
-                    <Accordion.Item eventKey="4">
+                    <Accordion.Item eventKey="5">
                         <Accordion.Header className="p-0">
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold fs--1 text-primary" xl={8}>
@@ -170,6 +237,19 @@ const DREProvisionado = () =>{
                         <Accordion.Header>
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold fs--1 text-primary" xl={8}>
+                                    (-)	Estimativa Despesas
+                                    <span className="fw-normal text-secondary ms-1 fs--2">(Até dezembro {new Date().getFullYear()})</span>                          
+                                </Col>
+                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
+                                    {data.total_despesas_estimativa}
+                                </Col>
+                            </div>
+                        </Accordion.Header>
+                    </Accordion.Item>
+                    <Accordion.Item eventKey="0" className="disabled">
+                        <Accordion.Header>
+                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
+                                <Col className="fw-bold fs--1 text-primary" xl={8}>
                                     (=) Lucro Operacional
                                 </Col>
                                 <Col className={`fw-bold text-end fs--1 text-${data.lucro_operacional > 0 ? 'success' : 'danger'}`} xl={4}>
@@ -178,7 +258,7 @@ const DREProvisionado = () =>{
                             </div>
                         </Accordion.Header>
                     </Accordion.Item>
-                    <Accordion.Item eventKey="5">
+                    <Accordion.Item eventKey="6">
                         <Accordion.Header className="p-0">
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold fs--1 text-primary" xl={8}>
@@ -216,7 +296,7 @@ const DREProvisionado = () =>{
                             </div>
                         </Accordion.Header>
                     </Accordion.Item>
-                    <Accordion.Item eventKey="6">
+                    <Accordion.Item eventKey="7">
                         <Accordion.Header className="p-0">
                             <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold fs--1 text-primary" xl={8}>
@@ -230,15 +310,11 @@ const DREProvisionado = () =>{
                         <Accordion.Body className="ps-2 py-0">
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>CSLL</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_csll}
-                                    <span className="fw-normal ms-1">({data.percentual_csll})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.total_csll}</Col>
                             </div>
                             <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
                                 <Col className="fw-bold" xl={8}>IRPJ</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_irpj}
-                                    <span className="fw-normal ms-1">({data.percentual_irpj})</span>
-                                </Col>
+                                <Col xl='auto' className="fw-bold text-end">{data.total_irpj}</Col>
                             </div>
                         </Accordion.Body>
                     </Accordion.Item>
@@ -262,52 +338,11 @@ const DREProvisionado = () =>{
                     <Col>
                         <Card className="shadow-sm px-3 py-1 panel">
                             <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={9} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_liquida}</Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Líquida {new Date().getFullYear()}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={9} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_bruta}</Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Bruta {new Date().getFullYear()}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
                                 <Col className="px-0" xl={10} sm={8}>
                                     <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.faturamento_tributado}<span className="fw-normal ms-1">({data.percentual_fatu_tributado})</span>
+                                        {data.receita_bruta_estimada_total}
                                     </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Faturamento Tributado {new Date().getFullYear()}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faFilterCircleDollar} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.faturamento_sem_tributacao}<span className="fw-normal ms-1">({data.percentual_fatu_sem_tributacao})</span>
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Faturamento sem tributação {new Date().getFullYear()}</h3>
+                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Receita Bruta estimada {new Date().getFullYear()}</h3>
                                 </Col>
                                 <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
                                     <FontAwesomeIcon icon={faSackDollar} className="fs-3"/>
@@ -320,9 +355,9 @@ const DREProvisionado = () =>{
                             <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
                                 <Col className="px-0" xl={10} sm={8}>
                                     <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.percentual_impostos_tributado}<span className="fw-normal ms-1">({data.total_impostos})</span>
+                                        {data.previsao_impostos_total}
                                     </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Imposto sobre faturamento tributado {new Date().getFullYear()}</h3>
+                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Previsão impostos {new Date().getFullYear()}</h3>
                                 </Col>
                                 <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
                                     <FontAwesomeIcon icon={faArrowTrendDown} className="fs-3"/>
@@ -333,14 +368,25 @@ const DREProvisionado = () =>{
                     <Col>
                         <Card className="shadow-sm px-3 py-1 panel">
                             <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.percentual_impostos_total}<span className="fw-normal ms-1">({data.total_impostos})</span>
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Imposto sobre faturamento total {new Date().getFullYear()}</h3>
+                                <Col className="px-0" xl={10} sm={9}>
+                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_liquida}</Card.Title>
+                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Líquida Provisionada {new Date().getFullYear()}</h3>
                                 </Col>
                                 <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faArrowTrendDown} className="fs-3"/>
+                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
+                                </Col>
+                            </Card.Body>
+                        </Card>  
+                    </Col>
+                    <Col>
+                        <Card className="shadow-sm px-3 py-1 panel">
+                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
+                                <Col className="px-0" xl={10} sm={9}>
+                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_bruta}</Card.Title>
+                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Bruta Provisionada {new Date().getFullYear()}</h3>
+                                </Col>
+                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
+                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
                                 </Col>
                             </Card.Body>
                         </Card>  

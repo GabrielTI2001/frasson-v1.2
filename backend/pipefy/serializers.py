@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Card_Produtos, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal, Card_Prospects
+from .models import Card_Produtos, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal, Card_Prospects, Fornecedores_Colaboradores
 from .models import Instituicoes_Parceiras, Operacoes_Contratadas, ContasBancarias_Clientes, Instituicoes_Razao_Social, Prospect_Monitoramento_Prazos
 from alongamentos.models import Operacoes_Credito
 from datetime import datetime
@@ -252,7 +252,6 @@ class detailOperacoes(serializers.ModelSerializer):
         fields = '__all__'
         
 
-
 class serMonitoramentoPrazos(serializers.ModelSerializer): 
     avatar = serializers.SerializerMethodField(read_only=True)
     def get_avatar(self, obj):
@@ -266,3 +265,8 @@ class serMonitoramentoPrazos(serializers.ModelSerializer):
     class Meta:
         model = Prospect_Monitoramento_Prazos
         fields = '__all__'
+
+class listFornColab(serializers.ModelSerializer):
+    class Meta:
+        model = Fornecedores_Colaboradores
+        fields = ['id', 'razao_social', 'cpf_cnpj']

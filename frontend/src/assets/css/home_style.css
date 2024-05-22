@@ -26,7 +26,7 @@ a:hover{
   text-decoration: none !important;
 }
 
-input:focus{
+textarea:focus, input:focus{
   outline: none !important;
   box-shadow: none !important;
   border-color: #c4c4c4 !important;

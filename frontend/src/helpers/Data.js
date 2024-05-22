@@ -47,7 +47,7 @@ export const RetrieveRecord = async (uuid, url, setter) => {
     }
 }
 
-export const SelectSearchOptions = async (inputValue, link, field) => {
+export const SelectSearchOptions = async (inputValue, link, field, field2) => {
     const token = localStorage.getItem("token")
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/?search=${inputValue}`;
@@ -60,10 +60,10 @@ export const SelectSearchOptions = async (inputValue, link, field) => {
   
       const dataapi = await response.json();
       if (response.status === 200){
-        const options = dataapi.length > 0 ? dataapi.map(b =>({
+        const options = dataapi.map(b =>({
             value: b.id,
-            label: b[field]
-        })) : []
+            label: `${b[field]}${field2 ? ' - '+b[field2] : ''}`
+        }))
         return options
       }
       else if (response.status === 401){
@@ -77,7 +77,7 @@ export const SelectSearchOptions = async (inputValue, link, field) => {
     }
 };
 
-export const SelectOptions = async (link, field) => {
+export const SelectOptions = async (link, field, field2) => {
     const token = localStorage.getItem("token")
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/`;
@@ -92,7 +92,7 @@ export const SelectOptions = async (link, field) => {
       if (response.status === 200){
         const options = dataapi.length > 0 ? dataapi.map(b =>({
             value: b.id,
-            label: b[field]
+            label: `${b[field]}${field2 ? ' - '+b[field2] : ''}`
         })) : []
         return options
       }

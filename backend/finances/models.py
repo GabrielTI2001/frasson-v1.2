@@ -1,6 +1,7 @@
 from django.db import models
 from pipefy.models import Cadastro_Pessoal, Fornecedores_Colaboradores, Contratos_Servicos, Detalhamento_Servicos
 from users.models import User
+import uuid
 
 class MyAppPermissions(models.Model):
     class Meta:
@@ -159,3 +160,18 @@ class Reembolso_Cliente(models.Model):
         verbose_name_plural = 'Reembolsos Clientes'
     def __str__(self):
         return self.caixa_destino
+    
+class Lancamentos_Automaticos_Pagamentos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    beneficiario = models.ForeignKey(Fornecedores_Colaboradores, on_delete=models.SET_NULL, null=True, verbose_name='Beneficiário')
+    descricao = models.CharField(max_length=255, null=True, blank=True, verbose_name='Descrição do Lançamento')
+    detalhamento = models.TextField(null=True, blank=True, verbose_name='Detalhamento do Lançamento')
+    categoria_pagamento = models.ForeignKey(Categorias_Pagamentos, on_delete=models.SET_NULL, null=True)
+    valor_pagamento = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='Valor Pagamento')
+    dia_vencimento = models.IntegerField(null=True, blank=True, verbose_name='Dia do Vencimento')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Lançamentos Autom. Pagamentos'
+    def __str__(self):
+        return self.beneficiario.razao_social

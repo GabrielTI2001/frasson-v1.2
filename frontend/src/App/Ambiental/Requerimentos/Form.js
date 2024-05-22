@@ -7,7 +7,6 @@ import { fetchMunicipio } from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import GoogleMap from '../../../components/map/GoogleMap';
-import { MapInfoDetail } from './MapInfo';
 
 const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();

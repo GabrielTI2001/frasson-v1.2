@@ -33,7 +33,6 @@ const ConsultaCNPJ = () =>{
               navigate("/auth/login");
             }
             else if (response.status === 201 || response.status === 200){
-                console.log(data)
                 setFormData({...data, atividade_principal:`${data.atividade_principal_codigo || ''} ${data.atividade_principal_texto || ''}`})
             }
         } catch (error) {

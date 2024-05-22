@@ -9,7 +9,6 @@ const MyAssessments = () =>{
     const [dados, setDados] = useState();
     const navigate = useNavigate();
     const token = localStorage.getItem("token")
-    console.log(dados)
 
     const handleApi = async () => {
         const link = `${process.env.REACT_APP_API_URL}/assessments/my/?user=${user.id}`
