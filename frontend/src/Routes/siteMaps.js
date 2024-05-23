@@ -352,6 +352,19 @@ export const financeiroRoutes = {
           active: true
         },
       ]
+    },
+    {
+      name: 'Fluxo de Caixa',
+      active: true,
+      children: [
+        {
+          name: 'Saldos Bancários',
+          to: '/finances/accounts',
+          icon2: 'Cash',
+          exact: true,
+          active: true
+        },
+      ]
     }
   ]
 };

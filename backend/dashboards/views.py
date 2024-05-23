@@ -517,7 +517,7 @@ def cobrancas_pipefy_dashboard(request):
     #PREVISÃO DE FATURAMENTO ANUAL
     previsao_faturamento = faturado_total + total_cobrancas_abertas
     context = {
-        'total_aguardando_distribuicao': locale.currency(total_aguardando_distribuicao, grouping=True),
+        'total_aguardando': locale.currency(total_aguardando_distribuicao, grouping=True),
         'total_notificacao': locale.currency(total_notificacao, grouping=True),
         'total_faturamento': locale.currency(total_faturamento, grouping=True),
         'total_confirmacao': locale.currency(total_confirmacao, grouping=True),

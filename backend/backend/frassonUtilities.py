@@ -1,9 +1,10 @@
 from django.db.models import Q, Sum, Case, When, DecimalField
-import requests, json, environ, math
+import requests, json, environ, math, locale
 from django.http import JsonResponse, HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from environmental.models import Processos_Outorga_Coordenadas, Processos_APPO_Coordenadas
-from finances.models import Saldos_Iniciais, Cobrancas_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Pagamentos_Pipefy
+from finances.models import Saldos_Iniciais, Cobrancas_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Pagamentos_Pipefy, Transferencias_Contas
 from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, init_data
 from pygc import great_circle
 import numpy as np
@@ -170,6 +171,165 @@ class Frasson(object):
 
         return round(saldo_inicial_ano, 2)
 
+    def saldosAtuaisContasBancarias():
+        """Função que retorna os saldos das contas bancárias e os valores em aberto das Cobranças e Pagamentos"""
+        saldos_iniciais = {}
+        
+        caixas = [{'id': 667993245, 'caixa': 'Banco do Brasil', 'name': 'banco_brasil'}, 
+            {'id': 667993332, 'caixa': 'Caixa Econômica Federal', 'name': 'caixa_economica'}, 
+            {'id': 667993459, 'caixa': 'Santander', 'name': 'banco_santander'}, 
+            {'id': 667994503, 'caixa': 'Sicredi', 'name': 'banco_sicredi'}, 
+            {'id': 667994628, 'caixa': 'Dinheiro', 'name': 'dinheiro'}, 
+            {'id': 667994767, 'caixa': 'Grupo Frasson', 'name': 'grupo_frasson'}, 
+            {'id': 667994860, 'caixa': 'Sicoob', 'name': 'banco_sicoob'}, 
+            {'id': 667994970, 'caixa': 'Aplicação Banco do Brasil', 'name': 'aplicacao_bb'}, 
+            {'id': 667995029, 'caixa': 'Aplicação XP Investimentos', 'name': 'aplicacao_xp'}
+        ]
+
+        #BUSCA OS SALDOS INICIAIS DOS CAIXAS
+        for caixa in caixas:
+            try:
+                obj_saldo = Saldos_Iniciais.objects.get(caixa_id=caixa['id'])
+            except ObjectDoesNotExist:
+                obj_saldo = None
+
+            saldos_iniciais[caixa['name']] = round(float(obj_saldo.valor), 2) if obj_saldo != None else 0
+
+        # SOMA VALORES REEMBOLSO POR CAIXA
+        reembolsos = {}
+        reembolsos_db = Reembolso_Cliente.objects.values('caixa_destino').annotate(total=Sum('valor'))
+        for caixa in caixas:
+            for reembolso in reembolsos_db:
+                if caixa['id'] in reembolso.values():
+                    reembolsos[caixa['name']] = round(float(reembolso['total']), 2)
+                    break
+            
+            if not caixa['name'] in reembolsos:
+                reembolsos[caixa['name']] = 0
+        
+        # TOTAL RECEITAS FINANCEIRAS
+        receitas_financeiras = {}
+        rnop_db = Resultados_Financeiros.objects.filter(tipo__tipo='R').values('caixa').annotate(total=Sum('valor'))
+        for caixa in caixas:
+            for rnop in rnop_db:
+                if caixa['id'] in rnop.values():
+                    receitas_financeiras[caixa['name']] = round(float(rnop['total']), 2)
+                    break
+            
+            if not caixa['name'] in receitas_financeiras:
+                receitas_financeiras[caixa['name']] = 0
+
+        # TOTAL DESPESAS FINANCEIRAS
+        despesas_financeiras = {}
+        dnop_db = Resultados_Financeiros.objects.filter(tipo__tipo='D').values('caixa').annotate(total=Sum('valor'))
+        for caixa in caixas:
+            for dnop in dnop_db:
+                if caixa['id'] in dnop.values():
+                    despesas_financeiras[caixa['name']] = round(float(dnop['total']), 2)
+                    break
+            
+            if not caixa['name'] in despesas_financeiras:
+                despesas_financeiras[caixa['name']] = 0
+
+        # SOMA VALORES ENTRADAS DE TRANSFERENCIA POR CAIXA
+        entradas_transferencias = {}
+        entradas_db = Transferencias_Contas.objects.values('caixa_destino').annotate(total=Sum('valor'))
+        for caixa in caixas:
+            for transf in entradas_db:
+                if caixa['id'] in transf.values():
+                    entradas_transferencias[caixa['name']] = round(float(transf['total']), 2)
+                    break
+            
+            if not caixa['name'] in entradas_transferencias:
+                entradas_transferencias[caixa['name']] = 0
+
+        # SOMA VALORES SAÍDAS DE TRANSFERENCIAS POR CAIXA
+        saidas_transferencias = {}
+        saidas_db = Transferencias_Contas.objects.values('caixa_origem').annotate(total=Sum('valor'))
+        for caixa in caixas:
+            for transf in saidas_db:
+                if caixa['id'] in transf.values():
+                    saidas_transferencias[caixa['name']] = round(float(transf['total']), 2)
+                    break
+                    
+            if not caixa['name'] in saidas_transferencias:
+                saidas_transferencias[caixa['name']] = 0
+
+        #TOTAL PAGAMENTOS POR CAIXA (PAGOS)
+        pagamentos = {}
+        pagamentos_db = Pagamentos_Pipefy.objects.filter(phase_id=317163732).values('caixa').annotate(total=Sum('valor_pagamento'))
+        for caixa in caixas:
+            for pagamento in pagamentos_db:
+                if caixa['id'] in pagamento.values():
+                    pagamentos[caixa['name']] = round(float(pagamento['total']), 2)
+                    break
+                    
+            if not caixa['name'] in pagamentos:
+                pagamentos[caixa['name']] = 0
+        
+        #TOTAL COBRANÇAS POR CAIXA (PAGOS)
+        cobrancas = {}
+        cobrancas_db = Cobrancas_Pipefy.objects.filter(phase_id=317532039).values('caixa').annotate(total=Sum('valor_faturado'))
+        for caixa in caixas:
+            for pagamento in cobrancas_db:
+                if caixa['id'] in pagamento.values():
+                    cobrancas[caixa['name']] = round(float(pagamento['total']), 2)
+                    break
+                    
+            if not caixa['name'] in cobrancas:
+                cobrancas[caixa['name']] = 0
+
+        #CALCULA O SALDO DE CADA CONTA E INCLUI NO OBJETO 'Saldos'
+        saldos = {}
+        colors = {}
+        valor_total = 0
+        for caixa in caixas:
+            saldo = round(saldos_iniciais[caixa['name']] + (cobrancas[caixa['name']] - pagamentos[caixa['name']]) + (entradas_transferencias[caixa['name']] - saidas_transferencias[caixa['name']]) + (receitas_financeiras[caixa['name']] - despesas_financeiras[caixa['name']]) + reembolsos[caixa['name']], 2)
+            valor_total = valor_total + saldo
+            saldos[caixa['name']] = locale.currency(saldo, grouping=True)
+            colors[caixa['name']] = 'primary' if saldo >= 0 else 'danger'
+
+        #FATURAMENTO CONSOLIDADO POR PRODUTO
+        query_cobrancas_abertas= Cobrancas_Pipefy.objects.aggregate(
+            aguardando=Sum(Case(When(phase_id=317532037, then='saldo_devedor'), default=0, output_field=DecimalField())),
+            notificacao=Sum(Case(When(phase_id=317532038, then='saldo_devedor'), default=0, output_field=DecimalField())),
+            faturamento=Sum(Case(When(phase_id=318663454, then='saldo_devedor'), default=0, output_field=DecimalField())),
+            confirmacao=Sum(Case(When(phase_id=317532040, then='saldo_devedor'), default=0, output_field=DecimalField())))
+
+        total_aguardando = query_cobrancas_abertas.get('aguardando', 0) or 0
+        total_notificacao = query_cobrancas_abertas.get('notificacao', 0) or 0
+        total_faturamento = query_cobrancas_abertas.get('faturamento', 0) or 0
+        total_confirmacao = query_cobrancas_abertas.get('confirmacao', 0) or 0
+        total_aberto_cobrancas = float(total_aguardando + total_notificacao + total_faturamento + total_confirmacao)
+
+        #PAGAMENTOS ABERTOS POR FASE (CONFERÊNCIA E AGENDADO)
+        query_pagamentos_abertos= Pagamentos_Pipefy.objects.aggregate(
+            conferencia=Sum(Case(When(phase_id=317163730, then='valor_pagamento'), default=0, output_field=DecimalField())),
+            agendado=Sum(Case(When(phase_id=317163731, then='valor_pagamento'), default=0, output_field=DecimalField())))
+
+        aberto_conferencia = query_pagamentos_abertos.get('conferencia', 0) or 0
+        aberto_agendado = query_pagamentos_abertos.get('agendado', 0) or 0
+        total_aberto_pagamentos = float(aberto_conferencia + aberto_agendado)
+
+        #calcula a previsão de saldo
+        previsao_saldo = float(valor_total + total_aberto_cobrancas + total_aberto_pagamentos)
+
+        obj = {
+            'saldos': saldos,
+            'colors': colors,
+            'saldo_total': locale.currency(valor_total, grouping=True),
+            'aberto_aguardando': locale.currency(total_aguardando, grouping=True),
+            'aberto_notificacao': locale.currency(total_notificacao, grouping=True),
+            'aberto_faturamento': locale.currency(total_faturamento, grouping=True),
+            'aberto_confirmacao': locale.currency(total_confirmacao, grouping=True),
+            'total_aberto_cobrancas': locale.currency(total_aberto_cobrancas, grouping=True),
+            'total_aberto_pagamentos': locale.currency(total_aberto_pagamentos, grouping=True),
+            'aberto_conferencia': locale.currency(aberto_conferencia, grouping=True),
+            'aberto_agendado': locale.currency(aberto_agendado, grouping=True),
+            'previsao_saldo': locale.currency(previsao_saldo, grouping=True),
+        }
+
+        return obj
 
     
 

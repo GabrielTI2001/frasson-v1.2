@@ -6,6 +6,7 @@ import { BarChart, PieChart } from "../../../components/Custom/Charts";
 import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilter, faFilterCircleDollar, faPercent } from "@fortawesome/free-solid-svg-icons";
+import { CardProduto } from "./Card";
 
 const DashProspects = () =>{
     const {config: {theme}} = useAppContext();
@@ -46,59 +47,11 @@ const DashProspects = () =>{
             </li>    
         </ol>
         {data ? <>
-        <Row className="gx-4 gy-2 mb-3" xs={1} sm={2} xl={4}>
-            <Col>
-                <Card className="shadow-sm px-3 py-1 panel cursor-pointer">
-                    <Card.Body as={Row} className="justify-content-between py-3">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_prospects}</Card.Title>
-                            <h3 className="px-0 fs--1 mb-0">Prospects em Andamento</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faFilter} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col>
-                <Card className="shadow-sm px-3 py-1 panel cursor-pointer">
-                    <Card.Body as={Row} className="justify-content-between py-3">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_proposta_valor}</Card.Title>
-                            <h3 className="px-0 fs--1 mb-0">Prospects em proposta de valor</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faFilter} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col>
-                <Card className="shadow-sm px-3 py-1 panel cursor-pointer">
-                    <Card.Body as={Row} className="justify-content-between py-3">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.valor_proposta_valor}</Card.Title>
-                            <h3 className="px-0 fs--1 mb-0">Proposta de valor GAI (Total)</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faFilterCircleDollar} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col>
-                <Card className="shadow-sm px-3 py-1 panel cursor-pointer">
-                    <Card.Body as={Row} className="justify-content-between py-3">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.media_proposta_valor}</Card.Title>
-                            <h3 className="px-0 fs--1 mb-0">Proposta de valor GC (% médio)</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faPercent} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
+        <Row className="gx-4 gy-2 mb-4" xs={1} sm={2} xl={4}>
+            <CardProduto title='Prospects em Andamento' icon={faFilter} data={data} atribute='qtd_prospects'/>
+            <CardProduto title='Prospects em proposta de valor' icon={faFilter} data={data} atribute='qtd_proposta_valor'/>
+            <CardProduto title='Proposta de valor GAI (Total)' icon={faFilterCircleDollar} data={data} atribute='valor_proposta_valor'/>
+            <CardProduto title='Proposta de valor GC (% médio)' icon={faPercent} data={data} atribute='media_proposta_valor'/>
         </Row>
         <Row xs={1} sm={3} xl={3} className="gx-4 gy-2 d-flex"> 
             {data.produtos && !data.produtos.null &&

@@ -32,6 +32,7 @@ import Exchange from '../App/Services/Currency/Exchange';
 import DREConsolidado from '../App/Finances/DREActual';
 import DREProvisionado from '../App/Finances/DREForecast';
 import IndexAutomPagamentos from '../App/Finances/AutomPagamentos/Index';
+import SaldosContasIndex from '../App/Finances/FluxoCaixa/IndexSaldos';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -133,8 +134,29 @@ const LayoutRoutes = () => {
   return (
     <Routes>
       <Route element={<Default />}>
+        <Route path="/admin">
+          <Route path="users" element={<IndexUsers />}/>
+        </Route>
         <Route path="/alongamentos">
           <Route path="" element={<IndexAlongamentos />}/>
+        </Route>
+        <Route path="/ambiental/inema">
+          <Route path="outorgas" element={<IndexOutorgas />}/>
+          <Route path="outorgas/:uuid" element={<View />} />
+          <Route path="outorgas/edit/:uuid" element={<Edit />} />
+          <Route path="outorga/map" element={<MapaPontos key='outorga' type='outorga' />} />
+          <Route path="appos" element={<IndexAPPO/>}/>
+          <Route path="appos/:uuid" element={<ViewAppo />} />
+          <Route path="appos/edit/:uuid" element={<EditAppo />} />
+          <Route path="appo/map" element={<MapaPontos key='appo' type='appo' />} />
+          <Route path="asv" element={<IndexASV/>}/>
+          <Route path="asv/:uuid" element={<ViewASV/>}/>
+          <Route path="asv/edit/:uuid" element={<EditASV />} />
+          <Route path="asv/map" element={<MapaAreasASV />} />
+          <Route path="requerimentos" element={<IndexRequerimentos />} />
+          <Route path="requerimentos/appo" element={<MapaPontosRequerimento key='appo' type='appo' />} />
+          <Route path="requerimentos/new" element={<NewRequerimento key='appo' type='appo' />} />
+          <Route path="requerimentos/appo/:uuid" element={<ViewRequerimentoAPPO />} />
         </Route>
         <Route path="/analytics">
           <Route path="regime" element={<IndexRegimes />}/>
@@ -157,10 +179,20 @@ const LayoutRoutes = () => {
           <Route path="finances/billings" element={<DashBillings />}/>
           <Route path="finances/revenues" element={<DashRevenues />}/>
         </Route>
+        <Route path="/external-api">
+          <Route path="ana">
+            <Route path="outorgas" element={<IndexOutorgasANA />}/>
+          </Route>
+          <Route path="" element={<ExternalAPIs />}/>
+          <Route path="cnpj" element={<ConsultaCNPJ />}/>
+          <Route path="currency/commodity" element={<Commodities />}/>
+          <Route path="currency/exchange" element={<Exchange />}/>
+        </Route>
         <Route path="/finances">
           <Route path="dre/actual" element={<DREConsolidado />}/>
           <Route path="dre/forecast" element={<DREProvisionado />}/>
           <Route path="automation/payments" element={<IndexAutomPagamentos />}/>
+          <Route path="accounts" element={<SaldosContasIndex />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/irrigation">
@@ -177,16 +209,6 @@ const LayoutRoutes = () => {
           <Route path="" element={<IndexLicenses />}/>
           <Route path=":uuid" element={<ViewLicenca />}/>
         </Route>
-        <Route path="/register">
-          <Route path="" element={<IndexCadGerais />}/>
-          <Route path='machinery' element={<IndexMachinery />}/>
-          <Route path='farm-assets' element={<IndexBenfeitorias />}/>
-          <Route path='farm-assets/:uuid' element={<ViewBenfeitoria />}/>
-          <Route path='farm-assets/edit/:uuid' element={<BenfeitoriaEdit />}/>
-          <Route path='analysis/soil' element={<IndexAnaliseSolo />}/>
-          <Route path='analysis/soil/:uuid' element={<ViewAnaliseSolo />}/>
-          <Route path='feedback/new' element={<NewFeedback />}/>
-        </Route>
         <Route path="/pipefy">
           <Route path="pessoal" element={<IndexPessoal />}/>
           <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
@@ -199,32 +221,15 @@ const LayoutRoutes = () => {
           <Route path="followup" element={<IndexFollowup />}/>
           <Route path="followup/:id" element={<ViewFollowup />}/>
         </Route>
-        <Route path="/ambiental/inema">
-          <Route path="outorgas" element={<IndexOutorgas />}/>
-          <Route path="outorgas/:uuid" element={<View />} />
-          <Route path="outorgas/edit/:uuid" element={<Edit />} />
-          <Route path="outorga/map" element={<MapaPontos key='outorga' type='outorga' />} />
-          <Route path="appos" element={<IndexAPPO/>}/>
-          <Route path="appos/:uuid" element={<ViewAppo />} />
-          <Route path="appos/edit/:uuid" element={<EditAppo />} />
-          <Route path="appo/map" element={<MapaPontos key='appo' type='appo' />} />
-          <Route path="asv" element={<IndexASV/>}/>
-          <Route path="asv/:uuid" element={<ViewASV/>}/>
-          <Route path="asv/edit/:uuid" element={<EditASV />} />
-          <Route path="asv/map" element={<MapaAreasASV />} />
-          <Route path="requerimentos" element={<IndexRequerimentos />} />
-          <Route path="requerimentos/appo" element={<MapaPontosRequerimento key='appo' type='appo' />} />
-          <Route path="requerimentos/new" element={<NewRequerimento key='appo' type='appo' />} />
-          <Route path="requerimentos/appo/:uuid" element={<ViewRequerimentoAPPO />} />
-        </Route>
-        <Route path="/external-api">
-          <Route path="ana">
-            <Route path="outorgas" element={<IndexOutorgasANA />}/>
-          </Route>
-          <Route path="" element={<ExternalAPIs />}/>
-          <Route path="cnpj" element={<ConsultaCNPJ />}/>
-          <Route path="currency/commodity" element={<Commodities />}/>
-          <Route path="currency/exchange" element={<Exchange />}/>
+        <Route path="/register">
+          <Route path="" element={<IndexCadGerais />}/>
+          <Route path='machinery' element={<IndexMachinery />}/>
+          <Route path='farm-assets' element={<IndexBenfeitorias />}/>
+          <Route path='farm-assets/:uuid' element={<ViewBenfeitoria />}/>
+          <Route path='farm-assets/edit/:uuid' element={<BenfeitoriaEdit />}/>
+          <Route path='analysis/soil' element={<IndexAnaliseSolo />}/>
+          <Route path='analysis/soil/:uuid' element={<ViewAnaliseSolo />}/>
+          <Route path='feedback/new' element={<NewFeedback />}/>
         </Route>
         <Route path="/services">
           <Route path="maps" element={<ServicesMaps />}/>
@@ -233,9 +238,6 @@ const LayoutRoutes = () => {
           <Route path="tools/pivot" element={<PivotCoordinates />}/>
           <Route path="tools/LatLong" element={<InsertPoints />}/>
           <Route path="tools/kml/polygon" element={<KMLPolygon />}/>
-        </Route>
-        <Route path="/admin">
-          <Route path="users" element={<IndexUsers />}/>
         </Route>
       </Route>
       <Route element={<AuthSimpleLayout />}>

@@ -11,6 +11,10 @@
   font-size: 12px;
 }
 
+.card *{
+  font-size: 0.75rem;
+}
+
 select:focus{
   box-shadow: none !important;
   border-color: #c4c4c4 !important;

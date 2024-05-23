@@ -11,5 +11,6 @@ router.register(r'category-payments', views.CategoriaPagamentosView)
 urlpatterns = [
     path('dre/actual/', views.index_dre_consolidado, name='index.dre.consolidado'),
     path('dre/forecast/', views.index_dre_provisionado, name='index.dre.provisionado'),
+    path('accounts/', views.index_saldos_contas, name='index.saldos.contas'),
 ]
 urlpatterns += router.urls

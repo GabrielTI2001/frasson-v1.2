@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from "react";
-import { Card, Row, Col, Form, Table, Spinner, Modal, CloseButton} from "react-bootstrap";
+import { Card, Row, Col, Form, Spinner, Modal, CloseButton} from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
-import { ColumnLineChart, BarChart, ColumnChart } from "../../../components/Custom/Charts";
-import IndexCredit from "../../Analytics/Credit/Index";
+import { BarChart } from "../../../components/Custom/Charts";
 import { HandleSearch } from "../../../helpers/Data";
 
 const meses = [

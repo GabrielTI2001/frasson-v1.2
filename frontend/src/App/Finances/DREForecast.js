@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyBillTrendUp, faSackDollar, faArrowTrendDown } 
 from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";
+import { ItemTable } from "./AcordionItem";
 
 const DREProvisionado = () =>{
     const navigate = useNavigate();
@@ -36,300 +37,89 @@ const DREProvisionado = () =>{
         <Row xs={1} sm={1} xl={2} className="gx-4 gy-3 d-flex"> 
             <Col>
                 <Accordion defaultActiveKey={['0']}>
-                    <Accordion.Item eventKey="1">
-                        <Accordion.Header className="p-0">
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (+) Receita Sobre Serviços
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-success`} xl={4}>
-                                    {data.faturado_total}
-                                </Col>
-                            </div>            
-                        </Accordion.Header>
-                        <Accordion.Body className="ps-2 py-0">
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Gestão de Crédito</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_gc}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Gestão Ambiental e Irrigação</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_gai}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Avaliação de Imóvel</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_avaliacao}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Tecnologia e Inovação</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturado_tecnologia}</Col>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="2">
-                        <Accordion.Header className="p-0">
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (-) Impostos Sobre Serviços (Indiretos)
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
-                                    {data.total_impostos_indiretos}
-                                </Col>
-                            </div>            
-                        </Accordion.Header>
-                        <Accordion.Body className="ps-2 py-0">
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>ISS</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_iss}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>PIS</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_pis}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>COFINS</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_cofins}</Col>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="3">
-                        <Accordion.Header className="p-0">
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (+) Cobranças Abertas
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-success`} xl={4}>
-                                    {data.aberto_total}
-                                </Col>
-                            </div>            
-                        </Accordion.Header>
-                        <Accordion.Body className="ps-2 py-0">
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Gestão de Crédito</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.aberto_gc}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Gestão Ambiental e Irrigação</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.aberto_gai}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Avaliação de Imóvel</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.aberto_avaliacao}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Tecnologia e Inovação</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.aberto_tecnologia}</Col>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="4">
-                        <Accordion.Header className="p-0">
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (+) Receita Provisionada
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-success`} xl={4}>
-                                    {data.receita_provisionada}
-                                </Col>
-                            </div>            
-                        </Accordion.Header>
-                        <Accordion.Body className="ps-2 py-0">
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>    
-                                <Col className="fw-bold" xl={8}>
-                                    Proposta de valor GAI <span className="fw-normal">({data.percentual_proposta_valor})</span>
-                                </Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_pv_prospect}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Operações de crédito em andamento <span className="fw-normal">(0,8%)</span></Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturamento_provisionado_gc}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Faturamento GAI em andamento</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.faturamento_provisionado_gai}</Col>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (-)	Impostos Sobre Serviços (Estimativa)
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
-                                    {data.total_previsao_impostos_indiretos}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item> 
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (=) Receita Líquida
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-${data.receita_liquida > 0 ? 'success' : 'danger'}`} xl={4}>
-                                    {data.receita_liquida}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (-)	Custo Serviço Prestado
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
-                                    {data.total_custos}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item> 
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (-)	Estimativa Custo 
-                                    <span className="fw-normal text-secondary ms-1 fs--2">(Até dezembro {new Date().getFullYear()})</span>                          
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
-                                    {data.total_custos_estimativa}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (=) Lucro Bruto
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-${data.lucro_bruto > 0 ? 'success' : 'danger'}`} xl={4}>
-                                    {data.lucro_bruto}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="5">
-                        <Accordion.Header className="p-0">
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (-) Despesas
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
-                                    {data.total_despesas}
-                                </Col>
-                            </div>            
-                        </Accordion.Header>
-                        <Accordion.Body className="ps-2 py-0">
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Operacionais</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.despesas_operacionais}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Não Operacionais</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.despesas_nao_operacionais}</Col>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (-)	Estimativa Despesas
-                                    <span className="fw-normal text-secondary ms-1 fs--2">(Até dezembro {new Date().getFullYear()})</span>                          
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
-                                    {data.total_despesas_estimativa}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (=) Lucro Operacional
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-${data.lucro_operacional > 0 ? 'success' : 'danger'}`} xl={4}>
-                                    {data.lucro_operacional}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="6">
-                        <Accordion.Header className="p-0">
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (+) Resultado Financeiro
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-${data.resultado_financeiro < 0 ? 'danger' : 'success'}`} xl={4}>
-                                    {data.resultado_financeiro}
-                                </Col>
-                            </div>            
-                        </Accordion.Header>
-                        <Accordion.Body className="ps-2 py-0">
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Receitas em Movimentações Financeiras</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.receitas_financeiras}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Despesas em Movimentações Financeiras</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.despesas_financeiras}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>Reembolso Adiantamentos Clientes</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.reembolso_clientes}</Col>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (=) Lucro Antes dos Impostos (EBITDA)
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-${data.ebitda > 0 ? 'success' : 'danger'}`} xl={4}>
-                                    {data.ebitda}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="7">
-                        <Accordion.Header className="p-0">
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1 text-primary" xl={8}>
-                                    (-) Impostos Sobre Lucros (Diretos) 
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-danger`} xl={4}>
-                                    {data.total_impostos_diretos}
-                                </Col>
-                            </div>            
-                        </Accordion.Header>
-                        <Accordion.Body className="ps-2 py-0">
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>CSLL</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_csll}</Col>
-                            </div>
-                            <div className="d-flex justify-content-between mx-auto text-800" style={{width:'87%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold" xl={8}>IRPJ</Col>
-                                <Col xl='auto' className="fw-bold text-end">{data.total_irpj}</Col>
-                            </div>
-                        </Accordion.Body>
-                    </Accordion.Item>
-                    <Accordion.Item eventKey="0" className="disabled">
-                        <Accordion.Header>
-                            <div className="d-flex justify-content-between mx-auto px-3" style={{width:'100%', fontSize: '0.88rem'}}>
-                                <Col className="fw-bold fs--1" xl={8}>
-                                    (=) Lucro Líquido Provisionado {new Date().getFullYear()}
-                                </Col>
-                                <Col className={`fw-bold text-end fs--1 text-${data.lucro_liquido > 0 ? 'success' : 'danger'}`} xl={4}>
-                                    {data.lucro_liquido}
-                                </Col>
-                            </div>
-                        </Accordion.Header>
-                    </Accordion.Item>
+                    <ItemTable data={data} title={`(+) Receita Sobre Serviços`} colorvalue='success' colortitle='primary' eventkey="1"
+                        atribute='faturado_total'
+                        items={[
+                            {title:'Gestão de Crédito', attrtotal:'faturado_gc'},
+                            {title:'Gestão Ambiental e Irrigação', attrtotal:'faturado_gai'},
+                            {title:'Avaliação de Imóvel', attrtotal:'faturado_avaliacao'},
+                            {title:'Tecnologia e Inovação', attrtotal:'faturado_tecnologia'}
+                        ]}
+                    />
+                    <ItemTable data={data} title='(-) Impostos Sobre Serviços (Indiretos)' colorvalue='danger' colortitle='primary' 
+                        eventkey="2" atribute='total_impostos_indiretos'
+                        items={[
+                            {title:'ISS', attrtotal:'total_iss'},
+                            {title:'PIS', attrtotal:'total_pis'},
+                            {title:'COFINS', attrtotal:'total_cofins'}
+                        ]}
+                    />
+                    <ItemTable data={data} title={`(+) Cobranças Abertas`} colorvalue='success' colortitle='primary' eventkey="3"
+                        atribute='aberto_total'
+                        items={[
+                            {title:'Gestão de Crédito', attrtotal:'aberto_gc'},
+                            {title:'Gestão Ambiental e Irrigação', attrtotal:'aberto_gai'},
+                            {title:'Avaliação de Imóvel', attrtotal:'aberto_avaliacao'},
+                            {title:'Tecnologia e Inovação', attrtotal:'aberto_tecnologia'}
+                        ]}
+                    />
+                    <ItemTable data={data} title={`(+) Receita Provisionada`} colorvalue='success' colortitle='primary' eventkey="4"
+                        atribute='receita_provisionada'
+                        items={[
+                            {title:'Proposta de valor GAI', attrtotal:'total_pv_prospect', attrpercent:'percentual_proposta_valor'},
+                            {title:'Operações de crédito em andamento', attrtotal:'faturamento_provisionado_gc'},
+                            {title:'Faturamento GAI em andamento', attrtotal:'faturamento_provisionado_gai'},
+                        ]}
+                    />
+                    <ItemTable data={data} title={`(-)	Impostos Sobre Serviços (Estimativa)`} colortitle='primary' colorvalue='danger'
+                        atribute='total_previsao_impostos_indiretos' disabled
+                    />
+                    <ItemTable data={data} title={`(=) Receita Líquida`} colortitle='primary'
+                        atribute='receita_liquida' disabled
+                    />
+                    <ItemTable data={data} title={`(-) Custo Serviço Prestado`} colortitle='primary' colorvalue='danger'
+                        atribute='total_custos' disabled
+                    />
+                    <ItemTable data={data} title={`(-)	Estimativa Custo`} colortitle='primary' colorvalue='danger'
+                        atribute='total_custos_estimativa' disabled
+                    />
+                    <ItemTable data={data} title={`(=) Lucro Bruto`} colortitle='primary'
+                        atribute='lucro_bruto' disabled
+                    />
+                    <ItemTable data={data} title='(-) Despesas`' colorvalue='danger' colortitle='primary' 
+                        eventkey="5" atribute='total_despesas'
+                        items={[
+                            {title:'Operacionais', attrtotal:'despesas_operacionais'},
+                            {title:'Não Operacionais', attrtotal:'despesas_nao_operacionais'},
+                        ]}
+                    />
+                    <ItemTable data={data} title={`(-) Estimativa Despesas`} colortitle='primary' colorvalue='danger'
+                        atribute='total_despesas_estimativa' disabled subtitle={`Até dezembro ${new Date().getFullYear()}`}
+                    />
+                    <ItemTable data={data} title={`(=) Lucro Operacional`} colortitle='primary'
+                        atribute='lucro_operacional' disabled
+                    />
+                    <ItemTable data={data} title='(+) Resultado Financeiro`' colortitle='primary' 
+                        eventkey="6" atribute='resultado_financeiro'
+                        items={[
+                            {title:'Receitas em Movimentações Financeiras', attrtotal:'receitas_financeiras'},
+                            {title:'Despesas em Movimentações Financeiras', attrtotal:'despesas_financeiras'},
+                            {title:'Reembolso Adiantamentos Clientes', attrtotal:'reembolso_clientes'}
+                        ]}
+                    />
+                    <ItemTable data={data} title={`(=) Lucro Antes dos Impostos (EBITDA)`} colortitle='primary'
+                        atribute='ebitda' disabled
+                    />
+                    <ItemTable data={data} title='(-) Impostos Sobre Lucros (Diretos)' colorvalue='danger' colortitle='primary' 
+                        eventkey="6" atribute='total_impostos_diretos'
+                        items={[
+                            {title:'CSLL', attrtotal:'total_csll'},
+                            {title:'IRPJ', attrtotal:'total_irpj'}
+                        ]}
+                    />
+                    <ItemTable data={data} title={`(=) Lucro Líquido Provisionado ${new Date().getFullYear()}`} colortitle='900'
+                        atribute='lucro_liquido' disabled
+                    />
                 </Accordion>
             </Col>
 

@@ -462,5 +462,10 @@ def index_dre_provisionado(request):
         'margem_bruta': f"{locale.format_string('%.1f', margem_bruta, True)}%",
         'margem_ebitda': f"{locale.format_string('%.1f', margem_ebitda, True)}%"
     }
-
     return JsonResponse(context)
+
+
+def index_saldos_contas(request):
+    #FUNÇÃO QUE CALCULA TODOS OS SALDOS DAS CONTAS
+    saldos = Frasson.saldosAtuaisContasBancarias()
+    return JsonResponse(saldos)

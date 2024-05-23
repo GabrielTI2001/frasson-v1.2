@@ -2,16 +2,13 @@ import React, { useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, Form, Col, Table, Row, Placeholder} from 'react-bootstrap';
 import { useAppContext } from "../../Main";
-import { toast } from 'react-toastify';
 
 const ConsultaCNPJ = () =>{
     const {config: {theme}} = useAppContext();
-    const user = JSON.parse(localStorage.getItem('user'))
     const [formData, setFormData] = useState({});
     const [message, setMessage] = useState()
     const [cnpj, setCNPJ] = useState()
     const navigate = useNavigate();
-    const token = localStorage.getItem("token")
 
     const handleApi = async (cnpj) => {
         const link = `${process.env.REACT_APP_API_URL}/external/cnpj/?search=${cnpj}`

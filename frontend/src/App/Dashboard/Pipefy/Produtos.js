@@ -2,10 +2,11 @@ import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, Row, Col, Spinner} from "react-bootstrap";
 import { useAppContext } from "../../../Main";
-import { BarChart, PieChart } from "../../../components/Custom/Charts";
+import { BarChart} from "../../../components/Custom/Charts";
 import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faGear, faMoneyBills, faSeedling } from "@fortawesome/free-solid-svg-icons";
+import { faGear, faMoneyBills, faSeedling, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+import { CardProduto } from "./Card";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -75,85 +76,17 @@ const DashProdutos = () =>{
             </li>    
         </ol>
         {data ? <>
-        <Row className="d-flex flex-row gx-4 gy-3 mb-4" xs={1} sm={2} xl={4}>
-            <Col className="d-flex">
-                <Card className="shadow-sm px-3 py-1 panel w-100">
-                    <Card.Body as={Row} className="justify-content-between py-3 gy-2">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_processos}</Card.Title>
-                            <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Processos em Andamento</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faGear} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col className="d-flex">
-                <Card className="shadow-sm px-3 py-1 panel w-100">
-                    <Card.Body as={Row} className="justify-content-between py-3 gy-2">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_gestao_credito}</Card.Title>
-                            <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Gestão de Crédito</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faSeedling} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col className="d-flex">
-                <Card className="shadow-sm px-3 py-1 panel w-100">
-                    <Card.Body as={Row} className="justify-content-between py-3 gy-2">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.qtd_gestao_ambiental}</Card.Title>
-                            <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Gestão Ambiental e Irrigação</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faSeedling} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col className="d-flex">
-                <Card className="shadow-sm px-3 py-1 panel w-100">
-                    <Card.Body as={Row} className="justify-content-between py-3 gy-2">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.fatu_estimado_total}</Card.Title>
-                            <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Faturamento total estimado em andamento</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faMoneyBills} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col className="d-flex">
-                <Card className="shadow-sm px-3 py-1 panel w-100">
-                    <Card.Body as={Row} className="justify-content-between py-3 gy-2">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.concluidos_gc}</Card.Title>
-                            <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Processos GC Concluídos em {new Date().getFullYear()}</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faMoneyBills} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
-            <Col className="d-flex">
-                <Card className="shadow-sm px-3 py-1 panel w-100">
-                    <Card.Body as={Row} className="justify-content-between py-3 gy-2">
-                        <Col className="px-0">
-                            <Card.Title className="px-0 col fw-bold" style={{fontSize:'1rem'}}>{data.concluidos_gai}</Card.Title>
-                            <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Processos GAI Concluídos em {new Date().getFullYear()}</h3>
-                        </Col>
-                        <Col xl={2} className="d-flex align-items-center">
-                            <FontAwesomeIcon icon={faMoneyBills} className="fs-2"/>
-                        </Col>
-                    </Card.Body>
-                </Card>  
-            </Col>
+        <Row className="d-flex flex-row gx-4 gy-4 mb-4" xs={1} sm={2} xl={4}>
+            <CardProduto title='Processos em Andamento' icon={faGear} data={data} atribute='qtd_processos'/>
+            <CardProduto title='Gestão de Crédito' icon={faSeedling} data={data} atribute='qtd_gestao_credito'/>
+            <CardProduto title='Gestão Ambiental e Irrigação' icon={faSeedling} data={data} atribute='qtd_gestao_ambiental'/>
+            <CardProduto title='Faturamento total estimado em andamento' icon={faMoneyBills} data={data} atribute='fatu_estimado_total'/>
+            <CardProduto title={`Processos GC Concluídos em ${new Date().getFullYear()}`} icon={faCircleCheck} data={data} 
+                atribute='concluidos_gc'
+            />
+            <CardProduto title={`Processos GAI Concluídos em ${new Date().getFullYear()}`} icon={faCircleCheck} data={data} 
+                atribute='concluidos_gai'
+            />
         </Row>
         <Row xs={1} sm={3} xl={3} className="gx-4 gy-2 d-flex"> 
             {data.faturamento_estimado_gc && data.faturamento_estimado_gc.length > 0 &&
