@@ -46,12 +46,12 @@ const IndexAlongamentos = () => {
                 downloadFile(url)
             });
         }
-        if (type == 'edit'){
+        if (type === 'edit'){
             if ((user.permissions && user.permissions.indexOf("change_operacoes_credito") !== -1) || user.is_superuser){
                 setModalForm({show:true, id:dados.id})
             }
         }
-        if (type == 'delete'){
+        if (type === 'delete'){
             if ((user.permissions && user.permissions.indexOf("delete_operacoes_credito") !== -1) || user.is_superuser){
                 setModalDelete({show:true, link:`${process.env.REACT_APP_API_URL}/alongamentos/index/${dados.id}/`})
             }
@@ -61,7 +61,7 @@ const IndexAlongamentos = () => {
         setSearchResults(data)
     }
     const update = (type, data) =>{
-        if (type == 'delete'){
+        if (type === 'delete'){
             setModalDelete({show:false})
             setSearchResults(searchResults.filter(s => s.id !== parseInt(data)))
         }
@@ -77,7 +77,7 @@ const IndexAlongamentos = () => {
     useEffect(()=>{
         const getdata = async () =>{
             const status = await HandleSearch('', 'alongamentos/index', setter) 
-            if (status == 401){
+            if (status === 401){
                 navigate("/auth/login")
             }
         }

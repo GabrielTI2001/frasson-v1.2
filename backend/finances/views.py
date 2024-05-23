@@ -48,10 +48,42 @@ class CategoriaPagamentosView(viewsets.ModelViewSet):
             return listCategoriaPagamentos
         else:
             return self.serializer_class
+        
+class CaixasView(viewsets.ModelViewSet):
+    queryset = Caixas_Frasson.objects.all()
+    serializer_class = listCaixas
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)   
+        if search:
+            queryset = queryset.filter(Q(caixa__icontains=search) | Q(is_active=True))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCaixas
+        else:
+            return self.serializer_class
+
+class ReceitaDespesaView(viewsets.ModelViewSet):
+    queryset = Tipo_Receita_Despesa.objects.all()
+    serializer_class = listTipoReceitaDespesa
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)   
+        if search:
+            queryset = queryset.filter(Q(description__icontains=search))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listTipoReceitaDespesa
+        else:
+            return self.serializer_class
 
 class TransfContasView(viewsets.ModelViewSet):
     queryset = Transferencias_Contas.objects.all()
-    serializer_class = listTransfContas
+    serializer_class = detailTransfContas
     # permission_classes = [IsAuthenticated]
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -65,7 +97,22 @@ class TransfContasView(viewsets.ModelViewSet):
         else:
             return self.serializer_class
 
-
+class MovimentacoesView(viewsets.ModelViewSet):
+    queryset = Resultados_Financeiros.objects.all()
+    serializer_class = detailMovimentacoes
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)    
+        if search:
+            queryset = queryset.filter(Q(description__icontains=search) | Q(caixa__caixa__icontains=search) | 
+                Q(tipo__description__icontains=search))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listMovimentacoes
+        else:
+            return self.serializer_class
 
 def index_dre_consolidado(request):
     #DRE CONSOLIDADO

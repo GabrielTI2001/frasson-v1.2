@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { Card, Row, Col, Spinner, Modal, CloseButton} from "react-bootstrap";
+import { Row, Spinner, Modal, CloseButton} from "react-bootstrap";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
 import logobb from '../../../assets/media/various/bb-bank.png'

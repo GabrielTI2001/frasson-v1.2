@@ -43,7 +43,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
         navigate("/auth/login");
       }
       else if (response.status === 201 || response.status === 200){
-        if (type == 'edit'){
+        if (type === 'edit'){
           submit('edit', data)
           toast.success("Registro Atualizado com Sucesso!")
         }

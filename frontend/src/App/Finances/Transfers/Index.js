@@ -7,18 +7,18 @@ import AdvanceTableFooter from '../../../components/common/advance-table/Advance
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
-import { columnsAutomPayments} from "../Data";
+import { columnsTransfers} from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
-import FormAutomPagamento from "./Form";
+import FormTransfer from "./Form";
 
 const InitData = {
-    'columns':columnsAutomPayments, 'urlapilist':'finances/automation/payments', 
-    'urlview':'/finances/automations/payments/', 'title': 'Automação de Pagamentos'
+    'columns':columnsTransfers, 'urlapilist':'finances/transfers', 
+    'urlview':'/finances/transfers/', 'title': 'Transferências'
 }
 
-const IndexAutomPagamentos = () => {
+const IndexTransfers = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ const IndexAutomPagamentos = () => {
             setShowModal({show:true, type:'edit', data:{...data}})
         }
         else if (type === 'delete'){
-            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/finances/automation/payments/${data.uuid}/`})
+            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/finances/transfers/${data.id}/`})
         }
     }
 
@@ -44,13 +44,13 @@ const IndexAutomPagamentos = () => {
             setShowModal({show:false})
         }
         if (type === 'delete'){
-            setSearchResults(searchResults.filter(reg => reg.uuid !== data))
+            setSearchResults(searchResults.filter(reg => reg.id !== data))
             setShowModal({show:false})
         }
     }
 
     useEffect(()=>{
-        if ((user.permissions && user.permissions.indexOf("view_lancamentos_automaticos_pagamentos") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_transferencias_contas") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         const getdata = async () =>{
@@ -76,7 +76,7 @@ const IndexAutomPagamentos = () => {
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/home'}>Home</Link>
+                <Link className="link-fx text-primary" to={'/finances/accounts'}>Saldos Bancários</Link>
             </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
@@ -97,7 +97,7 @@ const IndexAutomPagamentos = () => {
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
                     <Link className="text-decoration-none btn btn-success shadow-none"
                         style={{padding: '3px 5px', fontSize: '12px'}} onClick={() =>{setShowModal({show:true, type:'add'})}}
-                    >Novo Lançamento Automático</Link>
+                    >Nova Transferência</Link>
                 </Col>
             </Row>     
             <AdvanceTable
@@ -131,17 +131,16 @@ const IndexAutomPagamentos = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                   {showmodal.type === 'add' ? 'Adicionar': 'Editar'} Autom. Pagamento
+                   {showmodal.type === 'add' ? 'Adicionar': 'Editar'} Transferência
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center w-100 sectionform">
                         {showmodal.type === 'add' 
-                            ? <FormAutomPagamento hasLabel type='add' submit={submit}/>
-                            : <FormAutomPagamento hasLabel type='edit' data={showmodal.data} submit={submit}/>
+                            ? <FormTransfer hasLabel type='add' submit={submit}/>
+                            : <FormTransfer hasLabel type='edit' data={showmodal.data} submit={submit}/>
                         }
-                        
                     </Row>
             </Modal.Body>
         </Modal>
@@ -150,5 +149,5 @@ const IndexAutomPagamentos = () => {
     );
   };
   
-  export default IndexAutomPagamentos;
+  export default IndexTransfers;
   

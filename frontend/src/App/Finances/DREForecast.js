@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from "react";
-import { Card, Row, Col, Spinner, Accordion} from "react-bootstrap";
+import { Row, Col, Spinner, Accordion} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMoneyBillTrendUp, faSackDollar, faArrowTrendDown } 
 from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";

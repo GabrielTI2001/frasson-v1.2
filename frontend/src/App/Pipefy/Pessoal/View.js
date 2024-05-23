@@ -12,7 +12,6 @@ import ListOperacoes from "./ListOperacoes";
 import ListContas from "./ListContas";
 
 const ViewPessoal = () => {
-    const channel = new BroadcastChannel('meu_canal');
     const {uuid} = useParams()
     const [pessoa, setPessoa] = useState()
     const [processos, setProcessos] = useState()
@@ -25,13 +24,6 @@ const ViewPessoal = () => {
         const idade = new Date() - new Date(data_nasc)
         return Math.floor(idade/((1000 * 3600 * 24 * 365)))
     }
-    const del = () =>{
-        navigate('/pipefy/pessoal/')
-    }
-
-    channel.onmessage = function(event) {
-
-    };
 
     useEffect(() =>{
         const getProcessos = async (params) =>{

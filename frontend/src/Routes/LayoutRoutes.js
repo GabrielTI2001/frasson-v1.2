@@ -33,6 +33,8 @@ import DREConsolidado from '../App/Finances/DREActual';
 import DREProvisionado from '../App/Finances/DREForecast';
 import IndexAutomPagamentos from '../App/Finances/AutomPagamentos/Index';
 import SaldosContasIndex from '../App/Finances/FluxoCaixa/IndexSaldos';
+import IndexTransfers from '../App/Finances/Transfers/Index';
+import IndexMovimentacoes from '../App/Finances/FluxoCaixa/IndexMoviments';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -193,6 +195,8 @@ const LayoutRoutes = () => {
           <Route path="dre/forecast" element={<DREProvisionado />}/>
           <Route path="automation/payments" element={<IndexAutomPagamentos />}/>
           <Route path="accounts" element={<SaldosContasIndex />}/>
+          <Route path="transfers" element={<IndexTransfers />}/>
+          <Route path="financial" element={<IndexMovimentacoes />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/irrigation">

@@ -23,7 +23,7 @@ const AdvanceTable = ({
 
   const renderIcon = (iconName, color) => {
     const IconComponent = icons[iconName];
-    return <IconComponent className={'me-2 '+'text-'+color}/>;
+    return <IconComponent className={`me-2 text-${color}`}/>;
   }
 
   const isDate = (dado) =>{
@@ -103,17 +103,21 @@ const AdvanceTable = ({
                     <td
                       key={index}
                       {...cell.getCellProps(cell.column.cellProps)}
-                      className='text-center'
+                      className={`text-center ${cell.column.cellProps && cell.column.cellProps.className}`}
                     >
-                      {tableProps.index_status && index === tableProps.index_status? 
-                      <SubtleBadge bg={row.original.status.color} className='fw-bold'>{row.original.status.text}</SubtleBadge>
-                      : cell.value ? 
-                      (isDateTime(cell.value) ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) 
-                      +' '+new Date(cell.value).toLocaleTimeString('pt-BR'): 
-                      isDate(cell.value) ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) : 
-                      isDecimal(cell.value) ? Number(cell.value).toLocaleString('pt-BR',{minimumFractionDigits: 2, maximumFractionDigits:2}) :
-                      cell.render('Cell')) 
-                      : '-'}
+                      {tableProps.index_status && index === tableProps.index_status ? 
+                        <SubtleBadge bg={cell.value.color} className='fw-bold fs--2'>{cell.value.text}</SubtleBadge>
+                      : cell.value 
+                        ? (isDateTime(cell.value) 
+                          ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+' '+new Date(cell.value).toLocaleTimeString('pt-BR')
+                          : isDate(cell.value) 
+                            ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) 
+                            : isDecimal(cell.value) 
+                              ? Number(cell.value).toLocaleString('pt-BR',{minimumFractionDigits: 2, maximumFractionDigits:2}) 
+                              : cell.render('Cell')
+                          ) 
+                        : '-'}
+                      {cell.column.cellProps && cell.column.cellProps.value}
                     </td>
                   );
                 })}

@@ -364,6 +364,20 @@ export const financeiroRoutes = {
           exact: true,
           active: true
         },
+        {
+          name: 'Transferências Bancárias',
+          to: '/finances/transfers',
+          icon2: 'CurrencyExchange',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Movimentações Financeiras',
+          to: '/finances/financial',
+          icon2: 'CurrencyDollar',
+          exact: true,
+          active: true
+        },
       ]
     }
   ]

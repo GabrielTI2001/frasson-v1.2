@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from "react";
-import { Card, Row, Col, Form, Spinner, Accordion} from "react-bootstrap";
+import { Row, Col, Form, Spinner, Accordion} from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../Main";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilterCircleDollar, faMoneyBillTrendUp, faSackDollar, faArrowTrendDown } 
 from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";
