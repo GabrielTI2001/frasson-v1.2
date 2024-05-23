@@ -1,5 +1,6 @@
 import { Card, Col, Row, Accordion } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { CardDRE } from "./Card";
 
 export const ItemTable = ({title, subtitle, data, atribute, disabled, items, colortitle, colorvalue, eventkey}) =>{
     // type = 'R', 'D', 'O'

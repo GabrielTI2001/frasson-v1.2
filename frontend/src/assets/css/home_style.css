@@ -14,7 +14,13 @@
 .card *{
   font-size: 0.75rem;
 }
-
+.hover-card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.hover-card:hover {
+    transform: scale(1.02);
+    box-shadow: 4px 4px 8px rgba(136, 136, 136, 0.2) !important;
+}
 select:focus{
   box-shadow: none !important;
   border-color: #c4c4c4 !important;

@@ -84,7 +84,7 @@ const DashBillings = () =>{
         {data ? <>
         <Row className="gx-4 gy-4 mb-4" xs={1} sm={2} xl={2}>
             <Col>
-                <Card className="shadow-sm p-3 panel cursor-pointer" style={{borderLeft: '4px solid #4c78dd'}}
+                <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
                     onClick={() => setModal({show:true, ano:formData && formData.ano})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">
@@ -94,7 +94,7 @@ const DashBillings = () =>{
                 </Card>  
             </Col>
             <Col>
-                <Card className="shadow-sm p-3 panel cursor-pointer" style={{borderLeft: '4px solid #4c78dd'}}
+                <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
                     onClick={() => setModal({show:true, ano:formData && formData.ano})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">
@@ -107,7 +107,7 @@ const DashBillings = () =>{
                 </Card>  
             </Col>
             <Col>
-                <Card className="shadow-sm p-3 panel cursor-pointer" style={{borderLeft: '4px solid #4c78dd'}}
+                <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
                     onClick={() => setModal({show:true, ano:formData && formData.ano})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">
@@ -120,7 +120,7 @@ const DashBillings = () =>{
                 </Card>  
             </Col>
             <Col>
-                <Card className="shadow-sm p-3 panel cursor-pointer" style={{borderLeft: '4px solid #4c78dd'}}
+                <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
                     onClick={() => setModal({show:true, ano:formData && formData.ano})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">

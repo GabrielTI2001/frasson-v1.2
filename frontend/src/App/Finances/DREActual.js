@@ -7,6 +7,7 @@ import { faFilterCircleDollar, faMoneyBillTrendUp, faSackDollar, faArrowTrendDow
 from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";
 import { ItemTable } from "./AcordionItem";
+import { CardDRE } from "./Card";
 
 const DREConsolidado = () =>{
     const {config: {theme}} = useAppContext();
@@ -63,7 +64,7 @@ const DREConsolidado = () =>{
         </Form>
         {data ? 
         <>
-        <Row xs={1} sm={1} xl={2} className="gx-4 gy-3 d-flex"> 
+        <Row xs={1} sm={1} xl={2} className="gx-4 gy-3 d-flex mb-4"> 
             <Col>
                 <Accordion>
                     <ItemTable data={data} title={`(=) Saldo Inicial em 01/01/${formData && formData.ano}`} colortitle='900'
@@ -150,95 +151,33 @@ const DREConsolidado = () =>{
 
             <Col>
                 <Row className="gx-4 gy-3 mb-3" xs={1} sm={2} xl={2}>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={9} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_liquida}</Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Líquida {formData && formData.ano}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={9} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_bruta}</Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Bruta {formData && formData.ano}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.faturamento_tributado}<span className="fw-normal ms-1">({data.percentual_fatu_tributado})</span>
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Faturamento Tributado {formData && formData.ano}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faFilterCircleDollar} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.faturamento_sem_tributacao}<span className="fw-normal ms-1">({data.percentual_fatu_sem_tributacao})</span>
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Faturamento sem tributação {formData && formData.ano}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faSackDollar} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.percentual_impostos_tributado}<span className="fw-normal ms-1">({data.total_impostos})</span>
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Imposto sobre faturamento tributado {formData && formData.ano}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faArrowTrendDown} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.percentual_impostos_total}<span className="fw-normal ms-1">({data.total_impostos})</span>
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Imposto sobre faturamento total {formData && formData.ano}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faArrowTrendDown} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
+                    <CardDRE data={data} atribute='margem_liquida' title={`Margem Líquida ${formData && formData.ano}`} 
+                        icon={faMoneyBillTrendUp}
+                    />
+                    <CardDRE data={data} atribute='margem_bruta' title={`Margem Bruta ${formData && formData.ano}`} 
+                        icon={faMoneyBillTrendUp}
+                    />
+                    <CardDRE data={data} atribute='faturamento_tributado' atribute2='percentual_fatu_tributado' 
+                        title={`Faturamento Tributado ${formData && formData.ano}`} icon={faFilterCircleDollar}
+                    />
+                    <CardDRE data={data} atribute='faturamento_sem_tributacao' atribute2='percentual_fatu_sem_tributacao' 
+                        title={`Faturamento sem tributação ${formData && formData.ano}`} icon={faSackDollar}
+                    />
+                    <CardDRE data={data} atribute='percentual_impostos_tributado' atribute2='total_impostos' 
+                        title={`Imposto sobre faturamento tributado ${formData && formData.ano}`} icon={faSackDollar}
+                    />
+                    <CardDRE data={data} atribute='percentual_impostos_total' atribute2='total_impostos' 
+                        title={`Imposto sobre faturamento total ${formData && formData.ano}`} icon={faArrowTrendDown}
+                    />
                 </Row>
             </Col>
         </Row> 
+        <div>
+            <Link className="btn btn-sm btn-secondary fs--2 me-2 mb-2" to={`/finances/dre/overview/`}>Detalhamento Mensal</Link>
+            <Link className="btn btn-sm btn-warning fs--2 mb-2" to={`${process.env.REACT_APP_API_URL}/finances/dre/real/report/?search=${formData.ano || ''}`}>
+                Relatório PDF
+            </Link>
+        </div>
         </>    
         : <div className="text-center"><Spinner></Spinner></div>} 
         </>

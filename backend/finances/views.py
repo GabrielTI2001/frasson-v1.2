@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
@@ -9,7 +9,10 @@ from django.db.models import Sum, Q, Case, When, DecimalField
 from backend.frassonUtilities import Frasson
 from datetime import date
 from collections import defaultdict
-import locale, uuid
+import locale, uuid, io
+from .utilities import calcdre
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch, mm
 
 class AutomPagamentosView(viewsets.ModelViewSet):
     queryset = Lancamentos_Automaticos_Pagamentos.objects.all()
@@ -45,6 +48,23 @@ class CategoriaPagamentosView(viewsets.ModelViewSet):
             return listCategoriaPagamentos
         else:
             return self.serializer_class
+
+class TransfContasView(viewsets.ModelViewSet):
+    queryset = Transferencias_Contas.objects.all()
+    serializer_class = listTransfContas
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)   
+        if search:
+            queryset = queryset.filter(Q(description__icontains=search) | Q(caixa__icontains=search))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listTransfContas
+        else:
+            return self.serializer_class
+
 
 
 def index_dre_consolidado(request):
@@ -469,3 +489,75 @@ def index_saldos_contas(request):
     #FUNÇÃO QUE CALCULA TODOS OS SALDOS DAS CONTAS
     saldos = Frasson.saldosAtuaisContasBancarias()
     return JsonResponse(saldos)
+
+
+def dre_consolidado_report(request):
+    search = request.GET.get('search')
+    if search: 
+        year = int(search)
+    else: 
+        year = date.today().year
+    date_today = date.today().strftime('%d/%m/%Y')
+    data_hoje = date.today().strftime('%d/%m/%Y')
+    dados = calcdre(year)
+    margin_top = 780
+    margin_left = 50
+
+    atribs = ['faturado_total','total_impostos_indiretos', 'total_iss', 'percentual_iss', 'total_pis', 'percentual_pis', 'total_cofins', 'percentual_cofins', 'receita_liquida', 'total_custos', 'lucro_bruto', 'total_despesas', 'despesas_operacionais', 'despesas_nao_operacionais',
+    'lucro_operacional', 'resultado_financeiro', 'receitas_financeiras', 'despesas_financeiras','ebitda', 'total_impostos_diretos', 'total_csll', 'percentual_csll', 'total_irpj', 'percentual_irpj', 'lucro_liquido',  'margem_liquida', 'margem_bruta',
+    'total_impostos',]
+
+    titles = ['Receita Sobre Serviços','Impostos Sobre Serviços (Indiretos)', 'Total ISS', 'percentual_iss', 'Total PIS', 'percentual_pis', 'Total COFINS', 'percentual_cofins', 'Receita Líquida', 'Custo Operacional Total', 'Lucro Bruto', 'Total de Despesas', 'Despesas Operacionais', 
+    'Despesas Não-Operacionais', 'Lucro Operacional', 'Resultado Operacional', 'Receitas Financeiras', 'Despesas Financeiras','EBITDA', 'Total Impostos Diretos', 'Total CSLL', 'percentual_csll', 'Total IRPJ', 'percentual_irpj', 'Lucro Líquido',  'Margem Líquida', 'Margem Bruta', 
+    'Total Impostos' ]
+
+    atribs2 = [
+        ['margem_liquida', 'Margem Líquida'], ['margem_bruta', 'Margem Bruta'],
+        ['faturamento_tributado','Faturamento Tributado'], ['faturamento_sem_tributacao','Faturamento Sem Tributação'],
+        ['percentual_impostos_tributado','Imposto Sobre Faturamento Tributado'], ['percentual_impostos_total','Imposto Sobre Faturamento Total'],
+    ]
+
+    img_logo = 'static/media/various/logo-frasson-app2.png'
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=(210*mm,300*mm))
+    c.setTitle(f"Relatório DRE Consolidado {year}")
+    c.drawImage(img_logo, margin_left, 780, 70, 70, preserveAspectRatio=True)
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(200, 810, f"RELATÓRIO DRE CONSOLIDADO")
+    c.setFont("Helvetica", 10)
+    c.drawString(500, 810, date_today)
+    c.setFont("Helvetica-Bold", 10)
+    vertical_position = margin_top
+    horizontal_position = margin_left
+    c.drawString(horizontal_position, vertical_position, "Descrição")
+    c.drawString(horizontal_position + 200, vertical_position, "Valor")
+    c.drawString(horizontal_position + 340, vertical_position, "Percentual")
+    vertical_position = margin_top - 20
+    for i in range (len(atribs)):
+        if i in [2,4,6,12,13,16,17,20,22]:
+            c.setFont("Helvetica", 10)
+            c.drawString(horizontal_position, vertical_position, f"{titles[i]}")
+            c.drawString(horizontal_position + 200, vertical_position, f"{dados[atribs[i]]}")
+            vertical_position-= 17
+        elif i in[3,5,7,21,23]:
+            c.drawString(horizontal_position + 340, vertical_position+18, f"{dados[atribs[i]]}")
+        else:
+            c.setFont("Helvetica-Bold", 10)
+            c.line(horizontal_position, vertical_position + 12, margin_left + 500, vertical_position + 12)
+            c.drawString(horizontal_position, vertical_position, f"{titles[i]}")
+            c.drawString(horizontal_position + 200, vertical_position, f"{dados[atribs[i]]}")
+            vertical_position-= 17
+    vertical_position -= 100
+    for i in range(len(atribs2)):      
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(horizontal_position, vertical_position, f"{atribs2[i][1]}")
+        c.setFont("Helvetica", 10)
+        c.drawString(horizontal_position + 220, vertical_position, f"{dados[atribs2[i][0]]}")
+        c.line(horizontal_position, vertical_position + 12, margin_left + 300, vertical_position + 12)
+        vertical_position-= 17
+    c.showPage()
+    c.save()
+    buf.seek(0)
+    file_name = f"DRE_Consolidado_{data_hoje}.PDF"
+    return FileResponse(buf, as_attachment=False, filename=file_name)

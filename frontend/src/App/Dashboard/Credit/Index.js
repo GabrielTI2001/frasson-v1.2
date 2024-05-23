@@ -91,7 +91,7 @@ const DashCredit = () =>{
         {data ? <>
         <Row className="gx-4 gy-2 mb-3" xs={1} sm={2} xl={2}>
             <Col>
-                <Card className="shadow-sm px-3 panel cursor-pointer" style={{borderLeft: '5px solid #4c78dd'}} 
+                <Card className="shadow-sm px-3 panel cursor-pointer hover-card" style={{borderLeft: '5px solid #4c78dd'}} 
                     onClick={() => setModal({show:true, ano:formData && formData.ano})}>
                     <Card.Body as={Row} className="justify-content-between pt-2 pb-0">
                         <Card.Title className="px-0 col" style={{fontSize:'0.75rem'}}>META</Card.Title>
@@ -109,7 +109,7 @@ const DashCredit = () =>{
                 </Card>  
             </Col>
             <Col>
-                <Card className="shadow-sm px-3 panel cursor-pointer" style={{borderLeft: '5px solid #4c78dd'}}
+                <Card className="shadow-sm px-3 panel cursor-pointer hover-card" style={{borderLeft: '5px solid #4c78dd'}}
                     onClick={() => setModal({show:true, ano:formData && formData.ano, mes:formData && formData.mes})}>
                     <Card.Body as={Row} className="justify-content-between pt-2 pb-0">
                         <Card.Title className="px-0 col" style={{fontSize:'0.75rem'}}>META</Card.Title>
@@ -127,7 +127,7 @@ const DashCredit = () =>{
                 </Card>  
             </Col>
             <Col>
-                <Card className="shadow-sm px-3 panel cursor-pointer" style={{borderLeft: '5px solid #4c78dd'}}>
+                <Card className="shadow-sm px-3 panel" style={{borderLeft: '5px solid #4c78dd'}}>
                     <Card.Body as={Row} className="justify-content-between pt-2 pb-0">
                         <Card.Title className="px-0 col" style={{fontSize:'0.75rem'}}>META ATÉ {formData && meses[formData.mes-1].description}</Card.Title>
                         <Card.Title className="px-0 col-auto" style={{fontSize:'0.75rem'}}>{data.percentual_meta_ate_mes} %</Card.Title>
@@ -144,7 +144,7 @@ const DashCredit = () =>{
                 </Card>  
             </Col>
             <Col>
-                <Card className="shadow-sm px-3 panel cursor-pointer" style={{borderLeft: '5px solid #4c78dd'}}>
+                <Card className="shadow-sm px-3 panel" style={{borderLeft: '5px solid #4c78dd'}}>
                     <Card.Body as={Row} className="justify-content-between pt-2 pb-0">
                         <Card.Title className="px-0 col" style={{fontSize:'0.75rem'}}>ÁREA TOTAL BENEFICIADA</Card.Title>
                         <Card.Title className="px-0 col-auto" style={{fontSize:'0.75rem'}}>{formData && formData.ano}</Card.Title>

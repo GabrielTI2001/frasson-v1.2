@@ -6,6 +6,7 @@ import { faMoneyBillTrendUp, faSackDollar, faArrowTrendDown }
 from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";
 import { ItemTable } from "./AcordionItem";
+import { CardDRE } from "./Card";
 
 const DREProvisionado = () =>{
     const navigate = useNavigate();
@@ -125,62 +126,18 @@ const DREProvisionado = () =>{
 
             <Col>
                 <Row className="gx-4 gy-3 mb-3" xs={1} sm={2} xl={2}>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.receita_bruta_estimada_total}
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Receita Bruta estimada {new Date().getFullYear()}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faSackDollar} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={8}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>
-                                        {data.previsao_impostos_total}
-                                    </Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Previsão impostos {new Date().getFullYear()}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faArrowTrendDown} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={9}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_liquida}</Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Líquida Provisionada {new Date().getFullYear()}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
-                    <Col>
-                        <Card className="shadow-sm px-3 py-1 panel">
-                            <Card.Body as={Row} className="justify-content-between py-3" sm={2} xs={2}>
-                                <Col className="px-0" xl={10} sm={9}>
-                                    <Card.Title className="px-0 col fw-bold" style={{fontSize:'1.2rem'}}>{data.margem_bruta}</Card.Title>
-                                    <h3 className="px-0 mb-0" style={{fontSize:'0.75rem'}}>Margem Bruta Provisionada {new Date().getFullYear()}</h3>
-                                </Col>
-                                <Col xl={2} sm='auto' xs='auto' className="d-flex align-items-center">
-                                    <FontAwesomeIcon icon={faMoneyBillTrendUp} className="fs-3"/>
-                                </Col>
-                            </Card.Body>
-                        </Card>  
-                    </Col>
+                    <CardDRE data={data} atribute='receita_bruta_estimada_total'
+                        title={`Receita Bruta estimada ${new Date().getFullYear()}`} icon={faSackDollar}
+                    />
+                    <CardDRE data={data} atribute='previsao_impostos_total'
+                        title={`Previsão impostos ${new Date().getFullYear()}`} icon={faArrowTrendDown}
+                    />
+                    <CardDRE data={data} atribute='margem_liquida'
+                        title={`Margem Líquida Provisionada ${new Date().getFullYear()}`} icon={faMoneyBillTrendUp}
+                    />
+                    <CardDRE data={data} atribute='margem_bruta'
+                        title={`Margem Bruta Provisionada ${new Date().getFullYear()}`} icon={faMoneyBillTrendUp}
+                    />
                 </Row>
             </Col>
         </Row> 

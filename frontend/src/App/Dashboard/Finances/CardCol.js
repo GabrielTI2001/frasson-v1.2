@@ -3,7 +3,7 @@ import { Card, Col, Row } from "react-bootstrap"
 export const CardCobrancas = ({title, data, atribute, atribute2, color, onClick}) =>{
     return (
     <Col>
-        <Card className="shadow-sm p-3 panel cursor-pointer" style={{borderLeft: `4px solid ${color}`}}
+        <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: `4px solid ${color}`}}
             onClick={onClick}
         >
             <Card.Body as={Row} className="justify-content-between py-1">
