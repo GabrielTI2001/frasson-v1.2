@@ -6,7 +6,7 @@ import { useAppContext } from '../../../Main';
 import { SelectOptions } from '../../../helpers/Data';
 import { RetrieveRecord } from '../../../helpers/Data';
 
-const FormTransfer = ({ hasLabel, type, submit, data}) => {
+const FormReembolso = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({
@@ -20,7 +20,7 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
   const [caixas, setCaixas] = useState()
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/finances/transfers/${type === 'edit' ? id+'/':''}`
+    const link = `${process.env.REACT_APP_API_URL}/finances/refunds/${type === 'edit' ? id+'/':''}`
     const method = type === 'edit' ? 'PUT' : 'POST'
     try {
       const response = await fetch(link, {
@@ -70,14 +70,14 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
 
   useEffect(()=>{
     const loadFormData = async () => {
-      const status = !record ? await RetrieveRecord(id, 'finances/transfers', (data) => setRecord(data)) : 200
+      const status = !record ? await RetrieveRecord(id, 'finances/refunds', (data) => setRecord(data)) : 200
       if(status === 200){
         if(record){
           const filteredData = Object.entries(record)
             .filter(([key, value]) => value !== null)
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
         
-          const { str_categoria, str_beneficiario, ...restData } = filteredData;
+          const { str_caixa_destino, ...restData } = filteredData;
           setFormData({...formData, ...restData})
         }
       }
@@ -103,7 +103,7 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row'>
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Data da Transferência*</Form.Label>}
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Data*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data' : ''}
             value={formData.data || ''}
@@ -113,33 +113,6 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.data : ''}</label>
         </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Valor da Transferência*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Valor' : ''}
-            value={formData.valor || ''}
-            name="valor"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.valor : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Caixa Origem*</Form.Label>}
-          <Form.Select
-            name='caixa_origem'
-            value={formData.caixa_origem || ''}
-            onChange={handleFieldChange}
-          >
-            <option value={undefined}>----</option>
-            {caixas &&(caixas.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
-            )))}
-          </Form.Select>
-          <label className='text-danger'>{message ? message.caixa_origem : ''}</label>
-        </Form.Group>     
 
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Caixa Destino*</Form.Label>}
@@ -154,7 +127,19 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
             )))}
           </Form.Select>
           <label className='text-danger'>{message ? message.caixa_destino : ''}</label>
-        </Form.Group>      
+        </Form.Group>   
+
+        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Valor*</Form.Label>}
+          <Form.Control
+            placeholder={!hasLabel ? 'Valor' : ''}
+            value={formData.valor || ''}
+            name="valor"
+            onChange={handleFieldChange}
+            type="number"
+          />
+          <label className='text-danger'>{message ? message.valor : ''}</label>
+        </Form.Group>   
 
         <Form.Group className="mb-2" as={Col} xl={6} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Descrição*</Form.Label>}
@@ -182,4 +167,4 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
   );
 };
 
-export default FormTransfer;
+export default FormReembolso;

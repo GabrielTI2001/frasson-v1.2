@@ -40,7 +40,7 @@ const IndexAutomPagamentos = () => {
             setShowModal({show:false})
         }
         if (type === 'edit'){
-            setSearchResults([...searchResults.map( reg => reg.id === reg.id ? data : reg)])
+            setSearchResults([...searchResults.map( reg => reg.id === data.id ? data : reg)])
             setShowModal({show:false})
         }
         if (type === 'delete'){

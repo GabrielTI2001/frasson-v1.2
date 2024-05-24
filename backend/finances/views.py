@@ -5,14 +5,75 @@ from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from .models import Cobrancas_Pipefy, Pagamentos_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Lancamentos_Automaticos_Pagamentos
 from pipefy.models import Card_Produtos, Card_Prospects
-from django.db.models import Sum, Q, Case, When, DecimalField
+from django.db.models import Sum, Q, Case, When, DecimalField, F, DateField
 from backend.frassonUtilities import Frasson
-from datetime import date
+from datetime import date, datetime
 from collections import defaultdict
-import locale, uuid, io
+import locale, uuid, io, math
 from .utilities import calcdre
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch, mm
+from reportlab.lib.pagesizes import letter, landscape, A4
+from reportlab.lib.colors import Color
+from rest_framework.response import Response
+
+class PagamentosView(viewsets.ModelViewSet):
+    queryset = Pagamentos_Pipefy.objects.all()
+    serializer_class = listPagamentosPipefy
+    # permission_classes = [IsAuthenticated]
+
+class PagamentosView(viewsets.ModelViewSet):
+    queryset = Pagamentos_Pipefy.objects.all()
+    serializer_class = listPagamentosPipefy
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', '')
+        search_year = self.request.query_params.get('year', None)
+        search_month = self.request.query_params.get('month', None)
+        if search_year:
+            search_year = int(search_year)
+            if search_month:
+                search_month = int(search_month)
+                query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) &
+                                (Q(data_vencimento__month=search_month) | Q(data_pagamento__month=search_month)) &
+                                (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)))
+                queryset = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+                    data=Case(
+                        When(phase_id=317163732, then=F('data_pagamento')),
+                        default=F('data_vencimento'),
+                        output_field=DateField()
+                    )
+                ).filter(data__year=search_year, data__month=search_month).order_by('data')
+            else:
+                search_year = int(search_year)
+                query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) &
+                                (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | 
+                                    Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)
+                                ))
+                queryset = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+                    data=Case(
+                        When(phase_id=317163732, then=F('data_pagamento')),
+                        default=F('data_vencimento'),
+                        output_field=DateField()
+                    )
+                ).filter(data__year=search_year).order_by('data')
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        anos = Pagamentos_Pipefy.objects.values_list('data_vencimento__year', flat=True).distinct()
+        response_data = {
+            'pagamentos': serializer.data,
+            'anos': anos,
+        }
+        return Response(response_data)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listPagamentosPipefy
+        else:
+            return self.serializer_class
 
 class AutomPagamentosView(viewsets.ModelViewSet):
     queryset = Lancamentos_Automaticos_Pagamentos.objects.all()
@@ -52,7 +113,6 @@ class CategoriaPagamentosView(viewsets.ModelViewSet):
 class CaixasView(viewsets.ModelViewSet):
     queryset = Caixas_Frasson.objects.all()
     serializer_class = listCaixas
-    # permission_classes = [IsAuthenticated]
     def get_queryset(self):
         queryset = super().get_queryset()
         search = self.request.query_params.get('search', None)   
@@ -89,7 +149,9 @@ class TransfContasView(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         search = self.request.query_params.get('search', None)   
         if search:
-            queryset = queryset.filter(Q(description__icontains=search) | Q(caixa__icontains=search))
+            queryset = queryset.filter(Q(description__icontains=search) | Q(caixa_destino__caixa__icontains=search) |
+                Q(caixa_origem__caixa__icontains=search)
+            )
         return queryset
     def get_serializer_class(self):
         if self.action == 'list':
@@ -111,6 +173,22 @@ class MovimentacoesView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return listMovimentacoes
+        else:
+            return self.serializer_class
+        
+class ReembolsosView(viewsets.ModelViewSet):
+    queryset = Reembolso_Cliente.objects.all()
+    serializer_class = detailReembolsos
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', None)    
+        if search:
+            queryset = queryset.filter(Q(description__icontains=search) | Q(caixa__caixa__icontains=search))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listReembolsos
         else:
             return self.serializer_class
 
@@ -607,4 +685,116 @@ def dre_consolidado_report(request):
     c.save()
     buf.seek(0)
     file_name = f"DRE_Consolidado_{data_hoje}.PDF"
+    return FileResponse(buf, as_attachment=False, filename=file_name)
+
+
+def pagamentos_pipefy_report_pdf(request):
+    date_today = date.today().strftime('%d/%m/%Y')
+    if request.method == "GET":
+        search_year = request.GET.get('year') or date.today().year
+        search_month = request.GET.get('month') or date.today().month
+        search = request.GET.get('search') or ''  
+    else:
+        search_year = date.today().year
+        search_month = date.today().month
+        search = ''
+    
+    if search_month:
+        query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) &
+            (Q(data_vencimento__month=search_month) | Q(data_pagamento__month=search_month)) & 
+                (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(categoria__category__icontains=search)))
+        pagamentos_pipefy = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+            data=Case(When(phase_id=317163732, then=F('data_pagamento')), default='data_vencimento')).filter(data__year=search_year, data__month=search_month).order_by('data')
+
+    else:
+        query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) & 
+            (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(categoria__category__icontains=search)))
+        pagamentos_pipefy = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+            data=Case(When(phase_id=317163732, then=F('data_pagamento')), default='data_vencimento')).filter(data__year=search_year).order_by('data')
+
+    pagamentos = []
+    pagamentos_phases = pagamentos_pipefy.values('phase_name').annotate(soma=Sum('valor_pagamento')).order_by('phase_name')
+    total_pagamentos = Pagamentos_Pipefy.objects.filter(query_search).aggregate(soma=Sum('valor_pagamento'))
+
+    for pag in pagamentos_phases:
+        pagamentos.append({
+            'phase': pag['phase_name'],
+            'total': pag['soma']
+        })
+
+    pagamentos.append({'phase': 'TOTAL', 'total': total_pagamentos['soma'] if total_pagamentos['soma'] != None else 0})
+    
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=landscape(letter))
+    c.setTitle(f"Payments Report - {date_today}")
+    
+    date_today = date.today().strftime('%d/%m/%Y')
+    img_logo = 'static/media/various/logo-frasson.png'
+
+    margin_top = 550
+    margin_bottom = 100
+    margin_left = 50
+    margin_right = 792 - margin_left
+    numero_registros_por_pagina = 30
+
+    qtd_pages = math.ceil(len(pagamentos_pipefy) / numero_registros_por_pagina) #arredonda pra cima quando float
+    qtd_pagamentos = pagamentos_pipefy.count()
+
+    y = qtd_pagamentos / numero_registros_por_pagina
+    
+    if (y % 1) > .80 or (y % 1) == 0: #estabelece 0.8 da quantidade de registros que ocuparão a página o limite para caber o resumo final na mesma página.
+        qtd_pages += 1 #caso o s registros forem até quase o final da página, adiciona uma nova página no documento.
+
+    registro_pagamento = 0
+    for i in range(qtd_pages):
+        c.setFillColor(Color(12/255, 23/255, 56/255)) #RGB color must be between 0 and 1
+        c.drawImage(img_logo, margin_left - 10, 280, 90, preserveAspectRatio=True)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(320, 580, f"RELATÓRIO DE PAGAMENTOS")
+        c.setFont("Helvetica", 8)
+        c.drawString(710, 580, date_today)
+        if i == 0:
+            c.setFont("Helvetica-Bold", 9)
+            c.drawString(margin_left, margin_top, "Data")
+            c.drawString(margin_left + 60, margin_top, "Beneficiário")
+            c.drawString(margin_left + 350, margin_top, "Categoria")
+            c.drawString(margin_left + 550, margin_top, "Fase")
+            c.drawString(margin_left + 640, margin_top, "Valor")
+            c.line(margin_left, margin_top - 5, margin_left + 700, margin_top - 5)
+        c.setFont("Helvetica", 8)
+
+        vertical_position = margin_top - 15
+        for j in range(registro_pagamento, registro_pagamento + numero_registros_por_pagina):
+            if registro_pagamento < len(pagamentos_pipefy):
+                c.drawString(margin_left, vertical_position, datetime.strptime(str(pagamentos_pipefy[registro_pagamento].data), '%Y-%m-%d').strftime('%d/%m/%Y'))
+                c.drawString(margin_left + 60, vertical_position, str(pagamentos_pipefy[registro_pagamento].beneficiario.razao_social)[:60])
+                c.drawString(margin_left + 350, vertical_position, str(pagamentos_pipefy[registro_pagamento].categoria.category))
+                c.drawString(margin_left + 550, vertical_position, str(pagamentos_pipefy[registro_pagamento].phase_name))
+                c.drawString(margin_left + 640, vertical_position, locale.currency(pagamentos_pipefy[registro_pagamento].valor_pagamento, grouping=True))
+                c.line(margin_left, vertical_position - 5, margin_left + 700, vertical_position - 5)
+            else:
+                break
+            
+            registro_pagamento+=1
+            vertical_position-=15
+
+        c.drawString(50, 50, "#documentointerno")
+        c.drawString(700, 50, f"Página {i + 1} de {qtd_pages}")
+
+        if (i + 1) == qtd_pages:
+    
+            x = vertical_position - 20
+            c.setFont("Helvetica-Bold", 8)
+            c.drawString(margin_left, x, "TOTAL POR FASE") 
+            for p in pagamentos:
+                c.setFont("Helvetica", 8)
+                c.drawString(margin_left, x - 15, p['phase'])
+                c.drawString(margin_left + 80, x - 15, locale.currency(p['total'], grouping=True))
+                x-=15
+        else:
+            c.showPage()
+    c.save()
+    buf.seek(0)
+    file_name = f"payments_report_{uuid.uuid4()}.pdf"
+    #return pdf file (to download file, set as_attachement = True)
     return FileResponse(buf, as_attachment=False, filename=file_name)

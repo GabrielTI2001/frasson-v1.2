@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { BarChart } from "../../../components/Custom/Charts";
 import { HandleSearch } from "../../../helpers/Data";
+import ReportPagamentos from "../../Finances/Reports/Pagamentos";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -17,7 +18,7 @@ const meses = [
 const DashBillings = () =>{
     const {config: {theme}} = useAppContext();
     const [formData, setFormData] = useState();
-    const [modal, setModal] = useState({show:false, mes:null, ano:null})
+    const [modal, setModal] = useState({show:false, type:null, mes:null, ano:null})
     const navigate = useNavigate();
     const [data, setData] = useState()
     const user = JSON.parse(localStorage.getItem("user"))
@@ -85,7 +86,7 @@ const DashBillings = () =>{
         <Row className="gx-4 gy-4 mb-4" xs={1} sm={2} xl={2}>
             <Col>
                 <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
-                    onClick={() => setModal({show:true, ano:formData && formData.ano})}
+                    onClick={() => setModal({show:true, type:'pagamento'})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">
                         <Card.Title className="px-0 col text-primary" style={{fontSize:'0.75rem'}}>TOTAL PAGAMENTOS</Card.Title>
@@ -95,7 +96,7 @@ const DashBillings = () =>{
             </Col>
             <Col>
                 <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
-                    onClick={() => setModal({show:true, ano:formData && formData.ano})}
+                    onClick={() => setModal({show:true, type:'pagamento'})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">
                         <Card.Title className="px-0 col text-primary" style={{fontSize:'0.75rem'}}>Conferência</Card.Title>
@@ -108,7 +109,7 @@ const DashBillings = () =>{
             </Col>
             <Col>
                 <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
-                    onClick={() => setModal({show:true, ano:formData && formData.ano})}
+                    onClick={() => setModal({show:true, type:'pagamento'})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">
                         <Card.Title className="px-0 col text-primary" style={{fontSize:'0.75rem'}}>Agendado</Card.Title>
@@ -121,7 +122,7 @@ const DashBillings = () =>{
             </Col>
             <Col>
                 <Card className="shadow-sm p-3 panel cursor-pointer hover-card" style={{borderLeft: '4px solid #4c78dd'}}
-                    onClick={() => setModal({show:true, ano:formData && formData.ano})}
+                    onClick={() => setModal({show:true, type:'pagamento'})}
                 >
                     <Card.Body as={Row} className="justify-content-between py-1">
                         <Card.Title className="px-0 col text-primary" style={{fontSize:'0.75rem'}}>Agendado</Card.Title>
@@ -166,7 +167,7 @@ const DashBillings = () =>{
                 <CloseButton onClick={() => setModal({show:false})}/>
             </Modal.Header>
             <Modal.Body>
-                {/* <IndexCredit mes={modal.mes} ano={modal.ano} /> */}
+                {modal.type === 'pagamento' && <ReportPagamentos />}
             </Modal.Body>
         </Modal>
         </>

@@ -1,11 +1,20 @@
 from rest_framework import serializers
 from .models import Lancamentos_Automaticos_Pagamentos, Categorias_Pagamentos, Transferencias_Contas, Caixas_Frasson, Resultados_Financeiros
-from .models import Tipo_Receita_Despesa
+from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Pagamentos_Pipefy, Cobrancas_Pipefy
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
 import locale, requests, json
 from datetime import date, timedelta
 from backend.settings import TOKEN_GOOGLE_MAPS_API, TOKEN_PIPEFY_API, URL_PIFEFY_API
+
+class listPagamentosPipefy(serializers.ModelSerializer):
+    str_categoria = serializers.CharField(source='categoria.category', read_only=True)
+    str_classificacao = serializers.CharField(source='categoria.classification', read_only=True)
+    str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
+    data = serializers.DateField(read_only=True)
+    class Meta:
+        model = Pagamentos_Pipefy
+        fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'phase_name', 'data', 'valor_pagamento', 'card_url']
 
 class listAutomPagamentos(serializers.ModelSerializer):
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', required=False, read_only=True)
@@ -63,7 +72,6 @@ class detailTransfContas(serializers.ModelSerializer):
     str_caixa_destino = serializers.CharField(source='caixa_destino.caixa', read_only=True)
     def validate_caixa_destino(self, value):
         origem = self.initial_data.get('caixa_origem')
-        destino = self.initial_data.get('caixa_destino')
         if int(origem) == value.id:
             raise serializers.ValidationError("Caixa de Destino deve ser diferente do Caixa de Origem!")
         return value
@@ -89,6 +97,24 @@ class listMovimentacoes(serializers.ModelSerializer):
 class detailMovimentacoes(serializers.ModelSerializer):
     str_tipo = serializers.CharField(source='tipo.description', read_only=True)
     str_caixa = serializers.CharField(source='caixa.caixa', read_only=True)
+    str_rd = serializers.CharField(source='tipo.tipo', read_only=True)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['data', 'valor', 'description' ,'caixa', 'tipo']:
+                field.required = True
     class Meta:
         model = Resultados_Financeiros
+        fields = '__all__'
+
+class listReembolsos(serializers.ModelSerializer):
+    str_caixa_destino = serializers.CharField(source='caixa_destino.caixa', read_only=True)
+    class Meta:
+        model = Reembolso_Cliente
+        fields = ['id', 'data', 'str_caixa_destino', 'valor', 'description']
+
+class detailReembolsos(serializers.ModelSerializer):
+    str_caixa_destino = serializers.CharField(source='caixa_destino.caixa', read_only=True)
+    class Meta:
+        model = Reembolso_Cliente
         fields = '__all__'

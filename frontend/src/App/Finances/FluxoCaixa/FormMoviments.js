@@ -4,13 +4,16 @@ import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
 import { SelectOptions } from '../../../helpers/Data';
+import { SelectSearchOptions } from '../../../helpers/Data';
 import { RetrieveRecord } from '../../../helpers/Data';
+import AsyncSelect from 'react-select/async';
+import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 
-const FormTransfer = ({ hasLabel, type, submit, data}) => {
+const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({
-    created_by: user.id
+    user: user.id
   });
   const [message, setMessage] = useState()
   const [record, setRecord] = useState()
@@ -18,9 +21,10 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
   const token = localStorage.getItem("token");
   const id = data ? data.id : '';
   const [caixas, setCaixas] = useState()
+  const [defaultoptions, setDefaultOptions] = useState();
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/finances/transfers/${type === 'edit' ? id+'/':''}`
+    const link = `${process.env.REACT_APP_API_URL}/finances/moviments/${type === 'edit' ? id+'/':''}`
     const method = type === 'edit' ? 'PUT' : 'POST'
     try {
       const response = await fetch(link, {
@@ -42,11 +46,15 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
       }
       else if (response.status === 201 || response.status === 200){
         if (type === 'edit'){
-          submit('edit', data)
+          submit('edit', {...data, valor:{color:data.str_rd === 'R' ? 'success' : 'danger', 
+            text:Number(data.valor).toLocaleString('pt-BR', {maximumFractionDigits:2, minimumFractionDigits:2})
+          }})
           toast.success("Registro Atualizado com Sucesso!")
         }
         else{
-          submit('add', data)
+          submit('add', {...data, valor:{color:data.str_rd === 'R' ? 'success' : 'danger', 
+            text:Number(data.valor).toLocaleString('pt-BR', {maximumFractionDigits:2, minimumFractionDigits:2})
+          }})
           toast.success("Registro Efetuado com Sucesso!")
         }
       }
@@ -70,15 +78,18 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
 
   useEffect(()=>{
     const loadFormData = async () => {
-      const status = !record ? await RetrieveRecord(id, 'finances/transfers', (data) => setRecord(data)) : 200
+      const status = !record ? await RetrieveRecord(id, 'finances/moviments', (data) => setRecord(data)) : 200
       if(status === 200){
         if(record){
           const filteredData = Object.entries(record)
             .filter(([key, value]) => value !== null)
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
         
-          const { str_categoria, str_beneficiario, ...restData } = filteredData;
+          const {str_tipo, ...restData } = filteredData;
           setFormData({...formData, ...restData})
+          setDefaultOptions({
+            tipo: {value:data.tipo, label: str_tipo}, 
+          })
         }
       }
       else{
@@ -86,8 +97,13 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
       }
     }
 
-    if (type === 'edit'){
+    if (type === 'edit' && !defaultoptions){
       loadFormData()
+    }
+    else{
+      if(!defaultoptions){
+        setDefaultOptions({tipo:{}})
+      }
     }
     if (!caixas){ 
       const get = async () => {
@@ -103,7 +119,7 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row'>
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Data da Transferência*</Form.Label>}
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Data*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data' : ''}
             value={formData.data || ''}
@@ -114,8 +130,27 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.data : ''}</label>
         </Form.Group>
 
+        {defaultoptions && (
+          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Movimentação*</Form.Label>}
+            <AsyncSelect 
+              name='tipo' 
+              loadOptions={(value) => SelectSearchOptions(value, 'finances/tipo-receita-despesa', 'description')}
+              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+              defaultValue={type === 'edit' ? defaultoptions.tipo || '' : ''}
+              onChange={(selected) => {
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  tipo: selected.value
+                }));
+              }}>
+            </AsyncSelect>
+            <label className='text-danger'>{message ? message.tipo : ''}</label>
+          </Form.Group>        
+        )}
+
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Valor da Transferência*</Form.Label>}
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Valor*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Valor' : ''}
             value={formData.valor || ''}
@@ -127,10 +162,10 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Caixa Origem*</Form.Label>}
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Caixa*</Form.Label>}
           <Form.Select
-            name='caixa_origem'
-            value={formData.caixa_origem || ''}
+            name='caixa'
+            value={formData.caixa|| ''}
             onChange={handleFieldChange}
           >
             <option value={undefined}>----</option>
@@ -138,23 +173,8 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
               <option key={c.value} value={c.value}>{c.label}</option>
             )))}
           </Form.Select>
-          <label className='text-danger'>{message ? message.caixa_origem : ''}</label>
+          <label className='text-danger'>{message ? message.caixa : ''}</label>
         </Form.Group>     
-
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Caixa Destino*</Form.Label>}
-          <Form.Select
-            name='caixa_destino'
-            value={formData.caixa_destino || ''}
-            onChange={handleFieldChange}
-          >
-            <option value={undefined}>----</option>
-            {caixas &&(caixas.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
-            )))}
-          </Form.Select>
-          <label className='text-danger'>{message ? message.caixa_destino : ''}</label>
-        </Form.Group>      
 
         <Form.Group className="mb-2" as={Col} xl={6} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Descrição*</Form.Label>}
@@ -182,4 +202,4 @@ const FormTransfer = ({ hasLabel, type, submit, data}) => {
   );
 };
 
-export default FormTransfer;
+export default FormMovimentacao;

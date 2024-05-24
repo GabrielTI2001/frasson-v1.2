@@ -23,7 +23,7 @@ const Edit = () => {
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [ambientalState, ambientalDispatch] = useReducer(ambientalReducer, {modal:{show:false, content:{}}});
-    const modal = ambientalState.modal;
+    const modal = ambientalState && ambientalState.modal;
     const outorga = ambientalState.outorga;
     const coordenadas = ambientalState.outorga ? ambientalState.outorga.coordenadas : [];
 
@@ -84,6 +84,9 @@ const Edit = () => {
                     localStorage.setItem("login", JSON.stringify(false));
                     localStorage.setItem('token', "");
                     navigate("/auth/login");
+                }
+                if (response.status === 404){
+                    navigate("/errors/404");
                 }
                 else if (response.status === 200){
                     const data = await response.json();
@@ -184,7 +187,7 @@ const Edit = () => {
             }
         </div>
         {/* MODAIS */}
-        {modal.content && (
+        {ambientalState && modal.content && (
             <Modal
                 size="xl"
                 show={modal.show && (modal.content.type === 'edit' || modal.content.type === 'add')}
@@ -205,9 +208,9 @@ const Edit = () => {
                 </Modal.Body>
             </Modal>
         )}
-        {modal.content && (
+        {modal.content && modal.content.data &&(
             <ModalDelete show={modal.show && modal.content.type === 'delete'} close={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}} 
-                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/${modal.content.data.id}/`}
+                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/${modal.content.data.uuid}/`}
             />
         )}
 

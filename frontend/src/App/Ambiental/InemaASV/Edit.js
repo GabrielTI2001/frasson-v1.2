@@ -85,6 +85,9 @@ const EditASV = () => {
                     localStorage.setItem('token', "");
                     navigate("/auth/login");
                 }
+                if (response.status === 404){
+                    navigate("/errors/404");
+                }
                 else if (response.status === 200){
                     const data = await response.json();
                     ambientalDispatch({type:'SET_DATA', payload:{

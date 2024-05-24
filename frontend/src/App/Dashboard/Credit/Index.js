@@ -249,7 +249,7 @@ const DashCredit = () =>{
         >
             <Modal.Header>
             <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                Operações de Crédito {formData && formData.ano}
+                Operações de Crédito {modal.mes && meses[modal.mes-1].description+'/'}{modal.ano}
             </Modal.Title>
                 <CloseButton onClick={() => setModal({show:false})}/>
             </Modal.Header>

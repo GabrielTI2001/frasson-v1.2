@@ -90,6 +90,9 @@ export const Edit = () => {
                     toast.error("Sua Sessão Expirou")
                     navigate(`/auth/login?next=${next}`);
                 }
+                if (response.status === 404){
+                    navigate("/errors/404");
+                }
                 else if (response.status === 200){
                     const data = await response.json();
                     ambientalDispatch({type:'SET_DATA', payload:{
@@ -209,7 +212,7 @@ export const Edit = () => {
                 </Modal.Body>
             </Modal>
         )}
-        {modal.content && (
+        {modal.content && modal.content.data && (
             <ModalDelete show={modal.show && modal.content.type === 'delete'} close={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}} 
                 update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/appo/coordenadas-detail/${modal.content.data.id}/`}
             />

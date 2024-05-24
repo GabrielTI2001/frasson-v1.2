@@ -35,6 +35,8 @@ import IndexAutomPagamentos from '../App/Finances/AutomPagamentos/Index';
 import SaldosContasIndex from '../App/Finances/FluxoCaixa/IndexSaldos';
 import IndexTransfers from '../App/Finances/Transfers/Index';
 import IndexMovimentacoes from '../App/Finances/FluxoCaixa/IndexMoviments';
+import IndexReembolsos from '../App/Finances/FluxoCaixa/IndexRefunds';
+import ReportPagamentos from '../App/Finances/Reports/Pagamentos';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -197,6 +199,8 @@ const LayoutRoutes = () => {
           <Route path="accounts" element={<SaldosContasIndex />}/>
           <Route path="transfers" element={<IndexTransfers />}/>
           <Route path="financial" element={<IndexMovimentacoes />}/>
+          <Route path="refunds" element={<IndexReembolsos />}/>
+          <Route path="billings" element={<ReportPagamentos />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/irrigation">

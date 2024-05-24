@@ -1,6 +1,6 @@
 export const HandleSearch = async (search, urlapi, setResults, adicional='') => {
     const token = localStorage.getItem("token")
-    const params = search === '' ? '' : `?&search=${search}`
+    const params = search === '' ? '' : `${adicional === '' ? '?' :''}&search=${search}`
     const url = `${process.env.REACT_APP_API_URL}/${urlapi}/${adicional !== '' ? adicional : ''}${params}`
     try {
         const response = await fetch(url, {

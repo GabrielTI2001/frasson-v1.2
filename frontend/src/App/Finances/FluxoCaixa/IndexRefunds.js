@@ -7,18 +7,18 @@ import AdvanceTableFooter from '../../../components/common/advance-table/Advance
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
-import { columnsTransfers} from "../Data";
+import { columnsReembolso} from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
-import FormTransfer from "./Form";
+import FormReembolso from "./FormRefunds";
 
 const InitData = {
-    'columns':columnsTransfers, 'urlapilist':'finances/transfers', 
-    'urlview':'/finances/transfers/', 'title': 'Transferências'
+    'columns':columnsReembolso, 'urlapilist':'finances/refunds', 
+    'urlview':'/finances/refunds/', 'title': 'Reembolsos Clientes'
 }
 
-const IndexTransfers = () => {
+const IndexReembolsos = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
@@ -30,7 +30,7 @@ const IndexTransfers = () => {
             setShowModal({show:true, type:'edit', data:{...data}})
         }
         else if (type === 'delete'){
-            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/finances/transfers/${data.id}/`})
+            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/finances/refunds/${data.id}/`})
         }
     }
 
@@ -97,7 +97,7 @@ const IndexTransfers = () => {
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
                     <Link className="text-decoration-none btn btn-success shadow-none"
                         style={{padding: '3px 5px', fontSize: '12px'}} onClick={() =>{setShowModal({show:true, type:'add'})}}
-                    >Nova Transferência</Link>
+                    >Novo Reembolso</Link>
                 </Col>
             </Row>     
             <AdvanceTable
@@ -131,15 +131,15 @@ const IndexTransfers = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                   {showmodal.type === 'add' ? 'Adicionar': 'Editar'} Transferência
+                   {showmodal.type === 'add' ? 'Adicionar': 'Editar'} Reembolso
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center w-100 sectionform">
                         {showmodal.type === 'add' 
-                            ? <FormTransfer hasLabel type='add' submit={submit}/>
-                            : <FormTransfer hasLabel type='edit' data={showmodal.data} submit={submit}/>
+                            ? <FormReembolso hasLabel type='add' submit={submit}/>
+                            : <FormReembolso hasLabel type='edit' data={showmodal.data} submit={submit}/>
                         }
                     </Row>
             </Modal.Body>
@@ -149,5 +149,5 @@ const IndexTransfers = () => {
     );
   };
   
-  export default IndexTransfers;
+  export default IndexReembolsos;
   

@@ -11,7 +11,7 @@ import { columnsMovimentacao} from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
-// import FormTransfer from "./FormMoviments";
+import FormMovimentacao from "./FormMoviments";
 
 const InitData = {
     'columns':columnsMovimentacao, 'urlapilist':'finances/moviments', 
@@ -40,17 +40,17 @@ const IndexMovimentacoes = () => {
             setShowModal({show:false})
         }
         if (type === 'edit'){
-            setSearchResults([...searchResults.map( reg => reg.id === reg.id ? data : reg)])
+            setSearchResults([...searchResults.map( reg => reg.id === data.id ? data : reg)])
             setShowModal({show:false})
         }
         if (type === 'delete'){
-            setSearchResults(searchResults.filter(reg => reg.id !== data))
+            setSearchResults(searchResults.filter(reg => reg.id !== parseInt(data)))
             setShowModal({show:false})
         }
     }
 
     useEffect(()=>{
-        if ((user.permissions && user.permissions.indexOf("view_transferencias_contas") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_resultados_financeiros") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         const getdata = async () =>{
@@ -132,16 +132,16 @@ const IndexMovimentacoes = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                   {showmodal.type === 'add' ? 'Adicionar': 'Editar'} Transferência
+                   {showmodal.type === 'add' ? 'Adicionar': 'Editar'} Movimentação
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center w-100 sectionform">
-                        {/* {showmodal.type === 'add' 
-                            ? <FormTransfer hasLabel type='add' submit={submit}/>
-                            : <FormTransfer hasLabel type='edit' data={showmodal.data} submit={submit}/>
-                        } */}
+                        {showmodal.type === 'add' 
+                            ? <FormMovimentacao hasLabel type='add' submit={submit}/>
+                            : <FormMovimentacao hasLabel type='edit' data={showmodal.data} submit={submit}/>
+                        }
                     </Row>
             </Modal.Body>
         </Modal>

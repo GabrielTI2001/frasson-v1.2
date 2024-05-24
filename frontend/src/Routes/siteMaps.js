@@ -1,5 +1,5 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
-faMap, faWheatAwn, faCannabis, faFilePen} 
+faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
@@ -378,8 +378,28 @@ export const financeiroRoutes = {
           exact: true,
           active: true
         },
+        {
+          name: 'Reembolsos Clientes',
+          to: '/finances/refunds',
+          icon2: 'ArrowClockwise',
+          exact: true,
+          active: true
+        },
       ]
-    }
+    },
+    {
+      name: 'Financeiro Reports',
+      active: true,
+      children: [
+        {
+          name: 'Report Pagamentos',
+          to: '/finances/billings',
+          icon: faFilePdf,
+          exact: true,
+          active: true
+        },
+      ]
+    },
   ]
 };
 
