@@ -1,8 +1,9 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
-faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf} 
+faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
+
 const user = JSON.parse(localStorage.getItem("user"));
 
 export const dashboardRoutes = {
@@ -398,8 +399,35 @@ export const financeiroRoutes = {
           exact: true,
           active: true
         },
+        {
+          name: 'Report Cobranças',
+          to: '/finances/revenues',
+          icon: faFilePdf,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Report Saldos Contas',
+          to: `${process.env.REACT_APP_API_URL}/finances/balances/bank-accounts/pdf`,
+          icon: faFilePdf,
+          exact: true,
+          active: true
+        }
       ]
     },
+    {
+      name: 'Outras Ferramentas',
+      active: true,
+      children: [
+        {
+          name: 'Indicadores Frasson',
+          to: '/kpi/indicators',
+          icon: faBullseye,
+          exact: true,
+          active: true
+        },
+      ]
+    }
   ]
 };
 
@@ -467,9 +495,23 @@ export const adminRoutes = {
       active: true,
       children: [
         {
+          name: 'Django Admin',
+          to: `${process.env.REACT_APP_API_URL}/admin/`,
+          icon2: 'WrenchAdjustable',
+          exact: true,
+          active: true
+        },
+        {
           name: 'Usuários',
           to: '/admin/users',
           icon: faUser,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Administrator Panel',
+          to: '/administrator',
+          icon: faScrewdriverWrench,
           exact: true,
           active: true
         },

@@ -28,6 +28,16 @@ class detailMetas(serializers.ModelSerializer):
             return f"{obj.assignee.first_name} {obj.assignee.last_name}"
         else:
             return None  
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in ['user_avatar', 'str_indicator', 'str_responsavel']:
+                field.required = True
     class Meta:
         model = Metas_Realizados
         fields = '__all__'
+
+class listIndicators(serializers.ModelSerializer):
+    class Meta:
+        model = Indicadores_Frasson
+        fields = ['id', 'uuid', 'description', 'is_active']

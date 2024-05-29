@@ -46,7 +46,7 @@ class UserProfileView(APIView):
                 profile_data = {
                     'user_id': profile.user.id,
                     'first_name': profile.user.first_name,
-                    'avatar': 'http://10.0.0.104:8000/media/'+profile.avatar.name
+                    'avatar': 'media/'+profile.avatar.name
                     # Adicione outros campos do perfil conforme necessário
                 }
                 return Response(profile_data)

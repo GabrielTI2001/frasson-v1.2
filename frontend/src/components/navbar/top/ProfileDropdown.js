@@ -14,7 +14,7 @@ const ProfileDropdown = () => {
         as={Link}
         className="pe-0 ps-2 nav-link"
       >
-        <Avatar src={perfil.avatar} size={'l'}></Avatar>
+        {perfil.avatar && <Avatar src={`${process.env.REACT_APP_API_URL}/${perfil.avatar}`} size={'l'}></Avatar>}
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="dropdown-caret dropdown-menu-card  dropdown-menu-end">

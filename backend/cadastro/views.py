@@ -158,4 +158,13 @@ class CategoryFeedbackView(viewsets.ModelViewSet):
 
 class FeedbackView(viewsets.ModelViewSet):
     queryset = Feedbacks_System.objects.all()
-    serializer_class = ListFeedbacks
+    serializer_class = detailFeedbacks
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ListFeedbacks
+        else:
+            return self.serializer_class
+
+class FeedbackReplyView(viewsets.ModelViewSet):
+    queryset = Feedbacks_Replies.objects.all()
+    serializer_class = FeedbackReply

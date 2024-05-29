@@ -25,7 +25,6 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
         model = Cadastro_Pessoal
         fields = '__all__'
     def get_contas_bancarias(self, obj):
-        ContasBancarias_Clientes.objects.filter(cliente=obj)
         return [{
             'id': c.id,
             'banco': c.instituicao.instituicao.razao_social,

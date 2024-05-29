@@ -77,7 +77,7 @@ export const SelectSearchOptions = async (inputValue, link, field, field2) => {
     }
 };
 
-export const SelectOptions = async (link, field, field2) => {
+export const SelectOptions = async (link, field, field2, pkfield) => {
     const token = localStorage.getItem("token")
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/`;
@@ -91,7 +91,7 @@ export const SelectOptions = async (link, field, field2) => {
       const dataapi = await response.json();
       if (response.status === 200){
         const options = dataapi.length > 0 ? dataapi.map(b =>({
-            value: b.id,
+            value: pkfield ? b[pkfield] : b.id,
             label: `${b[field]}${field2 ? ' - '+b[field2] : ''}`
         })) : []
         return options

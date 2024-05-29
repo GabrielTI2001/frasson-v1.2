@@ -15,6 +15,7 @@ router.register(r'picture-farm-assets', views.PicturesBenfeitoriasView)
 router.register(r'agencias-bancarias', views.AgenciasBancariasView)
 router.register(r'feedbacks', views.FeedbackView)
 router.register(r'feedbacks-category', views.CategoryFeedbackView)
+router.register(r'feedbacks-reply', views.FeedbackReplyView)
 
 urlpatterns = []
 urlpatterns += router.urls

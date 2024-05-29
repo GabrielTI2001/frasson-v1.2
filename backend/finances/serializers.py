@@ -16,6 +16,24 @@ class listPagamentosPipefy(serializers.ModelSerializer):
         model = Pagamentos_Pipefy
         fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'phase_name', 'data', 'valor_pagamento', 'card_url']
 
+class listCobrancasPipefy(serializers.ModelSerializer):
+    str_detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
+    str_produto = serializers.CharField(source='detalhamento.produto.description', read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    data = serializers.DateField(read_only=True)
+    valor = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
+    class Meta:
+        model = Cobrancas_Pipefy
+        fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'phase_name', 'data', 'valor', 'card_url']
+
+class listCobrancasInvoices(serializers.ModelSerializer):
+    str_detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
+    str_produto = serializers.CharField(source='detalhamento.produto.description', read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    class Meta:
+        model = Cobrancas_Pipefy
+        fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'phase_name', 'data_pagamento', 'valor_faturado', 'card_url']
+
 class listAutomPagamentos(serializers.ModelSerializer):
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', required=False, read_only=True)
     str_categoria = serializers.SerializerMethodField(required=False, read_only=True)

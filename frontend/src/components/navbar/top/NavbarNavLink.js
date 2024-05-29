@@ -13,7 +13,7 @@ const NavbarNavLink = ({ title, route, icon, icon2 }) => {
     setConfig
   } = useAppContext();
 
-  const BootstrapIcon = icons[icon2];
+  const BootstrapIcon = icon2 ? icons[icon2] : '';
 
   const handleClick = () => {
     if (route.name === 'Modal') {

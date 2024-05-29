@@ -5,17 +5,15 @@ import { getFlatRoutes } from '../../../helpers/utils';
 import NavbarNavLink from './NavbarNavLink';
 
 const NavbarDropdownAdmin = ({ items }) => {
-  const routes = getFlatRoutes(items);
   return (
-    <Row>{routes.admin && (
+    <Row>
       <Col xs={12} md={12}>
         <Nav className="flex-column">
-          {routes.admin.map(route => (
-            <NavbarNavLink key={route.name} route={route} icon={route.icon}/>
+          {items[0].children.map(item=>(
+              <NavbarNavLink key={item.name} route={item} icon={item.icon} icon2={item.icon2}/>
           ))}
         </Nav>
       </Col>
-      )}
     </Row>
   );
 };

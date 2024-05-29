@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Spinner, Table, Card, Modal, CloseButton} from 'react-bootstrap';
-import { useNavigate, useParams, uuid } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import { RetrieveRecord } from "../../helpers/Data";
 import { useAppContext } from "../../Main";
 import { ColumnLineChart } from "../../components/Custom/Charts";
@@ -32,7 +32,7 @@ const ViewIndicator = () => {
         setTotal({meta:totalmeta, realizado:totalrealizado})
     }
 
-    const onClick = (uuid) =>{
+    const onClick = () =>{
         setShowModal(true)
     }
     const calcpercentual = (numerador, denominador) =>{
@@ -71,8 +71,14 @@ const ViewIndicator = () => {
     return (
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
+            <li className="breadcrumb-item fw-bold">
+                <Link className="link-fx text-primary" to={'/kpi/indicators'}>Key Performance Indicators</Link>
+            </li>
+            <li className="breadcrumb-item fw-bold">
+                <Link className="link-fx text-primary" to={'/kpi/myindicators'}>Meus Indicadores</Link>
+            </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                Meus Indicadores
+                {register && register.str_indicator+' '+register.year}
             </li>  
         </ol>
         {register && total ?
@@ -88,7 +94,7 @@ const ViewIndicator = () => {
                 </thead>
                 <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
                 {months.map((month, index) =>
-                    <tr style={{cursor:'pointer'}} onClick={() => onClick(register.uuid)} key={index}>
+                    <tr style={{cursor:'pointer'}} onClick={() => onClick()} key={index}>
                         <td className="align-middle fw-bold text-primary">{meses[index].toLocaleUpperCase()}</td>
                         <td className="align-middle fw-bold text-primary">{register[`target_${month}`] || '-'}</td>
                         <td className="align-middle fw-bold text-primary">{register[`actual_${month}`] || '-'}</td>
@@ -129,6 +135,9 @@ const ViewIndicator = () => {
                 </Card.Body>
             </Col>
             }
+            <div className="fs--1 fw-bold mb-2 text-info-emphasis">
+                Atualizado em {new Date(register.updated_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})} {new Date(register.updated_at).toLocaleTimeString('pt-BR', {timeZone:'UTC'})}
+            </div>
         </Row>
         : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
@@ -140,7 +149,7 @@ const ViewIndicator = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Editar Indicador
+                    Editar Metas
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>

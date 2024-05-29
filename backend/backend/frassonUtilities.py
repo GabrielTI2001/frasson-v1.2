@@ -9,6 +9,7 @@ from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, 
 from pygc import great_circle
 import numpy as np
 from pyproj import Transformer
+from inbox.models import Notifications_Messages
 
 env = environ.Env()
 environ.Env.read_env()
@@ -17,6 +18,21 @@ class Frasson(object):
     def insertAllOnDatabase():
         for id in init_data.keys():
             InsertRegistros(int(id))
+    
+    def createNotificationMessageUsers(str_title, str_subject, str_text, str_icon, str_icon_color, int_recipient, int_sender=1):
+        """Cria mensagens no centro de notificações"""
+        Notifications_Messages.objects.create(
+            title = str_title, 
+            subject = str_subject, 
+            text = str_text,
+            icon = str_icon,
+            icon_color = str_icon_color,
+            recipient_id = int_recipient,
+            sender_id = int_sender
+        )
+
+        return JsonResponse({'msg': 'ok'})
+
 
     def verificaCoordenadaCadastro(latitude, longitude, type):
         """Função que verifica se a coordenada informada na outorga já está cadastrada (Novo registro). Retorna True se existe coordenada próxima."""

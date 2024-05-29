@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse, FileResponse
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
@@ -16,11 +17,6 @@ from reportlab.lib.units import inch, mm
 from reportlab.lib.pagesizes import letter, landscape, A4
 from reportlab.lib.colors import Color
 from rest_framework.response import Response
-
-class PagamentosView(viewsets.ModelViewSet):
-    queryset = Pagamentos_Pipefy.objects.all()
-    serializer_class = listPagamentosPipefy
-    # permission_classes = [IsAuthenticated]
 
 class PagamentosView(viewsets.ModelViewSet):
     queryset = Pagamentos_Pipefy.objects.all()
@@ -74,6 +70,100 @@ class PagamentosView(viewsets.ModelViewSet):
             return listPagamentosPipefy
         else:
             return self.serializer_class
+        
+class CobrancasView(viewsets.ModelViewSet):
+    queryset = Cobrancas_Pipefy.objects.all()
+    serializer_class = listCobrancasPipefy
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search = self.request.query_params.get('search', '')
+        search_year = self.request.query_params.get('year', None)
+        search_month = self.request.query_params.get('month', None)
+        search_pago = True if self.request.query_params.get('status', '0') == "1" else False
+        phase = self.request.query_params.get('phase', None)
+        produto = self.request.query_params.get('produto', None)
+        
+        if search_year:
+            search_year = int(search_year)
+            if search_month:
+                search_month = int(search_month)
+                if search_pago:
+                    query_search = (Q(phase_id=317532039) & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                        (Q(data_pagamento__month=search_month) | Q(data_previsao__month=search_month)) & 
+                            (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+
+                else:
+                    query_search = (~Q(phase_id=317532039) & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                        (Q(data_pagamento__month=search_month) | Q(data_previsao__month=search_month)) & 
+                            (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+                    
+                queryset = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+                valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+                data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year, data__month=search_month).order_by('data')
+            
+            else:
+                if search_pago:
+                    query_search = (Q(phase_id=317532039) & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                        (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+                else:
+                    query_search = (~Q(phase_id=317532039) & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                        (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+                queryset = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+                valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+                data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year).order_by('data')
+
+        else: #se não houver nenhuma busca (carregada pela primeira vez)
+            queryset = Cobrancas_Pipefy.objects.filter(phase_id__in=[317532037, 317532038, 318663454, 317532040]).annotate(
+            valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).order_by('data')
+
+        if phase:
+            queryset = Cobrancas_Pipefy.objects.filter(phase_id=int(phase)).annotate(
+            valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).order_by('data')
+
+        if produto:
+            queryset = Cobrancas_Pipefy.objects.filter(detalhamento__produto_id=int(produto)).annotate(
+            valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).order_by('data')
+        return queryset
+    
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        anos = [ano for ano in range(2021, date.today().year + 1)]
+        response_data = {
+            'cobrancas': serializer.data,
+            'anos': anos,
+        }
+        return Response(response_data)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCobrancasPipefy
+        else:
+            return self.serializer_class
+
+class CobrancasInvoicesView(viewsets.ModelViewSet):
+    queryset = Cobrancas_Pipefy.objects.all()
+    serializer_class = listCobrancasInvoices
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        produto = self.request.query_params.get('produto', None)
+        current_year = int(date.today().year)
+        if produto:
+            queryset = queryset.filter(phase_id=317532039, data_pagamento__year=current_year,
+                detalhamento__produto_id=produto).order_by('-data_pagamento')
+        else:
+            queryset = queryset.filter(phase_id=317532039, data_pagamento__year=current_year).order_by('-data_pagamento')
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCobrancasInvoices
+        else:
+            return self.serializer_class
+
 
 class AutomPagamentosView(viewsets.ModelViewSet):
     queryset = Lancamentos_Automaticos_Pagamentos.objects.all()
@@ -796,5 +886,323 @@ def pagamentos_pipefy_report_pdf(request):
     c.save()
     buf.seek(0)
     file_name = f"payments_report_{uuid.uuid4()}.pdf"
+    #return pdf file (to download file, set as_attachement = True)
+    return FileResponse(buf, as_attachment=False, filename=file_name)
+
+def cobrancas_pipefy_report_pdf(request):
+    #GERA PDF DO REPORT COBRANÇAS
+    date_today = date.today().strftime('%d/%m/%Y')
+    search_year = request.GET.get('year')
+    search_month = request.GET.get('month')
+    search = request.GET.get('search')
+    search_pago = True if request.GET.get('status') == "1" else False
+
+    if search_month:
+        if search_pago:
+            query_search = (Q(phase_id=317532039) & (Q(data_previsao__year=search_year) | Q(data_pagamento__year=search_year)) & 
+                (Q(data_previsao__month=search_month) | Q(data_pagamento__month=search_month)) & 
+                    (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+        else:
+            query_search = (~Q(phase_id=317532039) & (Q(data_previsao__year=search_year) | Q(data_pagamento__year=search_year)) & 
+                (Q(data_previsao__month=search_month) | Q(data_pagamento__month=search_month)) & 
+                    (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+        
+        cobrancas_pipefy = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+            valor=Case(When(phase_id=317532039, then='valor_faturado'), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(phase_id=317532039, then='data_pagamento'), default='data_previsao')).filter(data__year=search_year, data__month=search_month).order_by('data')
+    
+    else:
+        if search_pago:
+            query_search = (Q(phase_id=317532039) & (Q(data_previsao__year=search_year) | Q(data_pagamento__year=search_year)) & 
+                (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+        else:
+            query_search = (~Q(phase_id=317532039) & (Q(data_previsao__year=search_year) | Q(data_pagamento__year=search_year)) & 
+                (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+        
+        cobrancas_pipefy = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+            valor=Case(When(phase_id=317532039, then='valor_faturado'), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(phase_id=317532039, then='data_pagamento'), default='data_previsao')).filter(data__year=search_year).order_by('data')
+    
+    cobrancas_phases = cobrancas_pipefy.values('phase_name').annotate(
+        valor=Sum(Case(When(phase_id=317532039, then=F('valor_faturado')), default=F('saldo_devedor'), output_field=DecimalField()))).order_by('phase_name')
+
+    total_cobrancas = cobrancas_pipefy.aggregate(
+        soma=Sum(Case(When(phase_id=317532039, then='valor_faturado'), default='saldo_devedor', output_field=DecimalField())))
+
+    cobrancas = [{
+        'phase': pag['phase_name'],
+        'total': pag['valor']
+    }for pag in cobrancas_phases]
+
+    cobrancas.append({'phase': 'TOTAL', 'total': total_cobrancas['soma'] if total_cobrancas['soma'] != None else 0})
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=landscape(letter))
+    c.setTitle(f"Revenues Report - {date_today}")
+    
+    date_today = date.today().strftime('%d/%m/%Y')
+    img_logo = 'static/media/various/logo-frasson.png'
+
+    margin_top = 550
+    margin_bottom = 100
+    margin_left = 50
+    margin_right = 792 - margin_left
+    numero_registros_por_pagina = 30
+
+    qtd_pages = math.ceil(len(cobrancas_pipefy) / numero_registros_por_pagina) #arredonda pra cima quando float
+    qtd_cobrancas = cobrancas_pipefy.count()
+
+    y = qtd_cobrancas / numero_registros_por_pagina
+    
+    if (y % 1) > .80 or (y % 1) == 0: #estabelece 0.8 da quantidade de registros que ocuparão a página o limite para caber o resumo final na mesma página.
+        qtd_pages += 1 #caso o s registros forem até quase o final da página, adiciona uma nova página no documento.
+
+    registro_cobranca = 0
+    
+    for i in range(qtd_pages):
+        c.setFillColor(Color(12/255, 23/255, 56/255)) #RGB color must be between 0 and 1
+        c.drawImage(img_logo, margin_left - 10, 280, 90, preserveAspectRatio=True)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawString(320, 580, f"RELATÓRIO DE COBRANÇAS")
+        c.setFont("Helvetica", 8)
+        c.drawString(710, 580, date_today)
+
+        if i == 0:
+            c.setFont("Helvetica-Bold", 9)
+            c.drawString(margin_left, margin_top, "Data")
+            c.drawString(margin_left + 60, margin_top, "Cliente")
+            c.drawString(margin_left + 350, margin_top, "Detalhamento")
+            c.drawString(margin_left + 550, margin_top, "Status")
+            c.drawString(margin_left + 640, margin_top, "Valor")
+            c.line(margin_left, margin_top - 5, margin_left + 700, margin_top - 5)
+        
+        c.setFont("Helvetica", 8)
+
+        vertical_position = margin_top - 15
+        for j in range(registro_cobranca, registro_cobranca + numero_registros_por_pagina):
+            if registro_cobranca < len(cobrancas_pipefy):
+                c.drawString(margin_left, vertical_position, datetime.strptime(str(cobrancas_pipefy[registro_cobranca].data), '%Y-%m-%d').strftime('%d/%m/%Y'))
+                c.drawString(margin_left + 60, vertical_position, str(cobrancas_pipefy[registro_cobranca].cliente.razao_social)[:60])
+                c.drawString(margin_left + 350, vertical_position, str(cobrancas_pipefy[registro_cobranca].detalhamento.detalhamento_servico))
+                c.drawString(margin_left + 550, vertical_position, str(cobrancas_pipefy[registro_cobranca].phase_name))
+                c.drawString(margin_left + 640, vertical_position, locale.currency(cobrancas_pipefy[registro_cobranca].valor, grouping=True))
+                c.line(margin_left, vertical_position - 5, margin_left + 700, vertical_position - 5)
+            else:
+                break
+            
+            registro_cobranca+=1
+            vertical_position-=15
+
+        c.drawString(50, 50, "#documentointerno")
+        c.drawString(700, 50, f"Página {i + 1} de {qtd_pages}")
+
+        if (i + 1) == qtd_pages:
+    
+            x = vertical_position - 20
+            c.setFont("Helvetica-Bold", 8)
+            c.drawString(margin_left, x, "TOTAL POR FASE") 
+            for p in cobrancas:
+                c.setFont("Helvetica", 8)
+                c.drawString(margin_left, x - 15, p['phase'])
+                c.drawString(margin_left + 80, x - 15, locale.currency(p['total'] or 0, grouping=True))
+                x-=15
+
+        else:
+            c.showPage()
+
+    c.save()
+    buf.seek(0)
+    file_name = f"revenues_report_{uuid.uuid4()}.pdf"
+
+    #return pdf file (to download file, set as_attachement = True)
+    return FileResponse(buf, as_attachment=False, filename=file_name)
+
+
+def movimentacao_conta_bancaria(request, id):
+    movimentacoes = []
+    quantidade_dias = 120
+    try:
+        caixa_nome = Caixas_Frasson.objects.get(pk=id).caixa
+        data_referencia = date.today() - timedelta(days=quantidade_dias)
+        cobrancas = Cobrancas_Pipefy.objects.filter(caixa=id, phase_id=317532039, data_pagamento__gte=data_referencia)
+        pagamentos = Pagamentos_Pipefy.objects.filter(caixa=id, phase_id=317163732, data_pagamento__gte=data_referencia)
+        reembolsos = Reembolso_Cliente.objects.filter(caixa_destino=id, data__gte=data_referencia)
+        resultados = Resultados_Financeiros.objects.filter(caixa=id, data__gte=data_referencia)
+        transf_entrada_caixa = Transferencias_Contas.objects.filter(caixa_destino=id, data__gte=data_referencia)
+        transf_saida_caixa = Transferencias_Contas.objects.filter(caixa_origem=id, data__gte=data_referencia)
+
+        for cobranca in cobrancas:
+            movimentacoes.append({
+                'data': datetime.strptime(str(cobranca.data_pagamento), '%Y-%m-%d').strftime('%d/%m/%Y'),
+                'descricao': f'Cobrança - {cobranca.detalhamento.produto}',
+                'detalhe': cobranca.cliente.razao_social,
+                'valor': locale.format_string('%.2f', cobranca.valor_faturado, True),
+                'color': 'success'
+            })
+
+        for pagamento in pagamentos:
+            movimentacoes.append({
+                'data': datetime.strptime(str(pagamento.data_pagamento), '%Y-%m-%d').strftime('%d/%m/%Y'),
+                'descricao': f'Pagamentos - {pagamento.categoria.category}',
+                'detalhe': pagamento.beneficiario.razao_social,
+                'valor': locale.format_string('%.2f', pagamento.valor_pagamento, True),
+                'color': 'danger'
+            })
+
+        for reembolso in reembolsos:
+            movimentacoes.append({
+                'data': datetime.strptime(str(reembolso.data), '%Y-%m-%d').strftime('%d/%m/%Y'),
+                'descricao': 'Reembolso',
+                'detalhe': reembolso.description,
+                'valor': locale.format_string('%.2f', reembolso.valor, True),
+                'color': 'success'
+            })
+
+        for resultado in resultados:
+            movimentacoes.append({
+                'data': datetime.strptime(str(resultado.data), '%Y-%m-%d').strftime('%d/%m/%Y'),
+                'descricao': f'Movimentação Financeira - {resultado.tipo.description}',
+                'detalhe': resultado.description,
+                'valor': locale.format_string('%.2f', resultado.valor, True),
+                'color': 'success' if resultado.tipo.tipo == 'R' else 'danger'
+            })    
+
+        for transferencia in transf_entrada_caixa:
+            movimentacoes.append({
+                'data': datetime.strptime(str(transferencia.data), '%Y-%m-%d').strftime('%d/%m/%Y'),
+                'descricao': 'Transferência Recebida',
+                'detalhe': transferencia.description,
+                'valor': locale.format_string('%.2f', transferencia.valor, True),
+                'color': 'success'
+            })
+        
+        for transferencia in transf_saida_caixa:
+            movimentacoes.append({
+                'data': datetime.strptime(str(transferencia.data), '%Y-%m-%d').strftime('%d/%m/%Y'),
+                'descricao': 'Transferência Enviada',
+                'detalhe': transferencia.description,
+                'valor': locale.format_string('%.2f', transferencia.valor, True),
+                'color': 'danger'
+            })
+
+        # Sort the list by the 'data' key
+        sorted_movimentacoes = sorted(movimentacoes, key=lambda x: datetime.strptime(x['data'], '%d/%m/%Y'), reverse=True)
+
+        context = {
+            'nome_caixa': caixa_nome,
+            'movimentacoes': sorted_movimentacoes,
+        }
+    except ObjectDoesNotExist:
+        context = {
+            'nome_caixa': 'Não existe',
+            'movimentacoes': [],
+        }
+    return JsonResponse(context)
+
+
+def pdf_saldos_view(request):
+    #create bytestrem buffer and canvas
+    from reportlab.lib.units import mm
+    date_today = date.today().strftime('%d/%m/%Y')
+
+    def coord(x, y, height, unit=1):
+        x, y = x * unit, height -  y * unit
+        return x, y
+
+    width, height = letter
+
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=letter)
+
+    #buscando os saldos pela função
+    obj = Frasson.saldosAtuaisContasBancarias()
+    saldos = obj['saldos']
+
+    c.setFont("Helvetica", 12)
+    img = 'static/media/various/logo-frasson.png'
+    c.drawImage(img, 42, 450, 110, preserveAspectRatio=True)
+    c.drawString(*coord(75, 15, height, mm), "SALDO DAS CONTAS BANCÁRIAS")
+    c.setFont("Helvetica-Bold", 11)
+    c.setFont("Helvetica", 10)
+    c.drawString(*coord(180, 15, height, mm), date_today)
+    
+    x = 0
+    y = 15
+
+    c.setFont("Helvetica", 11)
+    c.drawString(*coord(x + 19, y + 15, height, mm), "SALDOS ATUAIS")
+
+    c.drawString(*coord(x + 19, y + 25, height, mm), "Banco do Brasil: ")
+    c.drawString(*coord(x + 65, y + 25, height, mm), saldos['banco_brasil'])
+
+    c.drawString(*coord(x + 19, y + 32, height, mm), "Caixa Econômica: ")
+    c.drawString(*coord(x + 65, y + 32, height, mm), saldos['caixa_economica'])
+
+    c.drawString(*coord(x + 19, y + 39, height, mm), "Santander: ")
+    c.drawString(*coord(x + 65, y + 39, height, mm), saldos['banco_santander'])
+
+    c.drawString(*coord(x + 19, y + 46, height, mm), "Sicredi: ")
+    c.drawString(*coord(x + 65, y + 46, height, mm), saldos['banco_sicredi'])
+
+    c.drawString(*coord(x + 19, y + 53, height, mm), "Dinheiro: ")
+    c.drawString(*coord(x + 65, y + 53, height, mm), saldos['dinheiro'])
+
+    c.drawString(*coord(x + 19, y + 60, height, mm), "Grupo Frasson: ")
+    c.drawString(*coord(x + 65, y + 60, height, mm), saldos['grupo_frasson'])
+
+    c.drawString(*coord(x + 19, y + 67, height, mm), "Sicoob: ")
+    c.drawString(*coord(x + 65, y + 67, height, mm), saldos['banco_sicoob'])
+
+    c.drawString(*coord(x + 19, y + 74, height, mm), "Aplicação BB: ")
+    c.drawString(*coord(x + 65, y + 74, height, mm), saldos['aplicacao_bb'])
+
+    c.drawString(*coord(x + 19, y + 81, height, mm), "Aplicação xp: ")
+    c.drawString(*coord(x + 65, y + 81, height, mm), saldos['aplicacao_xp'])
+
+    c.drawString(*coord(x + 19, y + 88, height, mm), "SALDO TOTAL: ")
+    c.drawString(*coord(x + 65, y + 88, height, mm), obj['saldo_total'])
+
+    c.drawString(*coord(x + 19, y + 105, height, mm), "COBRANÇAS ABERTAS")
+
+    c.drawString(*coord(x + 19, y + 115, height, mm), "Aguardando Dist.")
+    c.drawString(*coord(x + 65, y + 115, height, mm), obj['aberto_aguardando'])
+
+    c.drawString(*coord(x + 19, y + 122, height, mm), "Notificação")
+    c.drawString(*coord(x + 65, y + 122, height, mm), obj['aberto_notificacao'])
+
+    c.drawString(*coord(x + 19, y + 129, height, mm), "Faturamento")
+    c.drawString(*coord(x + 65, y + 129, height, mm), obj['aberto_faturamento'])
+
+    c.drawString(*coord(x + 19, y + 136, height, mm), "Confirmação")
+    c.drawString(*coord(x + 65, y + 136, height, mm), obj['aberto_confirmacao'])
+
+    c.drawString(*coord(x + 19, y + 143, height, mm), "TOTAL COBRANÇAS")
+    c.drawString(*coord(x + 65, y + 143, height, mm), obj['total_aberto_cobrancas'])
+
+    c.drawString(*coord(x + 19, y + 160, height, mm), "PAGAMENTOS ABERTOS")
+
+    c.drawString(*coord(x + 19, y + 170, height, mm), "Conferência")
+    c.drawString(*coord(x + 65, y + 170, height, mm), obj['aberto_conferencia'])
+    
+    c.drawString(*coord(x + 19, y + 177, height, mm), "Agendado")
+    c.drawString(*coord(x + 65, y + 177, height, mm), obj['aberto_agendado'])
+    c.drawString(*coord(x + 19, y + 184, height, mm), "TOTAL PAGAMENTOS")
+    c.drawString(*coord(x + 65, y + 184, height, mm), obj['total_aberto_pagamentos'])
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(*coord(x + 19, y + 208, height, mm), "PREVISÃO SALDO")
+    c.drawString(*coord(x + 19, y + 215, height, mm), obj['previsao_saldo'])
+
+    #footer
+    c.setFont("Helvetica", 11)
+    c.drawString(*coord(x + 140, y + 250, height, mm), "#documento interno frasson")
+
+    #finishing up
+    c.setTitle("Bank Accounts Frasson")
+    c.showPage()
+    c.save()
+    buf.seek(0)
+   
+    file_name = f'saldos_contas_{date.today().day}_{date.today().month}_{date.today().year}.pdf'
+
     #return pdf file (to download file, set as_attachement = True)
     return FileResponse(buf, as_attachment=False, filename=file_name)

@@ -2,17 +2,18 @@ import React, { useEffect, useState} from 'react';
 import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Row, Col} from 'react-bootstrap';
-import { SelectOptions } from '../../helpers/Data';
+import { RetrieveRecord, SelectOptions } from '../../helpers/Data';
 
-const IndicatorForm = ({ hasLabel=true, type, data, submit}) => {
+const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
   const [formData, setFormData] = useState({});
   const [users, setUsers] = useState();
   const [message, setMessage] = useState();
+  const [indicators, setIndicators] = useState();
   const navigate = useNavigate();
   const token = localStorage.getItem("token")
   
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/kpi/metas/${type === 'edit' ? data.uuid+'/' : ''}` 
+    const link = `${process.env.REACT_APP_API_URL}/kpi/metas/${type === 'edit' ? data ? data.uuid : pk+'/' : ''}` 
     const method = type === 'edit' ? 'PUT' : 'POST'
     try {
         const response = await fetch(link, {
@@ -62,12 +63,18 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit}) => {
 
   useEffect(()=>{
     const loadFormData = () => {
-      setFormData({...formData, ...data})
+      if (!data){
+        RetrieveRecord(pk, 'kpi/metas', (data) => setFormData(data))
+      }
+      else{
+        setFormData({...formData, ...data})
+      }
     }
     const loadUsers = async () => {
       const options = await SelectOptions('users/users', 'first_name')
       Array.isArray(options) ? setUsers(options) : navigate("/auth/login")
-      
+      const options2 = await SelectOptions('kpi/indicators', 'description', null, 'uuid')
+      Array.isArray(options2) ? setIndicators(options2) : navigate("/auth/login")
     }
     if (type === 'edit'){
       if(!formData.year){   
@@ -81,6 +88,33 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit}) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row'>
+      <Form.Group className="mb-2" as={Col} lg={3}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Indicador*</Form.Label>}
+          <Form.Select
+            value={formData.indicator || ''}
+            name="indicator"
+            onChange={handleFieldChange}
+            type="select"
+          >
+            <option value={undefined}>----</option>
+            {indicators &&( indicators.map( u =>(
+              <option key={u.value} value={u.value}>{u.label}</option>
+            )))}
+          </Form.Select>
+          <label className='text-danger'>{message && (message.indicator)}</label>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} lg={3}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Ano*</Form.Label>}
+          <Form.Control
+            value={formData.year || ''}
+            name="year"
+            onChange={handleFieldChange}
+            type="number"
+          />
+          <label className='text-danger'>{message && (message.year)}</label>
+        </Form.Group>
+
         <Form.Group className="mb-2" as={Col} lg={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Responsável*</Form.Label>}
           <Form.Select

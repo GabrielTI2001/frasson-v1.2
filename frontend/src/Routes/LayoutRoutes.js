@@ -5,6 +5,9 @@ import Default from '../Layouts/Default';
 import AuthSimpleLayout from "../Layouts/AuthSimpleLayout";
 import PasswordResetFom from '../components/authentication/PasswordResetForm';
 import { ProfileContext } from '../context/Context';
+//Admin
+import IndexUsers from '../App/Admin/Users/Index';
+import IndexAdministrator from '../App/Admin/Index';
 //Alongamentos
 import IndexAlongamentos from '../App/Alongamentos/Index';
 //Analytics
@@ -37,6 +40,7 @@ import IndexTransfers from '../App/Finances/Transfers/Index';
 import IndexMovimentacoes from '../App/Finances/FluxoCaixa/IndexMoviments';
 import IndexReembolsos from '../App/Finances/FluxoCaixa/IndexRefunds';
 import ReportPagamentos from '../App/Finances/Reports/Pagamentos';
+import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -44,6 +48,7 @@ import ViewPivot from '../App/Irrigacao/Pivots/View';
 import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
 //KPI
 import IndexMyIndicators from '../App/Kpi/Index';
+import IndexIndicators from '../App/Kpi/IndexGeral';
 import ViewIndicator from '../App/Kpi/View';
 //Register
 import IndexCadGerais from '../App/Register/Index';
@@ -54,6 +59,7 @@ import BenfeitoriaEdit from '../App/Register/Benfeitorias/Edit';
 import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
 import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
 import NewFeedback from '../App/Register/Feedbacks/New';
+import IndexFeedbacks from '../App/Register/Feedbacks/Index';
 //Pipefy
 import IndexPessoal from '../App/Pipefy/Pessoal/Index';
 import ViewPessoal from '../App/Pipefy/Pessoal/View';
@@ -84,8 +90,6 @@ import ViewRequerimentoAPPO from '../App/Ambiental/Requerimentos/View';
 //Licenses
 import IndexLicenses from '../App/Licenses/Index';
 import ViewLicenca from '../App/Licenses/View';
-//Admin
-import IndexUsers from '../App/Admin/Users/Index';
 //Services
 import ExternalAPIs from '../App/Services/API';
 import Commodities from '../App/Services/Currency/Commodities';
@@ -138,6 +142,9 @@ const LayoutRoutes = () => {
   return (
     <Routes>
       <Route element={<Default />}>
+        <Route path="/administrator">
+          <Route path="" element={<IndexAdministrator />}/>
+        </Route>
         <Route path="/admin">
           <Route path="users" element={<IndexUsers />}/>
         </Route>
@@ -201,6 +208,7 @@ const LayoutRoutes = () => {
           <Route path="financial" element={<IndexMovimentacoes />}/>
           <Route path="refunds" element={<IndexReembolsos />}/>
           <Route path="billings" element={<ReportPagamentos />}/>
+          <Route path="revenues" element={<ReportCobrancas />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/irrigation">
@@ -211,6 +219,7 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/kpi">
           <Route path="myindicators" element={<IndexMyIndicators />}/>
+          <Route path="indicators" element={<IndexIndicators />}/>
           <Route path="indicators/:uuid" element={<ViewIndicator />}/>
         </Route>
         <Route path="/licenses">
@@ -238,6 +247,7 @@ const LayoutRoutes = () => {
           <Route path='analysis/soil' element={<IndexAnaliseSolo />}/>
           <Route path='analysis/soil/:uuid' element={<ViewAnaliseSolo />}/>
           <Route path='feedback/new' element={<NewFeedback />}/>
+          <Route path='feedbacks' element={<IndexFeedbacks />}/>
         </Route>
         <Route path="/services">
           <Route path="maps" element={<ServicesMaps />}/>

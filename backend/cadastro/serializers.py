@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Tipo_Benfeitorias, Pictures_Benfeitorias, Analise_Solo
-from .models import Agencias_Bancarias, Feedbacks_System, Feedbacks_Category
+from .models import Agencias_Bancarias, Feedbacks_System, Feedbacks_Category, Feedbacks_Replies
 from backend.frassonUtilities import Frasson
 import locale
 from backend.settings import TOKEN_GOOGLE_MAPS_API
@@ -193,6 +193,33 @@ class listAgenciasBancarias(serializers.ModelSerializer):
         fields = ['id', 'descricao_agencia']
 
 class ListFeedbacks(serializers.ModelSerializer):
+    str_category = serializers.CharField(source='category.description', read_only=True)
+    str_user = serializers.CharField(source='user.first_name', read_only=True)
+    user_avatar = serializers.SerializerMethodField(read_only=True)
+    replys = serializers.SerializerMethodField()
+    def get_user_avatar(self, obj):
+        return '/media/'+obj.user.profile.avatar.name
+    def get_replys(self, obj):
+        return [{
+            'id': r.id,
+            'text': r.text,
+            'created_at': r.created_at
+        }for r in Feedbacks_Replies.objects.filter(feedback=obj)]
+    class Meta:
+        model = Feedbacks_System
+        fields = '__all__'
+
+class detailFeedbacks(serializers.ModelSerializer):
+    user_avatar = serializers.SerializerMethodField(read_only=True)
+    replys = serializers.SerializerMethodField()
+    def get_user_avatar(self, obj):
+        return '/media/'+obj.user.profile.avatar.name
+    def get_replys(self, obj):
+        return [{
+            'id': r.id,
+            'text': r.text,
+            'created_at': r.created_at
+        }for r in Feedbacks_Replies.objects.filter(feedback=obj)]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
@@ -202,7 +229,18 @@ class ListFeedbacks(serializers.ModelSerializer):
         model = Feedbacks_System
         fields = '__all__'
 
+
 class ListFeedbacksCategory(serializers.ModelSerializer):
     class Meta:
         model = Feedbacks_Category
+        fields = '__all__'
+
+class FeedbackReply(serializers.ModelSerializer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['text']:
+                field.required = True
+    class Meta:
+        model = Feedbacks_Replies
         fields = '__all__'
