@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Nav, Row, Col } from 'react-bootstrap';
-import { getFlatRoutes } from '../../../helpers/utils';
 import NavbarNavLink from './NavbarNavLink';
 
 const NavbarDropdownAdmin = ({ items }) => {

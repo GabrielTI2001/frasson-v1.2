@@ -1,5 +1,6 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
-faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench} 
+faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench,
+faMapLocationDot} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
@@ -166,6 +167,13 @@ export const operacionalRoutes = {
           name: 'Cadastros Gerais',
           icon: faDatabase,
           to: '/register/',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Glebas Imóveis Rurais',
+          icon: faMapLocationDot,
+          to: '/glebas',
           exact: true,
           active: true
         },

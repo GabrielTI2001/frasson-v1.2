@@ -49,7 +49,7 @@ const ViewASV = () => {
                 }
                 else if (response.status === 200){
                     const data = await response.json();
-                    setCoordenadas([...data.map(d => d)])
+                    setCoordenadas([...data.map(d =>({...d, path:d.kml}))])
                 }
                 else if (response.status === 404){
                     setCoordenadas([])

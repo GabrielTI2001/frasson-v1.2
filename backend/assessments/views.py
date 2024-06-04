@@ -111,3 +111,34 @@ def quiz(request, uuid):
 
     context = {'questions':questions}
     return JsonResponse(context)
+
+def index_assessments(request):
+    context = {}
+    avaliacoes = Avaliacao_Colaboradores.objects.all().order_by('id')
+    perguntas = Questionario.objects.all()
+    notas = Notas_Avaliacao.objects.values('avaliacao', 'ponderador').annotate(
+        tot_res=Count('id'),
+    ).order_by('avaliacao')
+    avaliacoes_template = [] 
+    for i, a in enumerate(avaliacoes):
+        colaboradores = a.colaboradores.all()
+        total_necess = perguntas.count() * colaboradores.count()
+        count_done = 0
+        for n in notas:
+            if n['avaliacao'] == a.id:
+                for c in colaboradores:
+                    if n['ponderador'] == c.id:
+                        if n['tot_res'] == total_necess:
+                            count_done+=1
+        avaliacoes_template.append({
+            'status': f"{count_done} / {colaboradores.count()}",
+            'id': a.id,
+            'uuid': a.uuid,
+            'descricao': a.description,
+            'data': a.data_ref.strftime("%d/%m/%Y"),
+        })
+    context = {
+        'avaliacoes': avaliacoes_template,
+        'perguntas': list(perguntas.values())
+    }
+    return JsonResponse(context)

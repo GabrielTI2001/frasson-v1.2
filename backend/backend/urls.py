@@ -19,6 +19,7 @@ urlpatterns = [
     path('analytics/', include('analytics.urls')),
     path('dashboard/', include('dashboards.urls')),
     path('finances/', include('finances.urls')),
+    path('glebas/', include('glebas.urls')),
     path('kpi/', include('kpi.urls')),
     path('irrigation/', include('irrigation.urls')),
     path('licenses/', include('licenses.urls')),

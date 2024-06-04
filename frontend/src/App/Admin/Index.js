@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { Card, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faTractor, faPersonDigging, faFlask} from "@fortawesome/free-solid-svg-icons";
+import { faComments, faListCheck, faUsers} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../Main";
 
 const IndexAdministrator = () =>{
@@ -48,9 +48,22 @@ const IndexAdministrator = () =>{
                 <Link className="text-decoration-none" to={'/register/feedbacks'}>
                 <Card.Body as={Row} className="justify-content-between">
                   <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
-                    <FontAwesomeIcon icon={faUsers} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
+                    <FontAwesomeIcon icon={faComments} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Feedbacks</h5>     
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.feedbacks}</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
+          <Col>
+            <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'/assessments'}>
+                <Card.Body as={Row} className="justify-content-between">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faListCheck} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs--2">Avaliação 360</h5>     
                   <h5 className="text-center text-white fs--2">{countRegs && countRegs.feedbacks}</h5>                
                 </Card.Body>
                 </Link>

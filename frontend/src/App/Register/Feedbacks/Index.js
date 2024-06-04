@@ -1,17 +1,15 @@
 import React,{useEffect, useState} from 'react';
-import { useParams, useNavigate } from "react-router-dom";
-import { RetrieveRecord } from '../../../helpers/Data';
+import { useNavigate } from "react-router-dom";
 import { Link } from 'react-router-dom';
-import { Button, Col, Row, Card, OverlayTrigger, Tooltip, Modal, CloseButton } from 'react-bootstrap';
+import { Col, Row, Card, OverlayTrigger, Tooltip, Modal, CloseButton } from 'react-bootstrap';
 import {Placeholder} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPencil, faReply } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faReply } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 import { HandleSearch } from '../../../helpers/Data';
 import ViewFeedback from './View';
 
 const IndexFeedbacks = () => {
-    const {id} = useParams()
     const navigate = useNavigate()
     const user = JSON.parse(localStorage.getItem("user"))
     const [feedbacks, setFeedbacks] = useState();
@@ -23,11 +21,20 @@ const IndexFeedbacks = () => {
     }
     const submit = (type, data) =>{
         if (type === 'add') setFeedbacks([...feedbacks, data])
+        if (type === 'add_reply') {
+            setFeedbacks([...feedbacks.map(f =>(
+                f.id === data.id ? {...f, replys:[...f.replys, data]} : f
+            ))])
+        }           
         if (type === 'delete'){ 
             setFeedbacks(feedbacks.filter(m => m.id !== parseInt(data)))
             setModal({show:false})
         }
-        setModalform({show:false})
+        if (type === 'edit'){ 
+            setFeedbacks([...feedbacks.map(f =>(
+                f.id === data.id ? data : f
+            ))])
+        }
     }
     useEffect(() =>{
         const getdata = async () =>{
@@ -69,7 +76,7 @@ const IndexFeedbacks = () => {
                         }
                     >
                         <img className='p-0 rounded-circle me-2' style={{width: '42px', height: '38px'}} 
-                            src={`${process.env.REACT_APP_API_URL}${f.user_avatar}`}
+                            src={`${process.env.REACT_APP_API_URL}${f.user_avatar}`} alt='avatar'
                         />
                     </OverlayTrigger>
                     <Card as={Col}>
@@ -136,7 +143,7 @@ const IndexFeedbacks = () => {
         </Modal.Header>
         <Modal.Body className='px-4'>
             <Row className="flex-center sectionform">
-                <ViewFeedback feedback={modalform.data} />
+                <ViewFeedback feedback={modalform.data} submit={submit}/>
             </Row>
         </Modal.Body>
     </Modal>

@@ -1,6 +1,7 @@
-from django.db.models.signals import pre_delete, pre_save
+from django.db.models.signals import pre_delete, pre_save, post_save
 from django.dispatch import receiver
-from .models import Pictures_Benfeitorias, Analise_Solo
+from .models import Pictures_Benfeitorias, Analise_Solo, Feedbacks_Replies, Feedbacks_System
+from backend.frassonUtilities import Frasson
 import os
 
 @receiver(pre_delete, sender=Pictures_Benfeitorias)
@@ -42,3 +43,17 @@ def remover_arquivo_antigo(sender, instance, **kwargs):
                     os.remove(arquivo_antigo.path) 
         except Analise_Solo.DoesNotExist:
             pass 
+
+@receiver(post_save, sender=Feedbacks_Replies)
+def criar_notificacao(sender, instance, created, **kwargs):
+    if created:
+        reply = Feedbacks_Replies.objects.get(pk=instance.pk)
+        Frasson.createNotificationMessageUsers(
+            str_title='Nova resposta de feedback',
+            str_subject='Resposta de feedback da aplicação',
+            str_text=reply.text,
+            str_icon='fa-solid fa-comment',
+            str_icon_color='info',
+            int_recipient=reply.feedback.user.id,
+            int_sender=1  # id do Adriano
+        )

@@ -20,6 +20,7 @@ import ViewCredit from '../App/Analytics/Credit/View';
 //Assessments
 import Quiz from '../App/Assessments/Quiz';
 import MyAssessments from '../App/Assessments/My';
+import IndexAssessments from '../App/Assessments/Index';
 //Dashboard
 import DashCredit from '../App/Dashboard/Credit/Index';
 import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
@@ -41,6 +42,9 @@ import IndexMovimentacoes from '../App/Finances/FluxoCaixa/IndexMoviments';
 import IndexReembolsos from '../App/Finances/FluxoCaixa/IndexRefunds';
 import ReportPagamentos from '../App/Finances/Reports/Pagamentos';
 import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
+//Glebas
+import IndexGlebas from '../App/Glebas/Index';
+import MapaGlebas from '../App/Glebas/Mapa';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -180,6 +184,7 @@ const LayoutRoutes = () => {
         <Route path="/assessments">
           <Route path="quiz/:uuid" element={<Quiz />}/>
           <Route path="my" element={<MyAssessments />}/>
+          <Route path="" element={<IndexAssessments />}/>
         </Route>
         <Route path="/dashboard">
           <Route path="ambiental" element={<DashAmbiental />}/>
@@ -209,6 +214,10 @@ const LayoutRoutes = () => {
           <Route path="refunds" element={<IndexReembolsos />}/>
           <Route path="billings" element={<ReportPagamentos />}/>
           <Route path="revenues" element={<ReportCobrancas />}/>
+        </Route>
+        <Route path="/glebas">
+          <Route path="" element={<IndexGlebas />}/>
+          <Route path="map" element={<MapaGlebas />}/>
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/irrigation">

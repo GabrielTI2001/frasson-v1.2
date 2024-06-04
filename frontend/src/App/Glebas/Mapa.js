@@ -4,32 +4,28 @@ import { useNavigate } from "react-router-dom";
 import { Button, InputGroup, FormControl, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Placeholder } from "react-bootstrap";
-import PolygonMap from "../../../components/map/PolygonMap";
+import PolygonMap from "../../components/map/PolygonMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
-import {MapInfoDetailASV} from "./MapInfo";
-import { Card } from "react-bootstrap";
 
-const MapaAreasASV = () => {
-    const channel = new BroadcastChannel('meu_canal');
-    const [processos, setProcessos] = useState()
-    const [coordenadas, setCoordenadas] = useState()
+const MapaGlebas = () => {
+    const [glebas, setGlebas] = useState()
     const [search, setSearch] = useState('')
     const token = localStorage.getItem("token")
     const [tokenmaps, setTokenMaps] = useState()
     const navigate = useNavigate();
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas-detail/` 
+    const link = `${process.env.REACT_APP_API_URL}/glebas/coordenadas/` 
+
+    if (glebas){console.log(glebas.map(g =>({id:g.id, path:g.coordenadas.map(c=> ({lat:c.lat, lng:c.lng}))})))}
 
     const handleChange = (event) => {
         const { value } = event.target;
         setSearch(value);
-        getCoordenadas(value); 
-        getprocessos(value)
-    };
+        getGlebas(value)
+      };
 
-    const getCoordenadas = async (search) => {
-        const params = search ? `?search=${search}` : '';
-        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas/${params}`
+    const getGlebas= async (search) =>{
+        const url = `${process.env.REACT_APP_API_URL}/glebas/coordenadas/?search=${search}`
         try{
             const response = await fetch(url, {
                 method: 'GET',
@@ -45,35 +41,7 @@ const MapaAreasASV = () => {
             }
             else if (response.status === 200){
                 const data = await response.json();
-                setCoordenadas([...data.map(d => ({...d, path:d.kml}))])
-            }
-            else if (response.status === 404){
-                setCoordenadas([])
-            }
-            
-        } catch (error){
-            console.error("Erro: ",error)
-        }
-    }
-
-    const getprocessos = async (search) =>{
-        const url = `${process.env.REACT_APP_API_URL}/environmental/inema/asvs/?search=${search}`
-        try{
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            if (response.status === 401){
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            }
-            else if (response.status === 200){
-                const data = await response.json();
-                setProcessos(data)
+                setGlebas(data)
             }
         } catch (error){
             console.error("Erro: ",error)
@@ -95,9 +63,8 @@ const MapaAreasASV = () => {
             }
         }
 
-        if (!coordenadas){
-            getCoordenadas()
-            getprocessos('')
+        if (!glebas){
+            getGlebas('')
         }
         if (!tokenmaps){
             getTokenMaps()
@@ -108,7 +75,7 @@ const MapaAreasASV = () => {
     <>
         <ol className="breadcrumb breadcrumb-alt mb-2">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/ambiental/inema/asv'}>Processos ASV</Link>
+                <Link className="link-fx text-primary" to={'/glebas'}>Glebas</Link>
             </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
                 Mapa
@@ -122,7 +89,7 @@ const MapaAreasASV = () => {
                         onChange={handleChange}
                         size="sm"
                         id="search"
-                        placeholder='Requerente, CPF/CNPJ, N° Processo, Município...'
+                        placeholder='Cliente, Propriedade, Município ou Gleba...'
                         type="search"
                         className="shadow-none"
                     />
@@ -137,34 +104,31 @@ const MapaAreasASV = () => {
             </Col>
         </Row>
         <div className='text-end info p-2 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
-        {search !== '' && coordenadas.length > 0 &&
+        {search !== '' && glebas.length > 0 &&
             <Col lg={'auto'} xxl={'auto'} className="me-0 pe-0">
                 <Link to={``} 
                  className="btn btn-info py-0 px-2 ms-0">
-                    <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>
+                    <FontAwesomeIcon icon={faDownload} className="me-2"/>KML
                 </Link>
              </Col>        
           }
-            <Col className="fw-bold">
-                {coordenadas && Number(coordenadas.reduce((total, objeto) => total + objeto.area_total, 0)).toLocaleString('pt-BR')} ha
-            em {processos && (processos.length)} portarias de ASV</Col>
+            <Col className="fw-bold"> {glebas && glebas.length} Gleba(s)</Col>
         </div>
-        {coordenadas && tokenmaps ? ( coordenadas.length > 0 && (
+        {glebas && tokenmaps ? (
         <PolygonMap
             initialCenter={{
-                lat: coordenadas.length > 0 ? Number(coordenadas[0].kml[0]['lat']) : -13.7910,
-                lng: coordenadas.length > 0 ? Number(coordenadas[0].kml[0]['lng']) : -45.6814
+                lat: glebas.length > 0 ? Number(glebas[0].coordenadas[0]['lat']) : -13.7910,
+                lng: glebas.length > 0 ? Number(glebas[0].coordenadas[0]['lng']) : -45.6814
             }}
             mapStyle="Default"
             className="rounded-soft mt-2 google-maps container-map"
             token_api={tokenmaps}
             mapTypeId='satellite'
-            polygons={coordenadas}
+            polygons={glebas.map(g =>({id:g.id, path:g.coordenadas.map(c=> ({lat:c.lat, lng:c.lng}))}))}
             link={link}
         >
-            <MapInfoDetailASV/>
         </PolygonMap>
-        )) : 
+        ) : 
         <div>
             <Placeholder animation="glow">
                 <Placeholder xs={7} /> <Placeholder xs={4} /> 
@@ -177,5 +141,5 @@ const MapaAreasASV = () => {
     );
   };
   
-  export default MapaAreasASV;
+  export default MapaGlebas;
   

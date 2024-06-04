@@ -197,5 +197,3 @@ class Feedbacks_Replies(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name_plural = 'Respostas Feedback'
-    def __str__(self):
-        return self.feedback.category

@@ -1,21 +1,25 @@
-import React, { useState, useEffect, useContext } from "react";
-import { Button, Form, Col, Card, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import React, { useState, useEffect} from "react";
+import { Button, Form, Col, Card, OverlayTrigger, Tooltip, Modal, CloseButton, Row} from 'react-bootstrap';
+import ModalDelete from "../../../components/Custom/ModalDelete";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from 'react-toastify';
-import { ProfileContext } from "../../../context/Context";
 import { useNavigate } from "react-router-dom";
+import EditFeedback from "./Edit";
+import { RetrieveRecord } from "../../../helpers/Data";
 
 
-const ViewFeedback = ({feedback}) =>{
-    const user = JSON.parse(localStorage.getItem('user'))
+const ViewFeedback = ({feedback, submit}) =>{
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
-        feedback_id: feedback ? feedback.id : null
+        feedback: feedback ? feedback.id : null
     });
     const [message, setMessage] = useState()
-    const [datafeedback, setDataFeedback] = useState(feedback)
+    const [datafeedback, setDataFeedback] = useState()
     const token = localStorage.getItem("token")
-    const {profileState:{perfil}} = useContext(ProfileContext)
-    console.log(formData)
+    const [modal, setModal] = useState({show:false, link:''});
+    const [modalform, setModalform] = useState({show:false, data:{}});
+    console.log(datafeedback)
 
     const handleApi = async (dadosform) => {
         const link = `${process.env.REACT_APP_API_URL}/register/feedbacks-reply/`
@@ -41,6 +45,7 @@ const ViewFeedback = ({feedback}) =>{
             else if (response.status === 201 || response.status === 200){
                 toast.success("Resposta Registrada!")
                 setDataFeedback({...datafeedback, replys:[...datafeedback.replys, data]})
+                submit('edit', {...datafeedback, replys:[...datafeedback.replys, data]})
             }
         } catch (error) {
             console.error('Erro:', error);
@@ -57,12 +62,36 @@ const ViewFeedback = ({feedback}) =>{
         e.preventDefault();
         handleApi(formData);
     };
-    useEffect(()=>{
+    const submitreply = (type, data) =>{
+        if (type === 'edit') {
+            setDataFeedback({...datafeedback, replys:datafeedback.replys.map(f =>(
+                f.id === data.id ? data : f
+            ))})
+            setModalform({show:false})
+        }           
+        if (type === 'delete'){ 
+            setDataFeedback({...datafeedback, replys:datafeedback.replys.filter(r => r.id !== parseInt(data))})
+            setModal({show:false})
+            submit('edit', {...datafeedback, replys:datafeedback.replys.filter(r => r.id !== parseInt(data))} )
+        }
+    }
+    useEffect(() =>{
+        const getdata = async () =>{
+            const status = await RetrieveRecord(feedback.id, 'register/feedbacks', (data) => setDataFeedback(data))
+            if(status === 401){
+                navigate("/auth/login")
+            }
+        }
+        if (!datafeedback){
+            getdata()
+        }
+
     },[])
     
 
     return(
         <>
+        {datafeedback &&
         <div className='mb-3 d-flex align-items-center'>
             <OverlayTrigger
                 overlay={
@@ -72,7 +101,7 @@ const ViewFeedback = ({feedback}) =>{
                 }
             >
                 <img className='p-0 rounded-circle me-2' style={{width: '42px', height: '38px'}} 
-                    src={`${process.env.REACT_APP_API_URL}${datafeedback.user_avatar}`}
+                    src={`${process.env.REACT_APP_API_URL}${datafeedback.user_avatar}`} alt="avatar"
                 />
             </OverlayTrigger>
             <Card as={Col} className="bg-200">
@@ -92,6 +121,7 @@ const ViewFeedback = ({feedback}) =>{
                 </Card.Body>
             </Card>
         </div>
+        }
         <div>
             <Form onSubmit={handleSubmit} className='row'>
                 <Form.Group className="mb-2" as={Col} xl={12} xxl={12}>
@@ -114,8 +144,8 @@ const ViewFeedback = ({feedback}) =>{
             <hr className="mb-1"></hr>
         </div>
         <div>
-            <h6 className="fs--2 fw-bold mb-2">{datafeedback.replys.length} resposta(s) para esse feedback</h6>
-            {datafeedback.replys.map(r =>
+            <h6 className="fs--2 fw-bold mb-2">{datafeedback && datafeedback.replys.length} resposta(s) para esse feedback</h6>
+            {datafeedback && datafeedback.replys.map(r =>
                 <Card as={Col} className="bg-200 mb-2" key={r.id}>
                     <Card.Header className='d-flex justify-content-between py-1'>
                         <Col xl='auto'>
@@ -124,6 +154,15 @@ const ViewFeedback = ({feedback}) =>{
                                 {new Date(r.created_at).toLocaleTimeString('pt-br', {timeZone:'UTC'})}
                             </span>
                         </Col>
+                        <Col xl='auto'>
+                            <FontAwesomeIcon onClick={() => setModalform({show:true, data:r})} 
+                                icon={faPencil} className='text-primary ms-2 cursor-pointer'
+                            />
+                            <FontAwesomeIcon onClick={() => setModal({show:true, 
+                                link:`${process.env.REACT_APP_API_URL}/register/feedbacks-reply/${r.id}/`})} 
+                                icon={faTrash} className='text-danger ms-2 cursor-pointer'
+                            />
+                        </Col>
                     </Card.Header>
                     <Card.Body className='pt-0 pb-2'>
                         {r.text ? r.text : 'Sem Detalhamentos'}
@@ -131,6 +170,28 @@ const ViewFeedback = ({feedback}) =>{
                 </Card>
             )}
         </div>
+        <ModalDelete show={modal.show} link={modal.link} close={() => setModal({...modal, show:false})} 
+            update={submitreply} 
+        />
+        <Modal
+            size="lg"
+            show={modalform.show}
+            onHide={() => setModalform({show:false})}
+            dialogClassName="mt-5"
+            aria-labelledby="example-modal-sizes-title-lg"
+        >
+            <Modal.Header>
+            <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
+                Editar Feedback
+            </Modal.Title>
+                <CloseButton onClick={() => setModalform({show:false})}/>
+            </Modal.Header>
+            <Modal.Body className='px-4'>
+                <Row className="flex-center sectionform">
+                    <EditFeedback data={modalform.data} submit={submitreply} />
+                </Row>
+            </Modal.Body>
+        </Modal>
         </>
     )
 }

@@ -79,6 +79,9 @@ const PolygonMap = ({
     if (link){
       getInfo(coordId);
     }
+    else{
+
+    }
   };
 
   useEffect(() => {
@@ -104,7 +107,7 @@ const PolygonMap = ({
         {polygons && polygons.map((c, index) =>
           <Polygon 
             key={index}
-            path={c.kml}
+            path={c.path}
             options={{
               strokeColor: '#0c4106',
               strokeWeight: 1,
@@ -114,7 +117,7 @@ const PolygonMap = ({
           >
           </Polygon>
         )}
-        {infoPonto && (
+        {infoPonto && link && children &&(
           <InfoWindow
             position={infoWindowPosition} 
             onCloseClick={() => setInfoPonto(null)}

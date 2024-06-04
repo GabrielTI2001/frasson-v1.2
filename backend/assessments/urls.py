@@ -8,5 +8,6 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('my/', views.my_assessments, name='assessments.my'),
     path('quiz/<uuid:uuid>', views.quiz, name='assessments.quiz'),
+    path('index/', views.index_assessments, name='assessments.index'),
 ]
 urlpatterns += router.urls
