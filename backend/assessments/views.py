@@ -7,9 +7,10 @@ from .models import Avaliacao_Colaboradores, Notas_Avaliacao, Questionario
 from .serializers import *
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
-import os, json
+import os, json, uuid as libuuid
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q, Count
+from django.db.models import Q, Count, Sum, Case, When, DecimalField
+from .utilities import calcmedia
 
 def my_assessments(request):
     myavaliacoes = []
@@ -140,5 +141,127 @@ def index_assessments(request):
     context = {
         'avaliacoes': avaliacoes_template,
         'perguntas': list(perguntas.values())
+    }
+    return JsonResponse(context)
+
+
+def assessments_results(request, uuid):
+    current_assessment = Avaliacao_Colaboradores.objects.get(uuid=uuid)
+    colaboradores = current_assessment.colaboradores.all()
+    opcoes = []
+    pendentes_users = []
+    quantitativo_outros = []
+    quantitativo_auto = []
+    qualitativo_outros = []
+    qualitativo_auto = []
+
+    notas = Notas_Avaliacao.objects.filter(avaliacao=current_assessment)
+    total_done = notas.values('avaliado').annotate(
+        total = Count('id')
+    )
+    pendent_ponderadores = notas.values('ponderador').annotate(
+        total = Count('id')
+    )
+    total_necess = colaboradores.count() * Questionario.objects.all().count()
+
+    for c in colaboradores:
+        try:
+            notacol = next(n for n in total_done if n['avaliado'] == c.id)
+            if notacol['total'] >= Questionario.objects.all().count():
+                opcoes.append({
+                    'id':c.id,
+                    'nome': c.first_name+" "+c.last_name
+                })
+        except StopIteration:
+            None
+        try:
+            notacol2 = next(n for n in pendent_ponderadores if n['ponderador'] == c.id)
+            if notacol2['total'] < total_necess:
+                pendentes_users.append({
+                    'id':c.id,
+                    'nome': c.first_name+" "+c.last_name
+                })
+            None
+        except StopIteration: 
+            pendentes_users.append({
+                'id':c.id,
+                'nome': c.first_name+" "+c.last_name
+            })
+            None
+    msg = ""
+    if len(pendentes_users) > 0:
+        users = ', '.join([user['nome'] for user in pendentes_users])
+        msg = "A avaliação não está concluída!"+" Faltam responder: "+users
+    
+    search = request.GET.get('search') 
+    if search:
+        search = search
+        for o in opcoes:
+            if o['id'] == int(search):
+                avaliado = o['id']
+    else:
+        if len(opcoes) == 0:
+            return JsonResponse({})
+        else:
+           search = '1'
+           avaliado = opcoes[0]['id']
+    
+    done_pond = colaboradores.count() - len(pendentes_users) 
+    pontos = notas.values('questionario__category', 'questionario__category__description', 'questionario__type').filter(
+        avaliado=avaliado).annotate(
+            totalna =Sum(Case(When(Q(questionario__type='N') & Q(ponderador=avaliado), then='nota'), default=0, output_field=DecimalField())),
+            totalqa =Sum(Case(When(Q(questionario__type='Q') & Q(ponderador=avaliado), then='nota'), default=0, output_field=DecimalField())),        
+            totalno =Sum(Case(When(Q(questionario__type='N'), then='nota'), default=0, output_field=DecimalField())),
+            totalqo =Sum(Case(When(Q(questionario__type='Q'), then='nota'), default=0, output_field=DecimalField()))
+        ).order_by('-totalqa', '-totalna', '-totalqo', '-totalno')
+    for p in pontos:
+        if p['questionario__type'] == 'Q':
+            qualitativo_auto.append({
+                'categoria': p['questionario__category__description'],
+                'feito': float(p['totalqa']) or 0,
+                'max': 3,
+                'percentual': (float(p['totalqa'])/3) * 100
+            })
+            qualitativo_outros.append({
+                'categoria': p['questionario__category__description'],
+                'feito': float(p['totalqo']) or 0,
+                'max': 3 * colaboradores.count(),
+                'percentual': (float(p['totalqo'])/(3 * done_pond)) * 100
+            })
+        if p['questionario__type'] == 'N':
+            quantitativo_auto.append({
+                'categoria': p['questionario__category__description'],
+                'feito': float(p['totalna']),
+                'max': 5,
+                'percentual': (float(p['totalna'])/5) * 100
+            })
+            quantitativo_outros.append({
+                'categoria': p['questionario__category__description'],
+                'feito': float(p['totalno']),
+                'max': 5 * colaboradores.count(),
+                'percentual': (float(p['totalno'])/(5 * done_pond)) * 100
+            })
+    # print(qualitativo_outros)
+    soma_q = 0
+    for q in qualitativo_outros:
+        soma_q+=q['percentual']
+    soma_n = 0
+    for n in quantitativo_outros:
+        soma_n+=n['percentual']
+    geral = (soma_n+soma_q)/(len(qualitativo_outros)+len(quantitativo_outros)) if len(quantitativo_outros) > 0 or len(qualitativo_outros) > 0 else 0
+    medias = [{'label':"Quantitativo",'value':f"{calcmedia(quantitativo_outros,'percentual'):.2f}"},
+              {'label':"Qualitativo",'value':f"{calcmedia(qualitativo_outros,'percentual'):.2f}"},
+              {'label':"Geral",'value':f"{geral:.2f}"}]
+    context = {
+        'options': opcoes,
+        'auto_qualitativo': json.dumps(qualitativo_auto),
+        'outros_qualitativo': json.dumps(qualitativo_outros),
+        'auto_quantitativo': json.dumps(quantitativo_auto),
+        'outros_quantitativo': json.dumps(quantitativo_outros),
+        'msg': msg,
+        'uuid': libuuid.uuid4(),
+        'assessment': {'uuid': current_assessment.uuid},
+        'medias': medias,
+        'searched': int(search)
     }
     return JsonResponse(context)

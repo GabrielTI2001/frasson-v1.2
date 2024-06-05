@@ -19,7 +19,6 @@ const ViewFeedback = ({feedback, submit}) =>{
     const token = localStorage.getItem("token")
     const [modal, setModal] = useState({show:false, link:''});
     const [modalform, setModalform] = useState({show:false, data:{}});
-    console.log(datafeedback)
 
     const handleApi = async (dadosform) => {
         const link = `${process.env.REACT_APP_API_URL}/register/feedbacks-reply/`

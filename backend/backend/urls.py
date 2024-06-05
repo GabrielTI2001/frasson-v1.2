@@ -23,6 +23,7 @@ urlpatterns = [
     path('kpi/', include('kpi.urls')),
     path('irrigation/', include('irrigation.urls')),
     path('licenses/', include('licenses.urls')),
+    path('litec/', include('litec.urls')),
     path('register/', include('cadastro.urls')),
     path('pipefy/', include('pipefy.urls')),
     path('processes/', include('processes.urls')),

@@ -16,8 +16,6 @@ const MapaGlebas = () => {
     const navigate = useNavigate();
     const link = `${process.env.REACT_APP_API_URL}/glebas/coordenadas/` 
 
-    if (glebas){console.log(glebas.map(g =>({id:g.id, path:g.coordenadas.map(c=> ({lat:c.lat, lng:c.lng}))})))}
-
     const handleChange = (event) => {
         const { value } = event.target;
         setSearch(value);

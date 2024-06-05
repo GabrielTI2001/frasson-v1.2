@@ -37,7 +37,7 @@ const PolygonMap = ({
     streetViewControl: false,
     fullscreenControl: true,
     zoomControl: true,
-    zoom: 8,
+    zoom: 10,
     center: initialCenter,
     styles: googleMapStyles[mapStyles]
   });

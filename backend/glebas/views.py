@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 import requests, json, time
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from .serializers import *
-from .models import Glebas_Areas
+from .models import Glebas_Areas, Culturas_Agricolas
 from rest_framework.parsers import MultiPartParser, FormParser
 from pykml.factory import KML_ElementMaker as KML
 from pykml import parser
@@ -43,7 +43,7 @@ class GlebasView(viewsets.ModelViewSet):
 
 class CoordendasGlebasView(viewsets.ModelViewSet):
     queryset = Glebas_Areas.objects.all()
-    serializer_class = GlebasCoordenadas
+    serializer_class = detailGlebasCoordenadas
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)
@@ -61,7 +61,30 @@ class CoordendasGlebasView(viewsets.ModelViewSet):
             if self.action == 'list':
                 queryset = queryset.order_by('-created_at')[:10]
         return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return GlebasCoordenadas
+        else:
+            return self.serializer_class
 
+class CulturasView(viewsets.ModelViewSet):
+    queryset = Culturas_Agricolas.objects.all()
+    serializer_class = listCulturas
+    parser_classes = (MultiPartParser, FormParser)
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(cultura__icontains=search_term)
+            )
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCulturas
+        else:
+            return self.serializer_class
 
 def download_kml_gleba(request, id):
     time_now = int(time.time()) #for the file name
@@ -109,15 +132,11 @@ def download_kml_gleba(request, id):
             )
         )
     )
-
     # Convert KML document to string
     kml_str = etree.tostring(kml_doc, pretty_print=True)
-
     # Create a response with the KML type
     response = HttpResponse(kml_str, content_type='application/vnd.google-earth.kml+xml')
-
     # Add a file attachment header
     response['Content-Disposition'] = f'attachment; filename="{file_name}"'
-
     return response
     

@@ -53,8 +53,6 @@ const EditFeedback = ({data, submit}) =>{
         if(!formData){ 
             const {created_at, ...rest} = data;
             setFormData({...rest})
-            console.log(data)
-
         }
     },[])
     

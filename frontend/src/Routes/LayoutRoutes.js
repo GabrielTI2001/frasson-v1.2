@@ -45,6 +45,7 @@ import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
 //Glebas
 import IndexGlebas from '../App/Glebas/Index';
 import MapaGlebas from '../App/Glebas/Mapa';
+import ViewGleba from '../App/Glebas/View';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -54,6 +55,8 @@ import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
 import IndexMyIndicators from '../App/Kpi/Index';
 import IndexIndicators from '../App/Kpi/IndexGeral';
 import ViewIndicator from '../App/Kpi/View';
+//Litec
+
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -217,6 +220,7 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/glebas">
           <Route path="" element={<IndexGlebas />}/>
+          <Route path=":id" element={<ViewGleba />}/>
           <Route path="map" element={<MapaGlebas />}/>
         </Route>
         <Route path="/home" element={<Home />} />

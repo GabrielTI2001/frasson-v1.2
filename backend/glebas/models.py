@@ -3,6 +3,16 @@ from pipefy.models import Cadastro_Pessoal, Imoveis_Rurais
 from cadastro.models import Municipios
 from users.models import User
 
+class Culturas_Agricolas(models.Model):
+    cultura = models.CharField(max_length=255, null=True, verbose_name='Cultura Agrícola')
+    nome_cientifico = models.CharField(max_length=150, null=True, blank=True, verbose_name='Nome Científico')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Culturas Agrícolas'
+    def __str__(self):
+        return self.cultura
+
 class Glebas_Areas(models.Model):
     cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
     gleba = models.CharField(max_length=255, null=True, verbose_name='Identificação da Gleba')

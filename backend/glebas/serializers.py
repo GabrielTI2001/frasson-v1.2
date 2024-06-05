@@ -1,9 +1,7 @@
 from rest_framework import serializers
-from .models import Glebas_Areas, Glebas_Coordenadas
-from datetime import datetime
-import requests, json, locale, re, os
-from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL, TOKEN_GOOGLE_MAPS_API
-from users.models import Profile
+from .models import Glebas_Areas, Glebas_Coordenadas, Culturas_Agricolas
+import os
+from backend.settings import TOKEN_GOOGLE_MAPS_API
 from pykml import parser
 from rest_framework.exceptions import ValidationError
 
@@ -41,6 +39,12 @@ class detailGleba(serializers.ModelSerializer):
     list_propriedades = serializers.SerializerMethodField(read_only=True)
     str_municipio = serializers.SerializerMethodField(read_only=True)
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name not in ['str_cliente', 'str_municipio', 'list_propriedades', 'descricao']:
+                field.required = True
+
     def get_list_propriedades(self, obj):
         return [{
             'value': p.id,
@@ -73,17 +77,19 @@ class detailGleba(serializers.ModelSerializer):
     
     def validate(self, data):
         request = self.context.get('request')
-        if request and request.FILES:
+        if request.FILES:
             kml_file = request.FILES.get('kml')
             if kml_file:
                 file_extension = os.path.splitext(kml_file.name)[1]
                 if file_extension.lower() != '.kml':
                     raise ValidationError("O arquivo deve ser em formato KML!")
+        else:
+            raise ValidationError("Submeta um Arquivo")
         return data
     class Meta:
         model = Glebas_Areas
         fields = '__all__'
-        
+
 class GlebasCoordenadas(serializers.ModelSerializer):
     coordenadas = serializers.SerializerMethodField(read_only=True)
     def get_coordenadas(self, obj):
@@ -92,3 +98,29 @@ class GlebasCoordenadas(serializers.ModelSerializer):
     class Meta:
         model = Glebas_Areas
         fields = ['id', 'coordenadas']
+
+class detailGlebasCoordenadas(serializers.ModelSerializer):
+    coordenadas = serializers.SerializerMethodField(read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', required=False, read_only=True)
+    list_propriedades = serializers.SerializerMethodField(read_only=True)
+    str_municipio = serializers.SerializerMethodField(read_only=True)
+    token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
+    
+    def get_list_propriedades(self, obj):
+        return ', '.join([fazenda.nome_imovel for fazenda in obj.propriedade.all()])
+    def get_str_municipio(self, obj):
+        return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}" if obj.municipio else ''
+    def get_coordenadas(self, obj):
+        query = Glebas_Coordenadas.objects.filter(gleba=obj)
+        return [{'id':q.id, 'lat':q.latitude_gd, 'lng':q.longitude_gd } for q in query]
+    def get_token_apimaps(self, obj):
+        return TOKEN_GOOGLE_MAPS_API
+    
+    class Meta:
+        model = Glebas_Areas
+        fields = '__all__'
+
+class listCulturas(serializers.ModelSerializer):
+    class Meta:
+        model = Culturas_Agricolas
+        fields = ['id', 'cultura']

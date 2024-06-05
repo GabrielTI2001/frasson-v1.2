@@ -9,5 +9,6 @@ urlpatterns = [
     path('my/', views.my_assessments, name='assessments.my'),
     path('quiz/<uuid:uuid>', views.quiz, name='assessments.quiz'),
     path('index/', views.index_assessments, name='assessments.index'),
+    path('results/<uuid:uuid>', views.assessments_results, name='assessments.results'),
 ]
 urlpatterns += router.urls

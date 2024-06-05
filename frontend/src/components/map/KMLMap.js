@@ -72,7 +72,7 @@ const KMLMap = ({
         }}
         className='col'
       >
-        {urls.map(url => <KmlLayer url={url} options={{ preserveViewport: false, suppressInfoWindows:true }}/>)}
+        {urls.map((url,index) => <KmlLayer key={index} url={url} options={{ preserveViewport: false, suppressInfoWindows:true }}/>)}
       </ReactGoogleMap>
     </div>
   );
