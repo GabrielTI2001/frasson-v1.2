@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Card, Row, Col, Spinner} from "react-bootstrap";
+import { Card, Row, Col, Placeholder} from "react-bootstrap";
 import { useAppContext } from "../../../Main";
-import { BarChart, PieChart, ColumnChart } from "../../../components/Custom/Charts";
+import { BarChart, ColumnChart } from "../../../components/Custom/Charts";
 import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch, faLeaf, faArrowAltCircleRight, faMapLocationDot, faDroplet, faClock, faStopwatch, faHourglassHalf } 
@@ -24,15 +24,7 @@ const DashAmbiental = () =>{
     const navigate = useNavigate()
 
     const setter = (data) => {
-        setData({...data, 
-            processos:                
-            {
-                "BB": 1,
-                "CEF": 22
-            },
-            "abertos": [3, 4],
-            "abertos_last": [5, 2],
-        })
+        setData(data)
     }
 
     useEffect(()=>{
@@ -239,7 +231,15 @@ const DashAmbiental = () =>{
             }
         </Row> 
         </>    
-        : <div className="text-center"><Spinner></Spinner></div>} 
+        : 
+        <div>
+            <Placeholder animation="glow">
+                <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                <Placeholder xs={4} />
+                <Placeholder xs={6} /> <Placeholder xs={8} />
+            </Placeholder>    
+        </div>   
+        } 
         </>
         
     )

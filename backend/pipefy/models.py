@@ -3,14 +3,17 @@ import uuid
 from users.models import Profile, User
 
 class Pipe(models.Model):
-    id = models.AutoField(primary_key=True)
-    descricao = models.CharField(max_length=255, null=False, blank=False, verbose_name='Descricao  Pipe')
+    TYPE_CHOICES = (("D", "Database"), ("P", "Pipe"))
+    id = models.BigIntegerField(primary_key=True)
+    type = models.CharField(max_length=1, choices=TYPE_CHOICES ,null=True, verbose_name='Tipo Pipe')
+    name = models.CharField(max_length=255, null=True, blank=True, verbose_name='Nome Pipe')
+    description = models.CharField(max_length=255, null=True, blank=True, verbose_name='Descrição')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Pipe'
+        verbose_name_plural = 'Cadastro Pipes'
     def __str__(self):
-        return self.descricao
+        return self.name
 
 class Itens_Financiados(models.Model):
     item = models.CharField(max_length=255, null=True, verbose_name='Item Financiado')

@@ -2,8 +2,7 @@ import React,{useEffect, useState} from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { RetrieveRecord } from '../../../helpers/Data';
 import { Link } from 'react-router-dom';
-import { Button, Col, Row, Modal, CloseButton } from 'react-bootstrap';
-import {Spinner} from 'react-bootstrap';
+import { Row, Modal, CloseButton, Placeholder } from 'react-bootstrap';
 import KMLMap from '../../../components/map/KMLMap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf, faEarthAmericas , faHashtag, faClipboard, faBuildingColumns, faSackDollar, faCalendar, faPercent, 
@@ -175,7 +174,15 @@ const ViewCredit = () => {
         urls={operacao.pipefy.glebas_beneficiadas ? operacao.pipefy.glebas_beneficiadas : []}
     />
     </>
-    :<div className='text-center'><Spinner /></div>}
+    :
+    <div>
+        <Placeholder animation="glow">
+            <Placeholder xs={7} /> <Placeholder xs={4} /> 
+            <Placeholder xs={4} />
+            <Placeholder xs={6} /> <Placeholder xs={8} />
+        </Placeholder>    
+    </div>   
+    }
     <Modal
         size="xl"
         show={modalform.show}

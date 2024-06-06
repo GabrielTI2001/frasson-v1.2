@@ -217,7 +217,7 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
   );
 };
 
-export const BarChart = ({columns, title, height, series, hidescale}) => {
+export const BarChart = ({columns, title, height, series, hidescale, max, percentual}) => {
   const {config: {theme}} = useAppContext();
   const options = {
     chart: {
@@ -229,6 +229,9 @@ export const BarChart = ({columns, title, height, series, hidescale}) => {
     },
     dataLabels: {
       enabled: hidescale,
+      formatter: function (value) {
+        return percentual ? value.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + '%' : value.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
+      }
     },
     title: {
       text: title,
@@ -281,7 +284,7 @@ export const BarChart = ({columns, title, height, series, hidescale}) => {
       }
     },
     yaxis: {
-      max: Math.max(...series[0].data) + 2, // Definindo o valor máximo personalizado
+      max: max ? max : Math.max(...series[0].data) + 2, // Definindo o valor máximo personalizado
       tickAmount: 4,
       min: 0,
       labels: {

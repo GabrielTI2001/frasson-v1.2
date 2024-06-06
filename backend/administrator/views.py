@@ -1,11 +1,12 @@
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
-from users.models import Profile
+from users.models import Profile, User
 from administrator.models import Testes
 from pipefy.models import Cadastro_Pessoal, Card_Produtos, Imoveis_Rurais, Operacoes_Contratadas
 from pipefy.models import Fornecedores_Colaboradores, Pipe, Contratos_Servicos, Card_Prospects
 from finances.models import Cobrancas_Pipefy, Pagamentos_Pipefy
+from cadastro.models import Feedbacks_System
+from assessments.models import Avaliacao_Colaboradores
 from datetime import datetime
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 import requests, json
@@ -31,26 +32,26 @@ def call_api(id, page, endCursor):
     obj = json.loads(response.text)
     return obj
 
-@login_required
-@permission_required('administrator.ver_administrator', raise_exception=True)
 def index_administrator_panel(request):
     users_count = User.objects.all().count()
+    feedbacks_count = Feedbacks_System.objects.all().count()
+    avaliacao_count = Avaliacao_Colaboradores.objects.filter(is_active=True).count
     context = {
         'users_count': users_count,
+        'feedbacks_count': feedbacks_count,
+        'assessments_count': avaliacao_count
     }
-
     return JsonResponse(context)
 
-@login_required
-@permission_required('administrator.ver_administrator', raise_exception=True)
 def index_administrator_tests(request):
     subquery = Testes.objects.filter(pipe_id=OuterRef('id')).order_by('-updated_at').values('updated_at')[:1]
     cadastro_pipes_queryset = Pipe.objects.annotate(last_test_updated_at=Subquery(subquery))
+    # print(cadastro_pipes_queryset[0].name)
     pipes = [
      {
-        'nome': p.name, 
+        'nome': p.name if p.name else '-', 
         'last_test': p.last_test_updated_at.strftime("%d/%m/%Y %H:%M:%S")if p.last_test_updated_at != None else "-",
-        'url': '/administrator/tests/'+('pipe/' if p.type == 'P' else 'database/') + str(p.id)
+        'url': '/administrator/tests/'+('pipe/' if p.type == 'P' else 'database/') + str(p.id) if p.type else '-'
      } for p in cadastro_pipes_queryset]
     context = {
         'pipes': pipes,
@@ -649,8 +650,6 @@ def test_contr_servicos(request):
 
     return JsonResponse(response_data)
 
-# @login_required
-# @permission_required('administrator.ver_administrator', raise_exception=True)
 def test_pipeprospects(request):
     correspond = {'prospect_2':'prospect_id', 'produto':'produto', 'classifica_o_prospect':'classificacao',
         'origem':'origem', 'valor_inicial_da_proposta':'proposta_inicial', 'valor_aprovado':'proposta_aprovada', 
@@ -682,7 +681,6 @@ def test_pipeprospects(request):
             createdAt = edge["node"]["createdAt"]
             current_phase_id = int(edge["node"]["current_phase"]["id"])
             current_phase_name = edge["node"]["current_phase"]["name"]
-            due_date = edge['node']['due_date']
             card_fields = edge["node"]["fields"]
             qtdnobd = regssql.filter(id=id_card)
             if len(qtdnobd) == 0:
@@ -736,7 +734,7 @@ def test_pipeprospects(request):
                             # print(f"{valor} {type(valor)} {current_value} {type(current_value)}")
                             desatualizados.append({'id':id_card,'campo':field_id})
             index_resp = 0
-        #     break
+            # break
         # break
         page += 1
     

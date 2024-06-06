@@ -2,8 +2,7 @@ import React,{useEffect, useState} from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { RetrieveRecord } from '../../../helpers/Data';
 import { Link } from 'react-router-dom';
-import { Button, Col, Row } from 'react-bootstrap';
-import {Spinner} from 'react-bootstrap';
+import { Col, Placeholder, Row } from 'react-bootstrap';
 import KMLMap from '../../../components/map/KMLMap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf, faGlobeAmericas, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
@@ -171,7 +170,15 @@ const ViewRegime = () => {
         urls={[regime.farm_data.kml_da_matr_cula]}
     />
     </>
-    :<div className='text-center'><Spinner /></div>}
+    :
+    <div>
+        <Placeholder animation="glow">
+            <Placeholder xs={7} /> <Placeholder xs={4} /> 
+            <Placeholder xs={4} />
+            <Placeholder xs={6} /> <Placeholder xs={8} />
+        </Placeholder>    
+    </div>   
+    }
     </>
     );
 };

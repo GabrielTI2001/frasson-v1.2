@@ -17,6 +17,7 @@ import json
 from djoser.email import ActivationEmail
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import viewsets
+from django.db.models import Q
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -92,6 +93,12 @@ def get_api_maps(request):
 class ListUserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = ListUsers
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        if search_term:
+            queryset = queryset.filter(Q(first_name__icontains=search_term) | Q(last_name__icontains=search_term))
+        return queryset
 
 class AllowedEmailsView(viewsets.ModelViewSet):
     queryset = Allowed_Emails.objects.all()

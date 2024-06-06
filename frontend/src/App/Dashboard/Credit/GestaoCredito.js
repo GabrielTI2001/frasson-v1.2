@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Card, Row, Col, Spinner, Modal, CloseButton} from "react-bootstrap";
+import { Card, Row, Col, Modal, CloseButton, Placeholder} from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { BarChart, ColumnChart, PieChart } from "../../../components/Custom/Charts";
@@ -24,10 +24,6 @@ const DashGestaoCredito = () =>{
 
     const setter = (responsedata) => {
         setData(responsedata)
-        setData({...responsedata, processos_gc:[{phase_name:'TESTE', total:10}, {phase_name:'TESTE2', total:5}],
-            cards_current_year:[{jan:7}, {fev:11}], cards_last_year:[{jan:7}, {fev:15}],
-            total_beneficiarios:[{'Teste':5000}], total_bancos:[{'Teste':5000}, {'Teste2':4000}]
-        })
     }
 
     useEffect(()=>{
@@ -158,7 +154,15 @@ const DashGestaoCredito = () =>{
             }
         </Row> 
         </>    
-        : <div className="text-center"><Spinner></Spinner></div>} 
+        : 
+        <div>
+            <Placeholder animation="glow">
+                <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                <Placeholder xs={4} />
+                <Placeholder xs={6} /> <Placeholder xs={8} />
+            </Placeholder>    
+        </div>   
+        } 
         <Modal
             size="xl"
             show={modal.show}

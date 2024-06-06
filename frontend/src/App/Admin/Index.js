@@ -69,6 +69,19 @@ const IndexAdministrator = () =>{
                 </Link>
             </Card>
           </Col>
+          <Col>
+            <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'tests'}>
+                <Card.Body as={Row} className="justify-content-between">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faListCheck} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs--2">Testes de Aplicações</h5>     
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.feedbacks}</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
         </Row>
         </>
     )

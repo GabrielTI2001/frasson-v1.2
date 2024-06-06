@@ -8,6 +8,8 @@ import { ProfileContext } from '../context/Context';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
 import IndexAdministrator from '../App/Admin/Index';
+import TestsIndex from '../App/Admin/Tests/Tests';
+import { ResultDatabase, ResultPipe } from '../App/Admin/Tests/Results';
 //Alongamentos
 import IndexAlongamentos from '../App/Alongamentos/Index';
 //Analytics
@@ -21,6 +23,7 @@ import ViewCredit from '../App/Analytics/Credit/View';
 import Quiz from '../App/Assessments/Quiz';
 import MyAssessments from '../App/Assessments/My';
 import IndexAssessments from '../App/Assessments/Index';
+import ResultsAssessment from '../App/Assessments/Results';
 //Dashboard
 import DashCredit from '../App/Dashboard/Credit/Index';
 import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
@@ -55,8 +58,6 @@ import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
 import IndexMyIndicators from '../App/Kpi/Index';
 import IndexIndicators from '../App/Kpi/IndexGeral';
 import ViewIndicator from '../App/Kpi/View';
-//Litec
-
 //Register
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
@@ -151,6 +152,9 @@ const LayoutRoutes = () => {
       <Route element={<Default />}>
         <Route path="/administrator">
           <Route path="" element={<IndexAdministrator />}/>
+          <Route path="tests" element={<TestsIndex />}/>
+          <Route path="tests/pipe/:id" element={<ResultPipe />}/>
+          <Route path="tests/database/:id" element={<ResultDatabase />}/>
         </Route>
         <Route path="/admin">
           <Route path="users" element={<IndexUsers />}/>
@@ -188,6 +192,7 @@ const LayoutRoutes = () => {
           <Route path="quiz/:uuid" element={<Quiz />}/>
           <Route path="my" element={<MyAssessments />}/>
           <Route path="" element={<IndexAssessments />}/>
+          <Route path="results/:uuid" element={<ResultsAssessment />}/>
         </Route>
         <Route path="/dashboard">
           <Route path="ambiental" element={<DashAmbiental />}/>

@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Spinner} from 'react-bootstrap';
+import {Row, Col, Placeholder} from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
@@ -90,7 +90,15 @@ const IndexFarms = () => {
                     rowsPerPageSelection
                 />
             </div>
-        </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+        </AdvanceTableWrapper> : 
+        <div>
+            <Placeholder animation="glow">
+                <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                <Placeholder xs={4} />
+                <Placeholder xs={6} /> <Placeholder xs={8} />
+            </Placeholder>    
+        </div>   
+        }
         </>
     );
   };

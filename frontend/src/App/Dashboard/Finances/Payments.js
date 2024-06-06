@@ -25,13 +25,6 @@ const DashBillings = () =>{
 
     const setter = (responsedata) => {
         setData(responsedata)
-        setData({...responsedata,
-            categorias:{
-                'Teste': 10,
-                'Teste2': 15
-            },
-
-        })
     }
 
     useEffect(()=>{

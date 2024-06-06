@@ -1,15 +1,19 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Avaliacao_Colaboradores, Notas_Avaliacao, Questionario
 from .serializers import *
 from rest_framework import viewsets
-from rest_framework.parsers import MultiPartParser, FormParser
-import os, json, uuid as libuuid
+from users.models import User
+import os, json, uuid as libuuid, io
+from datetime import date
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, Count, Sum, Case, When, DecimalField
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import mm
 from .utilities import calcmedia
 
 def my_assessments(request):
@@ -28,13 +32,13 @@ def my_assessments(request):
                         myavaliacoes.append({
                             'uuid': a.uuid,
                             'descricao': a.description,
-                            'data': a.data_ref.strftime("%d/%m/%Y")
+                            'data': a.data_ref.strftime("%d/%m/%Y") if a.data_ref else '-'
                         })
                 except StopIteration:
                     myavaliacoes.append({
                         'uuid': a.uuid,
                         'descricao':a.description,
-                        'data': a.data_ref.strftime("%d/%m/%Y")
+                        'data': a.data_ref.strftime("%d/%m/%Y") if a.data_ref else '-'
                     })
         else:
             myavaliacoes = []
@@ -136,7 +140,7 @@ def index_assessments(request):
             'id': a.id,
             'uuid': a.uuid,
             'descricao': a.description,
-            'data': a.data_ref.strftime("%d/%m/%Y"),
+            'data': a.data_ref.strftime("%d/%m/%Y") if a.data_ref else '-',
         })
     context = {
         'avaliacoes': avaliacoes_template,
@@ -201,7 +205,7 @@ def assessments_results(request, uuid):
                 avaliado = o['id']
     else:
         if len(opcoes) == 0:
-            return JsonResponse({})
+            return JsonResponse({}, status=404)
         else:
            search = '1'
            avaliado = opcoes[0]['id']
@@ -225,7 +229,7 @@ def assessments_results(request, uuid):
             qualitativo_outros.append({
                 'categoria': p['questionario__category__description'],
                 'feito': float(p['totalqo']) or 0,
-                'max': 3 * colaboradores.count(),
+                'max': 3 * done_pond,
                 'percentual': (float(p['totalqo'])/(3 * done_pond)) * 100
             })
         if p['questionario__type'] == 'N':
@@ -238,7 +242,7 @@ def assessments_results(request, uuid):
             quantitativo_outros.append({
                 'categoria': p['questionario__category__description'],
                 'feito': float(p['totalno']),
-                'max': 5 * colaboradores.count(),
+                'max': 5 * done_pond,
                 'percentual': (float(p['totalno'])/(5 * done_pond)) * 100
             })
     # print(qualitativo_outros)
@@ -254,10 +258,10 @@ def assessments_results(request, uuid):
               {'label':"Geral",'value':f"{geral:.2f}"}]
     context = {
         'options': opcoes,
-        'auto_qualitativo': json.dumps(qualitativo_auto),
-        'outros_qualitativo': json.dumps(qualitativo_outros),
-        'auto_quantitativo': json.dumps(quantitativo_auto),
-        'outros_quantitativo': json.dumps(quantitativo_outros),
+        'auto_qualitativo': qualitativo_auto,
+        'outros_qualitativo': qualitativo_outros,
+        'auto_quantitativo': quantitativo_auto,
+        'outros_quantitativo': quantitativo_outros,
         'msg': msg,
         'uuid': libuuid.uuid4(),
         'assessment': {'uuid': current_assessment.uuid},
@@ -265,3 +269,216 @@ def assessments_results(request, uuid):
         'searched': int(search)
     }
     return JsonResponse(context)
+
+def assessments_report(request):
+    quantitativo_outros = []
+    quantitativo_auto = []
+    qualitativo_outros = []
+    qualitativo_auto = []
+    pendentes_users = []
+
+    search = request.GET.get('search')
+    avalia_uuid = request.GET.get('uuid') 
+    try:
+        current_assessment = Avaliacao_Colaboradores.objects.get(uuid=avalia_uuid)
+        if search:
+            avaliado = int(search)
+        colaboradores = current_assessment.colaboradores.all()
+        avaliadoobj = User.objects.get(id=avaliado)
+        notas = Notas_Avaliacao.objects.filter(avaliacao=current_assessment)
+        pendent_ponderadores = notas.values('ponderador').annotate(
+            total = Count('id')
+        )
+        total_necess = colaboradores.count() * Questionario.objects.all().count()
+        for c in colaboradores:
+            try:
+                notacol2 = next(n for n in pendent_ponderadores if n['ponderador'] == c.id)
+                if notacol2['total'] < total_necess:
+                    pendentes_users.append({
+                        'id':c.id,
+                        'nome': c.first_name+" "+c.last_name
+                    })
+                None
+            except StopIteration: 
+                pendentes_users.append({
+                    'id':c.id,
+                    'nome': c.first_name+" "+c.last_name
+                })
+                None
+
+        done_pond = colaboradores.count() - len(pendentes_users)
+        pontos = notas.values('questionario__category', 'questionario__category__description', 'questionario__type').filter(
+            avaliado=avaliado).annotate(
+                totalna =Sum(Case(When(Q(questionario__type='N') & Q(ponderador=avaliado), then='nota'), default=0, output_field=DecimalField())),
+                totalqa =Sum(Case(When(Q(questionario__type='Q') & Q(ponderador=avaliado), then='nota'), default=0, output_field=DecimalField())),        
+                totalno =Sum(Case(When(Q(questionario__type='N'), then='nota'), default=0, output_field=DecimalField())),
+                totalqo =Sum(Case(When(Q(questionario__type='Q'), then='nota'), default=0, output_field=DecimalField()))
+            ).order_by('-totalqa', '-totalna', '-totalqo', '-totalno')
+        for p in pontos:
+            if p['questionario__type'] == 'Q':
+                qualitativo_auto.append({
+                    'categoria': p['questionario__category__description'],
+                    'feito': float(p['totalqa']) or 0,
+                    'max': 3,
+                    'percentual': (float(p['totalqa'])/3) * 100
+                })
+
+                qualitativo_outros.append({
+                    'categoria': p['questionario__category__description'],
+                    'feito': float(p['totalqo']) or 0,
+                    'max': 3 * colaboradores.count(),
+                    'percentual': (float(p['totalqo'])/(3 * done_pond)) * 100
+                })
+
+            if p['questionario__type'] == 'N':
+                quantitativo_auto.append({
+                    'categoria': p['questionario__category__description'],
+                    'feito': float(p['totalna']),
+                    'max': 5,
+                    'percentual': (float(p['totalna'])/5) * 100
+                })
+
+                quantitativo_outros.append({
+                    'categoria': p['questionario__category__description'],
+                    'feito': float(p['totalno']),
+                    'max': 5 * colaboradores.count(),
+                    'percentual': (float(p['totalno'])/(5 * done_pond)) * 100
+                })
+        soma_q = 0
+        for q in qualitativo_outros:
+            soma_q+=q['percentual']
+        soma_n = 0
+        for n in quantitativo_outros:
+            soma_n+=n['percentual']
+        geral = (soma_n+soma_q)/(len(qualitativo_outros)+len(quantitativo_outros)) if len(quantitativo_outros) > 0 or len(qualitativo_outros) > 0 else 0
+        medias = [{'label':"Quantitativo",'value':calcmedia(quantitativo_outros,'percentual')},
+                {'label':"Qualitativo",'value':calcmedia(qualitativo_outros,'percentual')},
+                {'label':"Geral",'value':geral}]
+        dados = {
+            'auto_qualitativo': qualitativo_auto,
+            'outros_qualitativo': qualitativo_outros,
+            'auto_quantitativo': quantitativo_auto,
+            'outros_quantitativo': quantitativo_outros,
+        }
+        date_today = date.today().strftime('%d/%m/%Y')
+        margin_top = 785
+        margin_left = 50
+
+        img_logo = 'static/media/various/logo-frasson-app2.png'
+
+        buf = io.BytesIO()
+        c = canvas.Canvas(buf, pagesize=(210*mm,300*mm))
+        c.setTitle(f"Assessments Report - {date_today}")
+        c.drawImage(img_logo, margin_left, 780, 70, 70, preserveAspectRatio=True)
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(200, 810, f"RELATÓRIO DE AVALIAÇÃO")
+        c.setFont("Helvetica", 10)
+        c.drawString(500, 810, date_today)
+        c.setFont("Helvetica-Bold", 10)
+        vertical_position = margin_top
+        horizontal_position = margin_left
+        c.setFont("Helvetica", 10)
+        c.drawString(horizontal_position, vertical_position, "Avaliação:")
+        c.drawString(horizontal_position + 50, vertical_position, f"{current_assessment.description}")
+        c.drawString(horizontal_position + 430, vertical_position, "Data:")
+        c.drawString(horizontal_position + 455, vertical_position, f"{current_assessment.data_ref.strftime('%d/%m/%Y')}")
+        c.drawString(horizontal_position, vertical_position - 13, "Colaborador:")
+        c.drawString(horizontal_position + 70, vertical_position - 13, f"{avaliadoobj.first_name} {avaliadoobj.last_name}")
+        vertical_position = margin_top - 40
+
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(horizontal_position, vertical_position, "Avaliação Qualitativa")
+        vertical_position-= 14
+
+        c.drawString(horizontal_position, vertical_position, "Geral")
+        c.line(horizontal_position, vertical_position -2, margin_left + 200, vertical_position -2)
+        vertical_position-= 13
+        c.setFont("Helvetica", 10)
+        for qo in dados['outros_qualitativo']:
+            c.drawString(horizontal_position, vertical_position, f"{qo['categoria']}")
+            c.drawString(horizontal_position + 150, vertical_position, f"{qo['percentual']:.2f}%")
+            c.line(horizontal_position, vertical_position -3, margin_left + 200, vertical_position -3)
+            vertical_position-= 13
+
+        vertical_position += (len(dados['outros_qualitativo'])*13) + 13
+        horizontal_position = 300
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(horizontal_position, vertical_position, "Autoavaliação")
+        c.setFont("Helvetica", 10)
+        c.line(horizontal_position, vertical_position -2, horizontal_position + 200, vertical_position -2)
+        vertical_position -= 13
+        for qo in dados['auto_qualitativo']:
+            c.drawString(horizontal_position, vertical_position, f"{qo['categoria']}")
+            c.drawString(horizontal_position + 150, vertical_position, f"{qo['percentual']:.2f}%")
+            c.line(horizontal_position, vertical_position -3, horizontal_position + 200, vertical_position -3)
+            vertical_position-= 13
+        horizontal_position = margin_left
+        vertical_position-= 20
+
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(horizontal_position, vertical_position, "Avaliação Quantitativa")
+        vertical_position-= 14
+        c.drawString(horizontal_position, vertical_position, "Geral")
+        c.line(horizontal_position, vertical_position -2, margin_left + 200, vertical_position -2)
+        vertical_position-= 13
+        c.setFont("Helvetica", 10)
+        for qo in dados['outros_quantitativo']:
+            c.drawString(horizontal_position, vertical_position, f"{qo['categoria']}")
+            c.drawString(horizontal_position + 150, vertical_position, f"{qo['percentual']:.2f}%")
+            c.line(horizontal_position, vertical_position -3, margin_left + 200, vertical_position -3)
+            vertical_position-= 13
+
+        vertical_position += (len(dados['outros_quantitativo'])*13) + 13
+        horizontal_position = 300
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(horizontal_position, vertical_position, "Autoavaliação")
+        c.setFont("Helvetica", 10)
+        c.line(horizontal_position, vertical_position -2, horizontal_position + 200, vertical_position -2)
+        vertical_position -= 13
+        for qo in dados['auto_quantitativo']:
+            c.drawString(horizontal_position, vertical_position, f"{qo['categoria']}")
+            c.drawString(horizontal_position + 150, vertical_position, f"{qo['percentual']:.2f}%")
+            c.line(horizontal_position, vertical_position -3, horizontal_position + 200, vertical_position -3)
+            vertical_position-= 13
+        horizontal_position = margin_left
+        vertical_position-= 20
+
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(horizontal_position, vertical_position, "Média Final")
+        vertical_position-= 14
+        c.setFont("Helvetica", 10)
+        for m in medias:
+            c.drawString(horizontal_position, vertical_position, f"{m['label']}")
+            c.drawString(horizontal_position + 70, vertical_position, f"{m['value']:.2f}%")
+            c.line(horizontal_position, vertical_position -3, horizontal_position + 120, vertical_position -3)
+            vertical_position-=13
+        c.showPage()
+        c.save()
+        buf.seek(0)
+        file_name = f"DRE_Consolidado_{date_today}.PDF"
+        return FileResponse(buf, as_attachment=False, filename=file_name)
+    except ObjectDoesNotExist:
+        return JsonResponse({}, status=404)
+    
+class QuestionarioView(viewsets.ModelViewSet):
+    lookup_field = 'uuid'
+    queryset = Questionario.objects.all()
+    serializer_class = serQuestionarios
+    # permission_classes = [IsAuthenticated]
+
+class AvaliacoesView(viewsets.ModelViewSet):
+    lookup_field = 'uuid'
+    queryset = Avaliacao_Colaboradores.objects.all()
+    serializer_class = serAssessment
+    # permission_classes = [IsAuthenticated]
+
+class CategoryView(viewsets.ModelViewSet):
+    queryset = Category_Avaliacao.objects.all()
+    serializer_class = serCategory
+    # permission_classes = [IsAuthenticated]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        if search_term:
+            queryset = queryset.filter(Q(description__icontains=search_term))
+        return queryset

@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Spinner, Table, Form} from 'react-bootstrap';
+import {Row, Col, Table, Form, Placeholder} from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import AsyncSelect from 'react-select/async';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
@@ -134,7 +134,14 @@ const IndexRegimes = () => {
             ))} 
             </tbody>
         </Table>
-        : <div className="text-center"><Spinner /></div>
+        : 
+        <div>
+            <Placeholder animation="glow">
+                <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                <Placeholder xs={4} />
+                <Placeholder xs={6} /> <Placeholder xs={8} />
+            </Placeholder>    
+        </div>   
         }
         </>
     );

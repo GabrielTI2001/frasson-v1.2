@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import { Card, Row, Col, Form, Table, Spinner, Modal, CloseButton} from "react-bootstrap";
+import { Card, Row, Col, Form, Modal, CloseButton, Placeholder} from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { ColumnLineChart, BarChart, ColumnChart } from "../../../components/Custom/Charts";
@@ -25,16 +25,6 @@ const DashCredit = () =>{
 
     const setter = (responsedata) => {
         setData(responsedata)
-        setData({...responsedata,
-            realizado_ultimo_ano:{
-                'JAN': 20
-            },
-            tipos_operacao:{
-                'Teste': 10,
-                'Teste2': 15
-            },
-
-        })
     }
 
     useEffect(()=>{
@@ -239,7 +229,15 @@ const DashCredit = () =>{
             </Col>
         </Row> 
         </>    
-        : <div className="text-center"><Spinner></Spinner></div>} 
+        : 
+        <div>
+            <Placeholder animation="glow">
+                <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                <Placeholder xs={4} />
+                <Placeholder xs={6} /> <Placeholder xs={8} />
+            </Placeholder>    
+        </div>   
+        } 
         <Modal
             size="xl"
             show={modal.show}

@@ -3,7 +3,6 @@ import React from 'react';
 import { useParams, useNavigate } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import {Spinner} from "react-bootstrap";
 import { Placeholder } from "react-bootstrap";
 import GoogleMap from "../../../components/map/GoogleMap";
 import SubtleBadge from '../../../components/common/SubtleBadge';
