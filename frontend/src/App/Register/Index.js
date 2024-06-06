@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { Card, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faTractor, faPersonDigging, faFlask} from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faTractor, faPersonDigging, faFlask, faFileSignature} from "@fortawesome/free-solid-svg-icons";
 import { fetchPessoal } from "../Pipefy/Data";
 import { fetchBenfeitorias, FetchAnaliseSolo } from "./Data";
 import { useAppContext } from "../../Main";
@@ -95,7 +95,7 @@ const IndexCadGerais = () =>{
                 <Link className="text-decoration-none" to={'/pipefy/contracts'}>
                 <Card.Body as={Row} className="justify-content-center">
                   <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
-                    <FontAwesomeIcon icon={faFlask} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
+                    <FontAwesomeIcon icon={faFileSignature} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Contratos Serviços</h5>     
                   <h5 className="text-center text-white fs--2">{countRegs && countRegs.contratos} Registro(s)</h5>                

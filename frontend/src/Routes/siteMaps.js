@@ -1,6 +1,7 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
 faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench,
-faMapLocationDot} 
+faMapLocationDot,
+faFileSignature} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
@@ -124,6 +125,13 @@ export const PipefyRoutes = {
           name: 'Cadastro Pessoal',
           to: '/pipefy/pessoal',
           icon: faPerson,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Contratos Serviços',
+          to: '/pipefy/contracts',
+          icon: faFileSignature,
           exact: true,
           active: true
         }
