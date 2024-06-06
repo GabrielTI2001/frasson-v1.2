@@ -50,7 +50,7 @@ export const RetrieveRecord = async (uuid, url, setter) => {
 export const GetRecord = async (uuid, url) => {
   const token = localStorage.getItem("token")
   try{
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}/${uuid}/`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}/${uuid}${uuid !== '' ? '/' : '?all=1'}`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

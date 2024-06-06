@@ -6,6 +6,7 @@ import { faUsers, faTractor, faPersonDigging, faFlask} from "@fortawesome/free-s
 import { fetchPessoal } from "../Pipefy/Data";
 import { fetchBenfeitorias, FetchAnaliseSolo } from "./Data";
 import { useAppContext } from "../../Main";
+import { GetRecord } from "../../helpers/Data";
 
 const IndexCadGerais = () =>{
     const {config: { theme}} = useAppContext();
@@ -17,8 +18,10 @@ const IndexCadGerais = () =>{
         const dadospessoal = await fetchPessoal();
         const dadosbenfeitoria = await fetchBenfeitorias();
         const dadosanalise = await FetchAnaliseSolo();
+        const dadosmaquinas = await GetRecord('', 'register/machinery');
+        const contratos= await GetRecord('', 'pipefy/contratos-servicos');
         setCountRegs({...countRegs, 'pessoal':dadospessoal.length, 'benfeitoria':dadosbenfeitoria.length,
-        'analisesolo':dadosanalise.length})
+        'analisesolo':dadosanalise.length, 'maquinas':dadosmaquinas.length, 'contratos':contratos.length})
       }
       if ((user.permissions && user.permissions.indexOf("ver_cadastros_gerais") === -1) && !user.is_superuser){
         navigate("/error/403")
@@ -43,7 +46,7 @@ const IndexCadGerais = () =>{
                     <FontAwesomeIcon icon={faUsers} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Cadastro Pessoal</h5>     
-                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.pessoal} Registros</h5>                
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.pessoal} Registro(s)</h5>                
                 </Card.Body>
                 </Link>
             </Card>
@@ -56,7 +59,7 @@ const IndexCadGerais = () =>{
                     <FontAwesomeIcon icon={faTractor} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Máquinas e Equipamentos</h5>     
-                  <h5 className="text-center text-white fs--2">0 Registros</h5>                
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.maquinas} Registro(s)</h5>                
                 </Card.Body>
                 </Link>
             </Card>
@@ -69,7 +72,7 @@ const IndexCadGerais = () =>{
                     <FontAwesomeIcon icon={faPersonDigging} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Benfeitorias Fazendas</h5>     
-                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.benfeitoria} Registros</h5>                
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.benfeitoria} Registro(s)</h5>                
                 </Card.Body>
                 </Link>
             </Card>
@@ -82,7 +85,20 @@ const IndexCadGerais = () =>{
                     <FontAwesomeIcon icon={faFlask} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Análises de Solo</h5>     
-                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.analisesolo} Registros</h5>                
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.analisesolo} Registro(s)</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
+          <Col>
+            <Card as={Col} className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'/pipefy/contracts'}>
+                <Card.Body as={Row} className="justify-content-center">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faFlask} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs--2">Contratos Serviços</h5>     
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.contratos} Registro(s)</h5>                
                 </Card.Body>
                 </Link>
             </Card>

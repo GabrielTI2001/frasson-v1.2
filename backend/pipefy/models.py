@@ -323,3 +323,21 @@ class Prospect_Monitoramento_Prazos(models.Model):
         verbose_name_plural = 'Monitoramento Prazos Prospect'
     def __str__(self):
         return self.prospect.prospect
+
+class Contratos_Pagamentos(models.Model):
+    CHOICES_ETAPAS = (
+        ("A", "Assinatura Contrato"),
+        ("P", "Protocolo"),
+        ("E", "Encerramento")
+    )
+    contrato = models.ForeignKey(Contratos_Servicos, on_delete=models.CASCADE, null=True)
+    etapa = models.CharField(max_length=1, choices=CHOICES_ETAPAS, null=True, verbose_name="Etapa Pagamento")
+    percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
+    observacoes = models.TextField(null=True, blank=True, verbose_name="Observações")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Contratos - Forma Pagamento'
+    def __str__(self):
+        return self.contrato.contratante.razao_social

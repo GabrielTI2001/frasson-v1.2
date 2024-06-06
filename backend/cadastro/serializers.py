@@ -210,6 +210,7 @@ class ListFeedbacks(serializers.ModelSerializer):
         fields = '__all__'
 
 class detailFeedbacks(serializers.ModelSerializer):
+    str_user = serializers.CharField(source='user.first_name', read_only=True)
     user_avatar = serializers.SerializerMethodField(read_only=True)
     replys = serializers.SerializerMethodField()
     def get_user_avatar(self, obj):

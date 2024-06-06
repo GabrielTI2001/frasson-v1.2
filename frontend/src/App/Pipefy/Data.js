@@ -234,3 +234,46 @@ export const columnsCardProdutos = [
     headerProps: { className: 'text-900 p-1' }
   }
 ];
+
+export const columnsContratos = [
+  {
+    accessor: 'id',
+    Header: 'Código',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_produto',
+    Header: 'Produtos',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_contratante',
+    Header: 'Contratante',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_servicos',
+    Header: 'Serviços',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'percentual_gc',
+    Header: '% GC',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'valor_gai',
+    Header: 'Valor GAI',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'data_assinatura',
+    Header: 'Data',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'status',
+    Header: 'Status',
+    headerProps: { className: 'text-900 p-1' }
+  }
+];

@@ -35,11 +35,11 @@ def call_api(id, page, endCursor):
 def index_administrator_panel(request):
     users_count = User.objects.all().count()
     feedbacks_count = Feedbacks_System.objects.all().count()
-    avaliacao_count = Avaliacao_Colaboradores.objects.filter(is_active=True).count
+    avaliacao_count = Avaliacao_Colaboradores.objects.filter(is_active=True).count()
     context = {
-        'users_count': users_count,
-        'feedbacks_count': feedbacks_count,
-        'assessments_count': avaliacao_count
+        'users': users_count,
+        'feedbacks': feedbacks_count,
+        'assessments': avaliacao_count
     }
     return JsonResponse(context)
 
