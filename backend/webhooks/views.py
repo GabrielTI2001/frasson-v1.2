@@ -9,6 +9,7 @@ from pipefy.models import Itens_Financiados, Cadastro_Prospects, Detalhamento_Se
 from finances.models import Pagamentos_Pipefy, Cobrancas_Pipefy, Categorias_Pagamentos, Caixas_Frasson
 import json
 from datetime import datetime
+from backend.backgroundTasks import InsertCARImoveisRurais, InsertParcelasImoveisRurais
 
 @csrf_exempt
 def webhooks_pipe_create_card(request, id):
@@ -75,6 +76,11 @@ def webhooks_database_create_record(request, id):
     id_record = obj["data"]["card"]["id"] #get new id created
     data = getData(id_record, id)
     criar_registro_db(id, data)
+    if id == 1213951:
+        if 'n_mero_ccir' in data:
+            InsertParcelasImoveisRurais(id_record, data['n_mero_ccir'])
+        if 'registro_car' in data:  
+            InsertCARImoveisRurais(id_record, data['registro_car'])
     return JsonResponse({'message': 'Webhook status ok'})
 
 @csrf_exempt

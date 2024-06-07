@@ -156,13 +156,13 @@ const ViewCardProduto = () => {
         <Col>
             <h6 style={{fontSize: '14px'}} className='fw-bold mb-2'>Comentários do card ({comments.length})</h6>
             {comments && comments.map(c =>
-                <div class="d-flex mb-3">
-                    <img class="rounded-circle me-1" src={c.avatarUrl} 
+                <div className="d-flex mb-3">
+                    <img className="rounded-circle me-1" src={c.avatarUrl} 
                         alt="Avatar" style={{width: '30px', height: '30px'}} />
-                    <div class="mb-0">
-                        <span class="fw-bold text-primary mb-0 me-1 author">{c.author}</span>
-                        <span class="fw-bold" style={{fontSize: '11px'}}>{c.created_at}</span><br></br>
-                        <span class="" style={{fontSize: '11px'}}>{c.text}</span>
+                    <div className="mb-0">
+                        <span className="fw-bold text-primary mb-0 me-1 author">{c.author}</span>
+                        <span className="fw-bold" style={{fontSize: '11px'}}>{c.created_at}</span><br></br>
+                        <span className="" style={{fontSize: '11px'}}>{c.text}</span>
                     </div>
                 </div>
             )}

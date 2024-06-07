@@ -35,7 +35,7 @@ const IndexCredit = ({mes, ano}) => {
         if (mes) query = query + 'month='+mes+'&'
         if (ano) query = query + 'year='+ano+'&'
         if (formData.search) query = query + 'search='+formData.search+'&'
-        if (formData.banco) query = query + 'bank='+formData.bank+'&'
+        if (formData.banco) query = query + 'bank='+formData.banco+'&'
 
         const url = `${process.env.REACT_APP_API_URL}/${urlapi}/?${query}`
         try {

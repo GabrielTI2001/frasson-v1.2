@@ -22,7 +22,7 @@ class OutorgaView(viewsets.ModelViewSet):
     queryset = Processos_Outorga.objects.all()
     serializer_class = detailOutorga
     lookup_field = 'uuid'
-    permission_classes = (IsAuthenticated,)
+    # permission_classes = (IsAuthenticated,)
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)

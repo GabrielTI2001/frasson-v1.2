@@ -93,7 +93,7 @@ const LoginForm = ({ hasLabel, layout }) => {
       <Row className="justify-content-between align-items-center">
         <Col xs="auto">
           <Link
-            className="fs--1 mb-0"
+            className="fs--1 mb-0 text-primary fw-semibold"
             to={'/auth/password/forget'}
           >
             Esqueceu Sua Senha?

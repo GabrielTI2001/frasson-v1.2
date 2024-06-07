@@ -123,7 +123,7 @@ const IndexPivots = () => {
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                        <PivotForm hasLabel type='add' submit={submit} />
                     </Row>
             </Modal.Body>

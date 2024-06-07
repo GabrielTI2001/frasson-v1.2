@@ -134,7 +134,7 @@ const IndexASV = () => {
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                        <ASVForm hasLabel type='add' />
                     </Row>
             </Modal.Body>

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Operacoes_Contratadas
+from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Cadastro_Ambiental_Rural_Coordenadas, Certificacao_Sigef_Parcelas, Certificacao_Sigef_Parcelas_Vertices
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
 import locale, requests, json
@@ -38,7 +38,28 @@ class listFarms(serializers.ModelSerializer):
 class detailFarms(serializers.ModelSerializer):
     str_proprietario = serializers.CharField(source='proprietario.razao_social', read_only=True)
     kml = serializers.SerializerMethodField(read_only=True)
+    coordenadas_car = serializers.SerializerMethodField(read_only=True)
+    parcelas_sigef = serializers.SerializerMethodField(read_only=True)
     token_apimaps = serializers.SerializerMethodField(read_only=True)
+    def get_coordenadas_car(self, obj):
+        car = Cadastro_Ambiental_Rural_Coordenadas.objects.filter(car__imovel_id=obj.id)
+        coordenadas_car = [{
+            "lat": float(coord.latitude),
+            "lng": float(coord.longitude)
+        }for coord in car]
+        return coordenadas_car
+    def get_parcelas_sigef(self, obj):
+        parcelas = Certificacao_Sigef_Parcelas.objects.filter(imovel_id=obj.id)
+        vertices = Certificacao_Sigef_Parcelas_Vertices.objects.filter(parcela__imovel_id=obj.id)
+        poligonos_sigef = []
+        for p in parcelas:
+            vertices = Certificacao_Sigef_Parcelas_Vertices.objects.filter(parcela=p)
+            coordenadas_sigef = [{
+                "lat": float(v.latitude),
+                "lng": float(v.longitude)
+            }for v in vertices]
+            poligonos_sigef.append(coordenadas_sigef)
+        return poligonos_sigef
     def get_kml(self, obj):
         kml = None
         payload = {"query":"{table_record (id:" + str(obj.id) + ") {record_fields{native_value field{id}}}}"}

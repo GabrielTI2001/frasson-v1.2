@@ -210,7 +210,7 @@ const ViewPivot = () => {
                 <CloseButton onClick={() => setModal({show:false})}/>
             </Modal.Header>
             <Modal.Body>
-                <Row className="flex-center w-100 sectionform">
+                <Row className="flex-center sectionform">
                     <PivotForm hasLabel type='edit' data={registro} submit={submit} />
                 </Row>
         </Modal.Body>

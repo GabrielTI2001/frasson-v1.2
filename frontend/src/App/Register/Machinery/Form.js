@@ -103,7 +103,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row'>
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={4}>
+          <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Proprietário da Máquina*</Form.Label>}
             <AsyncSelect loadOptions={fetchProprietario} name='proprietario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.proprietario : null) : null }
@@ -118,7 +118,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Máquina*</Form.Label>}
             <AsyncSelect loadOptions={fetchTipoEquipamento} name='tipo' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.tipo : null) : null }
@@ -133,7 +133,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} sm={6} xl={2} lg={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Quantidade*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Quantidade' : ''}
@@ -145,7 +145,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.quantidade : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} sm={6} xl={2} lg={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Ano Fabricação</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Ano Fabricação' : ''}
@@ -157,7 +157,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.ano_fabricacao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} sm={12} lg={6} xl={4}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fabricante</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Fabricante' : ''}
@@ -169,7 +169,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.fabricante : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Modelo</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Modelo' : ''}
@@ -181,48 +181,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.modelo : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2} xl={2} xxl={2}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Total*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Valor' : ''}
-            value={formData.valor_total || ''}
-            name="valor_total"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.valor_total : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={2}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Situação*</Form.Label>}
-          <Form.Select
-            placeholder={!hasLabel ? 'Situação' : ''}
-            value={formData.situacao || ''}
-            name="situacao"
-            onChange={handleFieldChange}
-            type="select"
-          >
-            <option value={undefined}>----</option>
-            {situacao &&( situacao.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
-            )))}
-          </Form.Select>
-          <label className='text-danger'>{message ? message.situacao : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={2} xl={2} xxl={2}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Cor</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Cor' : ''}
-            value={formData.cor || ''}
-            name="cor"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.cor : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Série/Chassi</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Série/Chassi' : ''}
@@ -234,7 +193,48 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.serie_chassi : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={2} lg={6} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Total*</Form.Label>}
+          <Form.Control
+            placeholder={!hasLabel ? 'Valor' : ''}
+            value={formData.valor_total || ''}
+            name="valor_total"
+            onChange={handleFieldChange}
+            type="number"
+          />
+          <label className='text-danger'>{message ? message.valor_total : ''}</label>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Situação*</Form.Label>}
+          <Form.Select
+            placeholder={!hasLabel ? 'Situação' : ''}
+            value={formData.situacao || ''}
+            name="situacao"
+            onChange={handleFieldChange}
+            type="select"
+          >
+            <option value={undefined}>----</option>
+            {situacao &&( situacao.map( c =>(
+              <option key={c.label} value={c.label}>{c.label}</option>
+            )))}
+          </Form.Select>
+          <label className='text-danger'>{message ? message.situacao : ''}</label>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Cor</Form.Label>}
+          <Form.Control
+            placeholder={!hasLabel ? 'Cor' : ''}
+            value={formData.cor || ''}
+            name="cor"
+            onChange={handleFieldChange}
+            type="text"
+          />
+          <label className='text-danger'>{message ? message.cor : ''}</label>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Potência ou Capacidade</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Potência ou Capacidade' : ''}
@@ -246,7 +246,24 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.potencia_capacidade : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Estado Conservação*</Form.Label>}
+          <Form.Select
+            placeholder={!hasLabel ? 'Estado Conservação' : ''}
+            value={formData.estado_conservacao || ''}
+            name="estado_conservacao"
+            onChange={handleFieldChange}
+            type="select"
+          >
+            <option value={undefined}>----</option>
+            {estadocons &&( estadocons.map( c =>(
+              <option key={c.label} value={c.label}>{c.label}</option>
+            )))}
+          </Form.Select>
+          <label className='text-danger'>{message ? message.estado_conservacao : ''}</label>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Imóvel Rural*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Imóvel Rural' : ''}
@@ -258,24 +275,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.propriedade : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={2} lg={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Estado Conservação*</Form.Label>}
-          <Form.Select
-            placeholder={!hasLabel ? 'Estado Conservação' : ''}
-            value={formData.estado_conservacao || ''}
-            name="estado_conservacao"
-            onChange={handleFieldChange}
-            type="select"
-          >
-            <option value={undefined}>----</option>
-            {estadocons &&( estadocons.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
-            )))}
-          </Form.Select>
-          <label className='text-danger'>{message ? message.estado_conservacao : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Percentual Participação</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Potência ou Capacidade' : ''}
@@ -287,7 +287,6 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.participacao : ''}</label>
         </Form.Group>
 
-        
         <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
           <Button
             className="w-40"

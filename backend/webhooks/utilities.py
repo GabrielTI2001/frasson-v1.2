@@ -374,7 +374,7 @@ def criar_registro_db(id, data):
         createCadastroPessoal(data)
     elif id == 1260853:
         createFornColab(data)
-    elif id == 1214186:
+    elif id == 1213951:
         createImoveisRurais(data)
     elif id == 1136266:
         createContratosServicos(data)

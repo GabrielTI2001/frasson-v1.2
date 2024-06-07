@@ -200,7 +200,7 @@ const ViewCredit = () => {
             <CloseButton onClick={() => setModalForm({show:false})}/>
         </Modal.Header>
         <Modal.Body>
-            <div className="w-100">
+            <div className="">
             {modalform && modalform.type == 'edit' 
                 ? <Edit id={modalform.id} update={update}/>
                 : <FormAlongamento hasLabel type={modalform.type} submit={update}/>

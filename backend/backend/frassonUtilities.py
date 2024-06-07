@@ -1,15 +1,18 @@
 from django.db.models import Q, Sum, Case, When, DecimalField
-import requests, json, environ, math, locale
+import requests, json, environ, math, locale, re
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
-from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
+from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, TOKEN_API_INFOSIMPLES
 from environmental.models import Processos_Outorga_Coordenadas, Processos_APPO_Coordenadas
+from administrator.models import RequestsAPI
 from finances.models import Saldos_Iniciais, Cobrancas_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Pagamentos_Pipefy, Transferencias_Contas
 from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, init_data
 from pygc import great_circle
 import numpy as np
 from pyproj import Transformer
 from inbox.models import Notifications_Messages
+from datetime import datetime
+from django.db import transaction, IntegrityError, connection
 
 env = environ.Env()
 environ.Env.read_env()
@@ -118,6 +121,60 @@ class Frasson(object):
             str_result += f'''{lng_graus}°{lng_min}'{lng_sec}"{lng_direction} '''
         
         return str_result
+    
+    def convert_decimal_degrees_to_utm(lat, lon):
+        """Convert from Decimal Degrees to UTM"""
+        # Calculate the UTM zone from longitude
+        zone = int((lon + 180) // 6) + 1
+
+        # Determine if the point is in the Northern or Southern Hemisphere
+        south = lat < 0
+
+        # Create a Transformer
+        transformer = Transformer.from_crs(
+            f"+proj=latlong +datum=WGS84",
+            f"+proj=utm +zone={zone} +datum=WGS84 {'+south' if south else ''}",
+            always_xy=True
+        )
+
+        # Transform the point to UTM
+        easting, northing = transformer.transform(lon, lat)
+
+        # Return the UTM coordinates
+        return {
+            'lng': round(easting, 2),
+            'lat': round(northing, 2)
+        }
+
+    
+    def convert_dms_to_dd(dms):
+        """Converte uma string DMS para graus decimais com formatos específicos, tratando direções e sinais."""
+        # Limpa espaços extras e substitui vírgula por ponto para uniformidade
+        dms_cleaned = dms.replace(',', '.').replace(' ', '')
+        
+        # Expressão regular para extrair partes da coordenada e direção, se presente
+        dms_pattern = re.compile(r'(-?\d+)°(\d+)[\'](\d+\.\d+)(?:"([NSWE])?)')
+        match = dms_pattern.match(dms_cleaned)
+        
+        if match: # se o formato
+            degrees, minutes, seconds, direction = match.groups()
+            
+            # Convertendo de DMS para grau decimal
+            degrees = float(degrees)
+            minutes = float(minutes)
+            seconds = float(seconds)
+            
+            # Calcular o valor decimal
+            decimal = abs(degrees) + (minutes / 60) + (seconds / 3600)
+            
+            # Aplicar negatividade baseada na direção
+            if direction == 'S' or direction == 'W' or degrees < 0:
+                decimal = -abs(decimal)
+
+            return round(decimal, 8)
+        
+        else:
+            return "Formato DMS inválido!"
     
     def createLatLongPointsPivot(lat, lng, radius, quant):
         """Função que cria vários pontos em torno de uma coordenada, conforme distância do raio"""
@@ -346,6 +403,141 @@ class Frasson(object):
         }
 
         return obj
+    
+    @transaction.atomic
+    def getParcelasSIGEFImovelRural(codigo_imovel, login_cpf, login_senha):
+        """"Função que retorna as parcelas de imóvel rural no SIGEF a partir do CCIR"""
+        main_url = "https://api.infosimples.com/api/v2/consultas/incra/sigef"      
+        connection.close()  
+        response_parcelas = requests.get(url=f"{main_url}/parcelas", params={"codigo_imovel": codigo_imovel, "login_cpf": login_cpf, "login_senha": login_senha, "token": TOKEN_API_INFOSIMPLES, "timeout": 300})
+        obj_parcelas = response_parcelas.json()
+        connection.connect()  
+        data = {}
+        RequestsAPI.objects.create(
+            type='SP', cod_resposta=obj_parcelas["code"], url=f"{main_url}/parcelas", codigo=codigo_imovel, api_id=1,
+            text_resposta=obj_parcelas["code_message"], valor_cobrado=obj_parcelas["header"]["price"], 
+            hora_requisicao=obj_parcelas["header"]["requested_at"][:19], 
+            tempo_decorrido_ms=obj_parcelas["header"]["elapsed_time_in_milliseconds"]
+        )
+
+        if obj_parcelas["code"] == 200 and obj_parcelas["data_count"] > 0:
+            parcelas_obj = obj_parcelas["data"][0]["parcelas"]
+            parcelas = [{
+                'parcela_nome': parcela["nome"],
+                'area_ha': parcela["area_ha"],
+                'cns': parcela["cns"],
+                'matricula': parcela["matricula"],
+                'codigo_parcela': parcela["codigo_parcela"]
+            }for parcela in parcelas_obj]
+            
+            for parcela in parcelas:
+                connection.close()
+                response = requests.get(url=f"{main_url}/detalhes-parcela", params={"codigo_parcela": parcela["codigo_parcela"], "login_cpf": login_cpf, "login_senha": login_senha, "token": TOKEN_API_INFOSIMPLES, "timeout": 300})
+                obj = response.json()
+                connection.connect()
+                RequestsAPI.objects.create(
+                    type='SV', cod_resposta=obj["code"], url=f"{main_url}/detalhes-parcela", codigo=parcela["codigo_parcela"], 
+                    text_resposta=obj["code_message"], valor_cobrado=obj["header"]["price"], api_id=1,
+                    hora_requisicao=obj["header"]["requested_at"][:19],
+                    tempo_decorrido_ms=obj_parcelas["header"]["elapsed_time_in_milliseconds"]
+                )
+
+                if obj["code"] == 200 and obj["data_count"] > 0:
+                    limites_obj = obj["data"][0]["limites"] #lista
+                    vertices_obj = obj["data"][0]["vertices"] #lista
+                    parcela["situacao_imovel"] = obj["data"][0]["area_georreferenciada"]["situacao"]
+                    parcela["natureza"] = obj["data"][0]["area_georreferenciada"]["natureza"]
+                    parcela["nome_detentor"] = obj["data"][0]["identificacao_detentor"][0]["nome"]
+                    parcela["cpf_cnpj_detentor"] = obj["data"][0]["identificacao_detentor"][0]["cpf_cnpj"]
+                    parcela["data_entrada"] = obj["data"][0]["informacoes_parcela"]["data_entrada"]
+                    parcela["situacao_parcela"] = obj["data"][0]["informacoes_parcela"]["situacao"]
+                    parcela["responsavel_tecnico"] = obj["data"][0]["informacoes_parcela"]["responsavel_tecnico"]
+                    parcela["documento_rt"] = obj["data"][0]["informacoes_parcela"]["documento_rt"]
+                    parcela["mensagem_parcela"] = obj["data"][0]["informacoes_parcela"]["mensagem"]
+                    parcela["cartorio_registro"] = obj["data"][0]["registro"]["cartorio"]
+                    parcela["municipio_registro"] = obj["data"][0]["registro"]["municipio_uf"]
+
+                    limites = [{
+                        "do_vertice": limite["do_vertice"],
+                        "ao_vertice": limite["ao_vertice"],
+                        "tipo": limite["tipo"],
+                        "lado": limite["lado"],
+                        "azimute": limite["azimute"],
+                        "comprimento": str(limite["comprimento"]).replace(",", "."),
+                        "confrontante": limite["confrontante"],
+                    }for limite in limites_obj]                    
+
+                    vertices = [{
+                        "codigo": vertice["codigo"],
+                        "longitude": Frasson.convert_dms_to_dd(vertice["logitude"]),
+                        "sigma_long": str(vertice["sigma_long"]).replace(",", "."),
+                        "latitude": Frasson.convert_dms_to_dd(vertice["latitude"]),
+                        "sigma_lat": str(vertice["sigma_lat"]).replace(",", "."),
+                        "altitude": str(vertice["altitude"]).replace(",", "."),
+                        "sigma_altitude": str(vertice["sigma_altitude"]).replace(",", "."),
+                        "metodo_posicionamento": vertice["metodo_posicionamento"]
+                    }for vertice in vertices_obj]
+                    
+                    data["parcelas"] = parcelas
+                    data[parcela["codigo_parcela"]] = {"limites": limites, "vertices": vertices}
+        return data
+
+    def getCoordinatesCARImovelRural(car):
+        """Função que retorna as coordenadas do shape CAR do imóvel rural"""
+        data = {}
+        url = "https://api.infosimples.com/api/v2/consultas/car/demonstrativo"  
+        connection.close() 
+        response = requests.get(url, params={"car": car,"token": TOKEN_API_INFOSIMPLES, "timeout": 600})
+        obj = response.json()
+        connection.connect()
+        RequestsAPI.objects.create(
+            type='CI', cod_resposta=obj["code"], url=url, codigo=car, api_id=2,
+            text_resposta=obj["code_message"], valor_cobrado=obj["header"]["price"], 
+            hora_requisicao=obj["header"]["requested_at"][:19], tempo_decorrido_ms=obj["header"]["elapsed_time_in_milliseconds"]
+        )    
+
+        if obj["code"] == 200 and obj["data_count"] > 0:
+            data["area_preservacao_permanente"] = obj["data"][0]["area_preservacao_permanente"]
+            data["area_uso_restrito"] = obj["data"][0]["area_uso_restrito"]
+            data["numero_car"] = obj["data"][0]["car"]
+            data["condicao_cadastro"] = obj["data"][0]["condicao_cadastro"]
+            data["area_imovel"] = obj["data"][0]["imovel"]["area"]
+            data["numero_car"] = obj["data"][0]["car"]
+            data["modulos_fiscais"] = obj["data"][0]["imovel"]["modulos_fiscais"]
+            data["endereco_municipio"] = obj["data"][0]["imovel"]["endereco_municipio"]
+            data["endereco_latitude"] = Frasson.convert_dms_to_dd(obj["data"][0]["imovel"]["endereco_latitude"])
+            data["endereco_longitude"] = Frasson.convert_dms_to_dd(obj["data"][0]["imovel"]["endereco_longitude"])
+            data["data_registro"] = datetime.strptime(obj["data"][0]["imovel"]["registro_data"], '%d/%m/%Y').date()
+            data["data_analise"] = datetime.strptime(obj["data"][0]["imovel"]["analise_data"], '%d/%m/%Y').date() if obj["data"][0]["imovel"]["analise_data"] else None
+            data["data_retificacao"] = datetime.strptime(obj["data"][0]["imovel"]["retificacao_data"], '%d/%m/%Y').date() if obj["data"][0]["imovel"]["retificacao_data"] else None
+            data["reserva_situacao"] = obj["data"][0]["reserva"]["situacao"]
+            data["reserva_area_averbada"] = obj["data"][0]["reserva"]["area_averbada"]
+            data["reserva_area_nao_averbada"] = obj["data"][0]["reserva"]["area_nao_averbada"]
+            data["reserva_legal_proposta"] = obj["data"][0]["reserva"]["area_legal_proposta"]
+            data["reserva_legal_declarada"] = obj["data"][0]["reserva"]["area_legal_declarada"]
+            data["situacao"] = obj["data"][0]["situacao"]
+            data["solo_area_nativa"] = obj["data"][0]["solo"]["area_nativa"]
+            data["solo_area_uso"] = obj["data"][0]["solo"]["area_uso"]
+            data["solo_area_servidao"] = obj["data"][0]["solo"]["area_servidao_administrativa"]
+            data["restricoes"] = obj["data"][0]["restricoes"]
+
+            url = "https://api.infosimples.com/api/v2/consultas/car/imovel"   
+            connection.close()
+            response = requests.get(url, params={"car": car,"token": TOKEN_API_INFOSIMPLES, "timeout": 600})
+            obj2 = response.json()
+            connection.connect()
+            RequestsAPI.objects.create(
+                type='CC', cod_resposta=obj["code"], url=url, codigo=car, api_id=2,
+                text_resposta=obj["code_message"], valor_cobrado=obj["header"]["price"], 
+                hora_requisicao=obj["header"]["requested_at"][:19], tempo_decorrido_ms=obj["header"]["elapsed_time_in_milliseconds"]
+            )
+            data["coordinates"] = [{'latitude': coord[1], 'longitude': coord[0]} for coord in obj2["data"][0]["coordenadas"]]
+        else:
+            data["code"] = obj["code"]
+            data["message"] = obj["code_message"]
+
+        return data
+
 
     
 

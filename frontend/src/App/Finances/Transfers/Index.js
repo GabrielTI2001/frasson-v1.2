@@ -136,7 +136,7 @@ const IndexTransfers = () => {
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         {showmodal.type === 'add' 
                             ? <FormTransfer hasLabel type='add' submit={submit}/>
                             : <FormTransfer hasLabel type='edit' data={showmodal.data} submit={submit}/>

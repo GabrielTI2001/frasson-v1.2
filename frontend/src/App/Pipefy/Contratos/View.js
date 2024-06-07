@@ -232,7 +232,7 @@ const ViewContrato = () => {
             <CloseButton onClick={() => setModalform({show:false})}/>
         </Modal.Header>
         <Modal.Body>
-            <Row className="flex-center w-100 sectionform">
+            <Row className="flex-center sectionform">
             {card && !modalform.data 
                 ? <FormEtapa type='add' contrato={card} submit={submit}/> 
                 : <FormEtapa type='edit' contrato={card} data={modalform.data} submit={submit}/>

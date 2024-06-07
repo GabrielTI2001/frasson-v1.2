@@ -70,12 +70,12 @@ const IndexOutorgas = () => {
                 <AdvanceTableSearchBox table onSearch={handleChange}/>
             </Col>
             <Col xl={'auto'} sm={'auto'} xs={'auto'}>
-                <a className="text-decoration-none btn btn-primary shadow-none fs--2"
+                <a className="text-decoration-none btn btn-success shadow-none fs--2"
                     style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
                 >Nova Portaria</a>
             </Col>
             <Col xl={'auto'} sm='auto' xs={'auto'}>
-                <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
+                <Link className="text-decoration-none btn btn-info shadow-none fs--2"
                 style={{padding: '2px 5px'}} to={'../outorga/map'}>
                     <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa
                     </Link>
@@ -126,17 +126,17 @@ const IndexOutorgas = () => {
             size="xl"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-10"
+            dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Portaria
+                    Nova Portaria de Outorga - INEMA
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                        <OutorgaForm hasLabel type='add'></OutorgaForm>
                     </Row>
             </Modal.Body>

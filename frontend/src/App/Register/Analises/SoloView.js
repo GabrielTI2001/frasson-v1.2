@@ -47,7 +47,7 @@ const ViewAnaliseSolo = () => {
     <Row className='mt-2' xs={1} lg={2} xxl={2}>
         <Col className='d-flex flex-column justify-content-between'>
             <div>
-                <div className='mb-1'><strong>Cliente: </strong>{analise.str_cliente}</div>
+                <div className='mb-1 text-body'><strong>Cliente: </strong>{analise.str_cliente}</div>
                 <div className='mb-1'><strong>Localização: </strong>{analise.localizacao}</div>
                 <div className='mb-1'><strong>Data Coleta: </strong>{new Date(analise.data_coleta).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</div>
                 <div className='mb-1'><strong>Identificação Amostra: </strong>{analise.identificacao_amostra}</div>
@@ -83,7 +83,7 @@ const ViewAnaliseSolo = () => {
             <div className='row gy-1'>
                 <h4 className='mb-1' style={{fontSize:'14px'}}>Outras Informações</h4>
                 <Col xxl={12} lg={12}><strong>CTC Total (cmolc/dm<sup>3</sup>):</strong>
-                    <span className='mx-2 fw-bold'>{analise.other_info.capacidade_troca_cations}</span>
+                    <span className='mx-2 fw-bold'>{analise.other_info.capacidade_troca_cations || '-'}</span>
                 </Col>
                 <Col xxl={12} lg={12}><strong>Soma de Bases (cmolc/dm<sup>3</sup>):</strong>
                     <span className='mx-2 fw-bold'>{analise.other_info.soma_bases}</span>
@@ -95,7 +95,7 @@ const ViewAnaliseSolo = () => {
                 {analise.other_info.rel_calcio_magnesio ? 
                     <>
                     <span className='mx-2 fw-bold'>
-                        {Number(analise.other_info.rel_calcio_magnesio.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}
+                        {analise.other_info.rel_calcio_magnesio.value}
                     </span>
                     <span className={`badge bg-${analise.other_info.rel_calcio_magnesio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>
                         {analise.other_info.rel_calcio_magnesio.level}
@@ -107,7 +107,7 @@ const ViewAnaliseSolo = () => {
                 {analise.other_info.rel_calcio_potassio ? 
                     <>
                     <span className='mx-2 fw-bold'>
-                        {Number(analise.other_info.rel_calcio_potassio.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}
+                        {analise.other_info.rel_calcio_potassio.value}
                     </span>
                     <span className={`badge bg-${analise.other_info.rel_calcio_potassio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>
                         {analise.other_info.rel_calcio_potassio.level}
@@ -119,7 +119,7 @@ const ViewAnaliseSolo = () => {
                 {analise.other_info.rel_magnesio_potassio ? 
                     <>
                     <span className='mx-2 fw-bold'>
-                        {Number(analise.other_info.rel_magnesio_potassio.value).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits:2})}
+                        {analise.other_info.rel_magnesio_potassio.value}
                     </span>
                     <span className={`badge bg-${analise.other_info.rel_magnesio_potassio.color} text-white fw-normal px-2`} style={{fontSize: '.75em'}}>
                         {analise.other_info.rel_magnesio_potassio.level}

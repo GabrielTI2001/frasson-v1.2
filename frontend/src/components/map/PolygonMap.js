@@ -19,7 +19,8 @@ const PolygonMap = ({
   token_api,
   polygons,
   link,
-  urlparams
+  urlparams,
+  zoom
 }) => {
 
   const { isLoaded } = useJsApiLoader({
@@ -37,7 +38,7 @@ const PolygonMap = ({
     streetViewControl: false,
     fullscreenControl: true,
     zoomControl: true,
-    zoom: 10,
+    zoom: zoom || 10,
     center: initialCenter,
     styles: googleMapStyles[mapStyles]
   });

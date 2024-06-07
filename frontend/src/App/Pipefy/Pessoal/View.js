@@ -10,6 +10,7 @@ import { faLocationDot, faLocationArrow, faMapPin, faCakeCandles, faBriefcase, f
 import ListProcessos from "./ListProcessos";
 import ListOperacoes from "./ListOperacoes";
 import ListContas from "./ListContas";
+import { RetrieveRecord } from "../../../helpers/Data";
 
 const ViewPessoal = () => {
     const {uuid} = useParams()
@@ -78,28 +79,9 @@ const ViewPessoal = () => {
 
 
         const getData = async () => {
-            try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/pipefy/pessoal/${uuid}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                });
-                if (response.status === 401){
-                    localStorage.setItem("login", JSON.stringify(false));
-                    navigate("/auth/login");
-                }
-                else if (response.status === 200){
-                    const data = await response.json();
-                    setPessoa(data)
-                    calcIdade('2001-11-10')
-                }
-                else if (response.status === 404){
-                    navigate("/error/404")
-                }
-            } catch (error){
-                console.error("Erro: ",error)
+            const status = RetrieveRecord(uuid, 'pipefy/pessoal', (data) => {setPessoa(data); data.data_nascimento && calcIdade(data.data_nascimento)})
+            if (status === 401){
+                navigate("/auth/login");
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_cadastro_pessoal") === -1) && !user.is_superuser){
@@ -146,7 +128,7 @@ const ViewPessoal = () => {
                     </Col>
                 </Row>
                 <address className="row mx-0 gx-0 mb-3">
-                    <div className="mb-1"><FontAwesomeIcon icon={faLocationDot} className="me-2"/>{pessoa && pessoa.endereco}</div>
+                    <div className="mb-1"><FontAwesomeIcon icon={faLocationDot} className="me-2"/>{pessoa && pessoa.endereco || '-'}</div>
                     <div className="mb-1"><FontAwesomeIcon icon={faLocationArrow} className="me-2"/>{pessoa && pessoa.municipio}</div>
                     <div className="mb-1"><FontAwesomeIcon icon={faMapPin} className="me-2"/>{pessoa && pessoa.cep}</div>
                 </address>
@@ -158,7 +140,7 @@ const ViewPessoal = () => {
                     <div><FontAwesomeIcon icon={faUsersLine} className="me-2"/>{pessoa && pessoa.grupo_info ? pessoa.grupo_info :'-'}</div>
                 </Row>
                 {pessoa && 
-                    <span><Link to={pessoa.record_url} target="__blank" className="fw-bold">Clique Aqui</Link> para visualizar registro no pipefy.</span>
+                    <div className="text-body opacity-100"><Link to={pessoa.record_url} target="__blank" className="fw-bold">Clique Aqui</Link> para visualizar registro no pipefy.</div>
                 }
             </Tab>
             {processos && processos.length > 0 &&

@@ -201,7 +201,7 @@ const EditASV = () => {
                     <CloseButton onClick={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         <AreaForm hasLabel data={modal.content.data} type={modal.content.type} />
                     </Row>
                 </Modal.Body>

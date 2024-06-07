@@ -110,7 +110,7 @@ const IndexProdPecuaria= () => {
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">  
+                    <Row className="flex-center sectionform">  
                     {!showmodal.data 
                         ? <FormProdPecuaria hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit}/>
                         : <EditProdPecuaria gleba={showmodal.data.gleba} id={showmodal.data.id} submit={submit} />

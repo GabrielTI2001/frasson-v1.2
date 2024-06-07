@@ -149,7 +149,7 @@ const IndexGlebas = () => {
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         <GlebaForm hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit}/>
                     </Row>
             </Modal.Body>

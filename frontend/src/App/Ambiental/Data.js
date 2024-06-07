@@ -16,7 +16,7 @@ export const fetchFinalidade = async (inputValue) => {
 
 export const fetchMunicipio = async (inputValue) => {
     try {
-      const apiUrl = `${process.env.REACT_APP_API_URL}/register/municipios/?search=${inputValue}`;
+      const apiUrl = `${process.env.REACT_APP_API_URL}/register/municipios/?search=${inputValue}&uf=BA`;
       const response = await fetch(apiUrl);
       const dataapi = await response.json();
       const options = dataapi.length > 0 ? dataapi.map(b =>({
@@ -161,6 +161,7 @@ export const columnsOutorga = [
   },
   {
       Header: 'Status',
+      accessor: 'status',
       headerProps: { className: 'text-900 p-3' }
   },
 ];
@@ -206,6 +207,7 @@ export const columnsAPPO = [
   },
   {
       Header: 'Status',
+      accessor: 'status',
       headerProps: { className: 'text-900 p-3' }
   },
 ];

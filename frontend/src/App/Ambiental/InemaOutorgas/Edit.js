@@ -135,15 +135,10 @@ const Edit = () => {
             {/* FORMULÁRIO DE OUTORGA */}
             {outorga && (
             <>
-                <OutorgaForm hasLabel type={'edit'} data={outorga}></OutorgaForm>
+                <OutorgaForm hasLabel type={'edit'} data={outorga} addpoint={() => onClickPoint(null, 'add')}></OutorgaForm>
                 <hr></hr>
-                {/* BOTÃO ADD PONTO */}
-                <Row className="text-end">
-                    <Col><Button onClick={()=> onClickPoint(null, 'add')}>Adicionar Ponto</Button></Col>
-                </Row>
             </>
             )}
-            <hr></hr>
             {/* TABELA DE PONTOS */}
             {coordenadas ? (coordenadas.length > 0 ?
                 <AdvanceTableWrapper
@@ -192,7 +187,7 @@ const Edit = () => {
                 size="xl"
                 show={modal.show && (modal.content.type === 'edit' || modal.content.type === 'add')}
                 onHide={() => ambientalDispatch({type:'TOGGLE_MODAL'})}
-                dialogClassName="mt-10"
+                dialogClassName="mt-8"
                 aria-labelledby="example-modal-sizes-title-lg"
             >
                 <Modal.Header>
@@ -202,7 +197,7 @@ const Edit = () => {
                     <CloseButton onClick={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         <PontoForm hasLabel data={modal.content.data} type={modal.content.type}></PontoForm>
                     </Row>
                 </Modal.Body>

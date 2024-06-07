@@ -31,7 +31,7 @@ export const AdvanceTableFooter = ({
         'align-items-center justify-content-between'
       )}
     >
-      <Flex alignItems="center" className="fs--1">
+      <Flex alignItems="center" className="fs--1 text-body">
         {rowInfo && (
           <p className="mb-0">
             <span className="d-none d-sm-inline-block me-2">

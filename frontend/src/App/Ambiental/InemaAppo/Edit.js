@@ -139,12 +139,7 @@ export const Edit = () => {
             {/* FORMULÁRIO DE APPO */}
             {appo && (
             <>
-                <APPOForm hasLabel type={'edit'} data={appo}></APPOForm>
-                <hr></hr>
-                 {/* BOTÃO ADD PONTO */}
-                <Row className="text-end">
-                    <Col><Button onClick={()=> onClickPoint(null, 'add')}>Adicionar Ponto</Button></Col>
-                </Row>
+                <APPOForm hasLabel type={'edit'} data={appo} addpoint={() => onClickPoint(null, 'add')}></APPOForm>
             </>
             )}
             <hr></hr>
@@ -206,7 +201,7 @@ export const Edit = () => {
                     <CloseButton onClick={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         <PontoForm hasLabel data={modal.content.data} type={modal.content.type}></PontoForm>
                     </Row>
                 </Modal.Body>
@@ -214,7 +209,7 @@ export const Edit = () => {
         )}
         {modal.content && modal.content.data && (
             <ModalDelete show={modal.show && modal.content.type === 'delete'} close={() => {ambientalDispatch({type:'TOGGLE_MODAL'})}} 
-                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/appo/coordenadas-detail/${modal.content.data.id}/`}
+                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/appo/coordenadas-detail/${modal.content.data}/`}
             />
         )}
 

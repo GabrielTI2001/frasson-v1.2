@@ -154,7 +154,7 @@ const ViewIndicator = () => {
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         <IndicatorForm hasLabel data={register} type='edit' submit={submit}/>
                     </Row>
             </Modal.Body>

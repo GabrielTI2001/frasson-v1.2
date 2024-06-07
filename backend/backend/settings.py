@@ -15,6 +15,9 @@ SECRET_KEY = env('SECRET_KEY')
 URL_PIFEFY_API = "https://api.pipefy.com/graphql"
 TOKEN_PIPEFY_API = env('TOKEN_PIPEFY')
 
+#TOKEN API INFOSIMPLES
+TOKEN_API_INFOSIMPLES = env('TOKEN_API_INFOSIMPLES')
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool('DEBUG')
 
@@ -26,6 +29,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
+    'background_task',
     'djoser',
     'corsheaders',
     'administrator',

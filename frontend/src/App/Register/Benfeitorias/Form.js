@@ -114,7 +114,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} xl={5}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
             <AsyncSelect loadOptions={FetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.farm : null) : null }
@@ -129,7 +129,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={2} lg={2}>
+        <Form.Group className="mb-2" as={Col} xl={4}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo de Benfeitoria*</Form.Label>}
           <Form.Select
             placeholder={!hasLabel ? 'Tipo de Benfeitoria' : ''}
@@ -146,7 +146,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.type : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data Construção</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data Construção' : ''}
@@ -158,7 +158,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.data_construcao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tamanho (m<sup>2</sup>)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Tamanho' : ''}
@@ -170,7 +170,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.tamanho : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Estimado (R$)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Valor Estimado' : ''}
@@ -182,7 +182,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.valor_estimado : ''}</label>
         </Form.Group>
 
-        {type === 'add' && <Form.Group className="mb-2" as={Col} lg={3}>
+        {type === 'add' && <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fotos*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Arquivo PDF' : ''}

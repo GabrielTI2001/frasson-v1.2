@@ -341,3 +341,120 @@ class Contratos_Pagamentos(models.Model):
         verbose_name_plural = 'Contratos - Forma Pagamento'
     def __str__(self):
         return self.contrato.contratante.razao_social
+
+
+class Cadastro_Ambiental_Rural(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    imovel = models.ForeignKey(Imoveis_Rurais, on_delete=models.CASCADE, null=True, verbose_name='Imóvel Rural')
+    numero_car = models.CharField(max_length=150, null=True, blank=True, verbose_name='Número do CAR')
+    area_preservacao_permanente = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Área APP')
+    area_uso_restrito = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Área Uso Restrito')
+    condicao_cadastro = models.CharField(max_length=250, null=True, blank=True, verbose_name='Condição Cadastro')
+    area_imovel = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Área Imóvel')
+    modulos_fiscais = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Módulos Fiscais')
+    endereco_municipio = models.CharField(max_length=250, null=True, blank=True, verbose_name='Endereço Município')
+    endereco_latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Latitude')
+    endereco_longitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Longitude')
+    data_registro = models.DateField(null=True, blank=True, verbose_name='Data Registro')
+    data_analise = models.DateField(null=True, blank=True, verbose_name='Data Análise')
+    data_retificacao = models.DateField(null=True, blank=True, verbose_name='Data Retificação')
+    reserva_situacao = models.CharField(max_length=150, null=True, blank=True, verbose_name='Reserva Situação')
+    reserva_area_averbada = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='RL Área Averbada')
+    reserva_area_nao_averbada = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='RL Área Não Averbada')
+    reserva_legal_proposta = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='RL Proposta')
+    reserva_legal_declarada = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='RL Declarada')
+    situacao = models.CharField(max_length=250, null=True, blank=True, verbose_name='Situação CAR')
+    solo_area_nativa = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Solo - Área Nativa')
+    solo_area_uso = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Solo - Área Uso')
+    solo_area_servidao = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Solo - Área Servidão')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Cadastro Ambiental Rural'
+    def __str__(self):
+        return f"{self.imovel.nome_imovel}"
+    
+
+class Cadastro_Ambiental_Rural_Restricoes(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    car = models.ForeignKey(Cadastro_Ambiental_Rural, on_delete=models.CASCADE, null=True, verbose_name='Imóvel Rural')
+    origem = models.CharField(max_length=255, null=True, blank=True, verbose_name='Origem da Restrição')
+    descricao = models.TextField(null=True, blank=True, verbose_name='Descrição da Restrição')
+    data_processamento = models.DateField(null=True, blank=True, verbose_name='Data Processamento')
+    area_conflito = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Área de Conflito')
+    percentual = models.DecimalField(max_digits=8, decimal_places=4, null=True, blank=True, verbose_name='Percentual Área Conflito')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Restrições no CAR'
+    def __str__(self):
+        return f"{self.car.imovel.nome_imovel}"
+
+
+class Cadastro_Ambiental_Rural_Coordenadas(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    car = models.ForeignKey(Cadastro_Ambiental_Rural, on_delete=models.CASCADE, null=True, verbose_name='Imóvel Rural')
+    longitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Longitude')
+    latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Latitude')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Coordenadas do CAR'
+    def __str__(self):
+        return f"{self.car.imovel.nome_imovel}"
+
+
+class Certificacao_Sigef_Parcelas(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    imovel = models.ForeignKey(Imoveis_Rurais, on_delete=models.CASCADE, null=True, verbose_name='Imóvel Rural')
+    nome = models.CharField(max_length=255, null=True, blank=True, verbose_name='Nome Imóvel')
+    area_ha = models.DecimalField(max_digits=15, decimal_places=4, null=True, verbose_name='Área Ha')
+    detentor = models.CharField(max_length=255, null=True, blank=True, verbose_name='Detentor')
+    cpf_cnpj_detentor = models.CharField(max_length=50, null=True, blank=True, verbose_name='CPF/CNPJ')
+    cns = models.CharField(max_length=50, null=True, blank=True, verbose_name='CNS')
+    codigo_parcela = models.UUIDField(null=True, blank=True, verbose_name='Código Parcela')
+    matricula = models.CharField(max_length=50, null=True, blank=True, verbose_name='CNS')
+    data_entrada = models.DateField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Parcelas Certificações SIGEF'
+    def __str__(self):
+        return f"{self.imovel.nome_imovel} - {self.imovel.matricula_imovel}" if self.imovel.matricula_imovel else self.imovel.nome_imovel
+
+
+class Certificacao_Sigef_Parcelas_Limites(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    parcela = models.ForeignKey(Certificacao_Sigef_Parcelas, on_delete=models.CASCADE, null=True, verbose_name='Parcela')
+    do_vertice = models.CharField(max_length=100, null=True, blank=True, verbose_name='Do Vértice')
+    ao_vertice = models.CharField(max_length=100, null=True, blank=True, verbose_name='Ao Vértice')
+    tipo = models.CharField(max_length=100, null=True, blank=True, verbose_name='Tipo')
+    lado = models.CharField(max_length=100, null=True, blank=True, verbose_name='Lado')
+    azimute = models.CharField(max_length=100, null=True, blank=True, verbose_name='Azimute')
+    comprimento = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True, verbose_name='Comprimento')
+    confrontante = models.TextField(null=True, blank=True, verbose_name='Confrontante')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'SIGEF - Limites de Parcelas'
+    def __str__(self):
+        return f"{self.parcela.codigo_parcela}"
+
+
+class Certificacao_Sigef_Parcelas_Vertices(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    parcela = models.ForeignKey(Certificacao_Sigef_Parcelas, on_delete=models.CASCADE, null=True, verbose_name='Parcela')
+    codigo = models.CharField(max_length=100, null=True, blank=True, verbose_name='Código do Vértice')
+    longitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Longitude')
+    sigma_long = models.DecimalField(max_digits=4, decimal_places=4, null=True, blank=True, verbose_name='Sigma Long')
+    latitude = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Latitude')
+    sigma_lat = models.DecimalField(max_digits=4, decimal_places=4, null=True, blank=True, verbose_name='Sigma Lat')
+    altitude = models.DecimalField(max_digits=8, decimal_places=4, null=True, blank=True, verbose_name='Altitude')
+    sigma_altitude = models.DecimalField(max_digits=4, decimal_places=4, null=True, blank=True, verbose_name='Sigma Altitude')
+    metodo_posicionamento = models.CharField(max_length=100, null=True, blank=True, verbose_name='Método Posicionamento')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'SIGEF - Vértices de Parcelas'
+    def __str__(self):
+        return f"{self.parcela.codigo_parcela}"

@@ -15,13 +15,15 @@ const IndexCadGerais = () =>{
     const navigate = useNavigate()
     useEffect(()=>{
       const buscadados = async () =>{
-        const dadospessoal = await fetchPessoal();
         const dadosbenfeitoria = await fetchBenfeitorias();
         const dadosanalise = await FetchAnaliseSolo();
         const dadosmaquinas = await GetRecord('', 'register/machinery');
-        const contratos= await GetRecord('', 'pipefy/contratos-servicos');
-        setCountRegs({...countRegs, 'pessoal':dadospessoal.length, 'benfeitoria':dadosbenfeitoria.length,
-        'analisesolo':dadosanalise.length, 'maquinas':dadosmaquinas.length, 'contratos':contratos.length})
+        if (!dadosbenfeitoria || !dadosanalise || !dadosbenfeitoria){
+          navigate("/auth/login")
+        }
+        else{
+          setCountRegs({'benfeitoria':dadosbenfeitoria.length, 'analisesolo':dadosanalise.length, 'maquinas':dadosmaquinas.length,})
+        }
       }
       if ((user.permissions && user.permissions.indexOf("ver_cadastros_gerais") === -1) && !user.is_superuser){
         navigate("/error/403")
@@ -38,19 +40,6 @@ const IndexCadGerais = () =>{
             </li>    
         </ol>
         <Row className="gy-3 gx-4" xs={1} sm={3} lg={5} xl={6}>
-          <Col>
-            <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
-                <Link className="text-decoration-none" to={'/pipefy/pessoal'}>
-                <Card.Body as={Row} className="justify-content-between">
-                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
-                    <FontAwesomeIcon icon={faUsers} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`}/>
-                  </Row>
-                  <h5 className="text-center text-white mt-2 fs--2">Cadastro Pessoal</h5>     
-                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.pessoal} Registro(s)</h5>                
-                </Card.Body>
-                </Link>
-            </Card>
-          </Col>
           <Col>
             <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
                 <Link className="text-decoration-none" to={'/register/machinery'}>
@@ -86,19 +75,6 @@ const IndexCadGerais = () =>{
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Análises de Solo</h5>     
                   <h5 className="text-center text-white fs--2">{countRegs && countRegs.analisesolo} Registro(s)</h5>                
-                </Card.Body>
-                </Link>
-            </Card>
-          </Col>
-          <Col>
-            <Card as={Col} className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
-                <Link className="text-decoration-none" to={'/pipefy/contracts'}>
-                <Card.Body as={Row} className="justify-content-center">
-                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
-                    <FontAwesomeIcon icon={faFileSignature} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
-                  </Row>
-                  <h5 className="text-center text-white mt-2 fs--2">Contratos Serviços</h5>     
-                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.contratos} Registro(s)</h5>                
                 </Card.Body>
                 </Link>
             </Card>

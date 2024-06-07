@@ -133,11 +133,12 @@ const BenfeitoriaEdit = () => {
                 <BenfeitoriaForm type='edit' hasLabel data={benfeitoria}/>
                 <hr></hr>
                 {/* EDITAR FOTOS */}
-                <h3>Alterar Fotos</h3>
+                <h3 className="fs-0 fw-bold">Alterar Fotos</h3>
                 {images ? <PicturesGallery images={images} showactions action={reducer}/> : <div>Loading...</div>}
             </>
             )}
             <hr></hr>
+            <h3 className="fs-0 fw-bold">Adicionar Fotos</h3>
             <Form onSubmit={formImgsubmit}>
                 <Form.Group className="mb-3">
                     <Form.Control 

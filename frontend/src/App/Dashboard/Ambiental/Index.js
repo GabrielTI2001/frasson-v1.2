@@ -167,7 +167,7 @@ const DashAmbiental = () =>{
                 </Card>  
             </Col>
         </Row>
-        <Row xs={1} sm={3} xl={3} className="gx-4 gy-2 d-flex"> 
+        <Row xs={1} sm={3} xl={3} className="gx-4 gy-2 d-flex mb-2"> 
             {data.processos && Object.keys(data.processos).length > 0 &&
                 <Col>
                     <Card as={Col} className="p-3">

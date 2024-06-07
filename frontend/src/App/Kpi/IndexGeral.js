@@ -100,7 +100,7 @@ const IndexIndicators = () => {
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         {showmodal.type == 'edit' 
                             ? <IndicatorForm hasLabel type='edit' submit={submit} pk={showmodal.pk}/>
                             : <IndicatorForm hasLabel type='add' submit={submit}/>

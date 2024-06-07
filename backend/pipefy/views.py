@@ -168,7 +168,7 @@ class OperacoesContratadasView(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None) 
         search_year = self.request.query_params.get('year', None)   
         search_month = self.request.query_params.get('month', None)  
-        search_bank = self.request.query_params.get('month', None)  
+        search_bank = self.request.query_params.get('bank', None)  
         query = Q()
         if search_year:
             query &= Q(data_emissao_cedula__year=search_year)

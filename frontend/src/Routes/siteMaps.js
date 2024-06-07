@@ -9,7 +9,7 @@ from "@fortawesome/free-solid-svg-icons";
 const user = JSON.parse(localStorage.getItem("user"));
 
 export const dashboardRoutes = {
-  label: 'Dashboard',
+  label: 'Dashboards',
   labelDisable: true,
   icon: faChartLine,
   children: [

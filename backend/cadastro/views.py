@@ -17,8 +17,11 @@ class MunicipioView(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)   
+        uf_term = self.request.query_params.get('uf', None) 
         if search_term:
             queryset = queryset.filter(nome_municipio__icontains=search_term)
+        if uf_term:
+            queryset = queryset.filter(nome_municipio__icontains=search_term, sigla_uf=uf_term)
         return queryset
 
 class MachineryView(viewsets.ModelViewSet):

@@ -84,7 +84,7 @@ const NavbarTopDropDownMenus = () => {
         <span className="nav-link-icon d-flex align-items-center">
           <FontAwesomeIcon icon={dashboardRoutes.icon} />
         </span>
-        <NavbarDropdown title="Dashboard">
+        <NavbarDropdown title="Dashboards">
           <NavbarDropdownCredito items={dashboardRoutes.children} key={2}/>
         </NavbarDropdown>
       </Flex>

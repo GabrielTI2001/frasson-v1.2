@@ -317,8 +317,7 @@ class detailCoordenadaAPPO(serializers.ModelSerializer):
     def validate(self, data):
         latitude = data.get('latitude_gd')
         longitude = data.get('longitude_gd')
-
-        if self.instance.pk: # Verifica se é uma edição
+        if self.instance: # Verifica se é uma edição
             result = Frasson.verificaCoordenadaEdicao(latitude, longitude, self.instance.pk, 'appo')
             if result:
                 raise serializers.ValidationError('A coordenada informada já está cadastrada ou muito próxima de outra já existente nos registros de outorga. Por favor, verifique.')

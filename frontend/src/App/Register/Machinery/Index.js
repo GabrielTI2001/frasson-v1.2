@@ -30,9 +30,6 @@ const IndexMachinery = () => {
         const url = `${InitData.urlview}${uuid}`
         navigate(url)
     }
-    // const submit = (type, data) => {
-
-    // }
     const setter = (data) => {
         setSearchResults(data)
     }
@@ -130,7 +127,7 @@ const IndexMachinery = () => {
             size="xl"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-10"
+            dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -140,7 +137,7 @@ const IndexMachinery = () => {
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         <MachineryForm type='add' hasLabel/>
                     </Row>
             </Modal.Body>

@@ -29,11 +29,11 @@ const NavbarNavLink = ({ title, route, icon, icon2 }) => {
   return (
     <Nav.Link
       as={title ? 'p' : Link}
-      className={classNames('fw-medium', {
-        'text-500': !route?.active,
-        'text-700 mb-0 fw-bold': title,
+      className={classNames('fw-medium text-body', {
+        'opacity-50': !route?.active,
+        'mb-0 fw-bold opacity-100': title,
         'py-1': !title,
-        'link-600': !title && route?.active,
+        '': !title && route?.active,
         'px-0':true,
         'submenu-a': true
       })}

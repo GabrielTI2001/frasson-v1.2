@@ -154,7 +154,7 @@ const ViewLicenca = () => {
                 <CloseButton onClick={() => setModal({...modal, show:false})}/>
             </Modal.Header>
             <Modal.Body>
-                <Row className="flex-center w-100 sectionform">
+                <Row className="flex-center sectionform">
                     <FormLicenca hasLabel type='edit' data={licenca} />
                 </Row>
         </Modal.Body>

@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
+import { Button, Form, Col, Row} from 'react-bootstrap';
 import { fetchCaptacao, fetchFinalidade, fetchMunicipio} from './../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { AmbientalContext } from '../../../context/Context';
 import { useAppContext } from '../../../Main';
 
-const OutorgaForm = ({ hasLabel, type, submit}) => {
+const OutorgaForm = ({ hasLabel, type, submit, addpoint}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const {ambientalState, ambientalDispatch} = useContext(AmbientalContext)
@@ -130,10 +130,34 @@ const OutorgaForm = ({ hasLabel, type, submit}) => {
               onChange={handleFieldChange}
               type="text"
             />
-            <label className='text-danger'>{message ? message.numero_portaria : ''}</label>
+            <label className='text-danger error-msg'>{message ? message.numero_portaria : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} lg={2}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Data Publicação*</Form.Label>}
+            <Form.Control
+              placeholder={!hasLabel ? 'Data Publicação' : ''}
+              value={formData.data_publicacao || ''}
+              name="data_publicacao"
+              onChange={handleFieldChange}
+              type="date"
+            />
+            <label className='text-danger error-msg'>{message ? message.data_publicacao : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col} lg={2}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Data Vencimento*</Form.Label>}
+            <Form.Control
+              placeholder={!hasLabel ? 'Data Vencimento' : ''}
+              value={formData.data_validade || ''}
+              name="data_validade"
+              onChange={handleFieldChange}
+              type="date"
+            />
+            <label className='text-danger error-msg'>{message ? message.data_validade : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col} lg={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Nº Processo INEMA*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Nº Processo INEMA' : ''}
@@ -142,10 +166,49 @@ const OutorgaForm = ({ hasLabel, type, submit}) => {
               onChange={handleFieldChange}
               type="text"
             />
-            <label className='text-danger'>{message ? message.numero_processo : ''}</label>
+            <label className='text-danger error-msg'>{message ? message.numero_processo : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col} lg={2}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Conduzido Frasson?*</Form.Label>}
+            <Form.Select
+              placeholder={!hasLabel ? 'Finalidade Outorga' : ''}
+              value={formData.processo_frasson || ''}
+              name="processo_frasson"
+              onChange={handleFieldChange}
+              type="select"
+            >
+              <option value={false}>Não</option>
+              <option value={true}>Sim</option>
+            </Form.Select>
+            <label className='text-danger error-msg'>{message ? message.processo_frasson : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col} lg={5}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Requerente*</Form.Label>}
+            <Form.Control
+              placeholder={!hasLabel ? 'Nome Requerente' : ''}
+              value={formData.nome_requerente || ''}
+              name="nome_requerente"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger error-msg'>{message ? message.nome_requerente : ''}</label>
           </Form.Group>
 
           <Form.Group className="mb-2" as={Col} lg={3}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ Requerente*</Form.Label>}
+            <Form.Control
+              placeholder={!hasLabel ? 'CPF/CNPJ Requerente' : ''}
+              value={formData.cpf_cnpj || ''}
+              name="cpf_cnpj"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger error-msg'>{message ? message.cpf_cnpj : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col} lg={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo de Captação*</Form.Label>}
             <Form.Select
               placeholder={!hasLabel ? 'Tipo de Captação' : ''}
@@ -159,58 +222,10 @@ const OutorgaForm = ({ hasLabel, type, submit}) => {
                 <option key={c.value} value={c.value}>{c.label}</option>
               )))}
             </Form.Select>
-            <label className='text-danger'>{message ? message.captacao : ''}</label>
+            <label className='text-danger error-msg'>{message ? message.captacao : ''}</label>
           </Form.Group>
 
-            <Form.Group className="mb-2" as={Col} lg={2}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Data Publicação*</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'Data Publicação' : ''}
-                value={formData.data_publicacao || ''}
-                name="data_publicacao"
-                onChange={handleFieldChange}
-                type="date"
-              />
-              <label className='text-danger'>{message ? message.data_publicacao : ''}</label>
-            </Form.Group>
-
-            <Form.Group className="mb-2" as={Col} lg={2}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Data Vencimento*</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'Data Vencimento' : ''}
-                value={formData.data_validade || ''}
-                name="data_validade"
-                onChange={handleFieldChange}
-                type="date"
-              />
-              <label className='text-danger'>{message ? message.data_validade : ''}</label>
-            </Form.Group>
-
-            <Form.Group className="mb-2" as={Col} lg={3}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ Requerente*</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'CPF/CNPJ Requerente' : ''}
-                value={formData.cpf_cnpj || ''}
-                name="cpf_cnpj"
-                onChange={handleFieldChange}
-                type="text"
-              />
-              <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
-            </Form.Group>
-            
-            <Form.Group className="mb-2" as={Col} lg={3}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Requerente*</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'Nome Requerente' : ''}
-                value={formData.nome_requerente || ''}
-                name="nome_requerente"
-                onChange={handleFieldChange}
-                type="text"
-              />
-              <label className='text-danger'>{message ? message.nome_requerente : ''}</label>
-            </Form.Group>
-
-            <Form.Group className="mb-2" as={Col} lg={3}>
+            <Form.Group className="mb-2" as={Col} lg={5}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Localidade*</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Localidade' : ''}
@@ -219,10 +234,11 @@ const OutorgaForm = ({ hasLabel, type, submit}) => {
                 onChange={handleFieldChange}
                 type="text"
               />
-              <label className='text-danger'>{message ? message.nome_propriedade : ''}</label>
+              <label className='text-danger error-msg'>{message ? message.nome_propriedade : ''}</label>
             </Form.Group>
+
             {defaultoptions && (
-              <Form.Group className="mb-2" as={Col} lg={3}>
+              <Form.Group className="mb-2" as={Col} lg={4}>
                 {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
                 <AsyncSelect loadOptions={fetchMunicipio} name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                   defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio : null) : null }
@@ -233,11 +249,23 @@ const OutorgaForm = ({ hasLabel, type, submit}) => {
                     }));
                   }}>
                 </AsyncSelect>
-                <label className='text-danger'>{message ? message.municipio : ''}</label>
+                <label className='text-danger error-msg'>{message ? message.municipio : ''}</label>
               </Form.Group>        
             )}
 
             <Form.Group className="mb-2" as={Col} lg={3}>
+              {hasLabel && <Form.Label className='fw-bold mb-1'>Área Outorgada (ha)</Form.Label>}
+              <Form.Control
+                placeholder={!hasLabel ? 'Bacia Hidrográfica' : ''}
+                value={formData.area_ha || ''}
+                name="area_ha"
+                onChange={handleFieldChange}
+                type="text"
+              />
+              <label className='text-danger error-msg'>{message ? message.area_ha : ''}</label>
+            </Form.Group>
+
+            <Form.Group className="mb-2" as={Col} lg={5}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Bacia Hidrográfica*</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Bacia Hidrográfica' : ''}
@@ -246,10 +274,11 @@ const OutorgaForm = ({ hasLabel, type, submit}) => {
                 onChange={handleFieldChange}
                 type="text"
               />
-              <label className='text-danger'>{message ? message.bacia_hidro : ''}</label>
+              <label className='text-danger error-msg'>{message ? message.bacia_hidro : ''}</label>
             </Form.Group>
+            
             {defaultoptions && (
-            <Form.Group className="mb-2" as={Col} lg={3}>
+            <Form.Group className="mb-2" as={Col} lg={4}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Finalidade Outorga*</Form.Label>}
               <AsyncSelect loadOptions={fetchFinalidade} name='finalidade' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                 defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.finalidade : null) : null }
@@ -260,49 +289,28 @@ const OutorgaForm = ({ hasLabel, type, submit}) => {
                   }));
                 }}>
               </AsyncSelect>
-              <label className='text-danger'>{message ? message.finalidade : ''}</label>
+              <label className='text-danger error-msg'>{message ? message.finalidade : ''}</label>
             </Form.Group>
             )}
-
-            <Form.Group className="mb-2" as={Col} lg={3}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Área (ha)</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'Bacia Hidrográfica' : ''}
-                value={formData.area_ha || ''}
-                name="area_ha"
-                onChange={handleFieldChange}
-                type="text"
-              />
-              <label className='text-danger'>{message ? message.area_ha : ''}</label>
-            </Form.Group>
-
-            <Form.Group className="mb-2" as={Col} lg={3}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Conduzido Frasson?*</Form.Label>}
-              <Form.Select
-                placeholder={!hasLabel ? 'Finalidade Outorga' : ''}
-                value={formData.processo_frasson || ''}
-                name="processo_frasson"
-                onChange={handleFieldChange}
-                type="select"
+        <Row>
+          <Form.Group className={`mb-2 pe-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' sm='auto' xs={12}>
+            <Button
+              className="w-40"
+              type="submit"
+              disabled={
+                  !formData.numero_portaria ||
+                  !formData.numero_processo
+                }
               >
-                <option value={false}>Não</option>
-                <option value={true}>Sim</option>
-              </Form.Select>
-              <label className='text-danger'>{message ? message.processo_frasson : ''}</label>
-            </Form.Group>
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-            disabled={
-                !formData.numero_portaria ||
-                !formData.numero_processo
-              }
-            >
-              {type === 'edit' ? "Atualizar Portaria"
-              : "Cadastrar Portaria"}
-          </Button>
-        </Form.Group>           
+                {type === 'edit' ? "Atualizar Portaria" : "Cadastrar Portaria"}
+            </Button>
+          </Form.Group>   
+          {type === 'edit' &&
+            <Form.Group className={`mb-0`} as={Col} xl='auto' sm='auto' xs={12}>
+              <Button onClick={addpoint} className='btn-success'>Adicionar Ponto</Button>
+            </Form.Group>   
+          }
+        </Row>
       </Form>
     </>
   );

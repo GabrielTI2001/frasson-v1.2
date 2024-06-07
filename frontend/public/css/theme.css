@@ -37,7 +37,7 @@
 .leaflet-safari .leaflet-tile-container {
 	width: 1600px;
 	height: 1600px;
-	-webkit-transform-origin: 0 0;
+	--webkit-transform-origin: 0 0;
 	}
 .leaflet-marker-icon,
 .leaflet-marker-shadow {
@@ -101,8 +101,8 @@
 	}
 /* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
 .leaflet-overlay-pane svg {
-	-moz-user-select: none;
-	}
+	--moz-user-select: none;
+}
 
 .leaflet-pane         { z-index: 400; }
 
@@ -662,7 +662,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 
 [data-simplebar]{position:relative;flex-direction:column;flex-wrap:wrap;justify-content:flex-start;align-content:flex-start;align-items:flex-start}.simplebar-wrapper{overflow:hidden;width:inherit;height:inherit;max-width:inherit;max-height:inherit}.simplebar-mask{direction:inherit;position:absolute;overflow:hidden;padding:0;margin:0;left:0;top:0;bottom:0;right:0;width:auto!important;height:auto!important;z-index:0}.simplebar-offset{direction:inherit!important;box-sizing:inherit!important;resize:none!important;position:absolute;top:0;left:0;bottom:0;right:0;padding:0;margin:0;-webkit-overflow-scrolling:touch}.simplebar-content-wrapper{direction:inherit;box-sizing:border-box!important;position:relative;display:block;height:100%;width:auto;max-width:100%;max-height:100%;overflow:auto;scrollbar-width:none;-ms-overflow-style:none}.simplebar-content-wrapper::-webkit-scrollbar,.simplebar-hide-scrollbar::-webkit-scrollbar{display:none;width:0;height:0}.simplebar-content:after,.simplebar-content:before{content:' ';display:table}.simplebar-placeholder{max-height:100%;max-width:100%;width:100%;pointer-events:none}.simplebar-height-auto-observer-wrapper{box-sizing:inherit!important;height:100%;width:100%;max-width:1px;position:relative;float:left;max-height:1px;overflow:hidden;z-index:-1;padding:0;margin:0;pointer-events:none;flex-grow:inherit;flex-shrink:0;flex-basis:0}.simplebar-height-auto-observer{box-sizing:inherit;display:block;opacity:0;position:absolute;top:0;left:0;height:1000%;width:1000%;min-height:1px;min-width:1px;overflow:hidden;pointer-events:none;z-index:-1}.simplebar-track{z-index:1;position:absolute;right:0;bottom:0;pointer-events:none;overflow:hidden}[data-simplebar].simplebar-dragging{pointer-events:none;-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}[data-simplebar].simplebar-dragging .simplebar-content{pointer-events:none;-webkit-touch-callout:none;-webkit-user-select:none;-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}[data-simplebar].simplebar-dragging .simplebar-track{pointer-events:all}.simplebar-scrollbar{position:absolute;left:0;right:0;min-height:10px}.simplebar-scrollbar:before{position:absolute;content:'';background:#000;border-radius:7px;left:2px;right:2px;opacity:0;transition:opacity .2s .5s linear}.simplebar-scrollbar.simplebar-visible:before{opacity:.5;transition-delay:0s;transition-duration:0s}.simplebar-track.simplebar-vertical{top:0;width:11px}.simplebar-scrollbar:before{top:2px;bottom:2px;left:2px;right:2px}.simplebar-track.simplebar-horizontal{left:0;height:11px}.simplebar-track.simplebar-horizontal .simplebar-scrollbar{right:auto;left:0;top:0;bottom:0;min-height:0;min-width:10px;width:auto}[data-simplebar-direction=rtl] .simplebar-track.simplebar-vertical{right:auto;left:0}.simplebar-dummy-scrollbar-size{direction:rtl;position:fixed;opacity:0;visibility:hidden;height:500px;width:500px;overflow-y:hidden;overflow-x:scroll;-ms-overflow-style:scrollbar!important}.simplebar-dummy-scrollbar-size>div{width:200%;height:200%;margin:10px 0}.simplebar-hide-scrollbar{position:fixed;left:0;visibility:hidden;overflow-y:scroll;scrollbar-width:none;-ms-overflow-style:none}
 
-@charset "UTF-8";
+/* @charset "UTF-8"; */
 /*                                 Theme                                      */
 /* -------------------------------------------------------------------------- */
 /* prettier-ignore */
@@ -748,8 +748,8 @@ svg.leaflet-image-layer.leaflet-interactive path {
   --falcon-body-font-size: 1rem;
   --falcon-body-font-weight: 400;
   --falcon-body-line-height: 1.5;
-  --falcon-body-color: #5e6e82;
-  --falcon-body-color-rgb: 94, 110, 130;
+  --falcon-body-color: rgb(14, 22, 56);
+  --falcon-body-color-rgb: 14, 22, 56;
   --falcon-body-bg: #edf2f9;
   --falcon-body-bg-rgb: 237, 242, 249;
   --falcon-emphasis-color: #000;
@@ -762,7 +762,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   --falcon-tertiary-color-rgb: 116, 129, 148;
   --falcon-tertiary-bg: #f9fafd;
   --falcon-tertiary-bg-rgb: 249, 250, 253;
-  --falcon-heading-color: var(--falcon-secondary-color);
+  --falcon-heading-color: var(--falcon-body-color);
   --falcon-link-color: #2c7be5;
   --falcon-link-color-rgb: 44, 123, 229;
   --falcon-link-decoration: none;
@@ -1077,7 +1077,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
 :root .table-secondary,
 [data-bs-theme=light] .table-secondary {
   --falcon-table-bg: #e3e6ea;
-  --falcon-table-color: #4d5969;
+  --falcon-table-color: var(--falcon-body-color);
   --falcon-table-hover-bg: #d8dbe0;
   --falcon-table-hover-color: #4d5969;
   --falcon-table-striped-bg: #dcdfe4;
@@ -1723,7 +1723,7 @@ button,
 [type=button],
 [type=reset],
 [type=submit] {
-  -webkit-appearance: button;
+  --webkit-appearance: button;
 }
 button:not(:disabled),
 [type=button]:not(:disabled),
@@ -1780,7 +1780,7 @@ legend + * {
 }
 
 [type=search] {
-  -webkit-appearance: textfield;
+  --webkit-appearance: textfield;
   outline-offset: -2px;
 }
 
@@ -1802,7 +1802,7 @@ legend + * {
 
 ::file-selector-button {
   font: inherit;
-  -webkit-appearance: button;
+  --webkit-appearance: button;
 }
 
 output {
@@ -3495,7 +3495,7 @@ progress {
   --falcon-table-bg-type: initial;
   --falcon-table-color-state: initial;
   --falcon-table-bg-state: initial;
-  --falcon-table-color: #5e6e82;
+  --falcon-table-color: var(--falcon-body-bg);
   --falcon-table-bg: transparent;
   --falcon-table-border-color: var(--falcon-body-bg);
   --falcon-table-accent-bg: transparent;
@@ -6134,7 +6134,7 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
   --falcon-card-spacer-y: 1.25rem;
   --falcon-card-spacer-x: 1.25rem;
   --falcon-card-title-spacer-y: 0.5rem;
-  --falcon-card-title-color: var(--falcon-secondary-color);
+  --falcon-card-title-color: var(--falcon-body-color);
   --falcon-card-subtitle-color: ;
   --falcon-card-border-width: 0px;
   --falcon-card-border-color: rgba(var(--falcon-emphasis-color-rgb), 0.125);
@@ -23196,7 +23196,7 @@ h5, .h5 {
 /*                                   Borders                                  */
 /* -------------------------------------------------------------------------- */
 .overflow-hidden[class*=rounded] {
-  -webkit-mask-image: radial-gradient(#fff, #000);
+  --webkit-mask-image: radial-gradient(#fff, #000);
 }
 
 .border-top-2 {
@@ -26178,7 +26178,7 @@ label {
 }
 
 .input-spin-none[type=number] {
-  -moz-appearance: textfield; /* Firefox */
+  --moz-appearance: textfield; /* Firefox */
 }
 
 /*-----------------------------------------------
@@ -26566,7 +26566,7 @@ option:disabled {
 .nav-tabs .nav-link {
   margin-bottom: -var(--falcon-border-width);
   border: var(--falcon-border-color);
-  color: var(--falcon-gray-800);
+  color: var(--falcon-body-color);
   font-weight: 700;
   font-size: 0.875rem;
   border-top-left-radius: var(--falcon-border-radius);

@@ -157,7 +157,7 @@ const IndexAlongamentos = () => {
                 <CloseButton onClick={() => setModalForm({show:false})}/>
             </Modal.Header>
             <Modal.Body>
-                <div className="w-100">
+                <div className="">
                     <Edit id={modalform.id} update={update}/>
                 </div>
             </Modal.Body>

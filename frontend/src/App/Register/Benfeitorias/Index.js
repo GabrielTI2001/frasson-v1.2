@@ -125,17 +125,17 @@ const IndexBenfeitorias = () => {
             size="xl"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-10"
+            dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Benfeitorias
+                    Adicionar Benfeitoria
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
-                    <Row className="flex-center w-100 sectionform">
+                    <Row className="flex-center sectionform">
                         <BenfeitoriaForm hasLabel type='add' submit={submit}/>
                     </Row>
             </Modal.Body>

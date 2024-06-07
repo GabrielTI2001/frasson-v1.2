@@ -115,7 +115,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={4}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data Coleta</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data Coleta' : ''}
@@ -127,7 +127,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.data_coleta : ''}</label>
         </Form.Group>
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} xl={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
             <AsyncSelect loadOptions={FetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.fazenda : null) : null }
@@ -143,7 +143,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         )}
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} xl={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Cliente*</Form.Label>}
             <AsyncSelect loadOptions={fetchPessoal} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.cliente : null) : null }
