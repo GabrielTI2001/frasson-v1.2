@@ -66,7 +66,7 @@ export const GetRecord = async (uuid, url) => {
         localStorage.setItem('token', "");
         return null;
     }
-    else if (response.status === 404){
+    else{
         return {};
     }
   } catch (error){
@@ -98,6 +98,9 @@ export const SelectSearchOptions = async (inputValue, link, field, field2) => {
         localStorage.setItem('token', "");
         return 401;
       }
+      else{
+        return [];
+      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
       return [];
@@ -127,6 +130,9 @@ export const SelectOptions = async (link, field, field2, pkfield) => {
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
         return 401;
+      }
+      else{
+        return [];
       }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);

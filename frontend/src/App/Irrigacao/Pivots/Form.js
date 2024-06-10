@@ -161,7 +161,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Identificação Pivot*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Identificação Pivot' : ''}
@@ -174,7 +174,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fabricante Pivot*</Form.Label>}
             <AsyncSelect 
               loadOptions={(value) => SelectSearchOptions(value, 'irrigation/fabricantes-pivots', 'nome_fabricante')} 
@@ -202,6 +202,36 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
             type="number"
           />
           <label className='text-danger'>{message ? message.area_circular_ha : ''}</label>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Latitude (GD)*</Form.Label>}
+          <Form.Control
+            placeholder={!hasLabel ? 'Latitude (GD)' : ''}
+            value={formData.lat_center_gd || ''}
+            name="lat_center_gd"
+            onChange={handleFieldChange}
+            type="number"
+          />
+          <label className='text-danger'>{message ? message.lat_center_gd : ''}</label>
+        </Form.Group>
+        <Form.Group className="mb-2 d-flex align-items-start p-3" as={Col} xl={1}>
+          <Button onClick={() => {setShowModal({show:true, type: 'latitude'})}} className='mt-2'>GMS</Button>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Longitude (GD)*</Form.Label>}
+          <Form.Control
+            placeholder={!hasLabel ? 'Longitude (GD)' : ''}
+            value={formData.long_center_gd || ''}
+            name="long_center_gd"
+            onChange={handleFieldChange}
+            type="number"
+          />
+          <label className='text-danger'>{message ? message.long_center_gd : ''}</label>
+        </Form.Group>
+        <Form.Group className="mb-2 d-flex align-items-start pt-3" as={Col} xl={1}>
+          <Button onClick={() => {setShowModal({show:true, type: 'longitude'})}} className='mt-2'>GMS</Button>
         </Form.Group>
 
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
@@ -240,36 +270,6 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.comprimento_adutora_m : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Latitude (GD)*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Latitude (GD)' : ''}
-            value={formData.lat_center_gd || ''}
-            name="lat_center_gd"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.lat_center_gd : ''}</label>
-        </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-start p-3" as={Col} xl={1}>
-          <Button onClick={() => {setShowModal({show:true, type: 'latitude'})}} className='mt-2'>GMS</Button>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Longitude (GD)*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Longitude (GD)' : ''}
-            value={formData.long_center_gd || ''}
-            name="long_center_gd"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.long_center_gd : ''}</label>
-        </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-start pt-3" as={Col} xl={1}>
-          <Button onClick={() => {setShowModal({show:true, type: 'longitude'})}} className='mt-2'>GMS</Button>
-        </Form.Group>
-
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Diâmetro Adutora (mm)</Form.Label>}
           <Form.Control
@@ -283,7 +283,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fabricante Bomba*</Form.Label>}
             <AsyncSelect 
               loadOptions={(value) => SelectSearchOptions(value, 'irrigation/fabricantes-bombas', 'nome_fabricante')} 

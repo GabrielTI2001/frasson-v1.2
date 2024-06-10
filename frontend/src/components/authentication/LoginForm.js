@@ -71,6 +71,7 @@ const LoginForm = ({ hasLabel, layout }) => {
       <Form.Group className="mb-3">
         {hasLabel && <Form.Label>Email address</Form.Label>}
         <Form.Control
+          className='fs--1'
           placeholder={!hasLabel ? 'Email address' : ''}
           value={formData.email}
           name="email"
@@ -82,6 +83,7 @@ const LoginForm = ({ hasLabel, layout }) => {
       <Form.Group className="mb-3">
         {hasLabel && <Form.Label>Password</Form.Label>}
         <Form.Control
+          className='fs--1'
           placeholder={!hasLabel ? 'Password' : ''}
           value={formData.password}
           name="password"
@@ -106,7 +108,7 @@ const LoginForm = ({ hasLabel, layout }) => {
         <Button
           type="submit"
           color="primary"
-          className="mt-3 w-100"
+          className="mt-3 w-100 fs--1"
           disabled={!formData.email || !formData.password}
         >
           Log in

@@ -124,7 +124,7 @@ const IndexASV = () => {
             size="xl"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-10"
+            dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>

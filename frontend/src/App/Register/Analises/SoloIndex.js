@@ -142,7 +142,7 @@ const IndexAnaliseSolo = () => {
             size="xl"
             show={showmodal.show}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-5"
+            dialogClassName="mt-2"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>

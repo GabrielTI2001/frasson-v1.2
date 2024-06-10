@@ -158,7 +158,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} lg={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Identificação Amostra*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Identificação Amostra' : ''}
@@ -170,7 +170,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.identificacao_amostra : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Latitude (GD)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Latitude (GD)' : ''}
@@ -181,11 +181,11 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.latitude_gd : ''}</label>
         </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-center" as={Col} lg={'auto'} xxl={'auto'}>
+        <Form.Group className="mb-2 d-flex align-items-center" as={Col} sm={'auto'} xl={'auto'}>
           <Button onClick={() => {setShowModal({show:true, type: 'latitude'})}}>GMS</Button>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Longitude (GD)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Longitude (GD)' : ''}
@@ -196,11 +196,11 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.longitude_gd : ''}</label>
         </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-center" as={Col} lg={'auto'} xxl={'auto'}>
+        <Form.Group className="mb-2 d-flex align-items-center" as={Col} sm={'auto'} xl={'auto'}>
           <Button onClick={() => {setShowModal({show:true, type: 'longitude'})}}>GMS</Button>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Profundidade (cm)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Profundidade (cm)' : ''}
@@ -212,7 +212,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.profundidade : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={4}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Número da Amostra</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Número da Amostra' : ''}
@@ -224,7 +224,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.numero_controle : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={5}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Responsável pela Coleta*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Responsável pela Coleta' : ''}
@@ -236,7 +236,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.responsavel : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={5}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Laboratório de Análise*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Laboratório de Análise' : ''}
@@ -248,7 +248,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.laboratorio_analise : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} xl={4}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo PDF</Form.Label>}
           <Form.Control
             name="file"
@@ -259,7 +259,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {type === 'edit' && data && data.file && 
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Arquivo Atual</Form.Label>
             <Col>
               <Link to={`${data.file}`} target="__blank" className="btn btn-info py-0 px-2 ms-0 w-50">
@@ -272,7 +272,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         <hr className='ms-3'></hr>
         <h4 style={{fontSize:'14px'}} className='fw-700'>Resultados</h4>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Ca<sup>2+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -292,7 +292,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.calcio_cmolc_dm3 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Mg<sup>2+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -312,7 +312,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.magnesio_cmolc_dm3 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>K<sup>2+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -332,7 +332,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.potassio_cmolc_dm3 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>P (mg/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -352,7 +352,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.fosforo : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>P-rem. (mg/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -373,7 +373,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.fosforo_rem : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Al<sup>3+</sup> (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -393,7 +393,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.aluminio_cmolc_dm3 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>S (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -413,7 +413,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.enxofre : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Zn (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -433,7 +433,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.zinco : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fe (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -453,7 +453,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.ferro : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Cu (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -473,7 +473,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.cobre : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Mn (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -493,7 +493,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.manganes : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>B (cmolc/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -513,7 +513,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.boro : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>H+Al
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -533,7 +533,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.h_mais_al : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={4} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Matéria Orgânica (dag/dm<sup>3</sup>)
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -553,7 +553,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.mat_org_dag_dm3 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>pH H<sub>2</sub>O
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -573,7 +573,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.ph_h2O : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>pH CaCl<sub>2</sub>
             <OverlayTrigger overlay={
               <Tooltip id="overlay-trigger-example">
@@ -593,7 +593,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.ph_cacl2 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Argila (%)</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Argila' : ''}
@@ -605,7 +605,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.argila_percentual : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Silte (%)</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Silte' : ''}
@@ -617,7 +617,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.silte_percentual : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2} xxl={2}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Areia (%)</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Areia' : ''}

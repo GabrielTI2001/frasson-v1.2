@@ -118,7 +118,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.numero_poco)}</label>
           </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Latitude (GD)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'latitude (GD)' : ''}
@@ -133,7 +133,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
           <Button onClick={() => {setShowModal({show:true, type: 'latitude'});}}>GMS</Button>
         </Form.Group>
         
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Longitude (GD)*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Longitude (GD)' : ''}
@@ -162,7 +162,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
 
         {defaultoptions && (
             <Form.Group className="mb-2" as={Col} lg={3}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Finalidade Outorga*</Form.Label>}
+              {hasLabel && <Form.Label className='fw-bold mb-1'>Finalidade APPO*</Form.Label>}
               <AsyncSelect loadOptions={fetchFinalidade} name='finalidade' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                 defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.finalidade : null) : null }
                 onChange={(selected) => {

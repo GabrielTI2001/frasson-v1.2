@@ -100,12 +100,12 @@ const IndexProdPecuaria= () => {
             size="xl"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName={showmodal.data ? 'mt-1' : 'mt-6'}
+            dialogClassName={showmodal.data ? 'mt-1 ps-0' : 'mt-7'}
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Produção Agrícola
+                    Adicionar Produção Pecuária
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>

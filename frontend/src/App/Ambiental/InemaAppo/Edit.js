@@ -191,7 +191,7 @@ export const Edit = () => {
                 size="xl"
                 show={modal.show && (modal.content.type === 'edit' || modal.content.type === 'add')}
                 onHide={() => ambientalDispatch({type:'TOGGLE_MODAL'})}
-                dialogClassName="mt-10"
+                dialogClassName="mt-7"
                 aria-labelledby="example-modal-sizes-title-lg"
             >
                 <Modal.Header>

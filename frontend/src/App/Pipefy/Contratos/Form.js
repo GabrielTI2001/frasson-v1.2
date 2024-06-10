@@ -91,7 +91,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
 
     return (
     <Form onSubmit={handleSubmit} className='row'>
-        <Form.Group className="mb-2" as={Col} xl={3}>
+        <Form.Group className="mb-2" as={Col} xl={4}>
             <Form.Label className='fw-bold mb-1'>Etapa Pagamento*</Form.Label>
             <Form.Select
               value={formData.etapa || ''}

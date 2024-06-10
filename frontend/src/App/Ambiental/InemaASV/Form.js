@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
+import { Button, Form, Col, Row} from 'react-bootstrap';
 import { fetchEmpresa, fetchMunicipio} from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { AmbientalContext } from '../../../context/Context';
@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 
-const ASVForm = ({ hasLabel, type}) => {
+const ASVForm = ({ hasLabel, type, addarea}) => {
   const {config: {theme}} = useAppContext();
   // const user = JSON.parse(localStorage.getItem('user'))
   const {ambientalState, ambientalDispatch} = useContext(AmbientalContext)
@@ -118,7 +118,7 @@ const ASVForm = ({ hasLabel, type}) => {
     <>
       <Form onSubmit={handleSubmit} className='row'>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Portaria*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Portaria*' : ''}
@@ -130,7 +130,7 @@ const ASVForm = ({ hasLabel, type}) => {
           <label className='text-danger'>{message ? message.portaria : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Nº Processo INEMA*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Nº Processo INEMA' : ''}
@@ -142,7 +142,7 @@ const ASVForm = ({ hasLabel, type}) => {
             <label className='text-danger'>{message ? message.processo : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Requerente*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Nome Requerente' : ''}
@@ -154,19 +154,19 @@ const ASVForm = ({ hasLabel, type}) => {
           <label className='text-danger'>{message ? message.requerente : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ Requerente*</Form.Label>}
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Área Total (ha)*</Form.Label>}
           <Form.Control
-            placeholder={!hasLabel ? 'CPF/CNPJ Requerente' : ''}
-            value={formData.cpf_cnpj || ''}
-            name="cpf_cnpj"
+            placeholder={!hasLabel ? 'Área' : ''}
+            value={formData.area_total || ''}
+            name="area_total"
             onChange={handleFieldChange}
-            type="text"
+            type="number"
           />
-          <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
+          <label className='text-danger'>{message ? message.area_total : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Data Formação</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Data Publicação' : ''}
@@ -178,7 +178,7 @@ const ASVForm = ({ hasLabel, type}) => {
               <label className='text-danger'>{message ? message.data_formacao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Data Publicação*</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Data Publicação' : ''}
@@ -190,7 +190,7 @@ const ASVForm = ({ hasLabel, type}) => {
               <label className='text-danger'>{message ? message.data_publicacao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Data Vencimento</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Data Vencimento' : ''}
@@ -202,7 +202,20 @@ const ASVForm = ({ hasLabel, type}) => {
               <label className='text-danger'>{message ? message.data_vencimento : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ Requerente*</Form.Label>}
+          <Form.Control
+            placeholder={!hasLabel ? 'CPF/CNPJ Requerente' : ''}
+            value={formData.cpf_cnpj || ''}
+            name="cpf_cnpj"
+            onChange={handleFieldChange}
+            type="text"
+          />
+          <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
+        </Form.Group>
+
+
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Localidade*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Localidade' : ''}
@@ -215,7 +228,7 @@ const ASVForm = ({ hasLabel, type}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
                 {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
                 <AsyncSelect loadOptions={fetchMunicipio} name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                   defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio : null) : null }
@@ -231,7 +244,7 @@ const ASVForm = ({ hasLabel, type}) => {
         )}
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
                 {hasLabel && <Form.Label className='fw-bold mb-1'>Empresa Consultoria</Form.Label>}
                 <AsyncSelect loadOptions={fetchEmpresa} name='empresa' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                   defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.empresa : null) : null }
@@ -246,7 +259,7 @@ const ASVForm = ({ hasLabel, type}) => {
             </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Nome do Técnico</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Nome do Técnico' : ''}
@@ -258,19 +271,7 @@ const ASVForm = ({ hasLabel, type}) => {
           <label className='text-danger'>{message ? message.tecnico : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Área Total (ha)*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Área' : ''}
-            value={formData.area_total || ''}
-            name="area_total"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.area_total : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Rendimento Lenhoso (m<sup>3</sup>)</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Rendimento' : ''}
@@ -283,7 +284,7 @@ const ASVForm = ({ hasLabel, type}) => {
         </Form.Group>
 
         {ambientalState && ambientalState.asv.file &&
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo PDF</Form.Label>}<br></br>
           <div className='mt-2'>     
             <Link to={`${ambientalState.asv.file}`} target="__blank" className="px-0 fw-bold text-danger">
@@ -292,7 +293,7 @@ const ASVForm = ({ hasLabel, type}) => {
           </div>
         </Form.Group>} 
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Substituir ou inserir arquivo PDF</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Arquivo PDF' : ''}
@@ -302,16 +303,27 @@ const ASVForm = ({ hasLabel, type}) => {
           />
           <label className='text-danger'>{message ? message.file : ''}</label>
         </Form.Group>
-
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-          >
-              {type === 'edit' ? "Atualizar Portaria"
-              : "Cadastrar Portaria"}
-          </Button>
-        </Form.Group>           
+        <Row> 
+          <Form.Group className={`mb-0 col-auto ${type === 'edit' ? 'text-start' : 'text-end'}`}>
+            <Button
+              className="w-40"
+              type="submit"
+            >
+                {type === 'edit' ? "Atualizar Portaria"
+                : "Cadastrar Portaria"}
+            </Button>
+          </Form.Group> 
+          {type === 'edit' &&    
+            <Form.Group className={`mb-0 ps-0 col-auto ${type === 'edit' ? 'text-start' : 'text-end'}`}>
+              <Button
+                className="w-40 btn-success"
+                onClick={() => addarea(null, 'add')}
+              >
+                Adicionar Área
+              </Button>
+            </Form.Group>
+          } 
+        </Row>     
       </Form>
     </>
   );

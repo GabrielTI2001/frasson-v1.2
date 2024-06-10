@@ -157,7 +157,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit}) => {
       <Form onSubmit={handleSubmit} className='row sectionform'>
         
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={2} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Cultura Agrícola*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'glebas/culturas', 'cultura')} name='cultura' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.cultura : '') : '' }
@@ -171,7 +171,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit}) => {
           </Form.Group>
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={2} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Variedade Cultura*</Form.Label>}
           <Form.Control
             value={formData.variedade || ''}
@@ -182,7 +182,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.variedade : ''}</label>
         </Form.Group>
         
-        <Form.Group className="mb-2" as={Col} xl={2} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Safra*</Form.Label>}
           <Form.Select
             value={formData.safra || ''}
@@ -199,10 +199,10 @@ const FormProdAgricola = ({ hasLabel, data, type, submit}) => {
 
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1 d-block'>Meses Plantio*</Form.Label>}
-          <Row className='ms-1 gx-1 d-flex justify-content-start'>
+          <Row className='gx-1 d-flex justify-content-start'>
             {meses.map(mes =>
                 <Form.Check 
-                    className="col me-1 mb-0 cursor-pointer"
+                    className="col-auto me-1 mb-0 cursor-pointer d-flex"
                     key={mes.name}
                     name='plantio'
                     label={mes.name}
@@ -218,10 +218,10 @@ const FormProdAgricola = ({ hasLabel, data, type, submit}) => {
 
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1 d-block'>Meses Colheita*</Form.Label>}
-          <Row className='ms-1 gx-1'>
+          <Row className='gx-1 d-flex justify-content-start'>
             {meses.map(mes =>
                 <Form.Check 
-                    className="col me-1 mb-0 cursor-pointer"
+                    className="col-auto me-1 mb-0 cursor-pointer d-flex"
                     key={mes.name}
                     name='colheita'
                     label={mes.name}
@@ -268,7 +268,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.descricao : ''}</label>
         </Form.Group>
 
-        <Form.Group className={`mb-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' xs='auto' sm='auto'> 
+        <Form.Group className={`mb-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='12' xs='auto' sm='auto'> 
           <Button className="w-40" type="submit">
             {type === 'edit' ? "Atualizar Produção" : "Cadastrar Produção"}
           </Button>

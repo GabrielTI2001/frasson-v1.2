@@ -126,7 +126,7 @@ const IndexAutomPagamentos = () => {
             size="xl"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-10"
+            dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>

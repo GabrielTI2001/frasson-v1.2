@@ -143,7 +143,7 @@ const ViewProspect = () => {
         size="xl"
         show={modalform.show}
         onHide={() => setModalform({show:false})}
-        dialogClassName="mt-10"
+        dialogClassName="mt-7"
         aria-labelledby="example-modal-sizes-title-lg"
     >
         <Modal.Header>

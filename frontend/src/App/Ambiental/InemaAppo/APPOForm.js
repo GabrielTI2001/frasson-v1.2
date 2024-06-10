@@ -133,7 +133,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
     <>
       <Form onSubmit={handleSubmit} className='row'>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Requerente*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Nome Requerente' : ''}
@@ -145,7 +145,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           <label className='text-danger'>{message ? message.nome_requerente : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ Requerente*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'CPF/CNPJ Requerente' : ''}
@@ -157,7 +157,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Nº Processo INEMA*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Nº Processo INEMA' : ''}
@@ -170,7 +170,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={3}>
+          <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
             <AsyncSelect loadOptions={fetchMunicipio} name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio : null) : null }
@@ -185,7 +185,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Localidade*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Localidade' : ''}
@@ -197,7 +197,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           <label className='text-danger'>{message ? message.nome_fazenda : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2}>
+        <Form.Group className="mb-2" as={Col} lg={4}sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Aquífero*</Form.Label>}
           <Form.Select
             placeholder={!hasLabel ? 'Tipo Aquífero' : ''}
@@ -214,7 +214,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           <label className='text-danger'>{message ? message.aquifero : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data Publicação*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data Publicação' : ''}
@@ -226,7 +226,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           <label className='text-danger'>{message ? message.data_documento : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data Vencimento*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data Vencimento' : ''}
@@ -238,7 +238,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           <label className='text-danger'>{message ? message.data_vencimento : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Conduzido Frasson?*</Form.Label>}
           <Form.Select
             placeholder={!hasLabel ? 'Conduzido Frasson?' : ''}
@@ -253,7 +253,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           <label className='text-danger'>{message ? message.processo_frasson : ''}</label>
         </Form.Group>
         {ambientalState && ambientalState.appo.file &&
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo PDF</Form.Label>}<br></br>
           <div className='mt-2'>     
             <Link to={`${ambientalState.appo.file}`} target="__blank" className="px-0 fw-bold text-danger">
@@ -262,7 +262,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
           </div>
         </Form.Group>} 
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Substituir ou inserir arquivo PDF</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Arquivo PDF' : ''}

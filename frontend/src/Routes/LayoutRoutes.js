@@ -246,6 +246,9 @@ const LayoutRoutes = () => {
           <Route path="" element={<IndexLicenses />}/>
           <Route path=":uuid" element={<ViewLicenca />}/>
         </Route>
+        <Route path="/litec">
+          <Route path="glebas" element={<IndexGlebas />}/>
+        </Route>
         <Route path="/pipefy">
           <Route path="pessoal" element={<IndexPessoal />}/>
           <Route path="pessoal/:uuid" element={<ViewPessoal />}/>

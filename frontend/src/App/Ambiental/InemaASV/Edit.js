@@ -134,12 +134,7 @@ const EditASV = () => {
             {/* FORMULÁRIO DE ASV */}
             {asv && (
             <>
-                <ASVForm hasLabel type={'edit'} data={asv} />
-                <hr></hr>
-                {/* BOTÃO ADD ÁREA */}
-                <Row className="text-end">
-                    <Col><Button onClick={()=> onClickPoint(null, 'add')}>Adicionar Área</Button></Col>
-                </Row>
+                <ASVForm hasLabel type={'edit'} data={asv} addarea={onClickPoint}/>
             </>
             )}
             <hr></hr>
@@ -191,7 +186,7 @@ const EditASV = () => {
                 size="xl"
                 show={modal.show && (modal.content.type === 'edit' || modal.content.type === 'add')}
                 onHide={() => ambientalDispatch({type:'TOGGLE_MODAL'})}
-                dialogClassName="mt-10"
+                dialogClassName="mt-7"
                 aria-labelledby="example-modal-sizes-title-lg"
             >
                 <Modal.Header>

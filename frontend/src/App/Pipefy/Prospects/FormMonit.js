@@ -54,7 +54,7 @@ const FormMonitoramento = ({data, submit}) => {
 
     return (
     <Form onSubmit={handleSubmit}>
-        <Form.Group as={Col} xl={10} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>Data Vencimento*</Form.Label>
             <Form.Control type='date' value={formData.data_vencimento || ''} 
                 onChange={handleFieldChange}
@@ -62,7 +62,7 @@ const FormMonitoramento = ({data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_vencimento : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={10} className='mb-3'>
+        <Form.Group as={Col} xl={12} className='mb-3'>
             <Form.Label className='mb-0'>Descrição*</Form.Label>
             <Form.Control as='textarea' value={formData.description || ''} 
                 onChange={handleFieldChange}
@@ -70,7 +70,7 @@ const FormMonitoramento = ({data, submit}) => {
             />
             <label className='text-danger'>{message ? message.description : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={10}>
+        <Form.Group as={Col} xl={12}>
             <Button type='submit'>Registrar</Button>
         </Form.Group>
     </Form>

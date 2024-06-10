@@ -81,9 +81,6 @@ const IndexGlebas = () => {
     return (
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
             </li>  
@@ -139,7 +136,7 @@ const IndexGlebas = () => {
             size="xl"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-10"
+            dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>

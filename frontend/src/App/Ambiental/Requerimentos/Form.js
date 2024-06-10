@@ -146,11 +146,11 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.file : ''}</label>
         </Form.Group>}
-        <Form.Group className={`d-flex align-items-center`} as={Col} lg={3}>
+        <Form.Group className={`d-flex align-items-center mb-1`} as={Col} lg={3}>
           <Button
             className="w-40"
             type="submit"
-            style={{marginTop: '0px'}}
+            style={{marginTop: '8px'}}
           >
               Extrair Informações
           </Button>
@@ -158,11 +158,9 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
         <div>Selecione o PDF do requerimento de APPO e clique no botão para extrair as informações...</div>
       </Form>
       <hr className='mb-2 mt-1'></hr>
-      <Row xl={2} sm={2} style={{height: '66vh'}} className='gy-1 d-flex align-items-start'>
-
-        <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
-
-          <Form.Group className="mb-1" as={Col} xl={6} xxl={2}>
+      <Row xl={2} lg={2} className='px-0 align-items-start'>
+        <Form onSubmit={handleSubmit} className='row d-flex align-items-start mb-2 px-0 mx-auto' encType='multipart/form-data'>
+          <Form.Group className="mb-1" as={Col} xl={6} xxl={2} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Data Requerimento*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Data Requerimento' : ''}
@@ -174,7 +172,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             <label className='text-danger'>{message ? message.data_requerimento : ''}</label>
           </Form.Group>
           
-          <Form.Group className="mb-1" as={Col} xl={6} xxl={2}>
+          <Form.Group className="mb-1" as={Col} xl={6} xxl={2} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>N° Requerimento*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'N° Requerimento' : ''}
@@ -186,7 +184,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             <label className='text-danger'>{message ? message.numero_requerimento : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-1" as={Col} xl={6} xxl={2}>
+          <Form.Group className="mb-1" as={Col} xl={6} xxl={2} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'CPF/CNPJ' : ''}
@@ -198,7 +196,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
           </Form.Group>
           
-          <Form.Group className="mb-1" as={Col} xl={6} xxl={2}>
+          <Form.Group className="mb-1" as={Col} xl={6} xxl={2} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Requerente*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Requerente' : ''}
@@ -211,7 +209,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>
 
           {defaultoptions && (
-            <Form.Group className="mb-2" as={Col} xl={6}>
+            <Form.Group className="mb-2" as={Col} xl={6} sm={6}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Município localização*</Form.Label>}
               <AsyncSelect loadOptions={fetchMunicipio} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                 defaultValue={defaultoptions.municipio || ''}
@@ -228,7 +226,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             </Form.Group>        
           )}
 
-          <Form.Group className="mb-1" as={Col} xl={6} xxl={2}>
+          <Form.Group className="mb-1" as={Col} xl={6} xxl={2} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Email*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Email' : ''}
@@ -240,7 +238,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             <label className='text-danger'>{message ? message.email : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-1" as={Col} xl={6} xxl={2}>
+          <Form.Group className="mb-1" as={Col} xl={6} xxl={2} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Data Formação*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Data Formação' : ''}
@@ -252,7 +250,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             <label className='text-danger'>{message ? message.data_formacao : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-1" as={Col} xl={6} xxl={2}>
+          <Form.Group className="mb-1" as={Col} xl={6} xxl={2} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>N° Processo INEMA*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'N° Processo INEMA' : ''}
@@ -264,7 +262,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             <label className='text-danger'>{message ? message.numero_processo : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={6}>
+          <Form.Group className="mb-2" as={Col} lg={6} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Conduzido Frasson?*</Form.Label>}
             <Form.Select
               placeholder={!hasLabel ? 'Finalidade Outorga' : ''}
@@ -279,7 +277,7 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             <label className='text-danger'>{message ? message.processo_frasson : ''}</label>
           </Form.Group>
 
-          <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
+          <Form.Group className={`mb-1 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
             <Button
               className="w-40"
               type="submit"
@@ -289,19 +287,20 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
             </Button>
           </Form.Group>           
         </Form>
-        {tokenmaps && <GoogleMap
-          initialCenter={{
-            lat: -13.7910,
-            lng: -45.6814
-          }}
-          mapStyle="Default"
-          className="rounded-soft mt-0 google-maps-s container-map-s"
-          token_api={tokenmaps}
-          mapTypeId='satellite'
-          coordenadas={coordenadas}
-        >
-            {/* < MapInfoDetail type={type}/> */}
-        </GoogleMap>}
+        {tokenmaps && 
+          <GoogleMap
+            initialCenter={{
+              lat: -13.7910,
+              lng: -45.6814
+            }}
+            mapStyle="Default"
+            className="rounded-soft mt-0 google-maps-l"
+            token_api={tokenmaps}
+            mapTypeId='satellite'
+            coordenadas={coordenadas}
+          >
+          </GoogleMap>
+        }
       </Row>
     </>
   );

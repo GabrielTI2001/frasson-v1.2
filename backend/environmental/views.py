@@ -249,8 +249,8 @@ class RequerimentoAPPOView(viewsets.ModelViewSet):
             )
         else:
             if self.action == 'list':
-                queryset = queryset.order_by('-created_at')[:10]
-        return queryset  
+                queryset = queryset.order_by('-created_at')
+        return queryset.exclude(numero_processo__in=Subquery(Processos_APPO.objects.values('numero_processo')))
     def get_serializer_class(self):
         if self.action == 'list':
             return listRequerimentosAPPO

@@ -62,7 +62,7 @@ const FormProcesso = ({type, data, submit}) => {
 
     return (
     <Form onSubmit={handleSubmit} className='row'>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>Data Requerimento*</Form.Label>
             <Form.Control type='date' value={formData.data_requerimento || ''} 
                 onChange={handleFieldChange}
@@ -70,7 +70,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_requerimento : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>N° Requerimento*</Form.Label>
             <Form.Control type='text' value={formData.requerimento || ''} 
                 onChange={handleFieldChange}
@@ -78,7 +78,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.requerimento : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>Data Enquadramento</Form.Label>
             <Form.Control type='date' value={formData.data_enquadramento || ''} 
                 onChange={handleFieldChange}
@@ -86,7 +86,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_enquadramento : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>Data Validação</Form.Label>
             <Form.Control type='date' value={formData.data_validacao || ''} 
                 onChange={handleFieldChange}
@@ -94,7 +94,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_validacao : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>Valor Boleto (R$)</Form.Label>
             <Form.Control type='number' value={formData.valor_boleto || ''} 
                 onChange={handleFieldChange}
@@ -102,7 +102,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.valor_boleto : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>Vencimento Boleto</Form.Label>
             <Form.Control type='date' value={formData.vencimento_boleto || ''} 
                 onChange={handleFieldChange}
@@ -110,7 +110,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.vencimento_boleto : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>Data Formação</Form.Label>
             <Form.Control type='date' value={formData.data_formacao || ''} 
                 onChange={handleFieldChange}
@@ -118,7 +118,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_formacao : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>N° Processo</Form.Label>
             <Form.Control type='text' value={formData.numero_processo || ''} 
                 onChange={handleFieldChange}
@@ -126,7 +126,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.numero_processo : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0'>N° Processo SEI</Form.Label>
             <Form.Control type='text' value={formData.processo_sei || ''} 
                 onChange={handleFieldChange}

@@ -47,7 +47,7 @@ const ViewPivot = () => {
     <>
         <ol className="breadcrumb breadcrumb-alt mb-2">
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/irrigation/pivots'}>Processos ASV</Link>
+                <Link className="link-fx text-primary" to={'/irrigation/pivots'}>Pivots</Link>
             </li>
             {registro && (
                <li className="breadcrumb-item fw-bold" aria-current="page">
@@ -200,7 +200,7 @@ const ViewPivot = () => {
         size="xl"
         show={modal.show && modal.type === 'edit'}
         onHide={() => setModal({show:false})}
-        dialogClassName="mt-10"
+        dialogClassName="mt-7"
         aria-labelledby="example-modal-sizes-title-lg"
     >
         <Modal.Header>

@@ -116,7 +116,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
     <>
       <Form onSubmit={handleSubmit} className='row sectionform'> 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Sistema de Produção*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'litec/sistema-producao', 'description')} name='sistema_producao' 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
@@ -132,7 +132,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
         )}
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Unidade de Produção*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'litec/unidade-producao', 'description')} name='unidade_producao' 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
@@ -148,7 +148,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
         )}
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Produto Principal*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'litec/produto-principal', 'description')} name='produto_principal' 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
@@ -163,7 +163,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
           </Form.Group>
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Ano*</Form.Label>}
           <Form.Select
             value={formData.ano || ''}
@@ -178,7 +178,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.ano : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo de Produção*</Form.Label>}
           <Form.Select
             value={formData.tipo_producao || ''}
@@ -191,7 +191,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.tipo_producao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Quantidade (Unid. Prod)*</Form.Label>}
           <Form.Control
             value={formData.quantidade || ''}
@@ -224,7 +224,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.observacoes : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={6} sm={12}>
+        <Form.Group className="mb-2" as={Col} xl={4} sm={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo PDF</Form.Label>}
           <Form.Control
             name="file"
@@ -234,7 +234,7 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.file : ''}</label>
         </Form.Group>
 
-        <Form.Group className={`mb-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' xs='auto' sm='auto'>
+        <Form.Group className={`mb-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='12' xs='auto' sm='auto'>
           <Button className="w-40" type="submit">
             {type === 'edit' ? "Atualizar Produção" : "Cadastrar Produção"}
           </Button>

@@ -104,7 +104,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={4}>
+          <Form.Group className="mb-2" as={Col} xl={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Cliente*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'pipefy/pessoal', 'razao_social')} name='cliente' 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
@@ -120,7 +120,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
         
-        <Form.Group className="mb-2" as={Col} lg={4} xl={4}>
+        <Form.Group className="mb-2" as={Col} xl={4}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Identificação Gleba*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? '' : ''}
@@ -133,24 +133,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={4}>
-            {hasLabel && <Form.Label className='fw-bold mb-1'>Fazendas*</Form.Label>}
-            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'analytics/farms', 'nome_imovel')} name='propriedade' 
-              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select" isMulti={true}
-              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.propriedade : '') : '' }
-              onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                propriedade: selected.map(s => s.value)
-                }))
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.propriedade : ''}</label>
-          </Form.Group>        
-        )}
-
-        {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={4}>
+          <Form.Group className="mb-2" as={Col} xl={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'register/municipios', 'nome_municipio', 'sigla_uf')} name='municipio' 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
@@ -166,7 +149,24 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} lg={4}>
+        {defaultoptions && (
+          <Form.Group className="mb-2" as={Col} xl={6}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Fazendas*</Form.Label>}
+            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'analytics/farms', 'nome_imovel')} name='propriedade' 
+              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select" isMulti={true}
+              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.propriedade : '') : '' }
+              onChange={(selected) => {
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                propriedade: selected.map(s => s.value)
+                }))
+              }}>
+            </AsyncSelect>
+            <label className='text-danger'>{message ? message.propriedade : ''}</label>
+          </Form.Group>        
+        )}
+
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>KML da Gleba*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'KML' : ''}
@@ -177,7 +177,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.non_field_errors : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={4} xl={4}>
+        <Form.Group className="mb-2" as={Col} xl={3}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Área Gleba (ha)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? '' : ''}
@@ -189,7 +189,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.area : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={8} xl={8}>
+        <Form.Group className="mb-2" as={Col} xl={8}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Descrição</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? '' : ''}

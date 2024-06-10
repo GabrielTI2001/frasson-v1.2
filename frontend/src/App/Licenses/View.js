@@ -144,7 +144,7 @@ const ViewLicenca = () => {
         size="xl"
         show={modal.show && modal.type === 'edit'}
         onHide={() => setModal(false)}
-        dialogClassName="mt-10"
+        dialogClassName="mt-7"
         aria-labelledby="example-modal-sizes-title-lg"
     >
         <Modal.Header>

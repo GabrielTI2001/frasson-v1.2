@@ -8,10 +8,8 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsMachinery} from "../Data";
-// import OutorgaForm from "./Machinery/OutorgaForm";
 import MachineryForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { HandleSearch } from "../../../helpers/Data";
 
 const InitData = {
@@ -50,30 +48,6 @@ const IndexMachinery = () => {
         }
     },[])
 
-    const handleSearch = async (search) => {
-        const params = search === '' ? '' : `?search=${search}`
-        const url = `${process.env.REACT_APP_API_URL}/${InitData.urlapilist}/${params}`
-        try {
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-            });
-            const data = await response.json();
-            if (response.status === 401) {
-                localStorage.setItem("login", JSON.stringify(false));
-                localStorage.setItem('token', "");
-                navigate("/auth/login");
-            } else if (response.status === 200) {
-                setSearchResults(data)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
-    };
-
     return (
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
@@ -84,6 +58,7 @@ const IndexMachinery = () => {
                {InitData.title}
             </li>  
         </ol>
+        <Row>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={InitData.columns}
@@ -123,6 +98,7 @@ const IndexMachinery = () => {
                 />
             </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+        </Row>
         <Modal
             size="xl"
             show={showmodal}
@@ -130,18 +106,18 @@ const IndexMachinery = () => {
             dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
         >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Máquina ou Equipamento
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row className="flex-center sectionform">
-                        <MachineryForm type='add' hasLabel/>
-                    </Row>
-            </Modal.Body>
-        </Modal>
+        <Modal.Header>
+        <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
+            Adicionar Máquina
+        </Modal.Title>
+            <CloseButton onClick={() => setShowModal(false)}/>
+        </Modal.Header>
+        <Modal.Body>
+            <Row className="flex-center sectionform">
+                <MachineryForm type='add' hasLabel/>
+            </Row>
+        </Modal.Body>
+    </Modal>
         </>
     );
   };

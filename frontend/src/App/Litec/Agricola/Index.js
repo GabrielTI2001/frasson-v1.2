@@ -107,7 +107,7 @@ const IndexProdAgricola = () => {
             size="xl"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName={showmodal.data ? 'mt-1' : 'mt-6'}
+            dialogClassName={showmodal.data ? 'mt-1' : 'mt-7'}
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>

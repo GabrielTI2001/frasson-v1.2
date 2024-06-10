@@ -104,7 +104,7 @@ const MapaPontosRequerimento = ({type}) => {
         }
 
         if (!coordenadas){
-            getCoordenadas()
+            getCoordenadas('')
             getprocessos('')
         }
         if (!tokenmaps){

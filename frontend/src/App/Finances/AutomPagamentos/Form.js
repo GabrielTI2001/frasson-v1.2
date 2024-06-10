@@ -180,7 +180,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.dia_vencimento : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={8} sm={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Detalhamento</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Detalhamento' : ''}

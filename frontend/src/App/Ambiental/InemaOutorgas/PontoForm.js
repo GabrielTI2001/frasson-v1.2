@@ -107,7 +107,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.descricao_ponto)}</label>
           </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Latitude (GD)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'latitude (GD)' : ''}
@@ -118,11 +118,11 @@ const PontoForm = ({ hasLabel, type, data}) => {
           />
           <label className='text-danger'>{message && (message.latitude_gd)}</label>
         </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-center" as={Col} lg={'auto'} xxl={'auto'}>
+        <Form.Group className="mb-2 d-flex align-items-center" as={Col} lg={'auto'} xxl={'auto'} sm={6}>
           <Button onClick={() => {setShowModal({show:true, type: 'latitude'});}}>GMS</Button>
         </Form.Group>
         
-        <Form.Group className="mb-2" as={Col} lg={3} xl={2}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Longitude (GD)*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Longitude (GD)' : ''}
@@ -133,11 +133,11 @@ const PontoForm = ({ hasLabel, type, data}) => {
             />
           <label className='text-danger'>{message && (message.longitude_gd)}</label>
         </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-center" as={Col} lg={'auto'} xxl={'auto'}>
+        <Form.Group className="mb-2 d-flex align-items-center" as={Col} lg={'auto'} xxl={'auto'} sm={6}>
           <Button onClick={() => {setShowModal({show:true, type: 'longitude'})}}>GMS</Button>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Vazão Máxima (m<sup>3</sup>/dia)*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Vazão Máxima' : ''}
@@ -149,7 +149,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
           <label className='text-danger'>{message && (message.vazao_m3_dia)}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Horas Bombeamento*</Form.Label>}
             <Form.Control
               placeholder={!hasLabel ? 'Bombeamento' : ''}
@@ -161,8 +161,8 @@ const PontoForm = ({ hasLabel, type, data}) => {
           <label className='text-danger'>{message && (message.bombeamento_h)}</label>
         </Form.Group>
 
-        <Row>
-          <Form.Group className="mb-2" as={Col} lg={2}>
+        <Row className='px-0 mx-auto'>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>JAN (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Jan' : ''}
@@ -174,7 +174,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_jan)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>FEV (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Fev' : ''}
@@ -186,7 +186,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_fev)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>MAR (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Mar' : ''}
@@ -198,7 +198,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_mar)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>ABR (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Abr' : ''}
@@ -210,7 +210,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_abr)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>MAI (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Mai' : ''}
@@ -222,7 +222,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_mai)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>JUN (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Jun' : ''}
@@ -234,7 +234,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_jun)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>JUN (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Jul' : ''}
@@ -246,7 +246,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_jul)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>AGO (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Ago' : ''}
@@ -258,7 +258,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_ago)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>SET (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Set' : ''}
@@ -270,7 +270,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_set)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>OUT (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Out' : ''}
@@ -282,7 +282,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_out)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>NOV (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Nov' : ''}
@@ -294,7 +294,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             <label className='text-danger'>{message && (message.vazao_m3_dia_nov)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={2}>
+          <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>DEZ (m<sup>3</sup>/dia)</Form.Label>}
               <Form.Control
                 placeholder={!hasLabel ? 'Vazão Dez' : ''}

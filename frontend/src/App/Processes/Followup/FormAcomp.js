@@ -71,7 +71,7 @@ const FormAcomp = ({data, submit}) => {
 
     return (
     <Form onSubmit={handleSubmit} className='row'>
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={4} className='mb-3'>
             <Form.Label className='mb-0 fw-bold'>Data*</Form.Label>
             <Form.Control type='date' value={formData.data || ''} 
                 onChange={handleFieldChange}
@@ -80,7 +80,7 @@ const FormAcomp = ({data, submit}) => {
             <label className='text-danger'>{message ? message.data : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3}>
+        <Form.Group className="mb-2" as={Col} xl={4}>
             <Form.Label className='fw-bold mb-1'>Status*</Form.Label>
             <Form.Select
               value={formData.status || ''}

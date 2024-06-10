@@ -116,7 +116,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
     <>
       <Form onSubmit={handleSubmit} className='row sectionform'>
         <span className='fw-bold text-primary mb-1'>Cálculo Alongamento</span>
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Percentual de Garantia*</Form.Label>}
           <Form.Control
             value={formData.percentual || ''}
@@ -127,7 +127,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.percentual : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Unitário (R$/Kg)*</Form.Label>}
           <Form.Control
             value={formData.valor_unitario || ''}
@@ -138,7 +138,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.valor_unitario : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Total Along. (R$)*</Form.Label>}
           <Form.Control
             value={formData.valor_total || ''}
@@ -149,7 +149,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.valor_total : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Qtd. Penhor (kg)*</Form.Label>}
           <Form.Control
             value={formData.quant_penhor_kg || ''}
@@ -160,7 +160,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.quant_penhor_kg : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Qtd. Penhor (tons)*</Form.Label>}
           <Form.Control
             value={formData.quant_penhor_tons || ''}
@@ -171,7 +171,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.quant_penhor_tons : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Qtd. Sacas (60 kg)*</Form.Label>}
           <Form.Control
             value={formData.quant_sacas_60_kg || ''}
@@ -184,7 +184,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         <hr style={{width:'96%'}} className='ms-3'></hr>
 
         <span className='fw-bold text-primary mb-1'>Outras Informações</span>
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data Alongamento*</Form.Label>}
           <Form.Control
             value={formData.data || ''}
@@ -195,7 +195,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.data : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Agência Bancária*</Form.Label>}
           <Form.Select
             value={formData.agencia_bancaria || ''}
@@ -212,7 +212,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         </Form.Group>
 
         {defaultoptions && (
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Município*</Form.Label>}
           <AsyncSelect loadOptions={fetchMunicipio} name='municipio_propriedade' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.municipio : null) : null }
@@ -227,39 +227,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         </Form.Group>
         )}
 
-        {defaultoptions && (
-        <Form.Group className="mb-2" as={Col} lg={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Fiel Depositário*</Form.Label>}
-          <AsyncSelect loadOptions={fetchPessoal} name='fiel_depositario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-            defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.fiel_depositario : null) : null }
-            onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                fiel_depositario: selected.value
-              }));
-            }}>
-          </AsyncSelect>
-          <label className='text-danger'>{message ? message.fiel_depositario : ''}</label>
-        </Form.Group>
-        )}
-
-        <Form.Group className="mb-2" as={Col} lg={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Produto Agrícola*</Form.Label>}
-          <Form.Select
-            value={formData.produto_agricola || ''}
-            name="produto_agricola"
-            onChange={handleFieldChange}
-            type="select"
-          >
-            <option value={undefined}>----</option>
-            {produtos &&( produtos.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
-            )))}
-          </Form.Select>
-          <label className='text-danger'>{message ? message.produto_agricola : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Armazenagem*</Form.Label>}
           <Form.Select
             value={formData.tipo_armazenagem || ''}
@@ -275,7 +243,39 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.tipo_armazenagem : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        {defaultoptions && (
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Fiel Depositário*</Form.Label>}
+          <AsyncSelect loadOptions={fetchPessoal} name='fiel_depositario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.fiel_depositario : null) : null }
+            onChange={(selected) => {
+              setFormData((prevFormData) => ({
+                ...prevFormData,
+                fiel_depositario: selected.value
+              }));
+            }}>
+          </AsyncSelect>
+          <label className='text-danger'>{message ? message.fiel_depositario : ''}</label>
+        </Form.Group>
+        )}
+
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Produto Agrícola*</Form.Label>}
+          <Form.Select
+            value={formData.produto_agricola || ''}
+            name="produto_agricola"
+            onChange={handleFieldChange}
+            type="select"
+          >
+            <option value={undefined}>----</option>
+            {produtos &&( produtos.map( c =>(
+              <option key={c.value} value={c.value}>{c.label}</option>
+            )))}
+          </Form.Select>
+          <label className='text-danger'>{message ? message.produto_agricola : ''}</label>
+        </Form.Group>
+
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Capacidade Estática (scs 60 kg)*</Form.Label>}
           <Form.Control
             value={formData.capacidade_estatica_sacas_60_kg || ''}
@@ -286,7 +286,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           <label className='text-danger'>{message ? message.capacidade_estatica_sacas_60_kg : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Classificação*</Form.Label>}
           <Form.Select
             value={formData.tipo_classificacao || ''}
@@ -303,7 +303,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         </Form.Group>
 
         {defaultoptions && (
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Testemunha 01*</Form.Label>}
           <AsyncSelect loadOptions={fetchPessoal} name='testemunha01' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.testemunha01 : null) : null }
@@ -319,7 +319,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         )}
 
         {defaultoptions && (
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Testemunha 02*</Form.Label>}
           <AsyncSelect loadOptions={fetchPessoal} name='testemunha02' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.testemunha02 : null) : null }
@@ -335,8 +335,8 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         )}
 
         {defaultoptions && (
-        <Form.Group className="mb-2" as={Col} lg={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
+        <Form.Group className="mb-2" as={Col} lg={6}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Fazendas*</Form.Label>}
           <AsyncSelect loadOptions={FetchImoveisRurais} name='propriedade' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.propriedade : null) : null } isMulti
             onChange={(selected) => {
