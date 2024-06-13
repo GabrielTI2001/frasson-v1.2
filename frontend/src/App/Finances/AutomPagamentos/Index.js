@@ -141,7 +141,6 @@ const IndexAutomPagamentos = () => {
                             ? <FormAutomPagamento hasLabel type='add' submit={submit}/>
                             : <FormAutomPagamento hasLabel type='edit' data={showmodal.data} submit={submit}/>
                         }
-                        
                     </Row>
             </Modal.Body>
         </Modal>

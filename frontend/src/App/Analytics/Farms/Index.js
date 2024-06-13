@@ -9,6 +9,8 @@ import AdvanceTableWrapper from '../../../components/common/advance-table/Advanc
 import { Link } from "react-router-dom";
 import { columnsFarms } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
+import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const InitData = {
     'urlapilist':'analytics/farms', 
@@ -68,6 +70,13 @@ const IndexFarms = () => {
             <Row className="flex-end-center justify-content-start mb-3">
                 <Col xs="auto" sm={6} lg={4}>
                     <AdvanceTableSearchBox table onSearch={handleChange}/>
+                </Col>
+                <Col xl={'auto'} sm='auto' xs={'auto'}>
+                    <Link className="text-decoration-none btn btn-info shadow-none fs--1"
+                        style={{padding: '2px 8px'}} to={'map'}
+                    >
+                        <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa
+                    </Link>
                 </Col>
             </Row>
             <AdvanceTable

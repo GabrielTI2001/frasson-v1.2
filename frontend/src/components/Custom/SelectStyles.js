@@ -13,8 +13,13 @@ const customStyles = {
       ...base,
       top: -2,
       paddingTop: 0,
-      height: 20,
-      minHeight: 20
+      height: 28,
+      paddingBlock: 0,
+      lineHeight: 1.4
+    }),
+    multiValue: base => ({
+      ...base,
+      height: 22
     }),
     indicatorsContainer:  base => ({
       ...base,
@@ -40,7 +45,8 @@ export const customStylesDark = {
       top: -2,
       paddingTop: 0,
       height: 20,
-      minHeight: 20
+      paddingBlock: 0,
+      lineHeight: 23
     }),
     indicatorsContainer:  base => ({
       ...base,

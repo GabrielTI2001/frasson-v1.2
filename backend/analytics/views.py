@@ -2,8 +2,8 @@ from django.shortcuts import render, HttpResponse
 from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework import viewsets
-from .serializers import ListRegimes, detailRegimes, listFarms, detailFarms
-from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Operacoes_Contratadas
+from .serializers import ListRegimes, detailRegimes, listFarms, detailFarms, ListCAR, detailCAR
+from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Operacoes_Contratadas, Cadastro_Ambiental_Rural, Cadastro_Ambiental_Rural_Coordenadas
 from io import BytesIO
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
@@ -49,6 +49,21 @@ class FarmsView(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return listFarms
+        else:
+            return self.serializer_class
+        
+class CARView(viewsets.ModelViewSet):
+    queryset = Cadastro_Ambiental_Rural.objects.all()
+    serializer_class = detailCAR
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)   
+        if search_term:
+            queryset = queryset.filter(Q(imovel__nome_imovel__icontains=search_term))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ListCAR
         else:
             return self.serializer_class
         

@@ -19,6 +19,7 @@ import IndexFarms from '../App/Analytics/Farms/Index';
 import ViewFarm from '../App/Analytics/Farms/View';
 import IndexCredit from '../App/Analytics/Credit/Index';
 import ViewCredit from '../App/Analytics/Credit/View';
+import MapaCAR from '../App/Analytics/Farms/Mapa';
 //Assessments
 import Quiz from '../App/Assessments/Quiz';
 import MyAssessments from '../App/Assessments/My';
@@ -68,6 +69,8 @@ import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
 import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
 import NewFeedback from '../App/Register/Feedbacks/New';
 import IndexFeedbacks from '../App/Register/Feedbacks/Index';
+//Pipeline
+import Products from '../App/Pipeline/products/products';
 //Pipefy
 import IndexPessoal from '../App/Pipefy/Pessoal/Index';
 import ViewPessoal from '../App/Pipefy/Pessoal/View';
@@ -186,6 +189,7 @@ const LayoutRoutes = () => {
           <Route path="regime" element={<IndexRegimes />}/>
           <Route path="regime/:id" element={<ViewRegime />}/>
           <Route path="farms" element={<IndexFarms />}/>
+          <Route path="farms/map" element={<MapaCAR />}/>
           <Route path="farms/:id" element={<ViewFarm />}/>
           <Route path="credit" element={<IndexCredit />}/>
           <Route path="credit/:id" element={<ViewCredit />}/>
@@ -258,6 +262,10 @@ const LayoutRoutes = () => {
           <Route path="pipes/301573538/cards/:id" element={<ViewCardProduto />}/>
           <Route path="contracts" element={<IndexContratos />}/>
           <Route path="contracts/:id" element={<ViewContrato />}/>
+        </Route>
+        <Route path="/pipeline">
+          <Route path="products" element={<Products />}/>
+          <Route path="products/:uuid" element={<Products />}/>
         </Route>
         <Route path="/processes">
           <Route path="followup" element={<IndexFollowup />}/>

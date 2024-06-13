@@ -1,21 +1,42 @@
-import React,{useEffect, useState} from 'react';
-import { useParams, useNavigate } from "react-router-dom";
-import { RetrieveRecord } from '../../../helpers/Data';
-import { Link } from 'react-router-dom';
-import { Col, Placeholder, Row, Tab, Tabs } from 'react-bootstrap';
-import KMLMap from '../../../components/map/KMLMap';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Tabs, Tab, Row, Col, Placeholder } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+import { faMagnifyingGlass, faDownload } from '@fortawesome/free-solid-svg-icons';
+import KMLMap from '../../../components/map/KMLMap';
 import PolygonMap from '../../../components/map/PolygonMap';
+import { RetrieveRecord } from '../../../helpers/Data';
 
 const ViewFarm = () => {
-    const {id} = useParams()
-    const navigate = useNavigate()
-    const user = JSON.parse(localStorage.getItem("user"))
-    const [farm, setFarm] = useState()
+    const { id } = useParams();
+    const navigate = useNavigate();
+    const user = JSON.parse(localStorage.getItem("user"));
+    const [farm, setFarm] = useState();
+    const [activeTab, setActiveTab] = useState('cadastro');
 
-    const setter = (data) =>{
-        setFarm(data)
+    const setter = (data) => {
+        setFarm(data);
+    }
+
+    useEffect(() => {
+        const getData = async () => {
+            const status = await RetrieveRecord(id, 'analytics/farms', setter);
+            if (status === 401) {
+                navigate("/auth/login");
+            }
+        }
+
+        if ((user.permissions && user.permissions.indexOf("view_imoveis_rurais") === -1) && !user.is_superuser) {
+            navigate("/error/403");
+        }
+
+        if (!farm) {
+            getData();
+        }
+    }, []);
+
+    const handleTabSelect = (key) => {
+        setActiveTab(key);
     }
 
     useEffect(() =>{

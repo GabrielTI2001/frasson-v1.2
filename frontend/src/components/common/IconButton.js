@@ -26,7 +26,6 @@ const IconButton = forwardRef(
 
 IconButton.propTypes = {
   ...Button.propTypes,
-  icon: PropTypes.oneOfType([PropTypes.string, PropTypes.array]).isRequired,
   children: PropTypes.any,
   iconAlign: PropTypes.oneOf(['left', 'right', 'middle']),
   iconClassName: PropTypes.string,

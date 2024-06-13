@@ -96,7 +96,7 @@ export const SelectSearchOptions = async (inputValue, link, field, field2) => {
       else if (response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        return 401;
+        return [];
       }
       else{
         return [];

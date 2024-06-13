@@ -7,6 +7,7 @@ from rest_framework import routers
 router = routers.DefaultRouter()
 router.register(r'regime', views.RegimesView)
 router.register(r'farms', views.FarmsView)
+router.register(r'car', views.CARView)
 
 urlpatterns = [
     path('credit-data', views.creditData, name='credit.data'),

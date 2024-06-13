@@ -24,4 +24,6 @@ export const KanbanContext = createContext({
   kanbanTasks: []
 });
 
+export const PipeContext = createContext();
+
 export default AppContext;

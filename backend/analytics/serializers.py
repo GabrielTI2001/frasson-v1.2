@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Cadastro_Ambiental_Rural_Coordenadas, Certificacao_Sigef_Parcelas, Certificacao_Sigef_Parcelas_Vertices
+from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Cadastro_Ambiental_Rural_Coordenadas, Certificacao_Sigef_Parcelas
+from pipefy.models import Certificacao_Sigef_Parcelas_Vertices, Cadastro_Ambiental_Rural
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
 import locale, requests, json
@@ -76,4 +77,27 @@ class detailFarms(serializers.ModelSerializer):
         return TOKEN_GOOGLE_MAPS_API
     class Meta:
         model = Imoveis_Rurais
+        fields = '__all__'
+
+
+class ListCAR(serializers.ModelSerializer):
+    coordenadas = serializers.SerializerMethodField(read_only=True)
+    def get_coordenadas(self, obj):
+        coordenadas = Cadastro_Ambiental_Rural_Coordenadas.objects.filter(car=obj)
+        coordenadas_car = [{
+            "id": coord.id,
+            "lat": float(coord.latitude),
+            "lng": float(coord.longitude)
+        }for coord in coordenadas]
+        return coordenadas_car
+    class Meta:
+        model = Cadastro_Ambiental_Rural
+        fields = ['id', 'coordenadas', 'area_imovel']
+
+class detailCAR(serializers.ModelSerializer):
+    str_imovel = serializers.CharField(source='imovel.nome_imovel', read_only=True)
+    str_proprietario = serializers.CharField(source='imovel.proprietario.razao_social', read_only=True)
+    str_cpf_cnpj = serializers.CharField(source='imovel.proprietario.cpf_cnpj', read_only=True)
+    class Meta:
+        model = Cadastro_Ambiental_Rural
         fields = '__all__'

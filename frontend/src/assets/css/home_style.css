@@ -181,3 +181,20 @@ textarea:focus, input:focus{
 .disabled .accordion-button::after {
   visibility: hidden !important;
 }
+.info-pipe{
+  width: 95%;
+  border: 1px solid #cfe0ed;
+  border-radius: 5px;
+  border-width: 1px 1px 1px 4px;
+}
+.info-pipe-dark{
+  border-color: #3d4658;
+}
+.modal-editar{
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.modal-editar:hover{
+  opacity: 0.7;
+}
