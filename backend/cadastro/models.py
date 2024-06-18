@@ -167,6 +167,14 @@ class Analise_Solo(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+class Welcome_Messages(models.Model):
+    message = models.CharField(verbose_name='Mensagem', max_length=255, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Welcome Messages'
+    def __str__(self):
+        return self.message
 
 class Feedbacks_Category(models.Model):
     description = models.CharField(max_length=150, verbose_name='Descrição Categoria')

@@ -17,5 +17,7 @@ router.register(r'feedbacks', views.FeedbackView)
 router.register(r'feedbacks-category', views.CategoryFeedbackView)
 router.register(r'feedbacks-reply', views.FeedbackReplyView)
 
-urlpatterns = []
+urlpatterns = [
+    path('landing/', views.home, name='home.page'),
+]
 urlpatterns += router.urls

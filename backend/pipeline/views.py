@@ -10,7 +10,7 @@ class PipeView(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
 
 class FasesView(viewsets.ModelViewSet):
-    queryset = Fase.objects.all().order_by('-done')
+    queryset = Fase.objects.all()
     serializer_class = serializerFase
     permission_classes = [permissions.AllowAny]
 
@@ -18,7 +18,7 @@ class Card_ProdutosView(viewsets.ModelViewSet):
     queryset = Card_Produtos.objects.all()
     serializer_class = serializerCard_Produtos
     permission_classes = [permissions.AllowAny]
-    lookup_field = 'uuid'
+    lookup_field = 'code'
 
 class Card_BeneficiariosView(viewsets.ModelViewSet):
     queryset = Card_Produtos.objects.all()

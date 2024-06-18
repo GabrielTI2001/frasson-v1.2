@@ -23,7 +23,7 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
   <>
     <div className="kanban-column-header">
       <h5 className="fs-0 mb-0">
-        {title} <span className="text-500">({itemCount})</span>
+        <span className='fs--1'>{title}</span> <span className="text-500 fs--1">({itemCount})</span>
       </h5>
       <Dropdown align="end" className="font-sans-serif btn-reveal-trigger">
         <Dropdown.Toggle variant="reveal" size="sm" className="py-0 px-2">

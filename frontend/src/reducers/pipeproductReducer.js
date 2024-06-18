@@ -66,7 +66,7 @@ export const kanbanReducer = (state, action) => {
         fases: state.fases.map(f => {
           return {
             ...f,
-            card_set: f.card_produtos_set.filter(card => card.id !== payload.idcard)
+            card_produtos_set: f.card_produtos_set.filter(card => card.id !== payload.idcard)
           };
         })
       };
@@ -101,6 +101,23 @@ export const kanbanReducer = (state, action) => {
             : fase
         )
       };
+
+      case 'REVERT_DRAG': {
+        const { sourceColumnId, initialSourceItems, destColumnId, initialDestItems } = action.payload;
+        // Atualizar as colunas com os itens iniciais
+        const updatedColumns = state.fases.map(column => {
+          if (column.id === Number(sourceColumnId)) {
+            return { ...column, card_produtos_set: initialDestItems };
+          } else if (column.id === Number(destColumnId)) {
+            return { ...column, card_produtos_set: initialSourceItems };
+          }
+          return column;
+        });
+        return {
+          ...state,
+          fases: updatedColumns
+        };
+      }
 
     case 'REMOVE_KANBAN_COLUMN':
       return {

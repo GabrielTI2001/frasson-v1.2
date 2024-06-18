@@ -10,6 +10,9 @@
 .conteudo .nav-tabs li button, .conteudo .tab-content, table svg, label{
   font-size: 12px;
 }
+a *{
+  cursor: pointer;
+}
 select{
   font-size: 12px !important;
 }
@@ -197,4 +200,16 @@ textarea:focus, input:focus{
 }
 .modal-editar:hover{
   opacity: 0.7;
+}
+.card-link-success-light {
+  background-color: rgba(192, 255, 217, 0.7) !important
+}
+.card-link-success-light:hover {
+  background-color: rgba(165, 255, 201, 0.7) !important
+}
+.card-link-success-dark {
+  background-color: rgb(21, 98, 70, 0.8)  !important
+}
+.card-link-success-dark:hover {
+  background-color: rgb(29, 106, 78, 1) !important
 }

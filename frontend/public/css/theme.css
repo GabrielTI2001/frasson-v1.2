@@ -703,7 +703,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   --falcon-secondary: #748194;
   --falcon-success: #00d27a;
   --falcon-info: #27bcfd;
-  --falcon-warning: #f5803e;
+  --falcon-warning: #f5a93e;
   --falcon-danger: #e63757;
   --falcon-light: #f9fafd;
   --falcon-dark: #0b1727;
@@ -727,7 +727,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   --falcon-secondary-bg-subtle: #e6e8ec;
   --falcon-success-bg-subtle: #d9f8eb;
   --falcon-info-bg-subtle: #d8f3ff;
-  --falcon-warning-bg-subtle: #fde6d8;
+  --falcon-warning-bg-subtle: #ffebad;
   --falcon-danger-bg-subtle: #fbdbe1;
   --falcon-light-bg-subtle: #fdfefe;
   --falcon-dark-bg-subtle: #08101b;
@@ -824,7 +824,7 @@ svg.leaflet-image-layer.leaflet-interactive path {
   --falcon-secondary-bg-subtle: #292d34;
   --falcon-success-bg-subtle: #003f25;
   --falcon-info-bg-subtle: #0c384c;
-  --falcon-warning-bg-subtle: #562d16;
+  --falcon-warning-bg-subtle: #564416;
   --falcon-danger-bg-subtle: #5c1623;
   --falcon-light-bg-subtle: #fdfefe;
   --falcon-dark-bg-subtle: #08101b;
@@ -7291,6 +7291,7 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
 }
 .modal-dialog-scrollable .modal-body {
   overflow-y: auto;
+  overflow-x: inherit;
 }
 
 .modal-dialog-centered {
@@ -7392,12 +7393,17 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
 @media (min-width: 992px) {
   .modal-lg,
   .modal-xl {
-    --falcon-modal-width: 800px;
+    --falcon-modal-width: 900px;
   }
 }
 @media (min-width: 1200px) {
   .modal-xl {
-    --falcon-modal-width: 1140px;
+    --falcon-modal-width: 1200px;
+  }
+}
+@media (min-width: 1500px) {
+  .modal-xl {
+    --falcon-modal-width: 94vw;
   }
 }
 .modal-fullscreen {
@@ -22597,13 +22603,13 @@ html[dir*=rtl] .tox-toolbar__primary {
 }
 
 .Toastify__toast--success {
-  background-color: var(--falcon-success) !important;
-  color: white !important;
+  background-color: var(--falcon-tertiary-bg) !important;
+  color: var(--falcon-success) !important;
 }
 
 .Toastify__toast--error {
-  background-color: var(--falcon-danger) !important;
-  color: white !important;
+  background-color: var(--falcon-tertiary-bg) !important;
+  color: var(--falcon-danger-text-emphasis) !important;
 }
 
 .Toastify__toast--default {
@@ -27012,12 +27018,14 @@ option:disabled {
 
 .kanban-container {
   padding-bottom: 0.25rem;
+  width: 96vw !important;
   white-space: nowrap;
+  overflow-x: scroll;
 }
 
 .kanban-column {
   display: inline-block !important;
-  width: 22.1875rem;
+  width: 18rem;
   white-space: normal;
   vertical-align: top;
   margin-right: 1.25rem;
@@ -27049,10 +27057,11 @@ option:disabled {
 .kanban-items-container {
   outline: none;
   padding: 0.5rem 1.25rem;
-  max-height: calc(100vh - (var(--falcon-top-nav-height) + 4.3125rem + 2.5625rem + 2.8125rem + 0.9375rem));
+  max-height: calc(100vh - (var(--falcon-top-nav-height) + 4.3125rem + 2.5625rem));
   overflow-y: auto;
   overflow-x: hidden;
   background-color: var(--falcon-kanban-bg);
+  height: 76.2vh;
 }
 .kanban-items-container .kanban-collapse:first-child,
 .kanban-items-container .kanban-item:first-child {
@@ -27072,7 +27081,11 @@ option:disabled {
   font-size: 0.8333333333rem;
   background-color: var(--falcon-kanban-item-bg);
   border-radius: 0.375rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  box-shadow: 0 0.115rem 0.15rem rgba(0, 0, 0, 0.055);
+}
+.kanban-item-card:hover {
+  transition: box-shadow .125s cubic-bezier(.2, 0, .38, .9);
+  box-shadow: 0 4px 6px 0 rgba(102, 102, 102, .09), 0 9px 14px 0 rgba(102, 102, 102, .06);
 }
 
 .kanban-item-dropdown-btn {

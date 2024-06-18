@@ -42,6 +42,10 @@ const EditForm = ({
           sel = data ? {value: data.id, label: data.contratante, produto: data.produto} : {};
           setdefaultSelected({...defaultselected, 'contrato':sel})
           break
+        case 'responsaveis':
+          const ids_resps = data.map(b => ({value: b.id, label: b.nome}));
+          setdefaultSelected({...defaultselected, 'responsaveis':ids_resps})
+          break
         default:
           setdefaultSelected({...defaultselected})
       }
@@ -71,12 +75,30 @@ const EditForm = ({
               onChange={({ target }) =>
                 setFormData({ ...formData, card: target.value })
               }
-              value={data}
+              defaultValue={data}
+              value={formData.card}
             >
               <option>---</option>
               <option value='Principal'>Principal</option>
               <option value='Paralelo'>Paralelo</option>
               <option value='Ocorrência'>Ocorrência</option>
+            </Form.Select>  
+          )}
+          {fieldkey === 'prioridade' &&(
+            <Form.Select
+              ref={inputRef}
+              rows={2}
+              className="mb-2 w-50 fs-xs py-0 px-1 ms-2 shadow-none outline-none"
+              onChange={({ target }) =>
+                setFormData({ ...formData, prioridade: target.value })
+              }
+              defaultValue={data}
+              value={formData.prioridade}
+            >
+              <option>---</option>
+              <option value='Alta'>Alta</option>
+              <option value='Media'>Média</option>
+              <option value='Baixa'>Baixa</option>
             </Form.Select>  
           )}
           {fieldkey === 'beneficiario' &&( defaultselected &&
@@ -127,7 +149,30 @@ const EditForm = ({
               }
             } className='mb-1 fs--1'/>
           )}
-            <Row className="gx-2 w-50 ms-2">
+          {fieldkey === 'data_vencimento' && data != null &&(
+            <Form.Control
+              ref={inputRef}
+              type='date'
+              className="mb-2 w-50 fs-xs py-0 px-1 ms-2 shadow-none outline-none"
+              onChange={({ target }) =>
+                setFormData({ ...formData, data_vencimento: target.value })
+              }
+              value={formData.data_vencimento || data}
+            /> 
+          )}
+          {fieldkey === 'responsaveis' &&( defaultselected &&
+            <AsyncSelect ref={inputRef} isMulti defaultValue={defaultselected['responsaveis']}
+              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+              loadOptions={(v) => SelectSearchOptions(v, 'users/users', 'first_name', 'last_name', true)}
+              onChange={(selectedOptions ) => {
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  responsaveis: selectedOptions.map(s => s.value)
+                }));
+              }
+              } className='mb-1'/>
+          )}
+          <Row className="gx-2 w-50 ms-2">
             <Button
               variant="primary"
               size="sm"
@@ -144,7 +189,7 @@ const EditForm = ({
               onClick={() =>     
                 setShow(prevState => ({
                 ...prevState,
-                [fieldkey]: !prevState[fieldkey]
+                [fieldkey]: false
               }))}
             >
               <span>Cancelar</span>

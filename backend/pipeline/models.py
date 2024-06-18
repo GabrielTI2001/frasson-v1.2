@@ -1,10 +1,16 @@
 from django.db import models
-from users.models import User
-import uuid
+from users.models import User, Profile
+import uuid, time, random
+
+def gerarcode():
+    timenumber = int(time.time())
+    code = timenumber - 1200000000 + random.randint(1, 10000)
+    return code
 
 class Pipe(models.Model):
     id = models.BigIntegerField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
     descricao = models.CharField(max_length=255, null=False, blank=False, verbose_name='Descricao  Pipe')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -95,6 +101,17 @@ class Contratos_Servicos(models.Model):
     def __str__(self):
         return self.contratante.razao_social
     
+class Cadastro_Produtos(models.Model):
+    id = models.BigIntegerField(primary_key=True)
+    description = models.CharField(max_length=255, null=True, blank=True, verbose_name='Descrição')
+    acronym = models.CharField(max_length=10, null=True, blank=True, verbose_name='Sigla')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Cadastro Produtos'
+    def __str__(self):
+        return self.description
+    
 class Detalhamento_Servicos(models.Model):
     id = models.BigIntegerField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -139,13 +156,17 @@ class Instituicoes_Parceiras(models.Model):
 class Card_Produtos(models.Model):
     id = models.AutoField(primary_key=True)
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
     card = models.CharField(max_length=255, null=True, verbose_name='Tipo Card')
+    prioridade = models.CharField(max_length=255, null=True, verbose_name='Prioridade')
     beneficiario = models.ManyToManyField(Cadastro_Pessoal, verbose_name='Nome Beneficiário')
+    responsaveis = models.ManyToManyField(User, verbose_name='Responsáveis', related_name='responsaveis')
     detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhamento Serviço')
     instituicao = models.ForeignKey(Instituicoes_Parceiras, on_delete=models.SET_NULL, null=True, verbose_name='Instituição Parceira')
     contrato = models.ForeignKey(Contratos_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
     valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor da Operação')
     faturamento_estimado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Faturamento Estimado')
+    data_vencimento = models.DateField(null=True, verbose_name='Data de Vencimento')
     phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase')
     card_url = models.CharField(max_length=255, null=True, verbose_name='URL do Card')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Criado por')
@@ -155,3 +176,25 @@ class Card_Produtos(models.Model):
         verbose_name_plural = 'Produtos Frasson'
     def __str__(self):
         return self.detalhamento.detalhamento_servico
+        
+class Card_Prospects(models.Model): 
+    id = models.BigIntegerField(primary_key=True)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cadastro Prospect')
+    produto = models.CharField(max_length=255, null=True, verbose_name='Produto de Interesse')
+    classificacao = models.CharField(max_length=255, null=True, verbose_name='Classificação do Prospect')
+    origem = models.CharField(max_length=255, null=True, verbose_name='Origem do Prospect')
+    proposta_inicial = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Proposta Inicial')
+    proposta_aprovada = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Proposta Aprovada')
+    percentual_inicial = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Inicial')
+    percentual_aprovado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Aprovado')
+    data_vencimento = models.DateTimeField(null=True, verbose_name='Data de Vencimento')
+    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase Atual')
+    card_url = models.CharField(max_length=255, null=True)
+    created_at = models.DateTimeField(null=True)
+    updated_at = models.DateTimeField(null=True)
+    class Meta:
+        verbose_name_plural = 'Prospects Frasson'
+    def __str__(self):
+        return self.cliente.razao_social

@@ -18,9 +18,10 @@ const AddAnotherFase = ({
   const [formData, setFormData] = useState({done:false});
   const [msg, setMsg] = useState();
   const inputRef = useRef(null);
+  const token = localStorage.getItem("token")
 
   const submitform = () => {
-    api.post('/pipeline/fases/', {...formData, pipe:kanbanState.pipe.id})
+    api.post('/pipeline/fases/', {...formData, pipe:kanbanState.pipe.id}, {headers: {Authorization: `bearer ${token}`}})
     .then((response) => {
       handleSubmit(response.data)
     })

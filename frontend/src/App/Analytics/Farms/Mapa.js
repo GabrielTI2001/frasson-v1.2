@@ -17,7 +17,6 @@ const MapaCAR = () => {
     const [tokenmaps, setTokenMaps] = useState()
     const navigate = useNavigate();
     const link = `${process.env.REACT_APP_API_URL}/analytics/car/` 
-    console.log(poligonos)
 
     const handleChange = (event) => {
         const { value } = event.target;

@@ -14,6 +14,17 @@ import { useNavigate } from 'react-router-dom';
 // Adicione os ícones à biblioteca
 library.add(faEllipsisH);
 
+const options = {
+  month: "short",
+  day: "numeric",
+  timeZone: 'UTC'
+};
+
+const calcdif = (data) => {
+  const dif = (new Date(data) - new Date())/(24 * 60 * 60 * 1000)
+  return dif
+};
+
 const TaskDropMenu = ({ id }) => {
   const { kanbanDispatch } = useContext(PipeContext);
 
@@ -47,16 +58,12 @@ const TaskDropMenu = ({ id }) => {
       >
         <FontAwesomeIcon icon={faEllipsisH} transform="shrink-2" />
       </Dropdown.Toggle>
-
-      <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
+      {/* <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
         <Dropdown.Item href="#!">Add Card</Dropdown.Item>
         <Dropdown.Item href="#!">Edit</Dropdown.Item>
         <Dropdown.Item href="#!">Copy link</Dropdown.Item>
         <Dropdown.Divider />
-        <Dropdown.Item onClick={handleRemoveTaskCard} className="text-danger">
-          Remove
-        </Dropdown.Item>
-      </Dropdown.Menu>
+      </Dropdown.Menu> */}
     </Dropdown>
   );
 };
@@ -68,7 +75,7 @@ const TaskCard = ({
   const { kanbanDispatch} = useContext(PipeContext);
   const navigate = useNavigate()
   const handleModalOpen = () => {
-    navigate('/pipeline/products/'+task.uuid)
+    navigate('/pipeline/products/'+task.code)
     kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {card: task} });
   };
   // styles we need to apply on draggables
@@ -77,7 +84,7 @@ const TaskCard = ({
     transform: isDragging ? 'rotate(-2deg)' : ''
   });
   return (
-    <Draggable draggableId={`task${task.id}`} index={index}>
+    <Draggable draggableId={`task${task ? task.id : 10}`} index={index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -91,24 +98,48 @@ const TaskCard = ({
             className="kanban-item-card hover-actions-trigger"
             onClick={handleModalOpen}
           >
-            <Card.Body >
-              <div className="position-relative">
-                <TaskDropMenu id={task.id} />
-              </div>
+            <Card.Body className='p-2'>
+              {task.prioridade && 
+                <SubtleBadge bg={`${task.prioridade === 'Alta' ? 'danger' : task.prioridade === 'Média' ? 'warning' : 'success'}`} 
+                  className='me-2 fw-normal text-body fs--2'>{task.prioridade}
+                </SubtleBadge>
+              }
               <div className='mb-1'>
                 <h4 className='fw-bold fs--1'>{task.str_detalhamento || '-'}</h4>
               </div>
               <div className='mb-1'>
-                <label className='mb-0'>Card</label><br></br>
-                <SubtleBadge bg='secondary' className='me-2'>{task.card}</SubtleBadge> 
+                <label className='mb-0 text-uppercase fs--2'>Processo</label><br></br>
+                <span className='d-block'>#{task.code}</span>
               </div>
               <div className='mb-1'>
-                <label className='mb-0 d-block cursor-pointer'>Beneficiário</label>
+                <label className='mb-0 text-uppercase fs--2'>Card</label><br></br>
+                <SubtleBadge bg='secondary' className='me-2 fw-normal'>{task.card}</SubtleBadge> 
+              </div>
+              <div className='mb-1'>
+                <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Beneficiário</label>
                 <span className='d-block'>{task.str_beneficiario}</span>
               </div>
               <div className='mb-1'>
-                <label className='mb-0 d-block cursor-pointer'>Criado em:</label>
+                <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Data de Abertura</label>
                 <span className='d-block'>{new Date(task.created_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})}</span>
+              </div>
+              {task.data_vencimento &&
+              <div className='mb-1'>
+                <SubtleBadge bg={calcdif(task.data_vencimento) > 0 ? 'secondary' : 'danger'} className='me-2 fw-normal fs--2'>
+                  Venc {new Date(task.data_vencimento).toLocaleDateString('pt-BR', options)}
+                </SubtleBadge> 
+                {calcdif(task.data_vencimento) > 0 
+                  ? <span style={{fontSize:'0.7rem'}}>em {parseInt(calcdif(task.data_vencimento))} dias</span>
+                  : <span style={{fontSize:'0.7rem'}}>{parseInt(calcdif(task.data_vencimento)) * -1} dias atrás</span>
+                }
+              </div>
+              }
+              <div className='mb-1'> 
+                {task.list_responsaveis.map(r => 
+                  <img data-bs-toggle="tooltip" title={r.nome} className='rounded-circle me-2' style={{width:'25px', height:'25px'}} 
+                    src={`${process.env.REACT_APP_API_URL}/${r.avatar}`} key={r.id}
+                  />
+                )}
               </div>
             </Card.Body>
           </Card>
@@ -117,22 +148,4 @@ const TaskCard = ({
     </Draggable>
   );
 };
-
-// TaskDropMenu.propTypes = {
-//   id: PropTypes.number.isRequired
-// };
-
-// TaskCard.propTypes = {
-//   task: PropTypes.shape({
-//     idcard: PropTypes.number,
-//     campo_set: PropTypes.arrayOf(
-//       PropTypes.shape({
-//         type: PropTypes.string,
-//         text: PropTypes.string
-//       })
-//     ),
-//   }),
-//   index: PropTypes.number
-// };
-
 export default TaskCard;

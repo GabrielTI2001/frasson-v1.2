@@ -5,13 +5,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faDownload } from '@fortawesome/free-solid-svg-icons';
 import KMLMap from '../../../components/map/KMLMap';
 import PolygonMap from '../../../components/map/PolygonMap';
-import { RetrieveRecord } from '../../../helpers/Data';
+import { HandleSearch, RetrieveRecord } from '../../../helpers/Data';
 
 const ViewFarm = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem("user"));
     const [farm, setFarm] = useState();
+    const [car, setCar] = useState();
+    const [sigef, setSigef] = useState();
     const [activeTab, setActiveTab] = useState('cadastro');
 
     const setter = (data) => {
@@ -35,8 +37,13 @@ const ViewFarm = () => {
         }
     }, []);
 
-    const handleTabSelect = (key) => {
-        setActiveTab(key);
+    const handleTabSelect = async (key) => {
+        if (key === 'car'){
+            HandleSearch('', 'analytics/car', (data) => {setCar(data)}, `?imovel=${farm.id}`)
+        }
+        if (key === 'sigef'){
+            HandleSearch('', 'analytics/parcelas-sigef', (data) => {setSigef(data)}, `?imovel=${farm.id}`)
+        }
     }
 
     useEffect(() =>{
@@ -65,7 +72,7 @@ const ViewFarm = () => {
         </li>  
     </ol>
     {farm ? <>
-        <Tabs defaultActiveKey="cadastro" id="uncontrolled-tab-example">
+        <Tabs defaultActiveKey="cadastro" id="uncontrolled-tab-example" onSelect={handleTabSelect}>
             <Tab eventKey="cadastro" title="Cadastro Imóvel" className='border-bottom border-x p-3'>
                 <Row className='mt-2 mb-2'>
                     <Col className='d-flex flex-column'>
@@ -199,38 +206,62 @@ const ViewFarm = () => {
                 />
             </Tab>
         }
-        {farm && farm.coordenadas_car.length > 0 &&
+        {farm.coordenadas_car &&
             <Tab eventKey="car" title="CAR" className='border-bottom border-x p-3'>
-                <div><strong>CAR: </strong><span>{farm.car}</span></div>
-                <PolygonMap
-                    initialCenter={{
-                        lat: farm.coordenadas_car.length > 0 ? Number(farm.coordenadas_car[0]['lat']) : -13.7910,
-                        lng: farm.coordenadas_car.length > 0 ? Number(farm.coordenadas_car[0]['lng']) : -45.6814
-                    }}
-                    mapStyle="Default"
-                    className="rounded-soft mt-2 google-maps-l container-map"
-                    token_api={farm.token_apimaps}
-                    mapTypeId='satellite'
-                    polygons={[{path:farm.coordenadas_car}]}
-                    zoom={11}
-                />
+                {car ? 
+                    <>
+                        <div><strong>CAR: </strong><span>{farm.car}</span></div>
+                        <PolygonMap
+                            initialCenter={{
+                                lat: car[0].coordenadas.length > 0 ? Number(car[0].coordenadas[0]['lat']) : -13.7910,
+                                lng: car[0].coordenadas.length > 0 ? Number(car[0].coordenadas[0]['lng']) : -45.6814
+                            }}
+                            mapStyle="Default"
+                            className="rounded-soft mt-2 google-maps-l container-map"
+                            token_api={farm.token_apimaps}
+                            mapTypeId='satellite'
+                            polygons={[{path:car[0].coordenadas}]}
+                            zoom={11}
+                        />
+                    </>
+                    :
+                    <div>
+                        <Placeholder animation="glow">
+                            <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                            <Placeholder xs={4} />
+                            <Placeholder xs={6} /> <Placeholder xs={8} />
+                        </Placeholder>    
+                    </div>   
+                }
             </Tab>
         }
-        {farm && farm.parcelas_sigef.length > 0 &&
+        {farm && farm.parcelas_sigef &&
             <Tab eventKey="sigef" title="SIGEF" className='border-bottom border-x p-3'>
-                <div><strong>CCIR: </strong><span>{farm.ccir}</span></div>
-                <PolygonMap
-                    initialCenter={{
-                        lat: farm.parcelas_sigef[0].length > 0 ? Number(farm.parcelas_sigef[0][0]['lat']) : -13.7910,
-                        lng: farm.parcelas_sigef[0].length > 0 ? Number(farm.parcelas_sigef[0][0]['lng']) : -45.6814
-                    }}
-                    mapStyle="Default"
-                    className="rounded-soft mt-2 google-maps-l container-map"
-                    token_api={farm.token_apimaps}
-                    mapTypeId='satellite'
-                    polygons={farm.parcelas_sigef.map(p => ({path:p}))}
-                    zoom={11}
-                />
+                {sigef ?
+                    <>
+                    <div><strong>CCIR: </strong><span>{farm.ccir}</span></div>
+                    <PolygonMap
+                        initialCenter={{
+                            lat: sigef[0].coordenadas.length > 0 ? Number(sigef[0].coordenadas[0]['lat']) : -13.7910,
+                            lng: sigef[0].coordenadas.length > 0 ? Number(sigef[0].coordenadas[0]['lng']) : -45.6814
+                        }}
+                        mapStyle="Default"
+                        className="rounded-soft mt-2 google-maps-l container-map"
+                        token_api={farm.token_apimaps}
+                        mapTypeId='satellite'
+                        polygons={sigef.map(p => ({path:p.coordenadas}))}
+                        zoom={11}
+                    />
+                    </> 
+                    :
+                    <div>
+                        <Placeholder animation="glow">
+                            <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                            <Placeholder xs={4} />
+                            <Placeholder xs={6} /> <Placeholder xs={8} />
+                        </Placeholder>    
+                    </div>  
+                }   
             </Tab>
         }
         </Tabs>

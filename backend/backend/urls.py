@@ -22,6 +22,7 @@ urlpatterns = [
     path('glebas/', include('glebas.urls')),
     path('kpi/', include('kpi.urls')),
     path('irrigation/', include('irrigation.urls')),
+    path('inbox/', include('inbox.urls')),
     path('licenses/', include('licenses.urls')),
     path('litec/', include('litec.urls')),
     path('register/', include('cadastro.urls')),

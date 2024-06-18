@@ -61,7 +61,6 @@ const FormAvaliacao = ({ hasLabel, type, submit, data}) => {
 
   const handleFieldChange = e => {
     if (e.target.type === 'checkbox') {
-      console.log(e.target.checked)
       setFormData({
         ...formData,
         [e.target.name]: e.target.checked ? true : false

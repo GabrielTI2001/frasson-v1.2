@@ -19,17 +19,19 @@ const ProductForm = ({
   const [formData, setFormData] = useState({phase:fase, id:4});
   const [message, setMessage] = useState();
   const inputRef = useRef(null);
+  const token = localStorage.getItem("token")
 
   const submit = async () => {
       const isEmpty = !Object.keys(formData).length;
     if (!isEmpty) {
-      api.post('pipeline/cards/produtos/', formData)
+      api.post('pipeline/cards/produtos/', formData, {headers: {Authorization: `bearer ${token}`}})
       .then((response) => {
         kanbanDispatch({
           type: 'ADD_TASK_CARD',
           payload: { targetListId: fase, 
             novocard:{id: response.data.id, card:response.data.card, str_detalhamento:response.data.info_detalhamento.detalhamento_servico,
-            str_beneficiario:response.data.list_beneficiario[0].razao_social, created_at: response.data.created_at
+            str_beneficiario:response.data.list_beneficiario[0].razao_social, created_at: response.data.created_at, code:response.data.code,
+            prioridade:response.data.prioridade
           }}
         });
         onSubmit()
@@ -74,6 +76,22 @@ const ProductForm = ({
             <label className='text-danger fs--2'>{message ? message.card : ''}</label>
           </Form.Group>
 
+          <Form.Group className="mb-2" as={Col} lg={4} xl={3} sm={6}>
+            <Form.Label className='fw-bold mb-1'>Prioridade</Form.Label>
+            <Form.Select
+              ref={inputRef}
+              onChange={({ target }) =>
+                setFormData({ ...formData, prioridade: target.value })
+              }
+            >
+              <option>---</option>
+              <option value='Alta'>Alta</option>
+              <option value='Media'>Média</option>
+              <option value='Baixa'>Baixa</option>
+            </Form.Select>  
+            <label className='text-danger fs--2'>{message ? message.prioridade : ''}</label>
+          </Form.Group>
+
           <Form.Group className="mb-2" as={Col} xl={5}>
             <Form.Label className='fw-bold mb-1'>Beneficiário*</Form.Label>
             <AsyncSelect 
@@ -83,6 +101,22 @@ const ProductForm = ({
                 setFormData((prevFormData) => ({
                   ...prevFormData,
                   beneficiario: selectedOptions.map(s => s.value)
+                }));
+              }} 
+              className='mb-1'
+            />
+            <label className='text-danger fs--2'>{message ? message.beneficiario : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col} xl={5}>
+            <Form.Label className='fw-bold mb-1'>Responsáveis*</Form.Label>
+            <AsyncSelect 
+              ref={inputRef} isMulti styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+              loadOptions={(v) => SelectSearchOptions(v, 'users/users', 'first_name', 'last_name', true)}
+              onChange={(selectedOptions ) => {
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  responsaveis: selectedOptions.map(s => s.value)
                 }));
               }} 
               className='mb-1'
@@ -104,6 +138,19 @@ const ProductForm = ({
               className='mb-1'
             />
             <label className='text-danger fs--2'>{message ? message.detalhamento : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col} lg={4} xl={3} sm={6}>
+            <Form.Label className='fw-bold mb-1'>Valor da Operação</Form.Label>
+            <Form.Control
+              type='number'
+              ref={inputRef}
+              onChange={({ target }) =>
+                setFormData({ ...formData, valor_operacao: target.value })
+              }
+              value={formData.valor_operacao || ''}
+            />
+            <label className='text-danger fs--2'>{message ? message.valor_operacao : ''}</label>
           </Form.Group>
 
           <Form.Group className="mb-2" as={Col} xl={4}>
@@ -139,16 +186,16 @@ const ProductForm = ({
           </Form.Group>
 
           <Form.Group className="mb-2" as={Col} lg={4} xl={3} sm={6}>
-            <Form.Label className='fw-bold mb-1'>Valor da Operação</Form.Label>
+            <Form.Label className='fw-bold mb-1'>Data Vencimento</Form.Label>
             <Form.Control
-              type='number'
+              type='date'
               ref={inputRef}
               onChange={({ target }) =>
-                setFormData({ ...formData, valor_operacao: target.value })
+                setFormData({ ...formData, data_vencimento: target.value })
               }
-              value={formData.valor_operacao || ''}
+              value={formData.data_vencimento || ''}
             />
-            <label className='text-danger fs--2'>{message ? message.valor_operacao : ''}</label>
+            <label className='text-danger fs--2'>{message ? message.data_vencimento : ''}</label>
           </Form.Group>
 
           <Form.Group className="mb-2 text-end" as={Col} xl={12}>

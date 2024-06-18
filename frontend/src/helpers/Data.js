@@ -74,7 +74,7 @@ export const GetRecord = async (uuid, url) => {
   }
 }
 
-export const SelectSearchOptions = async (inputValue, link, field, field2) => {
+export const SelectSearchOptions = async (inputValue, link, field, field2, join) => {
     const token = localStorage.getItem("token")
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/?search=${inputValue}`;
@@ -89,7 +89,7 @@ export const SelectSearchOptions = async (inputValue, link, field, field2) => {
       if (response.status === 200){
         const options = dataapi.map(b =>({
             value: b.id,
-            label: `${b[field]}${field2 ? ' - '+b[field2] : ''}`
+            label: `${b[field]}${field2 ? !join ? ' - ' : ' '+b[field2] : ''}`
         }))
         return options
       }

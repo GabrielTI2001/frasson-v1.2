@@ -8,6 +8,7 @@ router = routers.DefaultRouter()
 router.register(r'regime', views.RegimesView)
 router.register(r'farms', views.FarmsView)
 router.register(r'car', views.CARView)
+router.register(r'parcelas-sigef', views.SIGEFView)
 
 urlpatterns = [
     path('credit-data', views.creditData, name='credit.data'),

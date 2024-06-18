@@ -15,36 +15,6 @@ const KanbanColumn = ({ kanbanColumnItem}) => {
     kanbanState: { fases}
   } = useContext(PipeContext);
 
-  // const handleSubmit = cardData => {
-  //   console.log(fases)
-  //   const targetList = fases.find(fase =>fase.idfase === idfase);
-  //   const cardId = targetList.card_set.length
-  //     ? Math.max(...targetList.card_set.map(card => card.idcard)) + 1
-  //     : Number(`${targetList.idfase}0`);
-  //   const newCard = {
-  //     idcard: cardId,
-  //     fase: kanbanColumnItem.idfase,
-  //     user: 1,
-  //     valor: cardData.valor,
-  //     prazovenc: cardData.venc
-  //   };
-  //   const isEmpty = !Object.keys(cardData).length;
-
-  //   if (!isEmpty) {
-  //     api.post('/cards/', newCard)
-  //     .then((response) => {
-  //       kanbanDispatch({
-  //         type: 'ADD_TASK_CARD',
-  //         payload: { targetListId: idfase, novocard:newCard}
-  //       });
-  //     })
-  //     .catch((erro) => {
-  //       console.error('erro: '+erro);
-  //     })
-  //     setShowForm(false);
-  //   }
-  // };
-
   useEffect(() => {
     const timeout = setTimeout(() => {
       formViewRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -67,6 +37,7 @@ const KanbanColumn = ({ kanbanColumnItem}) => {
               {card_produtos_set.map((card, index) => (
                 <TaskCard key={index} index={index} task={card}/>
               ))}
+              
               {provided.placeholder}
               <div ref={formViewRef}></div>
             </div>

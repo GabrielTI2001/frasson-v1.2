@@ -19,47 +19,18 @@ const ModalCommentContent = ({card}) => {
             <Form>
               <Form.Control
                 as="textarea"
-                className="border-0 rounded-bottom-0 resize-none"
-                rows={3}
+                className="border-0 rounded-bottom-0 resize-none fs--1"
+                rows={2}
+                placeholder='Escreva Seu Comentário'
               />
               <Flex
-                justifyContent="between"
+                justifyContent="end"
                 alignItems="center"
-                className="bg-light rounded-bottom p-2 mt-1"
+                className="rounded-bottom p-2 mt-1"
               >
                 <Button size="sm" color="primary" type="submit">
-                  Save
+                  Comentar
                 </Button>
-                <ul className="list-inline mb-0">
-                  <li className="list-inline-item mr-1">
-                    <Form.Group controlId="file-attachment">
-                      <Form.Label className="link-600 px-2 transition-base rounded cursor-pointer mb-0">
-                        <FontAwesomeIcon icon={faPaperclip} />
-                      </Form.Label>
-                      <Form.Control type="file" className="d-none" />
-                    </Form.Group>
-                  </li>
-                  <li className="list-inline-item mr-1">
-                    <Link
-                      to="#!"
-                      className="link-600 px-2 transition-base rounded"
-                    >
-                      <FontAwesomeIcon icon={faAt} />
-                    </Link>
-                  </li>
-                  <li className="list-inline-item mr-1">
-                    <Form.Group controlId="file-image">
-                      <Form.Label className="link-600 px-2 transition-base rounded cursor-pointer mb-0">
-                        <FontAwesomeIcon icon={faImage} />
-                      </Form.Label>
-                      <Form.Control
-                        type="file"
-                        className="d-none"
-                        accept="image/*"
-                      />
-                    </Form.Group>
-                  </li>
-                </ul>
               </Flex>
             </Form>
           </div>

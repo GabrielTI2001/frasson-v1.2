@@ -26,10 +26,12 @@ class serializerContratos_Servicos(serializers.ModelSerializer):
 
 class serializerCard_Produtos(serializers.ModelSerializer):
     str_fase = serializers.CharField(source='phase.descricao', read_only=True)
+    fases_list = serializers.SerializerMethodField(read_only=True)
     info_contrato = serializers.SerializerMethodField(read_only=True)
     list_beneficiario = serializers.SerializerMethodField(read_only=True)
     info_instituicao = serializers.SerializerMethodField(read_only=True)
     info_detalhamento = serializers.SerializerMethodField(read_only=True)
+    list_responsaveis = serializers.SerializerMethodField(read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
@@ -39,12 +41,15 @@ class serializerCard_Produtos(serializers.ModelSerializer):
         else:
             for field_name, field in self.fields.items():
                 field.required = False
-    class Meta:
-        model = Card_Produtos
-        fields = '__all__'
+    def get_fases_list(self, obj):
+        fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe.id)]
+        return fases_list
     def get_list_beneficiario(self, obj):
         beneficiarios = obj.beneficiario.all()
         return [{'id':b.id, 'razao_social':b.razao_social, 'cpf_cnpj':b.cpf_cnpj} for b in beneficiarios]
+    def get_list_responsaveis(self, obj):
+        responsaveis = obj.responsaveis.all()
+        return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
     def get_info_instituicao(self, obj):
         if obj.instituicao:
             return {
@@ -72,16 +77,23 @@ class serializerCard_Produtos(serializers.ModelSerializer):
             }
         else:
             return None
+    class Meta:
+        model = Card_Produtos
+        fields = '__all__'
         
 class listCard_Produtos(serializers.ModelSerializer):
     str_detalhamento = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
     str_beneficiario = serializers.SerializerMethodField(read_only=True)
+    list_responsaveis = serializers.SerializerMethodField(read_only=True)
     def get_str_beneficiario(self, obj):
         beneficiarios = obj.beneficiario.all()
         return beneficiarios[0].razao_social if len(beneficiarios) > 0 else '-'
+    def get_list_responsaveis(self, obj):
+        responsaveis = obj.responsaveis.all()
+        return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
     class Meta:
         model = Card_Produtos
-        fields = ['id', 'uuid', 'str_detalhamento', 'str_beneficiario', 'card', 'created_at']
+        fields = ['id', 'uuid', 'code', 'str_detalhamento', 'str_beneficiario', 'card', 'prioridade', 'created_at', 'data_vencimento', 'list_responsaveis']
 
 
 class serializerFase(serializers.ModelSerializer):

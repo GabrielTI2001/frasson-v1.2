@@ -11,6 +11,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Placeholder } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
 library.add(faPlus);
 
 const KanbanContainer = () => {
@@ -18,7 +19,8 @@ const KanbanContainer = () => {
     kanbanState,
     kanbanDispatch
   } = useContext(PipeContext);
-  const {uuid} = useParams()
+  const token = localStorage.getItem("token")
+  const {code} = useParams()
   const [showForm, setShowForm] = useState(false);
   const containerRef = useRef(null);
   const fases = kanbanState.fases;
@@ -39,9 +41,9 @@ const KanbanContainer = () => {
       setShowForm(false);
     }
   };
-
+  
   useEffect(() => {
-    if (uuid) {
+    if (code) {
       kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {} });
     }
     if (is.ipad()) {
@@ -110,25 +112,40 @@ const KanbanContainer = () => {
         payload: { column, reorderedItems }
       });
     } else {
+      const initialSourceItems = [...getColumn(source.droppableId).card_produtos_set];
+      const initialDestItems = destination.droppableId !== source.droppableId ? [...getColumn(destination.droppableId).card_produtos_set] : null;
       const sourceColumn = getColumn(source.droppableId);
       const destColumn = getColumn(destination.droppableId);
 
       const movedItems = move(source, destination);
-      var idcard = getColumn(source.droppableId).card_produtos_set[source.index].id
-      api.put(`pipeline/cards/produtos/${idcard}/`, {'phase':destColumn.id})
+      var idcard = getColumn(source.droppableId).card_produtos_set[source.index].code
+      kanbanDispatch({
+        type: 'UPDATE_DUAL_COLUMN',
+        payload: {
+          idcard,
+          sourceColumn,
+          updatedSourceItems: movedItems.updatedSourceItems,
+          destColumn,
+          updatedDestItems: movedItems.updatedDestItems
+        }
+      });
+      api.put(`pipeline/cards/produtos/${idcard}/`, {'phase':destColumn.id}, {headers: {Authorization: `bearer ${token}`}})
       .then((response) => {
-        kanbanDispatch({
-          type: 'UPDATE_DUAL_COLUMN',
-          payload: {
-            idcard,
-            sourceColumn,
-            updatedSourceItems: movedItems.updatedSourceItems,
-            destColumn,
-            updatedDestItems: movedItems.updatedDestItems
-          }
-        });
+        toast.success("Card Movido Com Sucesso!")
       })
       .catch((erro) => {
+        if (erro.response.status === 400){
+          toast.error(erro.response.data.phase[0])
+          kanbanDispatch({
+            type: 'REVERT_DRAG',
+            payload: {
+              sourceColumnId: destination.droppableId,
+              initialSourceItems,
+              destColumnId: source.droppableId,
+              initialDestItems
+            }
+          });
+        }
         console.error('erro: '+erro);
       })
     }
@@ -136,7 +153,7 @@ const KanbanContainer = () => {
 
     return (
       <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="kanban-container me-n3" ref={containerRef}>
+        <div className="kanban-container me-n3" ref={containerRef} xl={8}>
         {/* Pega o array de itens e renderiza um div pra cada*/}
           {kanbanState.fases ? kanbanState.fases.map((fase)=>{
             return( 
@@ -155,7 +172,7 @@ const KanbanContainer = () => {
             </Placeholder>    
           </div>   
           }
-          <div className="kanban-column">
+          <div className="kanban-column w-25">
             <AddAnotherFase
               type="list"
               onSubmit={handleSubmit}
@@ -165,7 +182,7 @@ const KanbanContainer = () => {
             {!showForm && (
               <IconButton
                 variant="secondary"
-                className="d-block w-100 border-400 bg-400"
+                className="d-block border-400 bg-400 fs--1"
                 icon={faPlus}
                 iconClassName="me-1"
                 onClick={() => setShowForm(true)}

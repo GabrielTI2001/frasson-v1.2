@@ -43,24 +43,11 @@ class detailFarms(serializers.ModelSerializer):
     parcelas_sigef = serializers.SerializerMethodField(read_only=True)
     token_apimaps = serializers.SerializerMethodField(read_only=True)
     def get_coordenadas_car(self, obj):
-        car = Cadastro_Ambiental_Rural_Coordenadas.objects.filter(car__imovel_id=obj.id)
-        coordenadas_car = [{
-            "lat": float(coord.latitude),
-            "lng": float(coord.longitude)
-        }for coord in car]
-        return coordenadas_car
+        car = Cadastro_Ambiental_Rural_Coordenadas.objects.filter(car__imovel_id=obj.id).count()
+        return True if car > 0 else False
     def get_parcelas_sigef(self, obj):
-        parcelas = Certificacao_Sigef_Parcelas.objects.filter(imovel_id=obj.id)
-        vertices = Certificacao_Sigef_Parcelas_Vertices.objects.filter(parcela__imovel_id=obj.id)
-        poligonos_sigef = []
-        for p in parcelas:
-            vertices = Certificacao_Sigef_Parcelas_Vertices.objects.filter(parcela=p)
-            coordenadas_sigef = [{
-                "lat": float(v.latitude),
-                "lng": float(v.longitude)
-            }for v in vertices]
-            poligonos_sigef.append(coordenadas_sigef)
-        return poligonos_sigef
+        parcelas = Certificacao_Sigef_Parcelas.objects.filter(imovel_id=obj.id).count()
+        return True if parcelas > 0 else False
     def get_kml(self, obj):
         kml = None
         payload = {"query":"{table_record (id:" + str(obj.id) + ") {record_fields{native_value field{id}}}}"}
@@ -101,3 +88,17 @@ class detailCAR(serializers.ModelSerializer):
     class Meta:
         model = Cadastro_Ambiental_Rural
         fields = '__all__'
+
+class ListSIGEF(serializers.ModelSerializer):
+    coordenadas = serializers.SerializerMethodField(read_only=True)
+    def get_coordenadas(self, obj):
+        coordenadas = Certificacao_Sigef_Parcelas_Vertices.objects.filter(parcela=obj)
+        coordenadas_car = [{
+            "id": coord.id,
+            "lat": float(coord.latitude),
+            "lng": float(coord.longitude)
+        }for coord in coordenadas]
+        return coordenadas_car
+    class Meta:
+        model = Certificacao_Sigef_Parcelas
+        fields = ['id', 'coordenadas']

@@ -1,14 +1,28 @@
 from django.shortcuts import render
+from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
-from .models import Agencias_Bancarias, Feedbacks_Category, Feedbacks_System
+from .models import Agencias_Bancarias, Feedbacks_Category, Feedbacks_System, Welcome_Messages
+from pipeline.models import Card_Produtos
 from .serializers import *
 from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
 from django.db.models import Q
+from datetime import date
+
+def home(request):
+    produtos_count = Card_Produtos.objects.all().count()
+    welcome_message = Welcome_Messages.objects.order_by("?").values('message').first()
+    data_hoje_str = date.today().strftime("%A, %d de %B de %Y")
+    context = {
+        'produtos_count': produtos_count,
+        'message': welcome_message['message'],
+        'str_data_hoje': data_hoje_str
+    }
+    return JsonResponse(context)
 
 class MunicipioView(viewsets.ModelViewSet):
     queryset = Municipios.objects.all()

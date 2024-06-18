@@ -4,7 +4,7 @@ import { PipeContext } from '../../context/Context';
 import { kanbanReducer } from '../../reducers/pipeproductReducer';
 
 const KanbanProvider = ({ children, id }) => {
-  // const {uuid} = useParams();
+  const token = localStorage.getItem("token")
   const navigate = useNavigate();
   const [kanbanState, kanbanDispatch] = useReducer(kanbanReducer, {
     pipe: {},
@@ -24,11 +24,11 @@ const KanbanProvider = ({ children, id }) => {
   const fetchData = async () => {
     try {
       //Faça a solicitação com o token
-      const apiUrl = `http://localhost:8000/pipeline/pipes/${id}/`;
+      const apiUrl = `${process.env.REACT_APP_API_URL}/pipeline/pipes/${id}/`;
       const response = await fetch(apiUrl, {
         headers: {
           'Content-Type': 'application/json',
-          // 'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${token}`
         }
       });
 
@@ -55,7 +55,6 @@ const KanbanProvider = ({ children, id }) => {
   };
 
   useEffect(() => {
-    // Execute a função fetchData apenas se ainda não estiver inicializado
     fetchData();
   }, []);
 

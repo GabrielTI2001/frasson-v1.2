@@ -2,8 +2,8 @@ from django.shortcuts import render, HttpResponse
 from django.db.models import Q
 from django.http import JsonResponse
 from rest_framework import viewsets
-from .serializers import ListRegimes, detailRegimes, listFarms, detailFarms, ListCAR, detailCAR
-from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Operacoes_Contratadas, Cadastro_Ambiental_Rural, Cadastro_Ambiental_Rural_Coordenadas
+from .serializers import ListRegimes, detailRegimes, listFarms, detailFarms, ListCAR, detailCAR, ListSIGEF
+from pipefy.models import Regimes_Exploracao, Imoveis_Rurais, Operacoes_Contratadas, Cadastro_Ambiental_Rural, Certificacao_Sigef_Parcelas
 from io import BytesIO
 from bs4 import BeautifulSoup
 from openpyxl import Workbook
@@ -58,12 +58,30 @@ class CARView(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)   
+        imovel_term = self.request.query_params.get('imovel', None)
         if search_term:
             queryset = queryset.filter(Q(imovel__nome_imovel__icontains=search_term))
+        if imovel_term:
+            queryset = queryset.filter(Q(imovel__id=imovel_term))
         return queryset
     def get_serializer_class(self):
         if self.action == 'list':
             return ListCAR
+        else:
+            return self.serializer_class
+        
+class SIGEFView(viewsets.ModelViewSet):
+    queryset = Certificacao_Sigef_Parcelas.objects.all()
+    serializer_class = ListSIGEF
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        imovel_term = self.request.query_params.get('imovel', None)
+        if imovel_term:
+            queryset = queryset.filter(Q(imovel__id=int(imovel_term)))
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ListSIGEF
         else:
             return self.serializer_class
         

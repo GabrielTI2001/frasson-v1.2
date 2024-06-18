@@ -97,7 +97,7 @@ const NotificationDropdown = () => {
             className="card-footer text-center border-top"
             onClick={handleToggle}
           >
-            <Link className="card-link d-block" to="#!">
+            <Link className="card-link d-block" to="/notifications">
               View all
             </Link>
           </div>

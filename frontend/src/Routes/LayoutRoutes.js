@@ -50,6 +50,8 @@ import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
 import IndexGlebas from '../App/Glebas/Index';
 import MapaGlebas from '../App/Glebas/Mapa';
 import ViewGleba from '../App/Glebas/View';
+//Inbox
+import Notifications from '../App/Inbox/Index';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
@@ -253,6 +255,9 @@ const LayoutRoutes = () => {
         <Route path="/litec">
           <Route path="glebas" element={<IndexGlebas />}/>
         </Route>
+        <Route path="/Notifications">
+          <Route path="" element={<Notifications />}/>
+        </Route>
         <Route path="/pipefy">
           <Route path="pessoal" element={<IndexPessoal />}/>
           <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
@@ -265,7 +270,7 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/pipeline">
           <Route path="products" element={<Products />}/>
-          <Route path="products/:uuid" element={<Products />}/>
+          <Route path="products/:code" element={<Products />}/>
         </Route>
         <Route path="/processes">
           <Route path="followup" element={<IndexFollowup />}/>
