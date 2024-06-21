@@ -9,7 +9,7 @@ import AppContext, { PipeContext } from '../../../context/Context';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEllipsisH, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import SubtleBadge from '../../../components/common/SubtleBadge';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 import api from '../../../context/data';
 import { toast } from 'react-toastify';
@@ -33,13 +33,14 @@ export const TaskDropMenu = ({ card, click }) => {
   const [modaldel, setModaldel] = useState({show:false})
   const navigate = useNavigate()
   const token = localStorage.getItem("token")
+  const {pipe, code} = useParams()
 
   const {
     config: { isRTL }
   } = useContext(AppContext);
 
   const handleClose = () => {
-    navigate(`/pipeline/products`)
+    navigate(`/pipeline/${pipe}/cards`)
     kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   };
   
@@ -88,8 +89,9 @@ const TaskCard = ({
 }) => {
   const { kanbanDispatch} = useContext(PipeContext);
   const navigate = useNavigate()
+  const {pipe, code} = useParams()
   const handleModalOpen = () => {
-    navigate('/pipeline/products/'+task.code)
+    navigate(`/pipeline/${pipe}/cards/${task.code}`)
     kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {card: task} });
   };
   // styles we need to apply on draggables

@@ -29,11 +29,13 @@ class serializerCard_Produtos(serializers.ModelSerializer):
             for field_name, field in self.fields.items():
                 if field_name in ['card', 'beneficiario', 'contrato', 'instituicao', 'detalhamento']:
                     field.required = True
+                else:
+                    field.required = False
         else:
             for field_name, field in self.fields.items():
                 field.required = False
     def get_fases_list(self, obj):
-        fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe.id)]
+        fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe_id)]
         return fases_list
     def get_list_beneficiario(self, obj):
         beneficiarios = obj.beneficiario.all()
@@ -55,7 +57,7 @@ class serializerCard_Produtos(serializers.ModelSerializer):
             return {
                 'id': obj.detalhamento.id,
                 'detalhamento_servico': obj.detalhamento.detalhamento_servico,
-                'produto': obj.detalhamento.produto,
+                'produto': obj.detalhamento.produto.description,
             }
         else:
             return None
@@ -64,7 +66,7 @@ class serializerCard_Produtos(serializers.ModelSerializer):
             return {
                 'id': obj.contrato.id,
                 'contratante': obj.contrato.contratante.razao_social,
-                'produto': obj.contrato.produto,
+                'produto': ', '.join([s.produto.description for s in obj.contrato.servicos.all()]),
             }
         else:
             return None
@@ -111,6 +113,11 @@ class serializerFase(serializers.ModelSerializer):
 
 class serializerPipe(serializers.ModelSerializer):
     fase_set = serializerFase(many=True, read_only=True, required=False)
+    class Meta:
+        model = Pipe
+        fields = '__all__'
+
+class listPipe(serializers.ModelSerializer):
     class Meta:
         model = Pipe
         fields = '__all__'

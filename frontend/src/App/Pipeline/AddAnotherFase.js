@@ -1,9 +1,13 @@
 import classNames from 'classnames';
 // import PropTypes from 'prop-types';
+import AsyncSelect from 'react-select/async';
 import React, { useEffect, useRef, useState, useContext} from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import api from '../../context/data';
 import { PipeContext } from '../../context/Context';
+import { SelectSearchOptions } from '../../helpers/Data';
+import { useAppContext } from '../../Main';
+import customStyles, { customStylesDark } from '../../components/Custom/SelectStyles';
 
 const AddAnotherFase = ({
   onSubmit: handleSubmit,
@@ -19,6 +23,7 @@ const AddAnotherFase = ({
   const [msg, setMsg] = useState();
   const inputRef = useRef(null);
   const token = localStorage.getItem("token")
+  const {config: {theme}} = useAppContext();
 
   const submitform = () => {
     api.post('/pipeline/fases/', {...formData, pipe:kanbanState.pipe.id}, {headers: {Authorization: `bearer ${token}`}})
@@ -78,6 +83,30 @@ const AddAnotherFase = ({
               }
             />
             <label className='error-msg text-danger'>{msg && msg.done}</label>
+            <Form.Label className='fw-bold mb-1 fs--1'>Responsáveis*</Form.Label>
+            <AsyncSelect
+              ref={inputRef} isMulti styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+              rows={3}
+              loadOptions={(v) => SelectSearchOptions(v, 'users/users', 'first_name', 'last_name', true)}
+              onChange={(selectedOptions ) => {
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  responsaveis: selectedOptions.map(s => s.value)
+                }));
+              }} 
+              className='mb-1'
+            />
+            <label className='text-danger fs--2'>{msg ? msg.responsaveis : ''}</label>
+            <Form.Control
+              className="mb-2"
+              type='number'
+              ref={inputRef}
+              onChange={({ target }) =>
+                setFormData({ ...formData, dias_prazo: target.value })
+              }
+              placeholder='Dias Prazo'
+            />
+            <label className='error-msg text-danger'>{msg && msg.dias_prazo}</label>
             <Row className="gx-2">
               <Col>
                 <Button
@@ -95,7 +124,7 @@ const AddAnotherFase = ({
                   size="sm"
                   className="d-block w-100 border-400"
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {setShowForm(false); setMsg(null)}}
                 >
                   Cancel
                 </Button>

@@ -20,25 +20,25 @@ const IndexPessoal = () => {
     const [modalDelete, setModalDelete] = useState({show:false, link:''})
 
     const onClick = (data, type) =>{
-        if ((user.permissions && user.permissions.indexOf("view_cadastro_pessoal") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_cadastro_cartorios_registro") === -1) && !user.is_superuser){
            navigate("/error/403")
         }
         if (type === 'view'){
-            const url = `/register/pessoal/${data.uuid}`
+            const url = `/register/cartorios/${data.uuid}`
             navigate(url)
         }
         else if (type === 'edit'){
             setShowModal({show:true, data:data.uuid})
         }
         else if (type === 'delete'){
-            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/register/pessoal/${data.uuid}/`})
+            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/register/cartorios/${data.uuid}/`})
         }
     }
     const setter = (data) => {
         setSearchResults(data)
     }
     const handleChange = async (value) => {
-        HandleSearch(value, 'register/pessoal', setter)
+        HandleSearch(value, 'register/cartorios', setter)
     };
     const submit = (type, data, id) => {
         if (type == 'add'){
@@ -56,10 +56,10 @@ const IndexPessoal = () => {
 
     useEffect(()=>{
         const Search = async () => {
-            const status = await HandleSearch('', 'register/pessoal', setter) 
+            const status = await HandleSearch('', 'register/cartorios', setter) 
             if (status === 401) navigate("/auth/login");
         }
-        if ((user.permissions && user.permissions.indexOf("view_cadastro_pessoal") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_cadastro_cartorios_registro") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
@@ -74,7 +74,7 @@ const IndexPessoal = () => {
                 <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
             </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                Cadastro Pessoal
+                Cartórios Registro
             </li>  
         </ol>
         {searchResults ? 

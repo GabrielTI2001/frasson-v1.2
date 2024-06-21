@@ -18,11 +18,14 @@ const IndexCadGerais = () =>{
         const dadosbenfeitoria = await fetchBenfeitorias();
         const dadosanalise = await FetchAnaliseSolo();
         const dadosmaquinas = await GetRecord('', 'register/machinery');
+        const dadospessoas = await GetRecord('', 'register/pessoal');
         if (!dadosbenfeitoria || !dadosanalise || !dadosbenfeitoria){
           navigate("/auth/login")
         }
         else{
-          setCountRegs({'benfeitoria':dadosbenfeitoria.length, 'analisesolo':dadosanalise.length, 'maquinas':dadosmaquinas.length,})
+          setCountRegs({'benfeitoria':dadosbenfeitoria.length, 'analisesolo':dadosanalise.length, 'maquinas':dadosmaquinas.length,
+            'pessoal':dadospessoas.length
+          })
         }
       }
       if ((user.permissions && user.permissions.indexOf("ver_cadastros_gerais") === -1) && !user.is_superuser){
@@ -48,7 +51,7 @@ const IndexCadGerais = () =>{
                     <FontAwesomeIcon icon={faPerson} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
                   </Row>
                   <h5 className="text-center text-white mt-2 fs--2">Cadastro Pessoal</h5>     
-                  <h5 className="text-center text-white fs--2">Registro(s)</h5>                
+                  <h5 className="text-center text-white fs--2">{countRegs && countRegs.pessoal} Registro(s)</h5>                
                 </Card.Body>
                 </Link>
             </Card>

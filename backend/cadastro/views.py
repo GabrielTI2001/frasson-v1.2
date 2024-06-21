@@ -24,6 +24,20 @@ def home(request):
     }
     return JsonResponse(context)
 
+class CategoriaCadView(viewsets.ModelViewSet):
+    queryset = Categoria_Cadastro.objects.all()
+    serializer_class = listCategoriaCadastro
+
+class GrupoClienteView(viewsets.ModelViewSet):
+    queryset = Grupos_Clientes.objects.all()
+    serializer_class = listGrupoCliente
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)   
+        if search_term:
+            queryset = queryset.filter(nome_grupo__icontains=search_term)
+        return queryset
+
 class MunicipioView(viewsets.ModelViewSet):
     queryset = Municipios.objects.all()
     serializer_class = selectMunicipio
@@ -40,14 +54,18 @@ class MunicipioView(viewsets.ModelViewSet):
 
 class CartorioView(viewsets.ModelViewSet):
     queryset = Cartorios_Registro.objects.all()
-    serializer_class = listCartorio
-
+    serializer_class = detailCartorio
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)   
         if search_term:
             queryset = queryset.filter(nome_municipio__icontains=search_term)
         return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCartorio
+        else:
+            return self.serializer_class
 
 class MachineryView(viewsets.ModelViewSet):
     queryset = Maquinas_Equipamentos.objects.all()

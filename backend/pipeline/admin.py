@@ -1,3 +1,14 @@
 from django.contrib import admin
+from .models import Card_Produtos, Fase, Pipe
 
-# Register your models here.
+@admin.register(Card_Produtos)
+class Card_ProdutosAdmin(admin.ModelAdmin):
+    list_display = ('uuid',)
+
+@admin.register(Fase)
+class FaseAdmin(admin.ModelAdmin):
+    list_display = ('uuid', 'descricao',)
+
+@admin.register(Pipe)
+class PipeAdmin(admin.ModelAdmin):
+    list_display = ('uuid', 'descricao',)

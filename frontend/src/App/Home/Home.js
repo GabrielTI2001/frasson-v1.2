@@ -5,16 +5,18 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenSquare, faPencilSquare } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '../../Main';
-import { GetRecord } from '../../helpers/Data';
+import { GetRecord, HandleSearch } from '../../helpers/Data';
 const Home = () => {
     const {profileState:{perfil}} = useContext(ProfileContext)
     const {config: {theme}} = useAppContext();
     const [data, setData] = useState()
+    const [pipes, setPipes] = useState()
 
     useEffect(() => {
         const getdata = async () =>{
             const dados = await GetRecord('', 'register/landing')
             setData(dados)
+            const status = await HandleSearch('', 'pipeline/pipes', (data) => setPipes(data))
         }   
         getdata()
     }, [])
@@ -40,26 +42,18 @@ const Home = () => {
             }
             <h4 className='fw-bold fs-1'>Fluxos</h4>
             <Row xl={11} sm={5} xs={1} lg={10} className='gx-4 gy-4 cols-xl-12'>
-                <Col>
+            {pipes && pipes.map(p =>
+                <Col key={p.id}>
                     <Link className={`card card-link-success-${theme} p-3 text-center`} 
-                        to={'/pipeline/products'}
+                        to={`/pipeline/${p.code}/cards`}
                     >
                         <div className='mb-3'>
                             <FontAwesomeIcon icon={faPencilSquare} className='fs-5 text-success-emphasis'/>
                         </div>
-                        <h4 className='fs--1 text-body'>Produtos</h4>
+                        <h4 className='fs--1 text-body'>{p.descricao}</h4>
                     </Link>
                 </Col>
-                <Col>
-                    <Link className={`card card-link-success-${theme} p-3 text-center`} 
-                        to={'/pipeline/prospects'}
-                    >
-                        <div className='mb-3'>
-                            <FontAwesomeIcon icon={faPencilSquare} className='fs-5 text-success-emphasis'/>
-                        </div>
-                        <h4 className='fs--1 text-body'>Prospects</h4>
-                    </Link>
-                </Col>
+            )}
             </Row>
         </>
 

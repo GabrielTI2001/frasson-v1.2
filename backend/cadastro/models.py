@@ -102,7 +102,7 @@ class Instituicoes_Parceiras(models.Model):
     class Meta:
         verbose_name_plural = 'Instituições Parceiras Frasson'
     def __str__(self):
-        return self.instituicao.razao_social 
+        return self.identificacao 
 
 class Cadastro_Pessoal(models.Model): 
     CHOICES_NATUREZA = (('PF', 'Pessoa Física'), ('PJ', 'Pessoa Jurídica'))

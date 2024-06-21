@@ -29,7 +29,7 @@ const ViewPessoal = () => {
     useEffect(() =>{
         const getProcessos = async (params) =>{
             try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/pipefy/cards/produtos/?${params}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/pipeline/cards/produtos/?${params}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -44,9 +44,6 @@ const ViewPessoal = () => {
                     const data = await response.json();
                     setProcessos(data)
                 }
-                else if (response.status === 404){
-                    navigate("/error/404")
-                }
             } catch (error){
                 console.error("Erro: ",error)
             }            
@@ -54,7 +51,7 @@ const ViewPessoal = () => {
 
         const getOperacoes = async (params) =>{
             try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/pipefy/operacoes-contratadas/?${params}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/credit/operacoes-contratadas/?${params}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -69,9 +66,6 @@ const ViewPessoal = () => {
                     const data = await response.json();
                     setOperacoes(data)
                 }
-                else if (response.status === 404){
-                    navigate("/error/404")
-                }
             } catch (error){
                 console.error("Erro: ",error)
             }            
@@ -79,7 +73,7 @@ const ViewPessoal = () => {
 
 
         const getData = async () => {
-            const status = RetrieveRecord(uuid, 'pipefy/pessoal', (data) => {setPessoa(data); data.data_nascimento && calcIdade(data.data_nascimento)})
+            const status = RetrieveRecord(uuid, 'register/pessoal', (data) => {setPessoa(data); data.data_nascimento && calcIdade(data.data_nascimento)})
             if (status === 401){
                 navigate("/auth/login");
             }
@@ -107,7 +101,7 @@ const ViewPessoal = () => {
                 <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
             </li>
             <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/pipefy/pessoal'}>Cadastro Pessoal</Link>
+                <Link className="link-fx text-primary" to={'/register/pessoal'}>Cadastro Pessoal</Link>
             </li>
             {pessoa && (
                <li className="breadcrumb-item fw-bold" aria-current="page">
@@ -128,7 +122,7 @@ const ViewPessoal = () => {
                     </Col>
                 </Row>
                 <address className="row mx-0 gx-0 mb-3">
-                    <div className="mb-1"><FontAwesomeIcon icon={faLocationDot} className="me-2"/>{pessoa && pessoa.endereco || '-'}</div>
+                    <div className="mb-1"><FontAwesomeIcon icon={faLocationDot} className="me-2"/>{(pessoa && pessoa.endereco) || '-'}</div>
                     <div className="mb-1"><FontAwesomeIcon icon={faLocationArrow} className="me-2"/>{pessoa && pessoa.municipio}</div>
                     <div className="mb-1"><FontAwesomeIcon icon={faMapPin} className="me-2"/>{pessoa && pessoa.cep}</div>
                 </address>
@@ -139,9 +133,6 @@ const ViewPessoal = () => {
                     <div><FontAwesomeIcon icon={faBriefcase} className="me-2"/>{pessoa && pessoa.profissao ? pessoa.profissao :'-'}</div>
                     <div><FontAwesomeIcon icon={faUsersLine} className="me-2"/>{pessoa && pessoa.grupo_info ? pessoa.grupo_info :'-'}</div>
                 </Row>
-                {pessoa && 
-                    <div className="text-body opacity-100"><Link to={pessoa.record_url} target="__blank" className="fw-bold">Clique Aqui</Link> para visualizar registro no pipefy.</div>
-                }
             </Tab>
             {processos && processos.length > 0 &&
                 <Tab eventKey="processos" title="Processos" className='border-bottom border-x p-3'>

@@ -12,7 +12,7 @@ const Activate = () => {
       const handleSubmit = async () => {
         const credentials = {uid: uid, token:token}
         try {
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/auth/users/activation/`, {
+          const response = await fetch(`${process.env.REACT_APP_API_URL}/api/v1/users/activation/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

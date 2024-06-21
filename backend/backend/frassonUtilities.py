@@ -22,6 +22,16 @@ class Frasson(object):
         for id in init_data.keys():
             InsertRegistros(int(id))
     
+    def valida_cpf_cnpj(value):
+        cpf_pattern = re.compile(r'(^[0-9]{3}\.[0-9]{3}\.[0-9]{3}\-[0-9]{2}$)')
+        cnpj_pattern = re.compile(r'(^[0-9]{2}\.[0-9]{3}\.[0-9]{3}\/[0-9]{4}\-[0-9]{2}$)')
+        return cpf_pattern.match(value) or cnpj_pattern.match(value)
+        
+    def valida_cep(value): 
+        pattern = re.compile(r'(^\d{5}-\d{3})$')
+        return pattern.match(value)
+            
+    
     # def createNotificationMessageUsers(str_title, str_subject, str_text, str_icon, str_icon_color, int_recipient, int_sender=1):
     #     """Cria mensagens no centro de notificações"""
     #     Notifications_Messages.objects.create(

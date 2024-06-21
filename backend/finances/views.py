@@ -301,7 +301,7 @@ class ContratoServicosView(viewsets.ModelViewSet):
             total=Count('id')).values('total')[:1]
 
         if search:
-            query_search = (Q(contratante__razao_social__icontains=search) | Q(servicos_contratados__detalhamento_servico__icontains=search))
+            query_search = (Q(contratante__razao_social__icontains=search) | Q(servicos__detalhamento_servico__icontains=search))
             queryset = Contratos_Servicos.objects.filter(query_search).annotate(
                 total_cobrancas=Coalesce(Subquery(subquery, output_field=IntegerField()), 0),
                 total_pago=Coalesce(Subquery(subquery2, output_field=IntegerField()), 0),

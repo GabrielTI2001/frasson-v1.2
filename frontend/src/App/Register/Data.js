@@ -96,11 +96,6 @@ export const FetchAnaliseSolo = async (inputValue) => {
 
 export const columnsPessoal = [
   {
-    accessor: 'id',
-    Header: 'Código',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
     accessor: 'razao_social',
     Header: 'Razão Social',
     headerProps: { className: 'text-900 p-1' }
@@ -121,13 +116,46 @@ export const columnsPessoal = [
     headerProps: { className: 'text-900 p-1' }
   },
   {
-    accessor: 'municipio',
+    accessor: 'str_municipio',
     Header: 'Município',
     headerProps: { className: 'text-900 p-1' }
   },
   {
     accessor: 'grupo_info',
     Header: 'Grupo',
+    headerProps: { className: 'text-900 p-1' }
+  },
+];
+
+export const columnsCartorio = [
+  {
+    accessor: 'razao_social',
+    Header: 'Nome',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'cnpj',
+    Header: 'CNPJ',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_municipio',
+    Header: 'Município',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'logradouro',
+    Header: 'Logradouro',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_municipio',
+    Header: 'Município',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'atendente',
+    Header: 'Atendente',
     headerProps: { className: 'text-900 p-1' }
   },
 ];

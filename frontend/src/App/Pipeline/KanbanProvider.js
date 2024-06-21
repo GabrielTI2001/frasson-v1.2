@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { PipeContext } from '../../context/Context';
 import { kanbanReducer } from '../../reducers/pipeproductReducer';
 
-const KanbanProvider = ({ children, id }) => {
+const KanbanProvider = ({ children, code }) => {
   const token = localStorage.getItem("token")
   const navigate = useNavigate();
   const [kanbanState, kanbanDispatch] = useReducer(kanbanReducer, {
@@ -24,7 +24,7 @@ const KanbanProvider = ({ children, id }) => {
   const fetchData = async () => {
     try {
       //Faça a solicitação com o token
-      const apiUrl = `${process.env.REACT_APP_API_URL}/pipeline/pipes/${id}/`;
+      const apiUrl = `${process.env.REACT_APP_API_URL}/pipeline/pipes/${code}/`;
       const response = await fetch(apiUrl, {
         headers: {
           'Content-Type': 'application/json',

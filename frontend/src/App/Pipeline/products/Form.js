@@ -54,13 +54,13 @@ const ProductForm = ({
           'p-3 border bg-white dark__bg-1000 mt-3': type === 'card'
         })}
       >
-        <Form className='row'
+        <Form className='row row-cols-xl-1 row-cols-sm-1 row-cols-xs-1'
           onSubmit={e => {
             e.preventDefault();
             return submit();
           }}
         >
-          <Form.Group className="mb-2" as={Col} lg={4} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Card*</Form.Label>
             <Form.Select
               ref={inputRef}
@@ -76,7 +76,7 @@ const ProductForm = ({
             <label className='text-danger fs--2'>{message ? message.card : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={4} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Prioridade</Form.Label>
             <Form.Select
               ref={inputRef}
@@ -92,11 +92,11 @@ const ProductForm = ({
             <label className='text-danger fs--2'>{message ? message.prioridade : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={5}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Beneficiário*</Form.Label>
             <AsyncSelect 
               ref={inputRef} isMulti styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/beneficiarios', 'razao_social', 'cpf_cnpj')}
+              loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj')}
               onChange={(selectedOptions ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -108,27 +108,11 @@ const ProductForm = ({
             <label className='text-danger fs--2'>{message ? message.beneficiario : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={5}>
-            <Form.Label className='fw-bold mb-1'>Responsáveis*</Form.Label>
-            <AsyncSelect 
-              ref={inputRef} isMulti styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'users/users', 'first_name', 'last_name', true)}
-              onChange={(selectedOptions ) => {
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  responsaveis: selectedOptions.map(s => s.value)
-                }));
-              }} 
-              className='mb-1'
-            />
-            <label className='text-danger fs--2'>{message ? message.beneficiario : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col} xl={4}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Detalhamento da Demanda*</Form.Label>
             <AsyncSelect 
               ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/detalhamentos', 'detalhamento_servico')}
+              loadOptions={(v) => SelectSearchOptions(v, 'register/detalhamentos', 'detalhamento_servico')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -140,7 +124,7 @@ const ProductForm = ({
             <label className='text-danger fs--2'>{message ? message.detalhamento : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} lg={4} xl={3} sm={6}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Valor da Operação</Form.Label>
             <Form.Control
               type='number'
@@ -153,11 +137,11 @@ const ProductForm = ({
             <label className='text-danger fs--2'>{message ? message.valor_operacao : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={4}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Instituição Vinculada*</Form.Label>
             <AsyncSelect
               ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/instituicoes', 'razao_social', 'identificacao')}
+              loadOptions={(v) => SelectSearchOptions(v, 'register/instituicoes', 'razao_social', 'identificacao')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -169,11 +153,11 @@ const ProductForm = ({
             <label className='text-danger fs--2'>{message ? message.instituicao : ''}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={4}>
+          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Contrato Vinculado*</Form.Label>
             <AsyncSelect
               ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/contratos', 'contratante', 'produto')}
+              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-servicos', 'contratante', 'produto')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -183,19 +167,6 @@ const ProductForm = ({
               className='mb-1'
             />
             <label className='text-danger fs--2'>{message ? message.contrato : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col} lg={4} xl={3} sm={6}>
-            <Form.Label className='fw-bold mb-1'>Data Vencimento</Form.Label>
-            <Form.Control
-              type='date'
-              ref={inputRef}
-              onChange={({ target }) =>
-                setFormData({ ...formData, data_vencimento: target.value })
-              }
-              value={formData.data_vencimento || ''}
-            />
-            <label className='text-danger fs--2'>{message ? message.data_vencimento : ''}</label>
           </Form.Group>
 
           <Form.Group className="mb-2 text-end" as={Col} xl={12}>

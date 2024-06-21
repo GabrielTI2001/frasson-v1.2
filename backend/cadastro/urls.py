@@ -6,7 +6,9 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'municipios', views.MunicipioView)
+router.register(r'categorias-cadastro', views.CategoriaCadView)
 router.register(r'cartorios', views.CartorioView)
+router.register(r'grupos-clientes', views.GrupoClienteView)
 router.register(r'machinery', views.MachineryView)
 router.register(r'farm-assets', views.BenfeitoriasView)
 router.register(r'analysis-soil', views.AnalisesSoloView)

@@ -47,10 +47,10 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
     <ModalDelete show={modaldel.show} link={modaldel.link} update={handleRemoveColumn} close={() => setModaldel({show:false})}/>
     
     <Modal
-      size="xl"
+      size="md"
       show={modalform.show}
       onHide={() => setModalForm({show:false})}
-      dialogClassName="mt-1"
+      dialogClassName="mt-7"
       aria-labelledby="example-modal-sizes-title-lg"
     >
       <Modal.Header>

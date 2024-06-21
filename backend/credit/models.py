@@ -43,7 +43,7 @@ class Operacoes_Contratadas(models.Model):
     class Meta:
         verbose_name_plural = 'Operações Contratadas'
     def __str__(self):
-        return self.beneficiario.razao_social
+        return self.numero_operacao
     
 class Operacoes_Contratadas_Cedulas(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)

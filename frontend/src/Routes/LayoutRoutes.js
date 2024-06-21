@@ -269,8 +269,8 @@ const LayoutRoutes = () => {
           <Route path="contracts/:id" element={<ViewContrato />}/>
         </Route>
         <Route path="/pipeline">
-          <Route path="products" element={<Products />}/>
-          <Route path="products/:code" element={<Products />}/>
+          <Route path=":pipe/cards" element={<Products />}/>
+          <Route path=":pipe/cards/:code" element={<Products />}/>
         </Route>
         <Route path="/processes">
           <Route path="followup" element={<IndexFollowup />}/>

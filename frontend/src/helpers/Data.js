@@ -89,7 +89,7 @@ export const SelectSearchOptions = async (inputValue, link, field, field2, join)
       if (response.status === 200){
         const options = dataapi.map(b =>({
             value: b.id,
-            label: `${b[field]}${field2 ? !join ? ' - ' : ' '+b[field2] : ''}`
+            label: `${b[field]}${field2 ? (!join ? ' - ' : ' ')+b[field2] : ''}`
         }))
         return options
       }

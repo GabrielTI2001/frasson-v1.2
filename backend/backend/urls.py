@@ -14,6 +14,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('administrator/', include('administrator.urls')),
     path('assessments/', include('assessments.urls')),
+    path('credit/', include('credit.urls')),
     path('external/', include('external.urls')),
     path('alongamentos/', include('alongamentos.urls')),
     path('dashboard/', include('dashboards.urls')),

@@ -3,8 +3,8 @@ from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Ti
 from .models import Feedbacks_System, Feedbacks_Category, Feedbacks_Replies, Senhas_Logins
 from backend.frassonUtilities import Frasson
 from rest_framework import serializers
-from .models import Detalhamento_Servicos, Cadastro_Pessoal, Produtos_Frasson, Cartorios_Registro
-from .models import Instituicoes_Parceiras, Contas_Bancarias_Clientes, Instituicoes_Razao_Social
+from .models import Detalhamento_Servicos, Cadastro_Pessoal, Produtos_Frasson, Cartorios_Registro, Categoria_Cadastro
+from .models import Instituicoes_Parceiras, Contas_Bancarias_Clientes, Instituicoes_Razao_Social, Grupos_Clientes
 from finances.models import Contratos_Servicos
 from datetime import datetime
 import requests, json, locale, re
@@ -15,6 +15,11 @@ from django.db.models import Q, Sum
 import locale
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 
+class listCategoriaCadastro(serializers.ModelSerializer):
+    class Meta:
+        model = Categoria_Cadastro
+        fields = ['id', 'categoria', 'sigla']
+
 class selectMunicipio(serializers.ModelSerializer):
     class Meta:
         model = Municipios
@@ -24,6 +29,16 @@ class listCartorio(serializers.ModelSerializer):
     class Meta:
         model = Cartorios_Registro
         fields = ['id', 'uuid', 'razao_social', 'cnpj']
+
+class detailCartorio(serializers.ModelSerializer):
+    class Meta:
+        model = Cartorios_Registro
+        fields = '__all__'
+
+class listGrupoCliente(serializers.ModelSerializer):
+    class Meta:
+        model = Grupos_Clientes
+        fields = ['id', 'uuid', 'nome_grupo']
 
 class ListMachinery(serializers.ModelSerializer):
     class Meta:
@@ -264,16 +279,21 @@ class SenhasLoginsSerializer(serializers.ModelSerializer):
 
 class listCadastro_Pessoal(serializers.ModelSerializer):
     grupo_info = serializers.CharField(source='grupo.nome_grupo', required=False, read_only=True)
+    natureza = serializers.CharField(source='get_natureza_display', read_only=True)
+    str_municipio = serializers.SerializerMethodField(read_only=True)
+    def get_str_municipio(self, obj):
+        return obj.municipio.nome_municipio + ' - ' + obj.municipio.sigla_uf
     class Meta:
         model = Cadastro_Pessoal
-        fields = ['id', 'uuid', 'razao_social', 'natureza', 'cpf_cnpj', 'numero_rg', 'municipio', 'grupo_info']
+        fields = ['id', 'uuid', 'razao_social', 'natureza', 'cpf_cnpj', 'numero_rg', 'str_municipio', 'grupo_info']
 
 class detailCadastro_Pessoal(serializers.ModelSerializer):
     grupo_info = serializers.CharField(source='grupo.nome_grupo', required=False, read_only=True)
-    contas_bancarias = serializers.SerializerMethodField()
-    class Meta:
-        model = Cadastro_Pessoal
-        fields = '__all__'
+    contas_bancarias = serializers.SerializerMethodField(read_only=True)
+    str_natureza = serializers.CharField(source='get_natureza_display', read_only=True)
+    str_municipio = serializers.SerializerMethodField(read_only=True)
+    def get_str_municipio(self, obj):
+        return obj.municipio.nome_municipio + ' - ' + obj.municipio.sigla_uf
     def get_contas_bancarias(self, obj):
         return [{
             'id': c.id,
@@ -282,6 +302,23 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
             'agencia': c.agencia,
             'conta': c.conta,
         }for c in Contas_Bancarias_Clientes.objects.filter(cliente=obj)]
+     
+    def validate_cpf_cnpj(self, value):
+        if not Frasson.valida_cpf_cnpj(value):
+            raise serializers.ValidationError("CPF ou CNPJ Inválido!")
+        return value
+    def validate_cep_logradouro(self, value):
+        if not Frasson.valida_cep(value):
+            raise serializers.ValidationError("CEP Inválido!")
+        return value
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['razao_social', 'municipio', 'cpf_cnpj', 'logradouro', 'cep_logradouro']:
+                field.required = True
+    class Meta:
+        model = Cadastro_Pessoal
+        fields = '__all__'
 
 class serializerInstituicoes_Parceiras(serializers.ModelSerializer):
     razao_social = serializers.CharField(source='instituicao.razao_social', required=False, read_only=True)

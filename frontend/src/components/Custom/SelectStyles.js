@@ -1,7 +1,7 @@
 const customStyles = {
     control: (base, state) => ({
       ...base,
-      height: 28,
+      // height: 28,
       minHeight: 20,
       border: state.isFocused ? '1px solid #b9c3cf' : '1px solid #d8e2ef',
       boxShadow: state.isFocused ? 0 : 0,
@@ -13,7 +13,7 @@ const customStyles = {
       ...base,
       top: -2,
       paddingTop: 0,
-      height: 28,
+      // height: 28,
       paddingBlock: 0,
       lineHeight: 1.4
     }),
@@ -36,7 +36,7 @@ const customStyles = {
 export const customStylesDark = {
   control: (base, state) => ({
     ...base,
-    height: 28,
+    // height: 28,
     minHeight: 20,
     border: state.isFocused ? '1px solid #3d4658' : '1px solid #3d4658',
     boxShadow: state.isFocused ? 0 : 0,
@@ -49,7 +49,7 @@ export const customStylesDark = {
     ...base,
     top: -2,
     paddingTop: 0,
-    height: 28,
+    // height: 28,
     paddingBlock: 0,
     lineHeight: 1.4
   }),
