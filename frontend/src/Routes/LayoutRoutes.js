@@ -62,6 +62,8 @@ import IndexMyIndicators from '../App/Kpi/Index';
 import IndexIndicators from '../App/Kpi/IndexGeral';
 import ViewIndicator from '../App/Kpi/View';
 //Register
+import IndexPessoal from '../App/Register/Pessoal/Index';
+import ViewPessoal from '../App/Register/Pessoal/View';
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
 import IndexBenfeitorias from '../App/Register/Benfeitorias/Index';
@@ -74,8 +76,6 @@ import IndexFeedbacks from '../App/Register/Feedbacks/Index';
 //Pipeline
 import Products from '../App/Pipeline/products/products';
 //Pipefy
-import IndexPessoal from '../App/Pipefy/Pessoal/Index';
-import ViewPessoal from '../App/Pipefy/Pessoal/View';
 import IndexProspects from '../App/Pipefy/Prospects/Index';
 import ViewProspect from '../App/Pipefy/Prospects/View';
 import IndexProdutos from '../App/Pipefy/Produtos/Index';
@@ -115,6 +115,7 @@ import PivotCoordinates from '../App/Services/Tools/PivotCoordinates';
 import InsertPoints from '../App/Services/Tools/InsertPoints';
 import KMLPolygon from '../App/Services/Tools/KMLPolygon';
 import ServicesMaps from '../App/Services/Maps';
+import WebSocketComponent from '../App/Pipeline/Websocket';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -157,6 +158,7 @@ const LayoutRoutes = () => {
   return (
     <Routes>
       <Route element={<Default />}>
+        <Route path="/websocket" element={<WebSocketComponent />}></Route>
         <Route path="/administrator">
           <Route path="" element={<IndexAdministrator />}/>
           <Route path="tests" element={<TestsIndex />}/>
@@ -259,8 +261,6 @@ const LayoutRoutes = () => {
           <Route path="" element={<Notifications />}/>
         </Route>
         <Route path="/pipefy">
-          <Route path="pessoal" element={<IndexPessoal />}/>
-          <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
           <Route path="pipes/301573049" element={<IndexProspects />}/>
           <Route path="pipes/301573049/cards/:id" element={<ViewProspect />}/>
           <Route path="pipes/301573538" element={<IndexProdutos />}/>
@@ -278,6 +278,8 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/register">
           <Route path="" element={<IndexCadGerais />}/>
+          <Route path="pessoal" element={<IndexPessoal />}/>
+          <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
           <Route path='machinery' element={<IndexMachinery />}/>
           <Route path='farm-assets' element={<IndexBenfeitorias />}/>
           <Route path='farm-assets/:uuid' element={<ViewBenfeitoria />}/>

@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import Processos_Outorga, Processos_Outorga_Coordenadas, Prazos_Renovacao, Finalidade_APPO, Tipo_Captacao
-from .models import Processos_APPO, Processos_APPO_Coordenadas, Aquifero_APPO, Processos_ASV, Processos_ASV_Areas, Empresas_Consultoria
-from .models import Requerimentos_APPO, Requerimentos_APPO_Coordenadas
+from .models import Outorgas_INEMA, Outorgas_INEMA_Coordenadas, Prazos_Renovacao, Finalidade_APPO, Tipo_Captacao
+from .models import APPO_INEMA, APPO_INEMA_Coordenadas, Aquifero_APPO, ASV_INEMA, ASV_INEMA_Areas, Empresas_Consultoria
+from .models import Requerimentos_APPO_INEMA, Requerimentos_APPO_Coordenadas
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 from datetime import timedelta, date, datetime
 from backend.frassonUtilities import Frasson
@@ -31,7 +31,7 @@ class serializerOutorga(serializers.ModelSerializer):
     status = serializers.SerializerMethodField(required=False, read_only=True)
 
     def get_qtd_pontos(self, obj):
-        qtd = Processos_Outorga_Coordenadas.objects.filter(processo=obj).count()   
+        qtd = Outorgas_INEMA_Coordenadas.objects.filter(processo=obj).count()   
         return qtd
     
     def get_status(self, obj):
@@ -47,7 +47,7 @@ class serializerOutorga(serializers.ModelSerializer):
             }
         
     class Meta:
-        model = Processos_Outorga
+        model = Outorgas_INEMA
         fields = ['uuid', 'nome_requerente', 'cpf_cnpj', 'str_tipo_captacao',  'numero_processo', 'numero_portaria', 
                   'data_publicacao', 'qtd_pontos', 'status']
 
@@ -71,7 +71,7 @@ class detailOutorga(serializers.ModelSerializer):
                 field.required = True
 
     def get_qtd_pontos(self, obj):
-        qtd = Processos_Outorga_Coordenadas.objects.filter(processo=obj).count()   
+        qtd = Outorgas_INEMA_Coordenadas.objects.filter(processo=obj).count()   
         return qtd
     
     def get_info_user(self, obj):
@@ -108,7 +108,7 @@ class detailOutorga(serializers.ModelSerializer):
         return value
     
     class Meta:
-        model = Processos_Outorga
+        model = Outorgas_INEMA
         fields = '__all__'
 
 class serializerCoordenadaOutorga(serializers.ModelSerializer):
@@ -120,7 +120,7 @@ class serializerCoordenadaOutorga(serializers.ModelSerializer):
             return 'Indefinido'
         
     class Meta:
-        model = Processos_Outorga_Coordenadas
+        model = Outorgas_INEMA_Coordenadas
         fields = ['id', 'latitude_gd', 'longitude_gd', 'status_processo']
 
 class detailCoordenadaOutorga(serializers.ModelSerializer):
@@ -161,7 +161,7 @@ class detailCoordenadaOutorga(serializers.ModelSerializer):
         return data
     
     class Meta:
-        model = Processos_Outorga_Coordenadas
+        model = Outorgas_INEMA_Coordenadas
         fields = '__all__'
 
 class CoordenadaOutorga(serializers.ModelSerializer):
@@ -187,7 +187,7 @@ class CoordenadaOutorga(serializers.ModelSerializer):
             return None
         
     class Meta:
-        model = Processos_Outorga_Coordenadas
+        model = Outorgas_INEMA_Coordenadas
         fields = '__all__'
 
 
@@ -200,7 +200,7 @@ class listAPPO(serializers.ModelSerializer):
     nome_municipio = serializers.CharField(source='municipio.nome_municipio', required=False, read_only=True)
 
     def get_qtd_pontos(self, obj):
-        qtd = Processos_APPO_Coordenadas.objects.filter(processo=obj).count()   
+        qtd = APPO_INEMA_Coordenadas.objects.filter(processo=obj).count()   
         return qtd
     
     def get_renovacao(self, obj):
@@ -224,7 +224,7 @@ class listAPPO(serializers.ModelSerializer):
             return None
         
     class Meta:
-        model = Processos_APPO
+        model = APPO_INEMA
         fields = ['uuid', 'nome_requerente', 'cpf_cnpj', 'nome_municipio', 'numero_processo', 'qtd_pontos', 'status', 'renovacao', 'data_vencimento']
 
 class detailAPPO(serializers.ModelSerializer):
@@ -246,7 +246,7 @@ class detailAPPO(serializers.ModelSerializer):
                 field.required = True
 
     def get_qtd_pontos(self, obj):
-        qtd = Processos_APPO_Coordenadas.objects.filter(processo=obj).count()   
+        qtd = APPO_INEMA_Coordenadas.objects.filter(processo=obj).count()   
         return qtd
     
     def get_info_user(self, obj):
@@ -283,12 +283,12 @@ class detailAPPO(serializers.ModelSerializer):
         return value
     
     class Meta:
-        model = Processos_APPO
+        model = APPO_INEMA
         fields = '__all__'
 
 class listCoordenadaAPPO(serializers.ModelSerializer):
     class Meta:
-        model = Processos_APPO_Coordenadas
+        model = APPO_INEMA_Coordenadas
         fields = ['id', 'latitude_gd', 'longitude_gd']
 
 class detailCoordenadaAPPO(serializers.ModelSerializer):
@@ -330,7 +330,7 @@ class detailCoordenadaAPPO(serializers.ModelSerializer):
         return data   
     
     class Meta:
-        model = Processos_APPO_Coordenadas
+        model = APPO_INEMA_Coordenadas
         fields = '__all__'
 
 class CoordenadaAPPO(serializers.ModelSerializer):
@@ -354,7 +354,7 @@ class CoordenadaAPPO(serializers.ModelSerializer):
             return None
         
     class Meta:
-        model = Processos_APPO_Coordenadas
+        model = APPO_INEMA_Coordenadas
         fields = '__all__'
 
 class listASV(serializers.ModelSerializer):
@@ -373,7 +373,7 @@ class listASV(serializers.ModelSerializer):
             }
         
     class Meta:
-        model = Processos_ASV
+        model = ASV_INEMA
         fields = ['uuid', 'requerente', 'cpf_cnpj', 'portaria', 'data_publicacao', 'str_empresa', 'area_total', 'status']
 
 class detailASV(serializers.ModelSerializer):
@@ -420,7 +420,7 @@ class detailASV(serializers.ModelSerializer):
                 field.required = False
     
     class Meta:
-        model = Processos_ASV
+        model = ASV_INEMA
         fields = '__all__'
 
 class listAreasASV(serializers.ModelSerializer):
@@ -436,7 +436,7 @@ class listAreasASV(serializers.ModelSerializer):
             kml = None
         return kml
     class Meta:
-        model = Processos_ASV_Areas
+        model = ASV_INEMA_Areas
         fields = ['kml', 'id', 'area_total']
 
 class detailAreasASV(serializers.ModelSerializer):
@@ -475,12 +475,12 @@ class detailAreasASV(serializers.ModelSerializer):
         else:
             self.fields['file'].required = False
     class Meta:
-        model = Processos_ASV_Areas
+        model = ASV_INEMA_Areas
         fields = '__all__'
 
 class listRequerimentosAPPO(serializers.ModelSerializer):
     class Meta:
-        model = Requerimentos_APPO
+        model = Requerimentos_APPO_Coordenadas
         fields = ['uuid', 'nome_requerente', 'numero_requerimento']
 
 class detailRequerimentosAPPO(serializers.ModelSerializer):
@@ -509,7 +509,7 @@ class detailRequerimentosAPPO(serializers.ModelSerializer):
         for field_name, field in self.fields.items():
             field.required = True
     class Meta:
-        model = Requerimentos_APPO
+        model = Requerimentos_APPO_INEMA
         fields = '__all__'
 
 class listCoordenadaRequerimentoAPPO(serializers.ModelSerializer):

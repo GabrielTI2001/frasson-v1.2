@@ -1,28 +1,17 @@
 from rest_framework import serializers
-from .models import Card_Produtos, Fase, Pipe, Detalhamento_Servicos, Contratos_Servicos, Cadastro_Pessoal
-from .models import Instituicoes_Parceiras
+from .models import Card_Produtos, Fase, Pipe
+from .models import Phases_History
+from datetime import datetime
 
-class serializerCadastro_Pessoal(serializers.ModelSerializer):
-    class Meta:
-        model = Cadastro_Pessoal
-        fields = ['id', 'razao_social', 'cpf_cnpj']
-
-class serializerInstituicoes_Parceiras(serializers.ModelSerializer):
-    razao_social = serializers.CharField(source='instituicao.razao_social', required=False, read_only=True)
-    class Meta:
-        model = Instituicoes_Parceiras
-        fields = ['id', 'razao_social', 'identificacao']
-
-class serializerDetalhamento_Servicos(serializers.ModelSerializer):
-    class Meta:
-        model = Detalhamento_Servicos
-        fields = ['id', 'produto', 'detalhamento_servico']
-
-class serializerContratos_Servicos(serializers.ModelSerializer):
-    contratante = serializers.CharField(source='contratante.razao_social', required=False, read_only=True)
-    class Meta:
-        model = Contratos_Servicos
-        fields = ['id', 'contratante', 'produto']
+def calcduration(first_in, last_in, last_to):
+    if not last_to:
+        last_to = datetime.now()
+    if (first_in and last_to < first_in) or (last_in and last_to < last_in):
+        last_to = datetime.now()
+    result = last_to - first_in if first_in else last_to - last_in
+    if first_in and last_in:
+        result = last_to - first_in
+    return int(result.total_seconds())
 
 class serializerCard_Produtos(serializers.ModelSerializer):
     str_fase = serializers.CharField(source='phase.descricao', read_only=True)
@@ -31,7 +20,9 @@ class serializerCard_Produtos(serializers.ModelSerializer):
     list_beneficiario = serializers.SerializerMethodField(read_only=True)
     info_instituicao = serializers.SerializerMethodField(read_only=True)
     info_detalhamento = serializers.SerializerMethodField(read_only=True)
+    list_beneficiario = serializers.SerializerMethodField(read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
+    history_fases_list = serializers.SerializerMethodField(read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
@@ -77,6 +68,16 @@ class serializerCard_Produtos(serializers.ModelSerializer):
             }
         else:
             return None
+    def get_history_fases_list(self, obj):
+        list = [
+            {'id':f.id, 'last_time_in':f.last_time_in, 'last_time_out':f.last_time_out, 'first_time_in':f.first_time_in,
+                'duration':calcduration(f.first_time_in, f.last_time_in, f.last_time_out), 'phase_name': f.phase.descricao  
+            } 
+            for f in Phases_History.objects.filter(produto_id=obj.id)
+        ]
+        return list
+    def validate_phase(self, value):
+        return value
     class Meta:
         model = Card_Produtos
         fields = '__all__'

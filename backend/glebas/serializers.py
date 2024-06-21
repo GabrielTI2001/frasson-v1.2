@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Glebas_Areas, Glebas_Coordenadas, Culturas_Agricolas
+from .models import Cadastro_Glebas, Cadastro_Glebas_Coordenadas
+from cadastro.models import Culturas_Agricolas
 import os
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 from pykml import parser
@@ -31,7 +32,7 @@ class listGlebas(serializers.ModelSerializer):
         return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}" if obj.municipio else '-'
 
     class Meta:
-        model = Glebas_Areas
+        model = Cadastro_Glebas
         fields = ['id', 'str_cliente', 'list_propriedades', 'gleba', 'str_municipio', 'area']
 
 class detailGleba(serializers.ModelSerializer):
@@ -63,16 +64,16 @@ class detailGleba(serializers.ModelSerializer):
                 kml_file.seek(0)
                 root = parser.parse(kml_file).getroot().Document
                 coordinates = parse_element_kml(root)
-                gleba_instance = Glebas_Areas.objects.get(id=instance.id)
-                glebas_coordenadas_list = [
-                    Glebas_Coordenadas(
+                gleba_instance = Cadastro_Glebas.objects.get(id=instance.id)
+                Cadastro_Glebas_Coordenadas_list = [
+                    Cadastro_Glebas_Coordenadas(
                         gleba=gleba_instance,
                         latitude_gd=coordinate['lat'],
                         longitude_gd=coordinate['lng']
                     )
                     for coordinate in coordinates
                 ]
-                Glebas_Coordenadas.objects.bulk_create(glebas_coordenadas_list)
+                Cadastro_Glebas_Coordenadas.objects.bulk_create(Cadastro_Glebas_Coordenadas_list)
         return instance
     
     def validate(self, data):
@@ -87,16 +88,16 @@ class detailGleba(serializers.ModelSerializer):
             raise ValidationError("Submeta um Arquivo")
         return data
     class Meta:
-        model = Glebas_Areas
+        model = Cadastro_Glebas
         fields = '__all__'
 
 class GlebasCoordenadas(serializers.ModelSerializer):
     coordenadas = serializers.SerializerMethodField(read_only=True)
     def get_coordenadas(self, obj):
-        query = Glebas_Coordenadas.objects.filter(gleba=obj)
+        query = Cadastro_Glebas_Coordenadas.objects.filter(gleba=obj)
         return [{'id':q.id, 'lat':q.latitude_gd, 'lng':q.longitude_gd } for q in query]
     class Meta:
-        model = Glebas_Areas
+        model = Cadastro_Glebas
         fields = ['id', 'coordenadas']
 
 class detailGlebasCoordenadas(serializers.ModelSerializer):
@@ -111,13 +112,13 @@ class detailGlebasCoordenadas(serializers.ModelSerializer):
     def get_str_municipio(self, obj):
         return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}" if obj.municipio else ''
     def get_coordenadas(self, obj):
-        query = Glebas_Coordenadas.objects.filter(gleba=obj)
+        query = Cadastro_Glebas_Coordenadas.objects.filter(gleba=obj)
         return [{'id':q.id, 'lat':q.latitude_gd, 'lng':q.longitude_gd } for q in query]
     def get_token_apimaps(self, obj):
         return TOKEN_GOOGLE_MAPS_API
     
     class Meta:
-        model = Glebas_Areas
+        model = Cadastro_Glebas
         fields = '__all__'
 
 class listCulturas(serializers.ModelSerializer):

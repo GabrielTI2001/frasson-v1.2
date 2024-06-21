@@ -1,7 +1,17 @@
 from rest_framework import serializers
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Tipo_Benfeitorias, Pictures_Benfeitorias, Analise_Solo
-from .models import Agencias_Bancarias, Feedbacks_System, Feedbacks_Category, Feedbacks_Replies
+from .models import Feedbacks_System, Feedbacks_Category, Feedbacks_Replies, Senhas_Logins
 from backend.frassonUtilities import Frasson
+from rest_framework import serializers
+from .models import Detalhamento_Servicos, Cadastro_Pessoal, Produtos_Frasson, Cartorios_Registro
+from .models import Instituicoes_Parceiras, Contas_Bancarias_Clientes, Instituicoes_Razao_Social
+from finances.models import Contratos_Servicos
+from datetime import datetime
+import requests, json, locale, re
+from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL, TOKEN_GOOGLE_MAPS_API
+from users.models import Profile
+from django.db.models import Q, Sum
+
 import locale
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 
@@ -9,6 +19,11 @@ class selectMunicipio(serializers.ModelSerializer):
     class Meta:
         model = Municipios
         fields = ['id', 'nome_municipio', 'sigla_uf']
+
+class listCartorio(serializers.ModelSerializer):
+    class Meta:
+        model = Cartorios_Registro
+        fields = ['id', 'uuid', 'razao_social', 'cnpj']
 
 class ListMachinery(serializers.ModelSerializer):
     class Meta:
@@ -187,11 +202,6 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
         fields = ['id', 'uuid', 'latitude_gd', 'longitude_gd', 'data_coleta', 'str_cliente', 'localizacao', 'identificacao_amostra',
         'responsavel', 'laboratorio_analise', 'numero_controle', 'profundidade', 'creation', 'token_apimaps', 'results', 'other_info']
 
-class listAgenciasBancarias(serializers.ModelSerializer):
-    class Meta:
-        model = Agencias_Bancarias
-        fields = ['id', 'descricao_agencia']
-
 class ListFeedbacks(serializers.ModelSerializer):
     str_category = serializers.CharField(source='category.description', read_only=True)
     str_user = serializers.CharField(source='user.first_name', read_only=True)
@@ -245,3 +255,57 @@ class FeedbackReply(serializers.ModelSerializer):
     class Meta:
         model = Feedbacks_Replies
         fields = '__all__'
+    
+
+class SenhasLoginsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Senhas_Logins
+        fields = '__all__'
+
+class listCadastro_Pessoal(serializers.ModelSerializer):
+    grupo_info = serializers.CharField(source='grupo.nome_grupo', required=False, read_only=True)
+    class Meta:
+        model = Cadastro_Pessoal
+        fields = ['id', 'uuid', 'razao_social', 'natureza', 'cpf_cnpj', 'numero_rg', 'municipio', 'grupo_info']
+
+class detailCadastro_Pessoal(serializers.ModelSerializer):
+    grupo_info = serializers.CharField(source='grupo.nome_grupo', required=False, read_only=True)
+    contas_bancarias = serializers.SerializerMethodField()
+    class Meta:
+        model = Cadastro_Pessoal
+        fields = '__all__'
+    def get_contas_bancarias(self, obj):
+        return [{
+            'id': c.id,
+            'banco': c.instituicao.instituicao.razao_social,
+            'identificacao': c.instituicao.identificacao,
+            'agencia': c.agencia,
+            'conta': c.conta,
+        }for c in Contas_Bancarias_Clientes.objects.filter(cliente=obj)]
+
+class serializerInstituicoes_Parceiras(serializers.ModelSerializer):
+    razao_social = serializers.CharField(source='instituicao.razao_social', required=False, read_only=True)
+    class Meta:
+        model = Instituicoes_Parceiras
+        fields = ['id', 'razao_social', 'identificacao']
+
+class listInstituicoes_RazaoSocial(serializers.ModelSerializer):
+    class Meta:
+        model = Instituicoes_Razao_Social
+        fields = ['id', 'razao_social', 'cnpj']  
+
+class serializer_Cad_Produtos(serializers.ModelSerializer):
+    class Meta:
+        model = Produtos_Frasson
+        fields = ['id', 'description', 'acronym']
+
+class serializerDetalhamento_Servicos(serializers.ModelSerializer):
+    class Meta:
+        model = Detalhamento_Servicos
+        fields = ['id', 'produto', 'detalhamento_servico']
+
+class serializerContratos_Servicos(serializers.ModelSerializer):
+    contratante = serializers.CharField(source='contratante.razao_social', required=False, read_only=True)
+    class Meta:
+        model = Contratos_Servicos
+        fields = ['id', 'contratante', 'produto']

@@ -1,7 +1,9 @@
-from pipefy.models import Card_Produtos, Card_Prospects, Cadastro_Pessoal, Fornecedores_Colaboradores, Imoveis_Rurais
-from pipefy.models import Contratos_Servicos, Instituicoes_Parceiras, Instituicoes_Razao_Social, Operacoes_Contratadas, Cadastro_Produtos
-from pipefy.models import Cadastro_Prospects, Detalhamento_Servicos, Regimes_Exploracao, Itens_Financiados, Grupos_Clientes, ContasBancarias_Clientes
-from finances.models import Pagamentos_Pipefy, Cobrancas_Pipefy, Categorias_Pagamentos, Caixas_Frasson
+from pipeline.models import Card_Produtos, Card_Prospects, Cadastro_Pessoal, Card_Cobrancas, Card_Pagamentos
+from farms.models import Imoveis_Rurais, Regimes_Exploracao
+from cadastro.models import Instituicoes_Parceiras, Instituicoes_Razao_Social, Produtos_Frasson
+from cadastro.models import Detalhamento_Servicos, Grupos_Clientes, Contas_Bancarias_Clientes
+from credit.models import Operacoes_Contratadas, Itens_Financiados
+from finances.models import Categorias_Pagamentos, Caixas_Frasson, Contratos_Servicos
 from django.core.exceptions import ObjectDoesNotExist
 from users.models import Profile
 from datetime import datetime
@@ -97,7 +99,7 @@ def updateCardProspects(id_card, id_field_updated, new_value_updated):
             Card_Prospects.objects.get(pk=id_card).responsavel.set(resps)
 
 def createCardPagamento(card):
-    Pagamentos_Pipefy.objects.create(
+    Card_Pagamentos.objects.create(
         id = card["id"],
         beneficiario_id = card["benefici_rio_pagamento"] if "benefici_rio_pagamento" in card else None,
         descricao = card["descri_o"] if "descri_o" in card else None,
@@ -119,12 +121,12 @@ def updateCardPagamento(id_card, id_field_updated, new_value_updated):
     if id_field_updated in pipefyMySQLFields.keys(): #se o campo atualizado é um campo de interesse
         if id_field_updated in ['benefici_rio_pagamento', 'categoria_pagamento', 'caixa_sa_da']: #campos conectores
             if len(new_value_updated) >= 1:
-                Pagamentos_Pipefy.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
+                Card_Pagamentos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
         else:
-            Pagamentos_Pipefy.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
+            Card_Pagamentos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
 
 def createCardCobrancas(card):          
-    Cobrancas_Pipefy.objects.create(
+    Card_Cobrancas.objects.create(
         id = card["id"],
         cliente_id = card["cliente"] if "cliente" in card else None,
         contrato_id = card["contrato"] if "contrato" in card else None,
@@ -152,9 +154,9 @@ def updateCardCobrancas(id_card, id_field_updated, new_value_updated):
     if id_field_updated in pipefyMySQLFields.keys(): #se o campo atualizado é um campo de interesse
         if id_field_updated in ['cliente', 'contrato', 'detalhe_demanda', 'faturado_no_caixa']: #campos conectores
             if len(id_field_updated) >= 1:
-                Cobrancas_Pipefy.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
+                Card_Cobrancas.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
         else:
-            Cobrancas_Pipefy.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
+            Card_Cobrancas.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
 
 def createCadastroPessoal(registro):
     reg = Cadastro_Pessoal.objects.create(

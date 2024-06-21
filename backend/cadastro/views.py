@@ -1,17 +1,17 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
-from .models import Agencias_Bancarias, Feedbacks_Category, Feedbacks_System, Welcome_Messages
+from .models import Feedbacks_Category, Feedbacks_System, Welcome_Messages, Detalhamento_Servicos, Instituicoes_Parceiras, Cartorios_Registro
 from pipeline.models import Card_Produtos
 from .serializers import *
-from rest_framework import viewsets
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
 from django.db.models import Q
 from datetime import date
+from rest_framework import permissions, viewsets, status
+from .models import Cadastro_Pessoal, Instituicoes_Razao_Social
 
 def home(request):
     produtos_count = Card_Produtos.objects.all().count()
@@ -36,6 +36,17 @@ class MunicipioView(viewsets.ModelViewSet):
             queryset = queryset.filter(nome_municipio__icontains=search_term)
         if uf_term:
             queryset = queryset.filter(nome_municipio__icontains=search_term, sigla_uf=uf_term)
+        return queryset
+
+class CartorioView(viewsets.ModelViewSet):
+    queryset = Cartorios_Registro.objects.all()
+    serializer_class = listCartorio
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)   
+        if search_term:
+            queryset = queryset.filter(nome_municipio__icontains=search_term)
         return queryset
 
 class MachineryView(viewsets.ModelViewSet):
@@ -165,10 +176,6 @@ class ResultAnalisesSoloView(viewsets.ModelViewSet):
     # permission_classes = (IsAuthenticated,)
     lookup_field = 'uuid'
 
-class AgenciasBancariasView(viewsets.ModelViewSet):
-    queryset = Agencias_Bancarias.objects.all()
-    serializer_class = listAgenciasBancarias
-
 class CategoryFeedbackView(viewsets.ModelViewSet):
     queryset = Feedbacks_Category.objects.all()
     serializer_class = ListFeedbacksCategory
@@ -185,3 +192,63 @@ class FeedbackView(viewsets.ModelViewSet):
 class FeedbackReplyView(viewsets.ModelViewSet):
     queryset = Feedbacks_Replies.objects.all()
     serializer_class = FeedbackReply
+
+class PessoasView(viewsets.ModelViewSet):
+    queryset = Cadastro_Pessoal.objects.all()
+    serializer_class = detailCadastro_Pessoal
+    # permission_classes = [IsAuthenticated]
+    lookup_field = 'uuid'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        all_term = self.request.query_params.get('all', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(razao_social__icontains=search_term) |
+                Q(cpf_cnpj__icontains=search_term) |
+                Q(grupo__nome_grupo__icontains=search_term)
+            )
+        elif all_term:
+            queryset = queryset.order_by('-created_at')
+        else:
+            if self.action == 'list':
+                queryset = queryset.order_by('-created_at')[:10]
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listCadastro_Pessoal
+        else:
+            return self.serializer_class
+        
+class ProdutosView(viewsets.ModelViewSet):
+    queryset = Produtos_Frasson.objects.all()
+    serializer_class = serializer_Cad_Produtos
+    permission_classes = [permissions.AllowAny]
+
+class Detalhamento_ServicosView(viewsets.ModelViewSet):
+    queryset = Detalhamento_Servicos.objects.all()
+    serializer_class = serializerDetalhamento_Servicos
+    permission_classes = [permissions.AllowAny]
+
+class Instituicoes_ParceirasView(viewsets.ModelViewSet):
+    queryset = Instituicoes_Parceiras.objects.all()
+    serializer_class = serializerInstituicoes_Parceiras
+    permission_classes = [permissions.AllowAny]
+
+class Instituicoes_RazaosocialView(viewsets.ModelViewSet):
+    queryset = Instituicoes_Razao_Social.objects.all()
+    serializer_class = listInstituicoes_RazaoSocial
+    permission_classes = [permissions.AllowAny]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        all_term = self.request.query_params.get('all', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(razao_social__icontains=search_term)
+            )
+        elif all_term:
+            queryset = queryset.order_by('-created_at')
+        else:
+            queryset = queryset.order_by('-created_at')[:10]
+        return queryset

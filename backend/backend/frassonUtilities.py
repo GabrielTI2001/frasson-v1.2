@@ -3,14 +3,14 @@ import requests, json, environ, math, locale, re
 from django.http import JsonResponse, HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, TOKEN_API_INFOSIMPLES
-from environmental.models import Processos_Outorga_Coordenadas, Processos_APPO_Coordenadas
+from environmental.models import Outorgas_INEMA_Coordenadas, APPO_INEMA_Coordenadas
 from administrator.models import RequestsAPI
-from finances.models import Saldos_Iniciais, Cobrancas_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Pagamentos_Pipefy, Transferencias_Contas
+from finances.models import Reembolso_Cliente, Resultados_Financeiros, Transferencias_Contas, Caixas_Frasson
+from pipeline.models import Card_Cobrancas, Card_Pagamentos
 from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, init_data
 from pygc import great_circle
 import numpy as np
 from pyproj import Transformer
-from inbox.models import Notifications_Messages
 from datetime import datetime
 from django.db import transaction, IntegrityError, connection
 
@@ -22,28 +22,28 @@ class Frasson(object):
         for id in init_data.keys():
             InsertRegistros(int(id))
     
-    def createNotificationMessageUsers(str_title, str_subject, str_text, str_icon, str_icon_color, int_recipient, int_sender=1):
-        """Cria mensagens no centro de notificações"""
-        Notifications_Messages.objects.create(
-            title = str_title, 
-            subject = str_subject, 
-            text = str_text,
-            icon = str_icon,
-            icon_color = str_icon_color,
-            recipient_id = int_recipient,
-            sender_id = int_sender
-        )
+    # def createNotificationMessageUsers(str_title, str_subject, str_text, str_icon, str_icon_color, int_recipient, int_sender=1):
+    #     """Cria mensagens no centro de notificações"""
+    #     Notifications_Messages.objects.create(
+    #         title = str_title, 
+    #         subject = str_subject, 
+    #         text = str_text,
+    #         icon = str_icon,
+    #         icon_color = str_icon_color,
+    #         recipient_id = int_recipient,
+    #         sender_id = int_sender
+    #     )
 
-        return JsonResponse({'msg': 'ok'})
+    #     return JsonResponse({'msg': 'ok'})
 
 
     def verificaCoordenadaCadastro(latitude, longitude, type):
         """Função que verifica se a coordenada informada na outorga já está cadastrada (Novo registro). Retorna True se existe coordenada próxima."""
         tolerancia = 0.0001
         if type == 'appo':
-            model = Processos_APPO_Coordenadas
+            model = APPO_INEMA_Coordenadas
         else:
-            model = Processos_Outorga_Coordenadas
+            model = Outorgas_INEMA_Coordenadas
         coordenadas_proximas = model.objects.filter(
             Q(latitude_gd__range=(float(latitude) - tolerancia, float(latitude) + tolerancia)) &
             Q(longitude_gd__range=(float(longitude) - tolerancia, float(longitude) + tolerancia)))
@@ -54,10 +54,10 @@ class Frasson(object):
         """Função que verifica se a coordenada informada na outorga já está cadastrada (Edição de registro). Retorna True se existe coordenada próxima."""
         #coordenada atual do registro
         if type == 'appo':
-            model = Processos_APPO_Coordenadas
+            model = APPO_INEMA_Coordenadas
             tolerancia = 0.0001
         else:
-            model = Processos_Outorga_Coordenadas
+            model = Outorgas_INEMA_Coordenadas
             tolerancia = 0.0001
 
         coord = model.objects.get(pk=id)
@@ -220,13 +220,13 @@ class Frasson(object):
         years = list(range(2020, year)) #cria uma lista de anos, iniciando em 2021 até o ano de busca
 
         #CALCULA SOMÁTORIO DO SALDO INICIAL
-        saldos = Saldos_Iniciais.objects.select_related('caixa').values('caixa__caixa', 'valor')
-        saldos_iniciais = {saldo['caixa__caixa']: float(saldo['valor']) for saldo in saldos}
+        saldos = Caixas_Frasson.objects.all().values('nome', 'saldo_inicial')
+        saldos_iniciais = {saldo['nome']: float(saldo['saldo_inicial'] or 0) for saldo in saldos}
         total_saldo_inicial = sum(saldos_iniciais.values())
 
         #TOTAL COBRANÇAS E PAGAMENTOS
-        cobrancas = Cobrancas_Pipefy.objects.filter(phase_id=317532039, data_pagamento__year__in=years).aggregate(total=Sum('valor_faturado'))['total'] or 0
-        pagamentos = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year__in=years).aggregate(total=Sum('valor_pagamento'))['total'] or 0
+        cobrancas = Card_Cobrancas.objects.filter(phase_id=317532039, data_pagamento__year__in=years).aggregate(total=Sum('valor_faturado'))['total'] or 0
+        pagamentos = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year__in=years).aggregate(total=Sum('valor_pagamento'))['total'] or 0
         
         #TOTAL RESULTADOS FINANCEIROS
         query_resultados_financeiros = Resultados_Financeiros.objects.filter(data__year__in=years).aggregate(
@@ -262,11 +262,11 @@ class Frasson(object):
         #BUSCA OS SALDOS INICIAIS DOS CAIXAS
         for caixa in caixas:
             try:
-                obj_saldo = Saldos_Iniciais.objects.get(caixa_id=caixa['id'])
+                obj_saldo = Caixas_Frasson.objects.get(id=caixa['id'])
             except ObjectDoesNotExist:
                 obj_saldo = None
 
-            saldos_iniciais[caixa['name']] = round(float(obj_saldo.valor), 2) if obj_saldo != None else 0
+            saldos_iniciais[caixa['name']] = round(float(obj_saldo.saldo_inicial) or 0, 2) if obj_saldo != None else 0
 
         # SOMA VALORES REEMBOLSO POR CAIXA
         reembolsos = {}
@@ -330,7 +330,7 @@ class Frasson(object):
 
         #TOTAL PAGAMENTOS POR CAIXA (PAGOS)
         pagamentos = {}
-        pagamentos_db = Pagamentos_Pipefy.objects.filter(phase_id=317163732).values('caixa').annotate(total=Sum('valor_pagamento'))
+        pagamentos_db = Card_Pagamentos.objects.filter(phase_id=317163732).values('caixa').annotate(total=Sum('valor_pagamento'))
         for caixa in caixas:
             for pagamento in pagamentos_db:
                 if caixa['id'] in pagamento.values():
@@ -342,7 +342,7 @@ class Frasson(object):
         
         #TOTAL COBRANÇAS POR CAIXA (PAGOS)
         cobrancas = {}
-        cobrancas_db = Cobrancas_Pipefy.objects.filter(phase_id=317532039).values('caixa').annotate(total=Sum('valor_faturado'))
+        cobrancas_db = Card_Cobrancas.objects.filter(phase_id=317532039).values('caixa').annotate(total=Sum('valor_faturado'))
         for caixa in caixas:
             for pagamento in cobrancas_db:
                 if caixa['id'] in pagamento.values():
@@ -363,7 +363,7 @@ class Frasson(object):
             colors[caixa['name']] = 'primary' if saldo >= 0 else 'danger'
 
         #FATURAMENTO CONSOLIDADO POR PRODUTO
-        query_cobrancas_abertas= Cobrancas_Pipefy.objects.aggregate(
+        query_cobrancas_abertas= Card_Cobrancas.objects.aggregate(
             aguardando=Sum(Case(When(phase_id=317532037, then='saldo_devedor'), default=0, output_field=DecimalField())),
             notificacao=Sum(Case(When(phase_id=317532038, then='saldo_devedor'), default=0, output_field=DecimalField())),
             faturamento=Sum(Case(When(phase_id=318663454, then='saldo_devedor'), default=0, output_field=DecimalField())),
@@ -376,7 +376,7 @@ class Frasson(object):
         total_aberto_cobrancas = float(total_aguardando + total_notificacao + total_faturamento + total_confirmacao)
 
         #PAGAMENTOS ABERTOS POR FASE (CONFERÊNCIA E AGENDADO)
-        query_pagamentos_abertos= Pagamentos_Pipefy.objects.aggregate(
+        query_pagamentos_abertos= Card_Pagamentos.objects.aggregate(
             conferencia=Sum(Case(When(phase_id=317163730, then='valor_pagamento'), default=0, output_field=DecimalField())),
             agendado=Sum(Case(When(phase_id=317163731, then='valor_pagamento'), default=0, output_field=DecimalField())))
 

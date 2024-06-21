@@ -3,7 +3,7 @@ from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets
 from .serializers import ListAlongamentos, detailAlongamentos, listProdutos, listTipoArmazenagem, listTipoClassificacao
-from .models import Operacoes_Credito, Produto_Agricola, Tipo_Classificacao, Tipo_Armazenagem
+from .models import Cadastro_Alongamentos, Produto_Agricola, Tipo_Classificacao, Tipo_Armazenagem
 import locale
 from num2words import num2words
 from reportlab.lib.pagesizes import letter, landscape
@@ -16,7 +16,7 @@ from reportlab.lib.colors import Color
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 class AlongamentosView(viewsets.ModelViewSet):
-    queryset = Operacoes_Credito.objects.all()
+    queryset = Cadastro_Alongamentos.objects.all()
     serializer_class = detailAlongamentos
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -43,14 +43,14 @@ def create_pdf_alongamento(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Operacoes_Credito.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
         qtd_penhor_kg = locale.format_string('%.0f', alongamento.quant_penhor_kg, True) if alongamento.quant_penhor_kg != None else ''
-        cep = alongamento.agencia_bancaria.cep_agencia
+        cep = alongamento.agencia_bancaria.cep_logradouro
         data_along = alongamento.data.strftime("%d de %B de %Y") 
-        mun_agencia = f"{alongamento.agencia_bancaria.municipio_agencia.nome_municipio} - {alongamento.agencia_bancaria.municipio_agencia.sigla_uf}"
-        mun_propriedade = f"{alongamento.municipio_propriedade.nome_municipio} - {alongamento.municipio_propriedade.sigla_uf}" if alongamento.municipio_propriedade != None else ''
+        mun_agencia = f"{alongamento.agencia_bancaria.municipio.nome_municipio} - {alongamento.agencia_bancaria.municipio.sigla_uf}"
+        mun_propriedade = f"{alongamento.propriedades.first().municipio.nome_municipio} - {alongamento.propriedades.first().municipio.sigla_uf}" if alongamento.propriedades.all() != [] else ''
         fiel_depositario_nome = alongamento.fiel_depositario.razao_social
         fiel_depositario_cpf = alongamento.fiel_depositario.cpf_cnpj
         numero_agencia = alongamento.agencia_bancaria.numero_agencia
@@ -74,8 +74,8 @@ def create_pdf_alongamento(request, id):
         valor_operacao_str = num2words(alongamento.operacao.valor_operacao, lang='pt_BR', to='currency')
         valor_total_along = locale.currency(alongamento.valor_total, grouping=True)
         valor_total_along_str = num2words(alongamento.valor_total, lang='pt_BR', to='currency')        
-        lista_propriedades = [propriedade.nome_imovel for propriedade in alongamento.propriedade.all()]
-        lista_matriculas = [propriedade.matricula_imovel for propriedade in alongamento.propriedade.all()]
+        lista_propriedades = [propriedade.nome for propriedade in alongamento.propriedades.all()]
+        lista_matriculas = [propriedade.matricula for propriedade in alongamento.propriedades.all()]
         fazendas_matriculas = [f"{nome} (Mat. {matricula})" for nome, matricula in zip(lista_propriedades, lista_matriculas)]
         fazendas_matriculas_str = ', '.join(fazendas_matriculas)
         fazendas_str = ', '.join([fazenda for fazenda in lista_propriedades])
@@ -310,14 +310,14 @@ def download_pdf_page_01(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Operacoes_Credito.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
         qtd_penhor_kg = locale.format_string('%.0f', alongamento.quant_penhor_kg, True) if alongamento.quant_penhor_kg != None else ''
-        cep = alongamento.agencia_bancaria.cep_agencia
+        cep = alongamento.agencia_bancaria.cep_logradouro
         data_along = alongamento.data.strftime("%d de %B de %Y") 
-        mun_agencia = f"{alongamento.agencia_bancaria.municipio_agencia.nome_municipio} - {alongamento.agencia_bancaria.municipio_agencia.sigla_uf}"
-        mun_propriedade = f"{alongamento.municipio_propriedade.nome_municipio} - {alongamento.municipio_propriedade.sigla_uf}" if alongamento.municipio_propriedade != None else ''
+        mun_agencia = f"{alongamento.agencia_bancaria.municipio.nome_municipio} - {alongamento.agencia_bancaria.municipio.sigla_uf}"
+        mun_propriedade = f"{alongamento.propriedades.first().municipio.nome_municipio} - {alongamento.propriedades.first().municipio.sigla_uf}" if alongamento.propriedades.all() != [] else ''
         fiel_depositario_nome = alongamento.fiel_depositario.razao_social
         fiel_depositario_cpf = alongamento.fiel_depositario.cpf_cnpj
         numero_agencia = alongamento.agencia_bancaria.numero_agencia
@@ -329,8 +329,8 @@ def download_pdf_page_01(request, id):
         tipo_classificacao = alongamento.tipo_classificacao.description
         valor_total_along = locale.currency(alongamento.valor_total, grouping=True)
         valor_total_along_str = num2words(alongamento.valor_total, lang='pt_BR', to='currency')        
-        lista_propriedades = [propriedade.nome_imovel for propriedade in alongamento.propriedade.all()]
-        lista_matriculas = [propriedade.matricula_imovel for propriedade in alongamento.propriedade.all()]
+        lista_propriedades = [propriedade.nome for propriedade in alongamento.propriedades.all()]
+        lista_matriculas = [propriedade.matricula for propriedade in alongamento.propriedades.all()]
         fazendas_matriculas = [f"{nome} (Mat. {matricula})" for nome, matricula in zip(lista_propriedades, lista_matriculas)]
         fazendas_matriculas_str = ', '.join(fazendas_matriculas)
 
@@ -450,14 +450,14 @@ def download_pdf_page_02(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Operacoes_Credito.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
         qtd_penhor_kg = locale.format_string('%.0f', alongamento.quant_penhor_kg, True) if alongamento.quant_penhor_kg != None else ''
-        cep = alongamento.agencia_bancaria.cep_agencia
+        cep = alongamento.agencia_bancaria.cep_logradouro
         data_along = alongamento.data.strftime("%d de %B de %Y") 
-        mun_agencia = f"{alongamento.agencia_bancaria.municipio_agencia.nome_municipio} - {alongamento.agencia_bancaria.municipio_agencia.sigla_uf}"
-        mun_propriedade = f"{alongamento.municipio_propriedade.nome_municipio} - {alongamento.municipio_propriedade.sigla_uf}" if alongamento.municipio_propriedade != None else ''
+        mun_agencia = f"{alongamento.agencia_bancaria.municipio.nome_municipio} - {alongamento.agencia_bancaria.municipio.sigla_uf}"
+        mun_propriedade = f"{alongamento.propriedades.first().municipio.nome_municipio} - {alongamento.propriedades.first().municipio.sigla_uf}" if alongamento.propriedades.all() != [] else ''
         fiel_depositario_nome = alongamento.fiel_depositario.razao_social
         fiel_depositario_cpf = alongamento.fiel_depositario.cpf_cnpj
         numero_agencia = alongamento.agencia_bancaria.numero_agencia
@@ -481,8 +481,8 @@ def download_pdf_page_02(request, id):
         valor_operacao_str = num2words(alongamento.operacao.valor_operacao, lang='pt_BR', to='currency')
         valor_total_along = locale.currency(alongamento.valor_total, grouping=True)
         valor_total_along_str = num2words(alongamento.valor_total, lang='pt_BR', to='currency')        
-        lista_propriedades = [propriedade.nome_imovel for propriedade in alongamento.propriedade.all()]
-        lista_matriculas = [propriedade.matricula_imovel for propriedade in alongamento.propriedade.all()]
+        lista_propriedades = [propriedade.nome for propriedade in alongamento.propriedades.all()]
+        lista_matriculas = [propriedade.matricula for propriedade in alongamento.propriedades.all()]
         fazendas_matriculas = [f"{nome} (Mat. {matricula})" for nome, matricula in zip(lista_propriedades, lista_matriculas)]
         fazendas_str = ', '.join([fazenda for fazenda in lista_propriedades])
         matriculas_str = ', '.join([matricula for matricula in lista_matriculas])
@@ -601,12 +601,12 @@ def download_pdf_page_03(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Operacoes_Credito.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
-        cep = alongamento.agencia_bancaria.cep_agencia
+        cep = alongamento.agencia_bancaria.cep_logradouro
         data_along = alongamento.data.strftime("%d de %B de %Y") if data_along else ''
-        mun_agencia = f"{alongamento.agencia_bancaria.municipio_agencia.nome_municipio} - {alongamento.agencia_bancaria.municipio_agencia.sigla_uf}"
+        mun_agencia = f"{alongamento.agencia_bancaria.municipio.nome_municipio} - {alongamento.agencia_bancaria.municipio.sigla_uf}"
         numero_agencia = alongamento.agencia_bancaria.numero_agencia
         numero_operacao = alongamento.operacao.numero_operacao
         produto_agricola = alongamento.produto_agricola

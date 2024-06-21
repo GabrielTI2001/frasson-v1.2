@@ -20,6 +20,7 @@ import { toast } from 'react-toastify';
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { useAppContext } from '../../../Main';
 import CardInfo, {CardTitle} from '../CardInfo';
+import { TaskDropMenu } from './TaskCard';
 
 const KanbanModal = ({show}) => {
   const [showForm, setShowForm] = useState({'card':false,'data':false,'beneficiario':false, 
@@ -43,11 +44,11 @@ const KanbanModal = ({show}) => {
         setCard({})
         navigate("/auth/login")
       }
-      if (Object.keys(card).length === 0){
-        handleClose()
-        navigate("/error/404")
-      }
       else{
+        if (Object.keys(card).length === 0){
+          handleClose()
+          navigate("/error/404")
+        }
         setCard(card)
       }
     }
@@ -60,6 +61,7 @@ const KanbanModal = ({show}) => {
       [key]: !prevState[key]
     }));
   }
+
   const handleSubmit = (formData) =>{
     if (formData){
       api.put(`pipeline/cards/produtos/${code}/`, formData, {headers: {Authorization: `bearer ${token}`}})
@@ -94,24 +96,25 @@ const KanbanModal = ({show}) => {
         onHide={handleClose}
         size='xl'
         contentClassName="border-0"
-        dialogClassName="mt-2 modal-custom modal-xl"
-        scrollable
+        dialogClassName="mt-2 modal-custom modal-xl mb-0"
       >
-        <div className="position-absolute top-0 end-0 mt-1 me-1 z-index-1"style={{ zIndex: 1000 }}>
+        <div className="position-absolute d-flex top-0 end-0 mt-1 me-1" style={{ zIndex: 1000 }}>
+          <TaskDropMenu card={card}/>
           <CloseButton
             onClick={handleClose}
-            className="btn btn-sm btn-circle d-flex flex-center transition-base"
+            className="btn btn-sm btn-circle d-flex flex-center transition-base ms-2"
           />
         </div>
         <Modal.Body className="pt-2">
           {card ? 
            <Row className='p-2'>
-              <Col className='border-1 px-0' id='infocard' lg={5}>
+              <Col className='border-1 px-0 overflow-auto modal-column-scroll' id='infocard' lg={5}>
                 <div className="rounded-top-lg pt-1 pb-0 ps-3">
                   {card.info_detalhamento && (
                     <h4 className="mb-1 fs-0 fw-bold">{card.info_detalhamento.detalhamento_servico}</h4>
                   )}
                 </div>
+                <span className='fw-bold fs--1 ms-3'>Formulário Inicial</span>
                 <div className="rounded-top-lg ps-3 pt-1 pb-0">
                   <span className='fw-bold fs--1'>Processo</span>
                   <div className="fs--1 ms-3 row-10">#{card.code}</div>
@@ -193,7 +196,17 @@ const KanbanModal = ({show}) => {
                     data={card.data_vencimento || ''}
                   />
                 </div>
-              
+                <span className='fw-bold fs--1 ms-3'>Histórico</span>
+                <div className="rounded-top-lg ps-3 pt-1 pb-0 mb-2">
+                  {card.history_fases_list.map(h =>
+                    <div className={`p-1 mb-1 text-body row ms-2 info-pipe ${theme === 'dark' ? 'info-pipe-dark' : ''}`} key={h.id}>
+                        <label className='row fw-bold fs--1'>{h.phase_name}</label>
+                        <label className='row fs--2'>Duração (min): 
+                          {' '+Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}
+                        </label>
+                    </div>
+                  )}
+                </div>
               </Col>
               <Col lg={5}>
                 <div className="rounded-top-lg pt-1 pb-0 mb-2">

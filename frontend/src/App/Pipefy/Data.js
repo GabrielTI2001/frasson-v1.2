@@ -98,44 +98,6 @@ export const fetchInstituicoesRazaoSocial = async (inputValue) => {
   }
 };
 
-export const columnsPessoal = [
-  {
-    accessor: 'id',
-    Header: 'Código',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
-    accessor: 'razao_social',
-    Header: 'Razão Social',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
-    accessor: 'natureza',
-    Header: 'Nat. Jurídica',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
-    accessor: 'cpf_cnpj',
-    Header: 'CPF/CNPJ',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
-    accessor: 'numero_rg',
-    Header: 'N° RG',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
-    accessor: 'municipio',
-    Header: 'Município',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
-    accessor: 'grupo_info',
-    Header: 'Grupo',
-    headerProps: { className: 'text-900 p-1' }
-  },
-];
-
 export const columnsPessoaProcesso = [
   {
     accessor: 'info_detalhamento.produto',

@@ -1442,6 +1442,18 @@ body {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+div::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  background-color: var(--falcon-body-bg);
+  border-radius: 10px;
+}
+
+div::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: var(--falcon-secondary);
+}
+
 hr {
   margin: 1rem 0;
   color: var(--falcon-border-color);
@@ -22003,7 +22015,7 @@ pre[class*=language-] {
 }
 .windows.chrome .fc-scroller::-webkit-scrollbar-thumb {
   visibility: hidden;
-  border-radius: 3px;
+  border-radius: 10px;
   background-color: var(--falcon-scrollbar-bg);
 }
 .windows.chrome .fc-scroller:hover::-webkit-scrollbar, .windows.chrome .fc-scroller:hover::-webkit-scrollbar-thumb, .windows.chrome .fc-scroller:focus::-webkit-scrollbar, .windows.chrome .fc-scroller:focus::-webkit-scrollbar-thumb {
@@ -25398,7 +25410,7 @@ html[dir=rtl] .img-dropdown {
 }
 .scrollbar::-webkit-scrollbar-thumb {
   visibility: hidden;
-  border-radius: 3px;
+  border-radius: 5px;
   background-color: var(--falcon-scrollbar-bg);
 }
 .scrollbar:hover::-webkit-scrollbar, .scrollbar:hover::-webkit-scrollbar-thumb, .scrollbar:focus::-webkit-scrollbar, .scrollbar:focus::-webkit-scrollbar-thumb {
@@ -27018,11 +27030,10 @@ option:disabled {
 
 .kanban-container {
   padding-bottom: 0.25rem;
-  width: 96vw !important;
+  width: 100% !important;
   white-space: nowrap;
   overflow-x: scroll;
 }
-
 .kanban-column {
   display: inline-block !important;
   width: 18rem;

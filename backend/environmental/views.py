@@ -1,7 +1,6 @@
 from django.db.models import Q, Subquery
-from .models import Processos_Outorga, Processos_Outorga_Coordenadas, Tipo_Captacao, Finalidade_APPO, Processos_APPO
-from .models import Aquifero_APPO, Processos_APPO_Coordenadas, Processos_ASV, Empresas_Consultoria
-from cadastro.models import Municipios
+from .models import Tipo_Captacao, Finalidade_APPO
+from .models import Aquifero_APPO, Empresas_Consultoria
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import viewsets
@@ -19,7 +18,7 @@ import tempfile
 from django.views.decorators.csrf import csrf_exempt
 
 class OutorgaView(viewsets.ModelViewSet):
-    queryset = Processos_Outorga.objects.all()
+    queryset = Outorgas_INEMA.objects.all()
     serializer_class = detailOutorga
     lookup_field = 'uuid'
     # permission_classes = (IsAuthenticated,)
@@ -46,7 +45,7 @@ class OutorgaView(viewsets.ModelViewSet):
             return self.serializer_class
         
 class CoordenadaOutorgaView(viewsets.ModelViewSet):
-    queryset = Processos_Outorga_Coordenadas.objects.all()
+    queryset = Outorgas_INEMA_Coordenadas.objects.all()
     serializer_class = serializerCoordenadaOutorga
     permission_classes = (IsAuthenticated,)
     def get_queryset(self):
@@ -71,7 +70,7 @@ class CoordenadaOutorgaView(viewsets.ModelViewSet):
         return queryset
 
 class detailCoordenadaOutorgaView(viewsets.ModelViewSet):
-    queryset = Processos_Outorga_Coordenadas.objects.all()
+    queryset = Outorgas_INEMA_Coordenadas.objects.all()
     serializer_class = detailCoordenadaOutorga
     permission_classes = (IsAuthenticated,)
     def get_queryset(self):
@@ -90,7 +89,7 @@ class detailCoordenadaOutorgaView(viewsets.ModelViewSet):
 
 
 class APPOView(viewsets.ModelViewSet):
-    queryset = Processos_APPO.objects.all()
+    queryset = APPO_INEMA.objects.all()
     serializer_class = detailAPPO #Esse serializer dá mais informações
     lookup_field = 'uuid'
     parser_classes = (MultiPartParser, FormParser)
@@ -131,7 +130,7 @@ class APPOView(viewsets.ModelViewSet):
 
 #Lista as coordenadas, mas com pouca informação
 class CoordenadaAPPOView(viewsets.ModelViewSet):
-    queryset = Processos_APPO_Coordenadas.objects.all()
+    queryset = APPO_INEMA_Coordenadas.objects.all()
     serializer_class = listCoordenadaAPPO
     permission_classes = (IsAuthenticated,)
     def get_queryset(self):
@@ -151,7 +150,7 @@ class CoordenadaAPPOView(viewsets.ModelViewSet):
         return queryset
 
 class detailCoordenadaAPPOView(viewsets.ModelViewSet):
-    queryset = Processos_APPO_Coordenadas.objects.all()
+    queryset = APPO_INEMA_Coordenadas.objects.all()
     serializer_class = detailCoordenadaAPPO
     permission_classes = (IsAuthenticated,)
     def get_queryset(self):
@@ -169,7 +168,7 @@ class detailCoordenadaAPPOView(viewsets.ModelViewSet):
 
 
 class ASVView(viewsets.ModelViewSet):
-    queryset = Processos_ASV.objects.all()
+    queryset = ASV_INEMA.objects.all()
     serializer_class = detailASV
     lookup_field = 'uuid'
     # permission_classes = (IsAuthenticated,)
@@ -192,7 +191,7 @@ class ASVView(viewsets.ModelViewSet):
             return self.serializer_class
 
 class AreasASVView(viewsets.ModelViewSet):
-    queryset = Processos_ASV_Areas.objects.all()
+    queryset = ASV_INEMA_Areas.objects.all()
     serializer_class = listAreasASV
     # permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser)
@@ -219,7 +218,7 @@ class AreasASVView(viewsets.ModelViewSet):
         return queryset
     
 class detailAreaASVView(viewsets.ModelViewSet):
-    queryset = Processos_ASV_Areas.objects.all()
+    queryset = ASV_INEMA_Areas.objects.all()
     serializer_class = detailAreasASV
     # permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser)
@@ -233,7 +232,7 @@ class detailAreaASVView(viewsets.ModelViewSet):
 
 
 class RequerimentoAPPOView(viewsets.ModelViewSet):
-    queryset = Requerimentos_APPO.objects.all()
+    queryset = Requerimentos_APPO_INEMA.objects.all()
     serializer_class = detailRequerimentosAPPO
     lookup_field = 'uuid'
     # permission_classes = (IsAuthenticated,)
@@ -250,7 +249,7 @@ class RequerimentoAPPOView(viewsets.ModelViewSet):
         else:
             if self.action == 'list':
                 queryset = queryset.order_by('-created_at')
-        return queryset.exclude(numero_processo__in=Subquery(Processos_APPO.objects.values('numero_processo')))
+        return queryset.exclude(numero_processo__in=Subquery(APPO_INEMA.objects.values('numero_processo')))
     def get_serializer_class(self):
         if self.action == 'list':
             return listRequerimentosAPPO
@@ -274,7 +273,7 @@ class CoordenadaRequerimentoAPPOView(viewsets.ModelViewSet):
                 Q(requerimento__numero_processo__icontains=search) | Q(requerimento__municipio__nome_municipio__icontains=search) |
                 Q(requerimento__email__icontains=search) | Q(requerimento__numero_requerimento__icontains=search)
             )
-        return queryset.exclude(requerimento__numero_processo__in=Subquery(Processos_APPO.objects.values('numero_processo')))
+        return queryset.exclude(requerimento__numero_processo__in=Subquery(APPO_INEMA.objects.values('numero_processo')))
 
 class detailCoordenadaRequerimentoAPPOView(viewsets.ModelViewSet):
     queryset = Requerimentos_APPO_Coordenadas.objects.all()
@@ -331,8 +330,8 @@ def kml_processo_appo(request, id):
         # Retrieve the Folder element
         folder = doc.Document.Folder
         #get coordinates from database Processos Outorga
-        processo = Processos_APPO.objects.get(pk=id)
-        coordenadas = Processos_APPO_Coordenadas.objects.filter(processo_id=id)
+        processo = APPO_INEMA.objects.get(pk=id)
+        coordenadas = APPO_INEMA_Coordenadas.objects.filter(processo_id=id)
         nome_requerente = processo.nome_requerente.strip().replace(' ', '_')
         #set file name
         file_name = f'APPO_{nome_requerente}.kml'
@@ -371,8 +370,8 @@ def kml_processo_outorga(request, id):
 
     folder = doc.Document.Folder
 
-    processo = Processos_Outorga.objects.get(pk=id)
-    coordenadas = Processos_Outorga_Coordenadas.objects.filter(processo_id=id)
+    processo = Outorgas_INEMA.objects.get(pk=id)
+    coordenadas = Outorgas_INEMA_Coordenadas.objects.filter(processo_id=id)
     nome_requerente = processo.nome_requerente.strip().replace(' ', '_')
 
     file_name = f'Outorga_{nome_requerente}.kml'
@@ -401,8 +400,8 @@ def kml_processo_outorga(request, id):
 
 def kml_processo_asv(request, id):
     folders = []
-    areas = Processos_ASV_Areas.objects.filter(processo=id)
-    file_name = Processos_ASV.objects.get(pk=id).portaria
+    areas = ASV_INEMA_Areas.objects.filter(processo=id)
+    file_name = ASV_INEMA.objects.get(pk=id).portaria
     for area in areas:
         kml_file = area.file
         kml_file.seek(0)
@@ -454,7 +453,7 @@ def kml_processo_asv(request, id):
     return response
 
 
-def kml_dashboard_processos_appo(request):
+def kml_dashboard_APPO_INEMA(request):
     #cria o arquivo kml dos processos de appo pesquisados
     folders = []
     search = request.GET.get('search')
@@ -463,10 +462,10 @@ def kml_dashboard_processos_appo(request):
         KML.Document()
     )
     query_search = (Q(nome_requerente__icontains=search) | Q(cpf_cnpj__icontains=search) | Q(numero_processo__icontains=search) | Q(municipio__nome_municipio__icontains=search))
-    processos = Processos_APPO.objects.filter(query_search)
+    processos = APPO_INEMA.objects.filter(query_search)
     #Creating a list of folders, each with a list of coordinates
     for processo in processos:
-        coordenadas = Processos_APPO_Coordenadas.objects.filter(processo_id=processo.id)
+        coordenadas = APPO_INEMA_Coordenadas.objects.filter(processo_id=processo.id)
         points = []
         for coord in coordenadas:
             str_coordenada = str(coord.longitude_gd) + ',' + str(coord.latitude_gd)
@@ -498,7 +497,7 @@ def kml_dashboard_processos_appo(request):
     # Create a response with the KML type
     response = HttpResponse(kml_str, content_type='application/vnd.google-earth.kml+xml')
     # Add a file attachment header
-    response['Content-Disposition'] = 'attachment; filename="Processos_APPO_INEMA.kml"'
+    response['Content-Disposition'] = 'attachment; filename="APPO_INEMA_INEMA.kml"'
     return response
 
 
@@ -511,10 +510,10 @@ def kml_dashboard_processos_outorga(request):
         KML.Document()
     )
     query_search = (Q(nome_requerente__icontains=search) | Q(cpf_cnpj__icontains=search) | Q(numero_processo__icontains=search) | Q(municipio__nome_municipio__icontains=search))
-    processos = Processos_Outorga.objects.filter(query_search)
+    processos = Outorgas_INEMA.objects.filter(query_search)
     #Creating a list of folders, each with a list of coordinates
     for processo in processos:
-        coordenadas = Processos_Outorga_Coordenadas.objects.filter(processo_id=processo.id)
+        coordenadas = Outorgas_INEMA_Coordenadas.objects.filter(processo_id=processo.id)
         points = []
         for coord in coordenadas:
             str_coordenada = f"{coord.longitude_gd},{coord.latitude_gd}"
@@ -673,7 +672,7 @@ def kml_requerimento_appo(request, id):
     folder = doc.Document.Folder
 
     #get coordinates from database Requerimentos
-    requerimento = Requerimentos_APPO.objects.get(pk=id)
+    requerimento = Requerimentos_APPO_INEMA.objects.get(pk=id)
     coordenadas = Requerimentos_APPO_Coordenadas.objects.filter(requerimento_id=id)
     nome_requerente = requerimento.nome_requerente.strip().replace(' ', '_')
 
@@ -718,11 +717,11 @@ def kml_mapa_requerimento_appo(request):
 
     query_search = (Q(nome_requerente__icontains=search) | Q(cpf_cnpj__icontains=search) | Q(numero_processo__icontains=search) | 
         Q(numero_requerimento__icontains=search) | Q(email__icontains=search) | Q(municipio__nome_municipio__icontains=search))
-    requerimentos = Requerimentos_APPO.objects.exclude(numero_processo__in=Subquery(Processos_APPO.objects.values('numero_processo'))).filter(query_search)
+    requerimentos = Requerimentos_APPO_INEMA.objects.exclude(numero_processo__in=Subquery(APPO_INEMA.objects.values('numero_processo'))).filter(query_search)
 
     #Creating a list of folders, each with a list of coordinates
     for requerimento in requerimentos:
-        coordenadas = Requerimentos_APPO_Coordenadas.objects.exclude(requerimento__numero_processo__in=Subquery(Processos_APPO.objects.values('numero_processo'))).filter(requerimento=requerimento.id)
+        coordenadas = Requerimentos_APPO_Coordenadas.objects.exclude(requerimento__numero_processo__in=Subquery(APPO_INEMA.objects.values('numero_processo'))).filter(requerimento=requerimento.id)
         points = []
         for coord in coordenadas:
             str_coordenada = str(coord.longitude_gd) + ',' + str(coord.latitude_gd)

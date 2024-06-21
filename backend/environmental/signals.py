@@ -1,36 +1,36 @@
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
-from .models import Processos_ASV_Areas, Processos_APPO
+from .models import ASV_INEMA_Areas, APPO_INEMA
 import os
 
-@receiver(pre_delete, sender=Processos_ASV_Areas)
+@receiver(pre_delete, sender=ASV_INEMA_Areas)
 def excluir_arquivo_no_delete(sender, instance, **kwargs):
     if instance.file:
         if os.path.isfile(instance.file.path):
             os.remove(instance.file.path)
 
-@receiver(pre_save, sender=Processos_ASV_Areas)
+@receiver(pre_save, sender=ASV_INEMA_Areas)
 def remover_arquivo_antigo(sender, instance, **kwargs):
     if instance.pk:  # Verifica se é uma atualização
         try:
-            registro_anterior = Processos_ASV_Areas.objects.get(pk=instance.pk)
+            registro_anterior = ASV_INEMA_Areas.objects.get(pk=instance.pk)
             arquivo_antigo = registro_anterior.file 
             novo_arquivo = instance.file
             if arquivo_antigo != novo_arquivo:
                 if os.path.isfile(arquivo_antigo.path):
                     os.remove(arquivo_antigo.path) 
-        except Processos_ASV_Areas.DoesNotExist:
+        except ASV_INEMA_Areas.DoesNotExist:
             pass 
 
-@receiver(pre_save, sender=Processos_APPO)
+@receiver(pre_save, sender=APPO_INEMA)
 def remover_arquivo_antigo(sender, instance, **kwargs):
     if instance.pk:  # Verifica se é uma atualização
         try:
-            registro_anterior = Processos_APPO.objects.get(pk=instance.pk)
+            registro_anterior = APPO_INEMA.objects.get(pk=instance.pk)
             arquivo_antigo = registro_anterior.file 
             novo_arquivo = instance.file
             if arquivo_antigo != novo_arquivo:
                 if os.path.isfile(arquivo_antigo.path):
                     os.remove(arquivo_antigo.path) 
-        except Processos_APPO.DoesNotExist:
+        except APPO_INEMA.DoesNotExist:
             pass 

@@ -37,9 +37,6 @@ const ModalSidebar = ({code, id, pipe}) => {
   const [actionMenu] = useState([
     { icon: faCopy, title: 'Copy', link: '#!' },
     { icon: faArrowRight, title: 'Move', link: '#!' },
-    { icon: faTrashAlt, title: 'Remove', link: '#!', 
-      click:() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/cards/${pipe}/${code}/`})}
-    }
   ]);
   return (
     <>

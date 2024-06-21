@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Processos_Andamento, Acompanhamento_Processos, Status_Acompanhamento
-from pipefy.models import Card_Produtos
+from pipeline.models import Card_Produtos
 from datetime import datetime, date, timedelta
 import requests, json, locale
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL

@@ -1,14 +1,14 @@
 from django.db import models
 from cadastro.models import Municipios
-from pipefy.models import Cadastro_Pessoal
+from cadastro.models import Cadastro_Pessoal
 from users.models import User
 import uuid
 
-#uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-
 #modelo para cadastro de fabricantes de pivot central
 class Fabricantes_Pivots(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     nome_fabricante = models.CharField(max_length=255, null=False, blank=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -18,7 +18,9 @@ class Fabricantes_Pivots(models.Model):
 
 #modelo para cadastro de fabricantes de bombas
 class Fabricantes_Bombas(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     nome_fabricante = models.CharField(max_length=255, null=False, blank=False)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -27,16 +29,18 @@ class Fabricantes_Bombas(models.Model):
         return self.nome_fabricante
 
 #modelo para cadastro de equipamentos pivot central - perfil de irrigação
-class  Perfil_Irrigacao(models.Model):
-    nome_proprietario = models.CharField(max_length=255, null=True)
-    municipio_localizacao = models.ForeignKey(Municipios, on_delete=models.CASCADE)
-    identificacao_pivot = models.CharField(max_length=255, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Perfil Irrigação'
-    def __str__(self):
-        return self.nome_proprietario
+# class  Perfil_Irrigacao(models.Model):
+#     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+#     nome_proprietario = models.CharField(max_length=255, null=True)
+#     municipio_localizacao = models.ForeignKey(Municipios, on_delete=models.CASCADE)
+#     identificacao_pivot = models.CharField(max_length=255, null=True)
+#     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+#     created_at = models.DateTimeField(auto_now_add=True)
+#     updated_at = models.DateTimeField(auto_now=True)
+#     class Meta:
+#         verbose_name_plural = 'Perfil Irrigação'
+#     def __str__(self):
+#         return self.nome_proprietario
 
 #modelo para cadastro de equipamentos pivot central - cadastro geral
 class Cadastro_Pivots(models.Model):
@@ -61,7 +65,7 @@ class Cadastro_Pivots(models.Model):
     pot_motor_cv = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name='Pot. Motor (cv)')
     data_montagem_pivot = models.DateField(null=True, blank=True, verbose_name='Data Montagem Pivot')
     file = models.FileField(upload_to='pivots/fichas', null=True, default=None, verbose_name='Ficha Técnica PDF')
-    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

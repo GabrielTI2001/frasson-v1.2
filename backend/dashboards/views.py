@@ -5,9 +5,9 @@ from django.http import JsonResponse
 from datetime import date
 import locale, json, statistics, uuid
 from django.core import serializers
-from pipefy.models import Operacoes_Contratadas, Card_Produtos, Card_Prospects
-from environmental.models import Processos_APPO_Coordenadas, Processos_Outorga_Coordenadas
-from finances.models import Pagamentos_Pipefy, Cobrancas_Pipefy
+from credit.models import Operacoes_Contratadas
+from environmental.models import APPO_INEMA_Coordenadas, Outorgas_INEMA_Coordenadas
+from pipeline.models import Card_Pagamentos, Card_Cobrancas, Card_Produtos, Card_Prospects
 from irrigation.models import Cadastro_Pivots
 from processes.models import Processos_Andamento
 from kpi.models import Indicadores_Frasson, Metas_Realizados
@@ -362,8 +362,8 @@ def dashboard_gestao_ambiental(request):
         abertos_last.append(processo['count'])
 
     qtd_processos = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).count()
-    qtd_pocos = Processos_APPO_Coordenadas.objects.all().count()
-    qtd_outorgas = Processos_Outorga_Coordenadas.objects.all().count()
+    qtd_pocos = APPO_INEMA_Coordenadas.objects.all().count()
+    qtd_outorgas = Outorgas_INEMA_Coordenadas.objects.all().count()
     qtd_pivots = Cadastro_Pivots.objects.all().count()
 
     days_processos = Processos_Andamento.objects.filter(processo__card=card_type, processo__detalhamento__produto=produto_gai)
@@ -416,7 +416,7 @@ def pagamentos_pipefy_dashboard(request):
         searched_year = current_year
         searched_month = current_month
 
-    anos = Pagamentos_Pipefy.objects.values_list('data_vencimento__year', flat=True).distinct()
+    anos = Card_Pagamentos.objects.values_list('data_vencimento__year', flat=True).distinct()
     meses = [{'number': 1, 'abrev': 'JAN', 'name': 'janeiro'},
         {'number': 2, 'abrev': 'FEV', 'name': 'fevereiro'},
         {'number': 3, 'abrev': 'MAR', 'name': 'março'},
@@ -431,7 +431,7 @@ def pagamentos_pipefy_dashboard(request):
         {'number': 12, 'abrev': 'DEZ', 'name': 'dezembro'}
     ]
     #TOTAL DE PAGAMENTOS POR FASE
-    query_pagamentos_fases = Pagamentos_Pipefy.objects.filter(query_search).aggregate(
+    query_pagamentos_fases = Card_Pagamentos.objects.filter(query_search).aggregate(
         conferencia=Sum(Case(When(phase_id=317163730, then='valor_pagamento'), default=0, output_field=DecimalField())),
         agendado=Sum(Case(When(phase_id=317163731, then='valor_pagamento'), default=0, output_field=DecimalField())),
         pago=Sum(Case(When(phase_id=317163732, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -447,7 +447,7 @@ def pagamentos_pipefy_dashboard(request):
     percentual_pago = round((total_pago / total_pagamentos) * 100, 1) if total_pagamentos != 0 else 0
  
     #PAGAMENTOS POR CATEGORIA
-    pagamentos_categoria = Pagamentos_Pipefy.objects.filter(query_search).values('categoria__category').annotate(total=Sum('valor_pagamento')).order_by('-total')[:10]
+    pagamentos_categoria = Card_Pagamentos.objects.filter(query_search).values('categoria__category').annotate(total=Sum('valor_pagamento')).order_by('-total')[:10]
     for pagamento in pagamentos_categoria:
         categorias[pagamento['categoria__category']] = pagamento['total']
 
@@ -477,7 +477,7 @@ def cobrancas_pipefy_dashboard(request):
     produto_avaliacao = 864795628
     produto_tecnologia = 864795734
     #COBRANÇAS ABERTAS
-    query_cobrancas_abertas= Cobrancas_Pipefy.objects.aggregate(
+    query_cobrancas_abertas= Card_Cobrancas.objects.aggregate(
         aguardando=Sum(Case(When(phase_id=317532037, then='saldo_devedor'), default=0, output_field=DecimalField())),
         notificacao=Sum(Case(When(phase_id=317532038, then='saldo_devedor'), default=0, output_field=DecimalField())),
         faturamento=Sum(Case(When(phase_id=318663454, then='saldo_devedor'), default=0, output_field=DecimalField())),
@@ -491,7 +491,7 @@ def cobrancas_pipefy_dashboard(request):
     #id das fases de cobranças abertas (não pagas - AD, Not, Fatu e Conf)
     id_phases_cobracas_abertas = [317532037, 317532038, 318663454, 317532040]
     #CÁLCULO TOTAL ABERTO POR PRODUTO
-    query_aberto_produtos= Cobrancas_Pipefy.objects.filter(phase_id__in=id_phases_cobracas_abertas).aggregate(
+    query_aberto_produtos= Card_Cobrancas.objects.filter(phase_id__in=id_phases_cobracas_abertas).aggregate(
         gc=Sum(Case(When(detalhamento__produto=produto_gc, then='saldo_devedor'), default=0, output_field=DecimalField())),
         gai=Sum(Case(When(detalhamento__produto=produto_gai, then='saldo_devedor'), default=0, output_field=DecimalField())),
         ava=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='saldo_devedor'), default=0, output_field=DecimalField())),
@@ -503,7 +503,7 @@ def cobrancas_pipefy_dashboard(request):
     aberto_tecnologia = query_aberto_produtos.get('tec', 0) or 0
 
     #CÁLCULO VALOR TOAL FATURADO (CONSOLIDADO) POR PRODUTO - ANO ATUAL
-    query_faturamento_consolidado= Cobrancas_Pipefy.objects.filter(phase_id=317532039, data_pagamento__year=current_year).aggregate(
+    query_faturamento_consolidado= Card_Cobrancas.objects.filter(phase_id=317532039, data_pagamento__year=current_year).aggregate(
         gc=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
         gai=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
         ava=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),

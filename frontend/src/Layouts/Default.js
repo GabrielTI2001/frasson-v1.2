@@ -32,7 +32,7 @@ const App = () => {
           <div className={classNames('content', 'pb-0')}>
               <NavbarTop />
               <hr className="my-0 d-lg-block"></hr>
-              <div className="container-fluid mt-2 px-3 conteudo">
+              <div className="container-fluid mt-2 px-0 conteudo">
                 <Outlet />
               </div>
           </div>

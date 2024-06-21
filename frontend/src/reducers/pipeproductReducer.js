@@ -5,7 +5,6 @@ export const kanbanReducer = (state, action) => {
     case 'SET_DATA':
       return {
         ...state,
-        pipes: action.payload.pipes,
         pipe: action.payload.pipe,
         fases: action.payload.fases
         // ... outras propriedades conforme necessário
@@ -126,7 +125,35 @@ export const kanbanReducer = (state, action) => {
           fase => fase.id !== payload.id
         )
     };
-
+    
+    case 'FILTER_CARD':
+      return {
+        ...state,
+        fases: state.fases.map(f => ({
+          ...f,
+          card_produtos_set: f.card_produtos_set.filter(c =>
+            Object.values(c).some(val => {
+              if (typeof val === 'string') {
+                return val.toLowerCase().includes(payload.toLowerCase());
+              } else if (Array.isArray(val)) {
+                return val.some(subVal => {
+                  if (typeof subVal === 'object' && subVal !== null) {
+                    return Object.values(subVal).some(subValAttr =>
+                      typeof subValAttr === 'string' && subValAttr.toLowerCase().includes(payload.toLowerCase())
+                    );
+                  }
+                  return false;
+                });
+              } else if (typeof val === 'object' && val !== null) {
+                return Object.values(val).some(subValAttr =>
+                  typeof subValAttr === 'string' && subValAttr.toLowerCase().includes(payload.toLowerCase())
+                );
+              }
+              return false;
+            })
+          )
+        }))
+      };
     default:
       return state;
   }

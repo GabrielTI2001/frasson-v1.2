@@ -26,6 +26,8 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'daphne',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
@@ -33,13 +35,17 @@ INSTALLED_APPS = [
     'djoser',
     'corsheaders',
     'administrator',
+    'administrativo',
     'alongamentos',
     'analytics',
     'assessments',
+    'backend',
     'cadastro',
+    'credit',
     'dashboards',
     'environmental',
     'external',
+    'farms',
     'finances',
     'glebas',
     'irrigation',
@@ -210,3 +216,15 @@ DJOSER = {
         'user_delete': "djoser.serializers.UserDeleteSerializer",      
     },
 }
+
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
+
+ASGI_APPLICATION = 'backend.asgi.application'

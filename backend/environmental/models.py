@@ -4,7 +4,9 @@ from users.models import User
 import uuid, os
 
 class Finalidade_APPO(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.CharField(verbose_name='Finalidade APPO', max_length=255, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -13,7 +15,9 @@ class Finalidade_APPO(models.Model):
         return self.description
 
 class Tipo_Captacao(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.CharField(verbose_name='Tipo Captação', max_length=255, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -22,7 +26,9 @@ class Tipo_Captacao(models.Model):
         return self.description
     
 class Aquifero_APPO(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.CharField(verbose_name='Tipo Aquífero', max_length=255, null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -30,7 +36,7 @@ class Aquifero_APPO(models.Model):
     def __str__(self):
         return self.description
 
-class Processos_Outorga(models.Model):
+class Outorgas_INEMA(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     numero_processo = models.CharField(max_length=100, null=True, unique=True, verbose_name='Número Processo INEMA', error_messages={'unique': 'Processo já cadastrado!'})
     numero_portaria = models.CharField(max_length=50, null=True, verbose_name='Número Portaria')
@@ -54,8 +60,9 @@ class Processos_Outorga(models.Model):
     def __str__(self):
         return self.nome_requerente
 
-class Processos_Outorga_Coordenadas(models.Model):
-    processo = models.ForeignKey(Processos_Outorga, on_delete=models.CASCADE, null=True)
+class Outorgas_INEMA_Coordenadas(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    processo = models.ForeignKey(Outorgas_INEMA, on_delete=models.CASCADE, null=True)
     descricao_ponto = models.CharField(max_length=100, null=True, blank=True, verbose_name='Descrição Ponto Outorga')
     latitude_gd = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Latitude')
     longitude_gd = models.DecimalField(max_digits=10, decimal_places=8, null=True, blank=True, verbose_name='Longitude')
@@ -73,6 +80,7 @@ class Processos_Outorga_Coordenadas(models.Model):
     vazao_m3_dia_out = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='Vazão m3/dia outubro')
     vazao_m3_dia_nov = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='Vazão m3/dia novembro')
     vazao_m3_dia_dez = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='Vazão m3/dia dezembro')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -80,7 +88,7 @@ class Processos_Outorga_Coordenadas(models.Model):
     def __str__(self):
         return self.processo
 
-class Requerimentos_APPO(models.Model):
+class Requerimentos_APPO_INEMA(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     nome_requerente = models.CharField(max_length=255, null=True, verbose_name='Nome Requerente')
     cpf_cnpj = models.CharField(max_length=255, null=True, verbose_name='CPF/CNPJ')
@@ -100,7 +108,8 @@ class Requerimentos_APPO(models.Model):
         return self.numero_requerimento
 
 class Requerimentos_APPO_Coordenadas(models.Model):
-    requerimento = models.ForeignKey(Requerimentos_APPO, on_delete=models.CASCADE)
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    requerimento = models.ForeignKey(Requerimentos_APPO_INEMA, on_delete=models.CASCADE)
     numero_poco = models.IntegerField(null=True, verbose_name='Número Poço')
     latitude_gd = models.DecimalField(max_digits=10, decimal_places=8, verbose_name='Latitude GD')
     longitude_gd = models.DecimalField(max_digits=10, decimal_places=8, verbose_name='Longitude GD')
@@ -120,7 +129,7 @@ def upload_to_appo(instance, filename):
     filename = f'{uuid}.{ext}'
     return os.path.join('inema/appo/', filename)
 
-class Processos_APPO(models.Model):
+class APPO_INEMA(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     nome_requerente = models.CharField(max_length=255, null=False, blank=False, verbose_name='Nome Requerente')
     cpf_cnpj = models.CharField(max_length=100, null=False, blank=False, verbose_name='CPF/CNPJ')
@@ -147,8 +156,9 @@ class Processos_APPO(models.Model):
     def __str__(self):
         return self.nome_requerente
 
-class Processos_APPO_Coordenadas(models.Model):
-    processo = models.ForeignKey(Processos_APPO, on_delete=models.CASCADE)
+class APPO_INEMA_Coordenadas(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    processo = models.ForeignKey(APPO_INEMA, on_delete=models.CASCADE)
     numero_poco = models.IntegerField(null=True, verbose_name='Número Poço')
     latitude_gd = models.DecimalField(max_digits=10, decimal_places=8, verbose_name='Latitude GD')
     longitude_gd = models.DecimalField(max_digits=10, decimal_places=8, verbose_name='Longitude GD')
@@ -159,6 +169,7 @@ class Processos_APPO_Coordenadas(models.Model):
     profundidade_poco = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name='Profundidade Poço')
     nivel_estatico = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name='Nível Estático')
     nivel_dinamico = models.DecimalField(max_digits=10, decimal_places=2, null=True, verbose_name='Nível Dinâmico')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -175,6 +186,7 @@ class Empresas_Consultoria(models.Model):
     contato_telefone = models.CharField(max_length=255, null=True, blank=True, verbose_name='Contato Telefone')
     contato_email = models.CharField(max_length=255, null=True, blank=True, verbose_name='Contato Email')
     responsavel = models.CharField(max_length=255, null=True, blank=True, verbose_name='Contato Email')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True, null=True)
     class Meta:
@@ -188,7 +200,7 @@ def upload_to_asv(instance, filename):
     uuid = str(instance.uuid)
     filename = f'{uuid}.{ext}'
     return os.path.join('inema/asv/portarias/', filename)
-class Processos_ASV(models.Model):
+class ASV_INEMA(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     processo = models.CharField(max_length=255, null=True, unique=True,  verbose_name='Número Processo', error_messages={'unique': 'Processo já cadastrado!'})
     requerente = models.CharField(max_length=255, null=True, blank=True, verbose_name='Nome Requerente')
@@ -212,11 +224,13 @@ class Processos_ASV(models.Model):
     def __str__(self):
         return self.requerente
 
-class Processos_ASV_Areas(models.Model):
-    processo = models.ForeignKey(Processos_ASV, on_delete=models.CASCADE, null=True, verbose_name='Processo ASV')
+class ASV_INEMA_Areas(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    processo = models.ForeignKey(ASV_INEMA, on_delete=models.CASCADE, null=True, verbose_name='Processo ASV')
     identificacao_area = models.CharField(max_length=100, null=True, blank=True, verbose_name='Identificação da Área')
     file = models.FileField(upload_to='inema/asv/kml', null=True, default=None, verbose_name='Arquivo PDF')
     area_total = models.DecimalField(max_digits=15, decimal_places=4, null=True, verbose_name='Área Total')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -225,6 +239,7 @@ class Processos_ASV_Areas(models.Model):
         return self.processo
 
 class Atos_Administrativos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     description = models.CharField(max_length=255, null=True)
     sigla = models.CharField(max_length=30, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -235,6 +250,7 @@ class Atos_Administrativos(models.Model):
         return self.description
 
 class Prazos_Renovacao(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     ato_admin = models.ForeignKey(Atos_Administrativos, on_delete=models.CASCADE, null=True, verbose_name='Ato Administrativo')
     dias_para_renov = models.IntegerField(verbose_name='Prazo Renovação (dias)')
     created_at = models.DateTimeField(auto_now_add=True)

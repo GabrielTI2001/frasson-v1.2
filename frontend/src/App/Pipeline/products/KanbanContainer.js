@@ -9,10 +9,13 @@ import { PipeContext } from '../../../context/Context';
 import AddAnotherFase from '../AddAnotherFase';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
-import { Placeholder } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
+import { Col, Placeholder, Row } from 'react-bootstrap';
+import { Link, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import SearchForm from '../Search';
 library.add(faPlus);
+
+const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
 
 const KanbanContainer = () => {
   const {
@@ -24,6 +27,34 @@ const KanbanContainer = () => {
   const [showForm, setShowForm] = useState(false);
   const containerRef = useRef(null);
   const fases = kanbanState.fases;
+  const user = JSON.parse(localStorage.getItem("user"))
+  const [socket, setSocket] = useState()
+  const [clientId] = useState(Math.floor(Math.random() * 1000000));
+
+  if (socket){
+    socket.onmessage = (event) => {
+      if (JSON.parse(event.data)){
+        const data = JSON.parse(event.data).message;
+        if (data.type === 'movecardproduto' && data.clientId !== clientId){
+          const { source, destination } = data.data;
+          const sourceColumn = getColumn(source.droppableId);
+          const destColumn = getColumn(destination.droppableId);
+          const movedItems = move(source, destination);
+          const idcard = data.code
+          kanbanDispatch({
+            type: 'UPDATE_DUAL_COLUMN',
+            payload: {
+              idcard,
+              sourceColumn,
+              updatedSourceItems: movedItems.updatedSourceItems,
+              destColumn,
+              updatedDestItems: movedItems.updatedDestItems
+            }
+          });
+        }
+      }
+    };
+  }
 
   const handleSubmit = listData => {
     const newList = {
@@ -43,6 +74,7 @@ const KanbanContainer = () => {
   };
   
   useEffect(() => {
+    setSocket(new WebSocket(SOCKET_SERVER_URL));
     if (code) {
       kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {} });
     }
@@ -93,7 +125,6 @@ const KanbanContainer = () => {
 
   const handleDragEnd = result => {
     const { source, destination } = result;
-
     if (!destination) {
       return;
     }
@@ -118,40 +149,57 @@ const KanbanContainer = () => {
       const destColumn = getColumn(destination.droppableId);
 
       const movedItems = move(source, destination);
-      var idcard = getColumn(source.droppableId).card_produtos_set[source.index].code
-      kanbanDispatch({
-        type: 'UPDATE_DUAL_COLUMN',
-        payload: {
-          idcard,
-          sourceColumn,
-          updatedSourceItems: movedItems.updatedSourceItems,
-          destColumn,
-          updatedDestItems: movedItems.updatedDestItems
-        }
-      });
-      api.put(`pipeline/cards/produtos/${idcard}/`, {'phase':destColumn.id}, {headers: {Authorization: `bearer ${token}`}})
-      .then((response) => {
-        toast.success("Card Movido Com Sucesso!")
-      })
-      .catch((erro) => {
-        if (erro.response.status === 400){
-          toast.error(erro.response.data.phase[0])
-          kanbanDispatch({
-            type: 'REVERT_DRAG',
-            payload: {
-              sourceColumnId: destination.droppableId,
-              initialSourceItems,
-              destColumnId: source.droppableId,
-              initialDestItems
-            }
-          });
-        }
-        console.error('erro: '+erro);
-      })
+      if (getColumn(source.droppableId).card_produtos_set[source.index].code){
+        const idcard = getColumn(source.droppableId).card_produtos_set[source.index].code
+        kanbanDispatch({
+          type: 'UPDATE_DUAL_COLUMN',
+          payload: {
+            idcard,
+            sourceColumn,
+            updatedSourceItems: movedItems.updatedSourceItems,
+            destColumn,
+            updatedDestItems: movedItems.updatedDestItems
+          }
+        });
+        api.put(`pipeline/cards/produtos/${idcard}/`, {'phase':destColumn.id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
+        .then((response) => {
+          socket.send(
+            JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:clientId}}));
+          toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
+        })
+        .catch((erro) => {
+          if (erro.response.status === 400){
+            toast.error(erro.response.data.phase[0])
+            kanbanDispatch({
+              type: 'REVERT_DRAG',
+              payload: {
+                sourceColumnId: destination.droppableId,
+                initialSourceItems,
+                destColumnId: source.droppableId,
+                initialDestItems
+              }
+            });
+          }
+          console.error('erro: '+erro);
+        })
+      }
     }
   };
 
-    return (
+    return (<>
+      <Row className="gx-1 px-1 d-flex align-items-center">
+        <ol className="breadcrumb breadcrumb-alt fs-0 mb-3 col">
+            <li className="breadcrumb-item fw-bold">
+                <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
+            </li>
+            <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
+              Fluxo - Produtos
+            </li>  
+        </ol>
+        <Col>
+          <SearchForm />
+        </Col>
+      </Row>
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="kanban-container me-n3" ref={containerRef} xl={8}>
         {/* Pega o array de itens e renderiza um div pra cada*/}
@@ -193,7 +241,7 @@ const KanbanContainer = () => {
           </div>
         </div>
         <KanbanModal show={kanbanState.kanbanModal.show}/>
-      </DragDropContext>
+      </DragDropContext></>
     );
 };
 

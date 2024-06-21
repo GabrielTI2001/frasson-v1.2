@@ -1,9 +1,5 @@
 from rest_framework import serializers
-from .models import Operacoes_Credito, Produto_Agricola, Tipo_Armazenagem, Tipo_Classificacao
-from backend.frassonUtilities import Frasson
-from backend.pipefyUtils import getTableRecordPipefy
-import locale, requests, json
-from backend.settings import TOKEN_GOOGLE_MAPS_API, TOKEN_PIPEFY_API, URL_PIFEFY_API
+from .models import Cadastro_Alongamentos, Produto_Agricola, Tipo_Armazenagem, Tipo_Classificacao
 
 class ListAlongamentos(serializers.ModelSerializer):
     beneficiario = serializers.CharField(source='operacao.beneficiario.razao_social', read_only=True)
@@ -15,7 +11,7 @@ class ListAlongamentos(serializers.ModelSerializer):
     str_tipo_armazenagem = serializers.CharField(source='tipo_armazenagem.description', read_only=True)
     
     class Meta:
-        model = Operacoes_Credito
+        model = Cadastro_Alongamentos
         fields = ['id', 'numero_operacao', 'data', 'beneficiario', 'cpf', 'instituicao', 'produto', 'valor_operacao', 
             'valor_total', 'str_tipo_armazenagem']
 
@@ -40,13 +36,13 @@ class detailAlongamentos(serializers.ModelSerializer):
         else:
             return None
     def get_str_municipio(self, obj):
-        if obj.municipio_propriedade:
-            return f"{obj.municipio_propriedade.nome_municipio} - {obj.municipio_propriedade.sigla_uf}"
+        if obj.propriedades.all() != []:
+            return f"{obj.propriedades.first().municipio.nome_municipio} - {obj.propriedades.first().municipio.sigla_uf}"
         else:
             return None
     def get_str_propriedade(self, obj):
         propriedades = obj.propriedade.all()
-        return [{'value':p.id, 'label':p.nome_imovel} for p in propriedades]
+        return [{'value':p.id, 'label':p.nome} for p in propriedades]
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -57,7 +53,7 @@ class detailAlongamentos(serializers.ModelSerializer):
             else:
                 field.required = True
     class Meta:
-        model = Operacoes_Credito
+        model = Cadastro_Alongamentos
         fields = '__all__'
 
 class listProdutos(serializers.ModelSerializer):

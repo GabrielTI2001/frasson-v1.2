@@ -1,5 +1,5 @@
 from django.db import models
-from pipefy.models import Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Razao_Social, Imoveis_Rurais
+from cadastro.models import Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Razao_Social, Imoveis_Rurais
 from users.models import User
 import uuid
 

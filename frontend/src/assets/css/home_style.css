@@ -213,3 +213,19 @@ textarea:focus, input:focus{
 .card-link-success-dark:hover {
   background-color: rgb(29, 106, 78, 1) !important
 }
+.modal-custom{
+  height: 98vh; 
+  max-height: 98vh;
+  overflow:hidden;
+  border-end-end-radius: 0.5rem;
+  border-end-start-radius: 0.5rem;
+}
+.modal-column-scroll{
+  height: 94vh;
+}
+
+@media (max-width: 992px){
+  .modal-custom{
+    height: auto;
+  }
+}

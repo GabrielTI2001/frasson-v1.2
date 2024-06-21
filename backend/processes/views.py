@@ -5,7 +5,7 @@ import requests, json
 from rest_framework.response import Response
 from django.db.models import Q
 from .models import Processos_Andamento, Acompanhamento_Processos, Status_Acompanhamento
-from pipefy.models import Card_Produtos
+from pipeline.models import Card_Produtos
 from .serializers import detailFollowup, detailAcompanhamentoProcessos, listStatus
 from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import date

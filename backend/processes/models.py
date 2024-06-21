@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
-from pipefy.models import Card_Produtos
+from pipeline.models import Card_Produtos
 from users.models import User
 
 class Processos_Andamento(models.Model):

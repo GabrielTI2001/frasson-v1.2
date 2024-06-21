@@ -2,7 +2,7 @@ import React, {useEffect, useState} from "react";
 import { Card, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faTractor, faPersonDigging, faFlask, faFileSignature} from "@fortawesome/free-solid-svg-icons";
+import { faUsers, faTractor, faPersonDigging, faFlask, faFileSignature, faPerson} from "@fortawesome/free-solid-svg-icons";
 import { fetchPessoal } from "../Pipefy/Data";
 import { fetchBenfeitorias, FetchAnaliseSolo } from "./Data";
 import { useAppContext } from "../../Main";
@@ -40,6 +40,19 @@ const IndexCadGerais = () =>{
             </li>    
         </ol>
         <Row className="gy-3 gx-4" xs={1} sm={3} lg={5} xl={6}>
+          <Col>
+            <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
+                <Link className="text-decoration-none" to={'/register/pessoal'}>
+                <Card.Body as={Row} className="justify-content-between">
+                  <Row className="rounded-circle bg-white mx-auto py-3 text-center" style={{width: '4rem'}}>
+                    <FontAwesomeIcon icon={faPerson} className={`fs-4 mx-auto p-0 ${theme==='dark' ? 'text-dark' :'text-900'}`} />
+                  </Row>
+                  <h5 className="text-center text-white mt-2 fs--2">Cadastro Pessoal</h5>     
+                  <h5 className="text-center text-white fs--2">Registro(s)</h5>                
+                </Card.Body>
+                </Link>
+            </Card>
+          </Col>
           <Col>
             <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>
                 <Link className="text-decoration-none" to={'/register/machinery'}>

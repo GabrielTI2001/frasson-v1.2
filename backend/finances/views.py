@@ -4,9 +4,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
-from .models import Cobrancas_Pipefy, Pagamentos_Pipefy, Reembolso_Cliente, Resultados_Financeiros, Lancamentos_Automaticos_Pagamentos
-from pipefy.models import Card_Produtos, Card_Prospects
-from django.db.models import Sum, Q, Case, When, DecimalField, F, DateField
+from .models import Reembolso_Cliente, Resultados_Financeiros, Lancamentos_Automaticos_Pagamentos, Contratos_Servicos_Pagamentos
+from pipeline.models import Card_Pagamentos, Card_Cobrancas, Card_Produtos, Card_Prospects
+from django.db.models import Sum, Q, Case, When, DecimalField, F, DateField, Subquery, OuterRef, Count, IntegerField, Value
+from django.db.models.functions import Coalesce
 from backend.frassonUtilities import Frasson
 from datetime import date, datetime
 from collections import defaultdict
@@ -19,7 +20,7 @@ from reportlab.lib.colors import Color
 from rest_framework.response import Response
 
 class PagamentosView(viewsets.ModelViewSet):
-    queryset = Pagamentos_Pipefy.objects.all()
+    queryset = Card_Pagamentos.objects.all()
     serializer_class = listPagamentosPipefy
     # permission_classes = [IsAuthenticated]
     def get_queryset(self):
@@ -34,7 +35,7 @@ class PagamentosView(viewsets.ModelViewSet):
                 query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) &
                                 (Q(data_vencimento__month=search_month) | Q(data_pagamento__month=search_month)) &
                                 (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)))
-                queryset = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+                queryset = Card_Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
                         When(phase_id=317163732, then=F('data_pagamento')),
                         default=F('data_vencimento'),
@@ -47,7 +48,7 @@ class PagamentosView(viewsets.ModelViewSet):
                                 (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | 
                                     Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)
                                 ))
-                queryset = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+                queryset = Card_Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
                         When(phase_id=317163732, then=F('data_pagamento')),
                         default=F('data_vencimento'),
@@ -59,7 +60,7 @@ class PagamentosView(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         serializer = self.get_serializer(queryset, many=True)
-        anos = Pagamentos_Pipefy.objects.values_list('data_vencimento__year', flat=True).distinct()
+        anos = Card_Pagamentos.objects.values_list('data_vencimento__year', flat=True).distinct()
         response_data = {
             'pagamentos': serializer.data,
             'anos': anos,
@@ -72,7 +73,7 @@ class PagamentosView(viewsets.ModelViewSet):
             return self.serializer_class
         
 class CobrancasView(viewsets.ModelViewSet):
-    queryset = Cobrancas_Pipefy.objects.all()
+    queryset = Card_Cobrancas.objects.all()
     serializer_class = listCobrancasPipefy
     # permission_classes = [IsAuthenticated]
     def get_queryset(self):
@@ -98,7 +99,7 @@ class CobrancasView(viewsets.ModelViewSet):
                         (Q(data_pagamento__month=search_month) | Q(data_previsao__month=search_month)) & 
                             (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
                     
-                queryset = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+                queryset = Card_Cobrancas.objects.filter(query_search).annotate(
                 valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
                 data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year, data__month=search_month).order_by('data')
             
@@ -109,22 +110,22 @@ class CobrancasView(viewsets.ModelViewSet):
                 else:
                     query_search = (~Q(phase_id=317532039) & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
                         (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
-                queryset = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+                queryset = Card_Cobrancas.objects.filter(query_search).annotate(
                 valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
                 data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year).order_by('data')
 
         else: #se não houver nenhuma busca (carregada pela primeira vez)
-            queryset = Cobrancas_Pipefy.objects.filter(phase_id__in=[317532037, 317532038, 318663454, 317532040]).annotate(
+            queryset = Card_Cobrancas.objects.filter(phase_id__in=[317532037, 317532038, 318663454, 317532040]).annotate(
             valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
             data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).order_by('data')
 
         if phase:
-            queryset = Cobrancas_Pipefy.objects.filter(phase_id=int(phase)).annotate(
+            queryset = Card_Cobrancas.objects.filter(phase_id=int(phase)).annotate(
             valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
             data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).order_by('data')
 
         if produto:
-            queryset = Cobrancas_Pipefy.objects.filter(detalhamento__produto_id=int(produto)).annotate(
+            queryset = Card_Cobrancas.objects.filter(detalhamento__produto_id=int(produto)).annotate(
             valor=Case(When(phase_id=317532039, then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
             data=Case(When(phase_id=317532039, then=F('data_pagamento')), default='data_previsao')).order_by('data')
         return queryset
@@ -145,7 +146,7 @@ class CobrancasView(viewsets.ModelViewSet):
             return self.serializer_class
 
 class CobrancasInvoicesView(viewsets.ModelViewSet):
-    queryset = Cobrancas_Pipefy.objects.all()
+    queryset = Card_Cobrancas.objects.all()
     serializer_class = listCobrancasInvoices
     # permission_classes = [IsAuthenticated]
     def get_queryset(self):
@@ -282,6 +283,50 @@ class ReembolsosView(viewsets.ModelViewSet):
         else:
             return self.serializer_class
 
+class ContratoServicosView(viewsets.ModelViewSet):
+    serializer_class = detailContratoServicos
+    queryset = Contratos_Servicos.objects.all()
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listContratoServicos
+        else:
+            return self.serializer_class
+    def list(self, request, *args, **kwargs):
+        search = self.request.query_params.get('search', None)
+        subquery = Card_Cobrancas.objects.filter(contrato_id=OuterRef('id')).values('contrato_id').annotate(
+            num_cobrancas=Count('id')).values('num_cobrancas')[:1]
+        subquery2 = Card_Cobrancas.objects.filter(contrato_id=OuterRef('id'), phase_id=317532039).values('contrato_id').annotate(
+            num_cobrancas=Count('id')).values('num_cobrancas')[:1]
+        subquery3 = Contratos_Servicos_Pagamentos.objects.filter(contrato_id=OuterRef('id')).values('contrato_id').annotate(
+            total=Count('id')).values('total')[:1]
+
+        if search:
+            query_search = (Q(contratante__razao_social__icontains=search) | Q(servicos_contratados__detalhamento_servico__icontains=search))
+            queryset = Contratos_Servicos.objects.filter(query_search).annotate(
+                total_cobrancas=Coalesce(Subquery(subquery, output_field=IntegerField()), 0),
+                total_pago=Coalesce(Subquery(subquery2, output_field=IntegerField()), 0),
+                total_formas=Coalesce(Subquery(subquery3, output_field=IntegerField()), 0),
+                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_cobrancas')) & Q(total_cobrancas=F('total_formas'))),
+                                 then=Value('Finalizado')), default=Value('Em Andamento'))
+            ).distinct().order_by('-created_at')
+        else:
+            queryset = Contratos_Servicos.objects.all().annotate(
+                total_cobrancas=Coalesce(Subquery(subquery, output_field=IntegerField()), 0),
+                total_pago=Coalesce(Subquery(subquery2, output_field=IntegerField()), 0),
+                total_formas=Coalesce(Subquery(subquery3, output_field=IntegerField()), 0),
+                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_cobrancas')) & Q(total_cobrancas=F('total_formas'))),
+                                 then=Value('Finalizado')), default=Value('Em Andamento'))
+            ).order_by('-created_at')[:50]
+        serializer = self.get_serializer(queryset, many=True)
+        response_data = {
+            'cadastros': serializer.data,
+        }
+        return Response(serializer.data)
+
+class ContratosPagamentosView(viewsets.ModelViewSet):
+    serializer_class = serContratosPagamentos
+    queryset = Contratos_Servicos_Pagamentos.objects.all()
+
 def index_dre_consolidado(request):
     #DRE CONSOLIDADO
     produto_gc = 864795372
@@ -305,7 +350,7 @@ def index_dre_consolidado(request):
         year = date.today().year
     
     #FATURAMENTO CONSOLIDADO POR PRODUTO
-    query_faturado_total= Cobrancas_Pipefy.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
+    query_faturado_total= Card_Cobrancas.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
         credito=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
         ambiental=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
         avaliacao=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),
@@ -324,7 +369,7 @@ def index_dre_consolidado(request):
     percentual_faturado_tecnologia = (faturado_tecnologia / faturado_total * 100) if faturado_total > 0 else 0
 
     #FATURAMENTO TRIBUTADO E SEM TRIBUTAÇÃO
-    query_fatu_tributacao = Cobrancas_Pipefy.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
+    query_fatu_tributacao = Card_Cobrancas.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
         faturamento_tributado=Sum(Case(When(~Q(caixa_id=667994628), then='valor_faturado'), default=0, output_field=DecimalField())),
         faturamento_sem_tributacao=Sum(Case(When(caixa_id=667994628, then='valor_faturado'), default=0, output_field=DecimalField())))
 
@@ -334,7 +379,7 @@ def index_dre_consolidado(request):
     percentual_fatu_sem_tributacao = (faturamento_sem_tributacao / faturado_total) * 100 if faturado_total > 0 else 0
  
     #IMPOSTOS INDIRETOS (ISS, PIS E COFINS) - VALOR TOTAL E PERCENTUAL
-    query_total_impostos_indiretos = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_total_impostos_indiretos = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
         total_iss=Sum(Case(When(categoria_id=687761062, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_pis=Sum(Case(When(categoria_id=687760058, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_cofins=Sum(Case(When(categoria_id=687760600, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -351,7 +396,7 @@ def index_dre_consolidado(request):
     receita_liquida = faturado_total - total_impostos_indiretos
  
     #TOTAL CUSTOS, DESPESAS OPERACIONAIS E DESPESAS NÃO OPERACIONAIS
-    query_total_despesas = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_total_despesas = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
         total_custos=Sum(Case(When(categoria__classification=class_custo, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_oper=Sum(Case(When(categoria__classification=class_desp_oper, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_nao_oper=Sum(Case(When(categoria__classification=class_desp_nao_oper, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -381,7 +426,7 @@ def index_dre_consolidado(request):
     ebitda = lucro_operacional + resultado_financeiro
 
     #CÁLCULO IMPOSTOS DIRETOS (CSLL E IRPJ)
-    query_total_impostos_diretos = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_total_impostos_diretos = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
         total_csll=Sum(Case(When(categoria_id=687761501, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_irpj=Sum(Case(When(categoria_id=687761676, then='valor_pagamento'), default=0, output_field=DecimalField())))
 
@@ -404,7 +449,7 @@ def index_dre_consolidado(request):
     percentual_impostos_total = (total_impostos / faturado_total * 100) if faturado_total > 0 else 0
 
     #CALCULA SALDOS CONSIDERANDO RETIRADAS DE SÓCIO, PAG. COMISSÃO, ATIVOS IMOB. E OUTROS ACERTOS
-    query_dre_saldos = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_dre_saldos = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
         retirada_socios=Sum(Case(When(categoria__classification=class_retirada, then='valor_pagamento'), default=0, output_field=DecimalField())),
         pagamento_comissao=Sum(Case(When(categoria__classification=class_comissao, then='valor_pagamento'), default=0, output_field=DecimalField())),
         ativos_imobilizados=Sum(Case(When(categoria__classification=class_ativos, then='valor_pagamento'), default=0,  output_field=DecimalField())),
@@ -492,7 +537,7 @@ def index_dre_provisionado(request):
     type_card = 'Principal'
 
     #FATURAMENTO CONSOLIDADO POR PRODUTO
-    query_faturado_total= Cobrancas_Pipefy.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
+    query_faturado_total= Card_Cobrancas.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
         credito=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
         ambiental=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
         avaliacao=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),
@@ -505,7 +550,7 @@ def index_dre_provisionado(request):
     faturado_total = float(faturado_gai + faturado_gc + faturado_avaliacao + faturado_tecnologia)
 
     #CÁCULO IMPOSTOS INDIRETOS (ISS, PIS, COFINS) QUE FORAM PAGOS
-    query_impostos_indiretos = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_impostos_indiretos = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
         total_iss=Sum(Case(When(categoria_id=687761062, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_pis=Sum(Case(When(categoria_id=687760058, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_cofins=Sum(Case(When(categoria_id=687760600, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -517,7 +562,7 @@ def index_dre_provisionado(request):
 
     #TOTAL DE COBRANÇAS ABERTAS POR PRODUTO
     cobrancas_abertas_phases = [317532037, 317532038, 318663454, 317532040] #fases aguardando distrib., notificação, faturamento e confirmação 
-    query_cobrancas_abertas = Cobrancas_Pipefy.objects.filter(phase_id__in=cobrancas_abertas_phases).aggregate(
+    query_cobrancas_abertas = Card_Cobrancas.objects.filter(phase_id__in=cobrancas_abertas_phases).aggregate(
         total_gc=Sum(Case(When(detalhamento__produto=produto_gc, then='saldo_devedor'), default=0, output_field=DecimalField())),
         total_gai=Sum(Case(When(detalhamento__produto=produto_gai, then='saldo_devedor'), default=0, output_field=DecimalField())),
         total_avaliacao=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='saldo_devedor'), default=0, output_field=DecimalField())),
@@ -565,7 +610,7 @@ def index_dre_provisionado(request):
     receita_liquida = float(faturado_total + faturamento_provisionado_estimado - total_impostos_indiretos - total_previsao_impostos_indiretos)
    
     #TOTAL CUSTOS E DESPESAS
-    query_total_custos_despesas = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_total_custos_despesas = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
         custos=Sum(Case(When(categoria__classification=class_custo, then='valor_pagamento'), default=0, output_field=DecimalField())),
         despesas_operacionais=Sum(Case(When(categoria__classification=class_desp_oper, then='valor_pagamento'), default=0, output_field=DecimalField())),
         despesas_nao_operacionais=Sum(Case(When(categoria__classification=class_desp_nao_oper, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -576,7 +621,7 @@ def index_dre_provisionado(request):
     total_despesas = float(total_despesas_operacionais + total_despesas_nao_operacionais)
 
     #CÁLCULO ESTIMATIVA DOS CUSTOS RESTANTES
-    custos_estimativa = Pagamentos_Pipefy.objects.values('data_pagamento__year', 'data_pagamento__month').filter(
+    custos_estimativa = Card_Pagamentos.objects.values('data_pagamento__year', 'data_pagamento__month').filter(
         phase_id=317163732, categoria__classification=class_custo).annotate(total=Sum('valor_pagamento')
         ).order_by('data_pagamento__year', 'data_pagamento__month')
     custos_mensais = defaultdict(list)
@@ -592,7 +637,7 @@ def index_dre_provisionado(request):
     lucro_bruto = receita_liquida - float(total_custos) - float(total_custos_estimativa)
 
     #CÁLCULO ESTIMATIVA DESPESAS RESTANTES
-    despesas_estimativa = Pagamentos_Pipefy.objects.values('data_pagamento__year', 'data_pagamento__month').filter(
+    despesas_estimativa = Card_Pagamentos.objects.values('data_pagamento__year', 'data_pagamento__month').filter(
         phase_id=317163732, categoria__classification__in=[class_desp_oper, class_desp_nao_oper]).annotate(total=Sum('valor_pagamento')
         ).order_by('data_pagamento__year', 'data_pagamento__month')
     despesas_mensais = defaultdict(list)
@@ -621,7 +666,7 @@ def index_dre_provisionado(request):
     ebitda = lucro_operacional + resultado_financeiro 
 
     #CÁLCULO IMPOSTOS DIRETOS (CSLL e IRPJ) PAGOS
-    query_impostos_diretos = Pagamentos_Pipefy.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_impostos_diretos = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
         csll=Sum(Case(When(categoria_id=687761501, then='valor_pagamento'), default=0, output_field=DecimalField())),
         irpj=Sum(Case(When(categoria_id=687761676, then='valor_pagamento'), default=0, output_field=DecimalField())))
     
@@ -793,18 +838,18 @@ def pagamentos_pipefy_report_pdf(request):
         query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) &
             (Q(data_vencimento__month=search_month) | Q(data_pagamento__month=search_month)) & 
                 (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(categoria__category__icontains=search)))
-        pagamentos_pipefy = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+        pagamentos_pipefy = Card_Pagamentos.objects.filter(query_search).annotate(
             data=Case(When(phase_id=317163732, then=F('data_pagamento')), default='data_vencimento')).filter(data__year=search_year, data__month=search_month).order_by('data')
 
     else:
         query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) & 
             (Q(beneficiario__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(categoria__category__icontains=search)))
-        pagamentos_pipefy = Pagamentos_Pipefy.objects.filter(query_search).annotate(
+        pagamentos_pipefy = Card_Pagamentos.objects.filter(query_search).annotate(
             data=Case(When(phase_id=317163732, then=F('data_pagamento')), default='data_vencimento')).filter(data__year=search_year).order_by('data')
 
     pagamentos = []
     pagamentos_phases = pagamentos_pipefy.values('phase_name').annotate(soma=Sum('valor_pagamento')).order_by('phase_name')
-    total_pagamentos = Pagamentos_Pipefy.objects.filter(query_search).aggregate(soma=Sum('valor_pagamento'))
+    total_pagamentos = Card_Pagamentos.objects.filter(query_search).aggregate(soma=Sum('valor_pagamento'))
 
     for pag in pagamentos_phases:
         pagamentos.append({
@@ -907,7 +952,7 @@ def cobrancas_pipefy_report_pdf(request):
                 (Q(data_previsao__month=search_month) | Q(data_pagamento__month=search_month)) & 
                     (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
         
-        cobrancas_pipefy = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+        cobrancas_pipefy = Card_Cobrancas.objects.filter(query_search).annotate(
             valor=Case(When(phase_id=317532039, then='valor_faturado'), default='saldo_devedor', output_field=DecimalField()),
             data=Case(When(phase_id=317532039, then='data_pagamento'), default='data_previsao')).filter(data__year=search_year, data__month=search_month).order_by('data')
     
@@ -919,7 +964,7 @@ def cobrancas_pipefy_report_pdf(request):
             query_search = (~Q(phase_id=317532039) & (Q(data_previsao__year=search_year) | Q(data_pagamento__year=search_year)) & 
                 (Q(cliente__razao_social__icontains=search) | Q(phase_name__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
         
-        cobrancas_pipefy = Cobrancas_Pipefy.objects.filter(query_search).annotate(
+        cobrancas_pipefy = Card_Cobrancas.objects.filter(query_search).annotate(
             valor=Case(When(phase_id=317532039, then='valor_faturado'), default='saldo_devedor', output_field=DecimalField()),
             data=Case(When(phase_id=317532039, then='data_pagamento'), default='data_previsao')).filter(data__year=search_year).order_by('data')
     
@@ -1024,8 +1069,8 @@ def movimentacao_conta_bancaria(request, id):
     try:
         caixa_nome = Caixas_Frasson.objects.get(pk=id).caixa
         data_referencia = date.today() - timedelta(days=quantidade_dias)
-        cobrancas = Cobrancas_Pipefy.objects.filter(caixa=id, phase_id=317532039, data_pagamento__gte=data_referencia)
-        pagamentos = Pagamentos_Pipefy.objects.filter(caixa=id, phase_id=317163732, data_pagamento__gte=data_referencia)
+        cobrancas = Card_Cobrancas.objects.filter(caixa=id, phase_id=317532039, data_pagamento__gte=data_referencia)
+        pagamentos = Card_Pagamentos.objects.filter(caixa=id, phase_id=317163732, data_pagamento__gte=data_referencia)
         reembolsos = Reembolso_Cliente.objects.filter(caixa_destino=id, data__gte=data_referencia)
         resultados = Resultados_Financeiros.objects.filter(caixa=id, data__gte=data_referencia)
         transf_entrada_caixa = Transferencias_Contas.objects.filter(caixa_destino=id, data__gte=data_referencia)

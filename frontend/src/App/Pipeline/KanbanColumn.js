@@ -35,7 +35,7 @@ const KanbanColumn = ({ kanbanColumnItem}) => {
               className="kanban-items-container scrollbar"
             >
               {card_produtos_set.map((card, index) => (
-                <TaskCard key={index} index={index} task={card}/>
+                <TaskCard key={card.id} index={index} task={card}/>
               ))}
               
               {provided.placeholder}

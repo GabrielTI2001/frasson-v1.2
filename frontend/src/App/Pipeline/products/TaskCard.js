@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 // import PropTypes from 'prop-types';
 import { Card, Dropdown} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -7,9 +7,12 @@ import { Draggable } from 'react-beautiful-dnd';
 import AppContext, { PipeContext } from '../../../context/Context';
 // import api from 'data/kanban2';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faEllipsisH } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisH, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { useNavigate } from 'react-router-dom';
+import ModalDelete from '../../../components/Custom/ModalDelete';
+import api from '../../../context/data';
+import { toast } from 'react-toastify';
 
 // Adicione os ícones à biblioteca
 library.add(faEllipsisH);
@@ -25,26 +28,36 @@ const calcdif = (data) => {
   return dif
 };
 
-const TaskDropMenu = ({ id }) => {
+export const TaskDropMenu = ({ card, click }) => {
   const { kanbanDispatch } = useContext(PipeContext);
+  const [modaldel, setModaldel] = useState({show:false})
+  const navigate = useNavigate()
+  const token = localStorage.getItem("token")
 
   const {
     config: { isRTL }
   } = useContext(AppContext);
-  
-  const handleRemoveTaskCard = () => {
-    // var url = "delete/card/"+id+"/";
-    // api.delete(url)
-    // .then(() => {
-    //   kanbanDispatch({
-    //     type: 'REMOVE_TASK_CARD',
-    //     payload: {idcard: id}
-    //   });
-    // })
-    // .catch((error) => {
-    //   console.error('Erro ao atualizar os dados:', error);
-    // });
+
+  const handleClose = () => {
+    navigate(`/pipeline/products`)
+    kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   };
+  
+  const handledelete = () =>{
+    api.delete(`pipeline/cards/produtos/${card.code}/`, { headers: {Authorization: `bearer ${token}`} })
+    .then((response) => {
+      kanbanDispatch({
+        type: 'REMOVE_TASK_CARD',
+        payload: {idcard: card.id}
+      });
+      toast.success("Card Deletado com Sucesso!")
+      handleClose()
+    })
+    .catch((erro) => {
+      console.error('erro: '+erro);
+    })
+  }
+
   return (
     <Dropdown
       onClick={e => e.stopPropagation()}
@@ -54,16 +67,17 @@ const TaskDropMenu = ({ id }) => {
       <Dropdown.Toggle
         variant="falcon-default"
         size="sm"
-        className="kanban-item-dropdown-btn hover-actions dropdown-caret-none"
+        className="kanban-item-dropdown-btn btn-circle hover-actions dropdown-caret-none d-flex flex-center py-2 px-3 shadow-none"
       >
-        <FontAwesomeIcon icon={faEllipsisH} transform="shrink-2" />
+        <FontAwesomeIcon icon={faEllipsisV} transform="shrink-2" className='fs-2'/>
       </Dropdown.Toggle>
-      {/* <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
-        <Dropdown.Item href="#!">Add Card</Dropdown.Item>
-        <Dropdown.Item href="#!">Edit</Dropdown.Item>
-        <Dropdown.Item href="#!">Copy link</Dropdown.Item>
-        <Dropdown.Divider />
-      </Dropdown.Menu> */}
+      <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
+        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/cards/produtos/${card.code}/`})}}>
+          Excluir Card
+        </Dropdown.Item>
+        <Dropdown.Item>Copy link</Dropdown.Item>
+      </Dropdown.Menu>
+      <ModalDelete show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
     </Dropdown>
   );
 };

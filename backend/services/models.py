@@ -40,15 +40,3 @@ class Commodity_Prices(models.Model):
         verbose_name_plural = 'Commodity Prices'
     def __str__(self):
         return self.commodity.commodity
-    
-
-class Update_Prices(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    commodity = models.ForeignKey(Commodity_Cotacao, on_delete=models.SET_NULL, null=True, verbose_name='Produto Cotação')
-    description = models.TextField(null=True, blank=True, verbose_name='Descrição da Atualização')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Update Prices'
-    def __str__(self):
-        return self.commodity.commodity

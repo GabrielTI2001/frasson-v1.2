@@ -4,16 +4,16 @@ from rest_framework.response import Response
 from django.db.models import Q
 from rest_framework.permissions import IsAuthenticated
 import requests, json, time
-from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API
 from .serializers import *
-from .models import Glebas_Areas, Culturas_Agricolas
+from .models import Cadastro_Glebas
+from cadastro.models import Culturas_Agricolas
 from rest_framework.parsers import MultiPartParser, FormParser
 from pykml.factory import KML_ElementMaker as KML
 from pykml import parser
 from lxml import etree
 
 class GlebasView(viewsets.ModelViewSet):
-    queryset = Glebas_Areas.objects.all()
+    queryset = Cadastro_Glebas.objects.all()
     serializer_class = detailGleba
     parser_classes = (MultiPartParser, FormParser)
     # permission_classes = [IsAuthenticated]
@@ -42,7 +42,7 @@ class GlebasView(viewsets.ModelViewSet):
         
 
 class CoordendasGlebasView(viewsets.ModelViewSet):
-    queryset = Glebas_Areas.objects.all()
+    queryset = Cadastro_Glebas.objects.all()
     serializer_class = detailGlebasCoordenadas
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -89,7 +89,7 @@ class CulturasView(viewsets.ModelViewSet):
 def download_kml_gleba(request, id):
     time_now = int(time.time()) #for the file name
     file_name = f"gleba_{time_now}.kml"
-    data = Glebas_Coordenadas.objects.values().filter(gleba_id=id)
+    data = Cadastro_Glebas_Coordenadas.objects.values().filter(gleba_id=id)
 
     polygon_coordinates = []
     for coord in data:

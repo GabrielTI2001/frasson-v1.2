@@ -1,0 +1,1167 @@
+[
+    {
+        "model": "cadastro.Feedbacks_Category",
+        "fields": {
+            "description": "Sugestão",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Feedbacks_Category",
+        "fields": {
+            "description": "Reclamação",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Feedbacks_Category",
+        "fields": {
+            "description": "Reportar Erro",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Culturas_Agricolas",
+        "fields": {
+            "cultura": "Soja",
+            "nome_cientifico": "Glycine max",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Culturas_Agricolas",
+        "fields": {
+            "cultura": "Milho",
+            "nome_cientifico": "Zea mays",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Culturas_Agricolas",
+        "fields": {
+            "cultura": "Feijão",
+            "nome_cientifico": "Phaseolus vulgaris",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Culturas_Agricolas",
+        "fields": {
+            "cultura": "Algodão",
+            "nome_cientifico": "Gossypium spp.",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Culturas_Agricolas",
+        "fields": {
+            "cultura": "Trigo",
+            "nome_cientifico": "Triticum spp.",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+
+
+
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Plataforma de Milho",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta de Transbordo de Arrasto",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Pipa D'Água",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Extratora",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Prensa de Algodão",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Arado de Aiveca",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta Agrícola",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Cultivador",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Plantadeira",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta Tanque",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Empilhadeira",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta Prancha",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Caminhão",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta Agrícola/Graneleira",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Automóvel",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Trator de Pneus Traçados",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Plataforma de Corte Flexível",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Pivô Central",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Pá Carregadeira",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Pulverizador Autopropelido",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Colhedora de Forragem",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Plataforma de Capim",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Tanque de Melaço",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Retroescavadeira",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Plaina Niveladora",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Vagão Forrageiro",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Caçamba roll on - roll off",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Prancha roll on - roll off",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Tanque roll on - roll off",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Perfurador de Solo",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Trator de Esteira",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Grade Aradora",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Grade Niveladora",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Motoniveladora/Patrol",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Arado de Aiveca de Comando Hidráulico",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Embolsadora",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Máquina para Esmagamento, Moagem e Trituração de Grãos",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Silos Metálicos para Armazenamento de Grãos",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Motocicleta",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Ensiladeira",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Subsolador Agrícola",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Guincho",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Embutidora de Grãos",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Veículo",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Trator de Pneus Simples",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Reboque Tanque Agrícola",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Distribuidor de Fertilizantes",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Bazuca",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Balança",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta sem Reboque Basculante",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta de Arrasto Carga Leve",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Colheitadeira Auto-Motriz de Cereais",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Elevador",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Guincho de Arrasto",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Lâminas para Tratores",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Niveladora de Arrasto",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Máquinas para Limpeza, Mistura e Peneiração de Grãos",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Reboque",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Carreta Trator de Pneus Traçados",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Conjunto Caçamba",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Distribuidor Calcário/Fertilizante",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Tanker",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Máquina Classificadora de Grãos",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Grade Intermediária",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Grade Terraceadora",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Grupo Gerador Móvel",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Grupo Gerador Estacionário",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Guincho Hidráulico",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Moto Niveladora",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Pá Mecânica",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Plataforma de Soja",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Plataforma de Algodão",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Tipo_Maquina_Equipamento",
+        "fields": {
+            "description": "Sistema Eletrônico de Pesagem",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+
+
+
+
+
+
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Vamos fazer acontecer?",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "O time Frasson é mais forte com você!",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Como está você hoje?",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Vamos arrasar hoje!",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Que bom ter você no time Frasson!",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Hora de trabalhar!",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Para chegar onde a maioria não chega, é necessário fazer o que a maioria não faz.",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Seja mais forte do que a sua melhor desculpa.",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "O entrosamento da nossa equipe é o que faz o nosso sucesso. Excelente trabalho, time!",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Uma grande equipe divide as tarefas para multiplicar os resultados.",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Defina metas altas e não pare até chegar lá!",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "cadastro.Welcome_Messages",
+        "fields": {
+            "message": "Use todos os dias para fazer a diferença!",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "kpi.Indicadores_Frasson",
+        "fields": {
+            "description": "Carteira de Crédito",
+            "is_active": true,
+            "created_at": "2023-01-02 00:00:00",
+            "updated_at": "2023-01-02 00:00:00"
+        }
+    },
+
+    {
+        "model": "kpi.Indicadores_Frasson",
+        "fields": {
+            "description": "Lucro Líquido",
+            "is_active": true,
+            "created_at": "2023-01-02 00:00:00",
+            "updated_at": "2023-01-02 00:00:00"
+        }
+    },
+    {
+        "model": "kpi.Indicadores_Frasson",
+        "fields": {
+            "description": "Faturamento GC",
+            "is_active": true,
+            "created_at": "2023-01-02 00:00:00",
+            "updated_at": "2023-01-02 00:00:00"
+        }
+    },
+    {
+        "model": "kpi.Indicadores_Frasson",
+        "fields": {
+            "description": "Faturamento GAI",
+            "is_active": true,
+            "created_at": "2023-01-02 00:00:00",
+            "updated_at": "2023-01-02 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "R",
+            "description": "Rendimento de Aplicação",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "D",
+            "description": "Perda em Aplicação",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "D",
+            "description": "Tarifas Bancárias",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "R",
+            "description": "Venda de Ativos",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "D",
+            "description": "Juros e Multas",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "R",
+            "description": "Aporte de Capital",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "R",
+            "description": "Outras Receitas",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+    {
+        "model": "finances.Tipo_Receita_Despesa",
+        "fields": {
+            "tipo": "D",
+            "description": "Outras Despesas",
+            "created_at": "2023-01-01 00:00:00",
+            "updated_at": "2023-01-01 00:00:00"
+        }
+    },
+
+
+
+
+
+
+
+    {
+        "model": "environmental.Aquifero_APPO",
+        "fields": {
+            "description": "Sedimentar",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Aquifero_APPO",
+        "fields": {
+            "description": "Cárstico",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Aquifero_APPO",
+        "fields": {
+            "description": "Cistalino ou Fissural",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+
+
+    {
+        "model": "environmental.Finalidade_APPO",
+        "fields": {
+            "description": "Irrigação",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Finalidade_APPO",
+        "fields": {
+            "description": "Dessedentação Animal",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Finalidade_APPO",
+        "fields": {
+            "description": "Pulverização Agrícola",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Finalidade_APPO",
+        "fields": {
+            "description": "Abastecimento Humano",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Finalidade_APPO",
+        "fields": {
+            "description": "Abastecimento Industrial",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    
+    {
+        "model": "environmental.Finalidade_APPO",
+        "fields": {
+            "description": "Abast. Humano, Animal e Pulverização",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+
+
+    {
+        "model": "environmental.Atos_Administrativos",
+        "fields": {
+            "description": "Autorização para Perfuração de Poço",
+            "sigla": "APPO",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Atos_Administrativos",
+        "fields": {
+            "description": "Renovação de Autorização para Perfuração de Poço",
+            "sigla": "REN-APPO",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+    {
+        "model": "environmental.Atos_Administrativos",
+        "fields": {
+            "description": "Outorga de Recursos Hídricos",
+            "sigla": "OUT",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Atos_Administrativos",
+        "fields": {
+            "description": "Renovação de Outorga de Recursos Hídricos",
+            "sigla": "REN-OUT",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Atos_Administrativos",
+        "fields": {
+            "description": "Autorização para Supressão da Vegetação Nativa",
+            "sigla": "ASV",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Atos_Administrativos",
+        "fields": {
+            "description": "Autorização por Procedimento Especial",
+            "sigla": "APE",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Tipo_Captacao",
+        "fields": {
+            "description": "Superficial",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "environmental.Tipo_Captacao",
+        "fields": {
+            "description": "Subterrânea",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+
+
+
+    {
+        "model": "irrigation.Fabricantes_Pivots",
+        "fields": {
+            "nome_fabricante": "Valley",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "irrigation.Fabricantes_Pivots",
+        "fields": {
+            "nome_fabricante": "Lindsay",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "irrigation.Fabricantes_Pivots",
+        "fields": {
+            "nome_fabricante": "Fockink",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "irrigation.Fabricantes_Pivots",
+        "fields": {
+            "nome_fabricante": "Bauer",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "irrigation.Fabricantes_Pivots",
+        "fields": {
+            "nome_fabricante": "Krebs",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+
+
+
+
+
+    {
+        "model": "irrigation.Fabricantes_Bombas",
+        "fields": {
+            "nome_fabricante": "KSB-ETA",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "irrigation.Fabricantes_Bombas",
+        "fields": {
+            "nome_fabricante": "KSB-MEGANORM",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "irrigation.Fabricantes_Bombas",
+        "fields": {
+            "nome_fabricante": "IMBIL",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "irrigation.Fabricantes_Bombas",
+        "fields": {
+            "nome_fabricante": "EBARA",
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    },
+    {
+        "model": "administrator.APIs",
+        "fields": {
+            "descricao": "SIGEF",
+            "created_at": "2022-09-01 00:00:00",
+            "main_url": "https://api.infosimples.com/api/v2"
+        }
+    },
+    {
+        "model": "administrator.APIs",
+        "fields": {
+            "descricao": "CAR",
+            "created_at": "2022-09-01 00:00:00",
+            "main_url": "https://api.infosimples.com/api/v2"
+        }
+    },
+    {
+        "model": "environmental.Prazos_Renovacao",
+        "fields": {
+            "ato_admin_id": 1,
+            "dias_para_renov": 90,
+            "created_at": "2022-09-01 00:00:00",
+            "updated_at": "2022-09-01 00:00:00"
+        }
+    }
+]
