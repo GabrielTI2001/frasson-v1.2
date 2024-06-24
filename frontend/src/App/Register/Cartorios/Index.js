@@ -20,7 +20,7 @@ const IndexPessoal = () => {
     const [modalDelete, setModalDelete] = useState({show:false, link:''})
 
     const onClick = (data, type) =>{
-        if ((user.permissions && user.permissions.indexOf("view_cadastro_cartorios_registro") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_cartorios_registro") === -1) && !user.is_superuser){
            navigate("/error/403")
         }
         if (type === 'view'){
@@ -59,7 +59,7 @@ const IndexPessoal = () => {
             const status = await HandleSearch('', 'register/cartorios', setter) 
             if (status === 401) navigate("/auth/login");
         }
-        if ((user.permissions && user.permissions.indexOf("view_cadastro_cartorios_registro") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_cartorios_registro") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){

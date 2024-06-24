@@ -104,7 +104,7 @@ const EditForm = ({
           {fieldkey === 'beneficiario' &&( defaultselected &&
             <AsyncSelect ref={inputRef} isMulti defaultValue={defaultselected['beneficiario']}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/beneficiarios', 'razao_social', 'cpf_cnpj')}
+              loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj')}
               onChange={(selectedOptions ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -116,7 +116,7 @@ const EditForm = ({
           {fieldkey === 'detalhamento' &&( defaultselected &&
             <AsyncSelect ref={inputRef} defaultValue={defaultselected['detalhamento']}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/detalhamentos', 'detalhamento_servico', 'produto')}
+              loadOptions={(v) => SelectSearchOptions(v, 'register/detalhamentos', 'detalhamento_servico', 'produto')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -128,7 +128,7 @@ const EditForm = ({
           {fieldkey === 'instituicao' &&( defaultselected &&
             <AsyncSelect ref={inputRef} defaultValue={defaultselected['instituicao']} 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/instituicoes', 'razao_social', 'identificacao')}
+              loadOptions={(v) => SelectSearchOptions(v, 'register/instituicoes', 'razao_social', 'identificacao')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -140,7 +140,7 @@ const EditForm = ({
           {fieldkey === 'contrato' &&( defaultselected &&
             <AsyncSelect ref={inputRef} isMulti={false} defaultValue={defaultselected['contrato']} 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'pipeline/contratos', 'contratante', 'produto')}
+              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-servicos', 'str_contratante', 'str_produto')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,

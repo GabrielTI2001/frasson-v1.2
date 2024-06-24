@@ -28,12 +28,12 @@ const KanbanModal = ({show}) => {
   const {kanbanState: {kanbanModal}, kanbanDispatch} = useContext(PipeContext);
   const navigate = useNavigate()
   const token = localStorage.getItem("token")
-  const {code} = useParams()
+  const {pipe, code} = useParams()
   const [card, setCard] = useState();
   const {config: {theme}} = useAppContext();
 
   const handleClose = () => {
-    navigate('/pipeline/products')
+    navigate('/pipeline/'+pipe)
     kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   };
 

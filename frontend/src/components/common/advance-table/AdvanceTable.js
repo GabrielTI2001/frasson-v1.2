@@ -20,7 +20,6 @@ const AdvanceTable = ({
   Click
 }) => {
   const {config: {theme}} = useAppContext();
-
   const renderIcon = (iconName, color) => {
     const IconComponent = icons[iconName];
     return <IconComponent className={`me-2 text-${color}`}/>;

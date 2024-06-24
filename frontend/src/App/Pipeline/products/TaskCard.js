@@ -39,24 +39,13 @@ export const TaskDropMenu = ({ card, click }) => {
     config: { isRTL }
   } = useContext(AppContext);
 
-  const handleClose = () => {
-    navigate(`/pipeline/${pipe}/cards`)
-    kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
-  };
-  
   const handledelete = () =>{
-    api.delete(`pipeline/cards/produtos/${card.code}/`, { headers: {Authorization: `bearer ${token}`} })
-    .then((response) => {
-      kanbanDispatch({
-        type: 'REMOVE_TASK_CARD',
-        payload: {idcard: card.id}
-      });
-      toast.success("Card Deletado com Sucesso!")
-      handleClose()
-    })
-    .catch((erro) => {
-      console.error('erro: '+erro);
-    })
+    kanbanDispatch({
+      type: 'REMOVE_TASK_CARD',
+      payload: {idcard: card.id}
+    });
+    navigate(`/pipeline/${pipe}`)
+    kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   }
 
   return (
@@ -91,7 +80,7 @@ const TaskCard = ({
   const navigate = useNavigate()
   const {pipe, code} = useParams()
   const handleModalOpen = () => {
-    navigate(`/pipeline/${pipe}/cards/${task.code}`)
+    navigate(`/pipeline/${pipe}/${task.code}`)
     kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {card: task} });
   };
   // styles we need to apply on draggables
@@ -151,7 +140,7 @@ const TaskCard = ({
               </div>
               }
               <div className='mb-1'> 
-                {task.list_responsaveis.map(r => 
+                {task.responsaveis && task.list_responsaveis.map(r => 
                   <img data-bs-toggle="tooltip" title={r.nome} className='rounded-circle me-2' style={{width:'25px', height:'25px'}} 
                     src={`${process.env.REACT_APP_API_URL}/${r.avatar}`} key={r.id}
                   />

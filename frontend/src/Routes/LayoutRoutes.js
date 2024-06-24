@@ -13,13 +13,14 @@ import { ResultDatabase, ResultPipe } from '../App/Admin/Tests/Results';
 //Alongamentos
 import IndexAlongamentos from '../App/Alongamentos/Index';
 //Analytics
-import IndexRegimes from '../App/Analytics/Regimes/Index';
-import ViewRegime from '../App/Analytics/Regimes/View';
-import IndexFarms from '../App/Analytics/Farms/Index';
-import ViewFarm from '../App/Analytics/Farms/View';
-import IndexCredit from '../App/Analytics/Credit/Index';
-import ViewCredit from '../App/Analytics/Credit/View';
-import MapaCAR from '../App/Analytics/Farms/Mapa';
+// import IndexRegimes from '../App/Analytics/Regimes/Index';
+// import ViewRegime from '../App/Analytics/Regimes/View';
+// import IndexFarms from '../App/Analytics/Farms/Index';
+// import ViewFarm from '../App/Analytics/Farms/View';
+// import IndexCredit from '../App/Analytics/Credit/Index';
+// import ViewCredit from '../App/Analytics/Credit/View';
+// import MapaCAR from '../App/Analytics/Farms/Mapa';
+
 //Assessments
 import Quiz from '../App/Assessments/Quiz';
 import MyAssessments from '../App/Assessments/My';
@@ -36,6 +37,13 @@ import DashRevenues from '../App/Dashboard/Finances/Revenues';
 //External
 import IndexOutorgasANA from '../App/External/OutorgasANA/Index';
 import Exchange from '../App/Services/Currency/Exchange';
+//Farms
+import IndexAppFarms from '../App/Farms/Index';
+import IndexFarms from '../App/Farms/Farms/Index';
+import IndexRegimes from '../App/Farms/Regimes/Index';
+import ViewRegime from '../App/Farms/Regimes/View';
+import ViewFarm from '../App/Farms/Farms/View';
+import MapaCAR from '../App/Farms/Farms/Mapa';
 //Finances
 import DREConsolidado from '../App/Finances/DREActual';
 import DREProvisionado from '../App/Finances/DREForecast';
@@ -189,7 +197,7 @@ const LayoutRoutes = () => {
           <Route path="requerimentos/new" element={<NewRequerimento key='appo' type='appo' />} />
           <Route path="requerimentos/appo/:uuid" element={<ViewRequerimentoAPPO />} />
         </Route>
-        <Route path="/analytics">
+        {/* <Route path="/analytics">
           <Route path="regime" element={<IndexRegimes />}/>
           <Route path="regime/:id" element={<ViewRegime />}/>
           <Route path="farms" element={<IndexFarms />}/>
@@ -197,7 +205,7 @@ const LayoutRoutes = () => {
           <Route path="farms/:id" element={<ViewFarm />}/>
           <Route path="credit" element={<IndexCredit />}/>
           <Route path="credit/:id" element={<ViewCredit />}/>
-        </Route>
+        </Route> */}
         <Route path="/assessments">
           <Route path="quiz/:uuid" element={<Quiz />}/>
           <Route path="my" element={<MyAssessments />}/>
@@ -221,6 +229,14 @@ const LayoutRoutes = () => {
           <Route path="cnpj" element={<ConsultaCNPJ />}/>
           <Route path="currency/commodity" element={<Commodities />}/>
           <Route path="currency/exchange" element={<Exchange />}/>
+        </Route>
+        <Route path="/farms">
+          <Route path="" element={<IndexAppFarms />}/>
+          <Route path="regime" element={<IndexRegimes />}/>
+          <Route path="regime/:uuid" element={<ViewRegime />}/>
+          <Route path="farms" element={<IndexFarms />}/>
+          <Route path="farms/map" element={<MapaCAR />}/>
+          <Route path="farms/:uuid" element={<ViewFarm />}/>
         </Route>
         <Route path="/finances">
           <Route path="dre/actual" element={<DREConsolidado />}/>
@@ -269,8 +285,8 @@ const LayoutRoutes = () => {
           <Route path="contracts/:id" element={<ViewContrato />}/>
         </Route>
         <Route path="/pipeline">
-          <Route path=":pipe/cards" element={<Products />}/>
-          <Route path=":pipe/cards/:code" element={<Products />}/>
+          <Route path=":pipe" element={<Products />}/>
+          <Route path=":pipe/:code" element={<Products />}/>
         </Route>
         <Route path="/processes">
           <Route path="followup" element={<IndexFollowup />}/>

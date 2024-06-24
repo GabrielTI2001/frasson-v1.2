@@ -45,7 +45,7 @@ const Home = () => {
             {pipes && pipes.map(p =>
                 <Col key={p.id}>
                     <Link className={`card card-link-success-${theme} p-3 text-center`} 
-                        to={`/pipeline/${p.code}/cards`}
+                        to={`/pipeline/${p.code}`}
                     >
                         <div className='mb-3'>
                             <FontAwesomeIcon icon={faPencilSquare} className='fs-5 text-success-emphasis'/>

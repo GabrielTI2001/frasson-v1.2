@@ -21,7 +21,7 @@ const ModalSidebar = ({code, id, pipe}) => {
   };
 
   const handledelete = () =>{
-    api.delete(`pipeline/cards/${pipe}/${code}/`, { headers: {Authorization: `bearer ${token}`} })
+    api.delete(`pipeline/${pipe}/${code}/`, { headers: {Authorization: `bearer ${token}`} })
     .then((response) => {
       kanbanDispatch({
         type: 'REMOVE_TASK_CARD',

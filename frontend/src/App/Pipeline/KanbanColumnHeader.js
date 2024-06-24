@@ -8,7 +8,7 @@ import { Modal, CloseButton } from 'react-bootstrap';
 import ProductForm from './products/Form';
 
 const KanbanColumnHeader = ({ id, title, itemCount }) => {
-  const { kanbanDispatch } = useContext(PipeContext);
+  const {kanbanState, kanbanDispatch } = useContext(PipeContext);
   const [modaldel, setModaldel] = useState({show:false})
   const [modalform, setModalForm] = useState({show:false})
 
@@ -50,8 +50,9 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       size="md"
       show={modalform.show}
       onHide={() => setModalForm({show:false})}
-      dialogClassName="mt-7"
+      centered
       aria-labelledby="example-modal-sizes-title-lg"
+      scrollable
     >
       <Modal.Header>
       <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
@@ -61,7 +62,10 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       </Modal.Header>
       <Modal.Body>
         <Row className="flex-center sectionform">
-          <ProductForm fase={id} onSubmit={() => setModalForm({show:false})}/>
+          {kanbanState.pipe.descricao === 'Produtos' 
+            ? <ProductForm fase={id} onSubmit={() => setModalForm({show:false})}/>
+            : null
+          }
         </Row>
       </Modal.Body>
     </Modal>

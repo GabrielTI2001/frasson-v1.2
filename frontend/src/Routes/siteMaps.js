@@ -1,7 +1,8 @@
 import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
 faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench,
 faMapLocationDot,
-faFileSignature} 
+faFileSignature,
+faTractor} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
@@ -101,20 +102,6 @@ export const PipefyRoutes = {
       active: true,
       children: [
         {
-          name: 'Regimes de Exploração',
-          icon: faPersonArrowUpFromLine,
-          to: '/analytics/regime',
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Imóveis Rurais',
-          icon: faMap,
-          to: '/analytics/farms',
-          exact: true,
-          active: true
-        },
-        {
           name: 'Operações Contratadas',
           to: '/analytics/credit',
           icon2: 'CashCoin',
@@ -182,6 +169,13 @@ export const operacionalRoutes = {
           name: 'Glebas Imóveis Rurais',
           icon: faMapLocationDot,
           to: '/glebas',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Fazendas',
+          icon: faTractor,
+          to: '/farms',
           exact: true,
           active: true
         },

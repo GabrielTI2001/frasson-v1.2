@@ -157,7 +157,7 @@ const ProductForm = ({
             <Form.Label className='fw-bold mb-1'>Contrato Vinculado*</Form.Label>
             <AsyncSelect
               ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-servicos', 'contratante', 'produto')}
+              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-servicos', 'str_contratante', 'str_produto')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,

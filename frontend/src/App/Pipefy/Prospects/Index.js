@@ -16,7 +16,7 @@ const IndexProspects = () => {
     const navigate = useNavigate();
 
     const onClick = (id, uuid) =>{
-        const url = `/pipefy/pipes/301573049/cards/${id}`
+        const url = `/pipefy/pipes/301573049/${id}`
         navigate(url)
     }
     const setter = (data) =>{

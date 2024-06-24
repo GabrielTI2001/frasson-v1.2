@@ -21,7 +21,6 @@ const SearchForm = ({
   const inputRef = useRef(null);
   const token = localStorage.getItem("token")
   const [prevstate, setPrevState] = useState()
-  console.log(prevstate)
 
   const submit = async (value) => {
     setFormData(value)

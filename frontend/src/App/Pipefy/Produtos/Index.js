@@ -15,7 +15,7 @@ const IndexProdutos = ({phasename}) => {
     const navigate = useNavigate();
 
     const onClick = (id, uuid) =>{
-        const url = `/pipefy/pipes/301573538/cards/${id}`
+        const url = `/pipefy/pipes/301573538/${id}`
         navigate(url)
     }
     const setter = (data) =>{
