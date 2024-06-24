@@ -44,16 +44,16 @@ def remover_arquivo_antigo(sender, instance, **kwargs):
         except Analise_Solo.DoesNotExist:
             pass 
 
-@receiver(post_save, sender=Feedbacks_Replies)
-def criar_notificacao(sender, instance, created, **kwargs):
-    if created:
-        reply = Feedbacks_Replies.objects.get(pk=instance.pk)
-        Frasson.createNotificationMessageUsers(
-            str_title='Nova resposta de feedback',
-            str_subject='Resposta de feedback da aplicação',
-            str_text=reply.text,
-            str_icon='fa-solid fa-comment',
-            str_icon_color='info',
-            int_recipient=reply.feedback.user.id,
-            int_sender=1  # id do Adriano
-        )
+# @receiver(post_save, sender=Feedbacks_Replies)
+# def criar_notificacao(sender, instance, created, **kwargs):
+#     if created:
+#         reply = Feedbacks_Replies.objects.get(pk=instance.pk)
+#         Frasson.createNotificationMessageUsers(
+#             str_title='Nova resposta de feedback',
+#             str_subject='Resposta de feedback da aplicação',
+#             str_text=reply.text,
+#             str_icon='fa-solid fa-comment',
+#             str_icon_color='info',
+#             int_recipient=reply.feedback.user.id,
+#             int_sender=1  # id do Adriano
+#         )

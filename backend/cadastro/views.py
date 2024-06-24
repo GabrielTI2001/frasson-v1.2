@@ -59,7 +59,7 @@ class CartorioView(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)   
         if search_term:
-            queryset = queryset.filter(nome_municipio__icontains=search_term)
+            queryset = queryset.filter(razao_social__icontains=search_term)
         return queryset
     def get_serializer_class(self):
         if self.action == 'list':
@@ -164,7 +164,7 @@ class PicturesBenfeitoriasView(viewsets.ModelViewSet):
                 serializer.save()
                 headers = self.get_success_headers(serializer.data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AnalisesSoloView(viewsets.ModelViewSet):
     queryset = Analise_Solo.objects.all()

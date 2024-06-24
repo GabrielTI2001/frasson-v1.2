@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from .serializers import serializerPipe, serializerFase, serializerCard_Produtos, listPipe
 from .models import Card_Produtos, Fase, Pipe
 from .models import Phases_History
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class PipeView(viewsets.ModelViewSet):
     lookup_field = 'code'
@@ -26,28 +26,6 @@ class Card_ProdutosView(viewsets.ModelViewSet):
     serializer_class = serializerCard_Produtos
     permission_classes = [permissions.AllowAny]
     lookup_field = 'code'
-    def perform_create(self, serializer):
-        id = serializer.validated_data.get('id')
-        phase = serializer.validated_data.get('phase')
-        historico_fase= Phases_History.objects.filter(phase=phase, produto_id=id)
-        if historico_fase.exists():
-            historico_fase.update(**{'first_time_in':datetime.now()})
-        else:
-            Phases_History.objects.create(first_time_in=datetime.now(), phase=phase, produto_id=id)
-        super().perform_create(serializer)
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     if serializer.is_valid():
-    #         instance = serializer.data
-    #         historico_fase= Phases_History.objects.filter(phase=instance['phase'], produto_id=instance.pk)
-    #         if historico_fase.exists():
-    #             historico_fase.update(**{'first_time_in':datetime.now()})
-    #         else:
-    #             Phases_History.objects.create(first_time_in=datetime.now(), phase=instance['phase'], produto_id=instance.pk)
-    #         headers = self.get_success_headers(serializer.data)
-    #         self.perform_create(serializer)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    #     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -65,10 +43,17 @@ class Card_ProdutosView(viewsets.ModelViewSet):
                 historico_fase_atual = Phases_History.objects.filter(phase_id=phase_atual, produto_id=instance.pk)
                 if historico_fase_atual.exists():
                     historico_fase_atual.update(**{'last_time_in':datetime.now(), 'last_time_out':None, 'moved_by_id':user})
+                    historico_fase_atual = historico_fase_atual.first()
                 else:
-                    Phases_History.objects.create(first_time_in=datetime.now(), last_time_out=None, phase_id=phase_atual, 
+                    historico_fase_atual = Phases_History.objects.create(first_time_in=datetime.now(), last_time_out=None, phase_id=phase_atual, 
                         produto_id=instance.pk, moved_by_id=user)
+                
+                responsaveis = [r.id for r in historico_fase_atual.phase.responsaveis.all()]
+                instance.responsaveis.set(responsaveis)
+                if historico_fase_atual.phase.dias_prazo:
+                    instance.data_vencimento = datetime.now().date() + timedelta(historico_fase_atual.phase.dias_prazo)
+                instance.save()
             serializer.save()
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-        return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

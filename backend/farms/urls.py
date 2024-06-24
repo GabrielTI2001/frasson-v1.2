@@ -11,7 +11,7 @@ router.register(r'car', views.CARView)
 router.register(r'parcelas-sigef', views.SIGEFView)
 
 urlpatterns = [
-    path('credit-data', views.creditData, name='credit.data'),
-    path('credit/convert-to-xls', views.convert_html_table_to_excel, name='credit.xls'),
+    path('kml/<uuid:uuid>', views.download_kml_farm, name='farm.kml'),
+    path('kml/regime/<uuid:uuid>', views.download_kml_regime, name='regime.kml')
 ]
 urlpatterns += router.urls

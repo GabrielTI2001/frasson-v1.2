@@ -7,7 +7,7 @@ from .models import Detalhamento_Servicos, Cadastro_Pessoal, Produtos_Frasson, C
 from .models import Instituicoes_Parceiras, Contas_Bancarias_Clientes, Instituicoes_Razao_Social, Grupos_Clientes
 from finances.models import Contratos_Servicos
 from datetime import datetime
-import requests, json, locale, re
+import requests, json, locale, re, os
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL, TOKEN_GOOGLE_MAPS_API
 from users.models import Profile
 from django.db.models import Q, Sum
@@ -311,6 +311,16 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
         if not Frasson.valida_cep(value):
             raise serializers.ValidationError("CEP Inválido!")
         return value
+    def validate_avatar(self, value):
+        if 'avatar' in self.initial_data:
+            file = self.initial_data.get('avatar')
+            ext = os.path.splitext(file.name)[1]
+            valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+            if not ext.lower() in valid_extensions:
+                raise serializers.ValidationError("Arquivo deve ser uma Imagem!")     
+            return file
+        else:
+            return None
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():

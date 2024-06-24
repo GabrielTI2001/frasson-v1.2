@@ -8,7 +8,7 @@ def calcduration(first_in, last_in, last_to):
         last_to = datetime.now()
     if (first_in and last_to < first_in) or (last_in and last_to < last_in):
         last_to = datetime.now()
-    result = last_to - first_in if first_in else last_to - last_in
+    result = last_to - first_in if first_in else last_to - last_in or 0
     if first_in and last_in:
         result = last_to - first_in
     return int(result.total_seconds())
@@ -73,7 +73,8 @@ class serializerCard_Produtos(serializers.ModelSerializer):
     def get_history_fases_list(self, obj):
         list = [
             {'id':f.id, 'last_time_in':f.last_time_in, 'last_time_out':f.last_time_out, 'first_time_in':f.first_time_in,
-                'duration':calcduration(f.first_time_in, f.last_time_in, f.last_time_out), 'phase_name': f.phase.descricao  
+                'duration':calcduration(f.first_time_in, f.last_time_in, f.last_time_out), 
+                'phase_name': f.phase.descricao  
             } 
             for f in Phases_History.objects.filter(produto_id=obj.id)
         ]
