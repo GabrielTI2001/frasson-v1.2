@@ -26,11 +26,30 @@ class selectMunicipio(serializers.ModelSerializer):
         fields = ['id', 'nome_municipio', 'sigla_uf']
 
 class listCartorio(serializers.ModelSerializer):
+    str_municipio = serializers.SerializerMethodField(read_only=True)
+    def get_str_municipio(self, obj):
+        return obj.municipio.nome_municipio + ' - ' + obj.municipio.sigla_uf
     class Meta:
         model = Cartorios_Registro
-        fields = ['id', 'uuid', 'razao_social', 'cnpj']
+        fields = ['id', 'uuid', 'razao_social', 'cnpj', 'logradouro', 'str_municipio', 'atendente']
 
 class detailCartorio(serializers.ModelSerializer):
+    str_municipio = serializers.SerializerMethodField(read_only=True)
+    def get_str_municipio(self, obj):
+        return obj.municipio.nome_municipio + ' - ' + obj.municipio.sigla_uf
+    def validate_cnpj(self, value):
+        if not Frasson.valida_cpf_cnpj(value):
+            raise serializers.ValidationError("CNPJ Inválido!")
+        return value
+    def validate_cep_logradouro(self, value):
+        if not Frasson.valida_cep(value):
+            raise serializers.ValidationError("CEP Inválido!")
+        return value
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['razao_social', 'municipio', 'cnpj', 'logradouro', 'cep_logradouro']:
+                field.required = True
     class Meta:
         model = Cartorios_Registro
         fields = '__all__'

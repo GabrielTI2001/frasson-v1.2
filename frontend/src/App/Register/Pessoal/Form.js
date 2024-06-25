@@ -2,7 +2,7 @@ import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col, OverlayTrigger, Tooltip} from 'react-bootstrap';
+import { Button, Form, Col, OverlayTrigger, Tooltip, Row} from 'react-bootstrap';
 import { fetchPessoal, FetchImoveisRurais } from '../../Pipefy/Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
@@ -120,207 +120,209 @@ const PessoaForm = ({ hasLabel, type, submit, data}) => {
 
   return (
     <>
-      <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
-        <Form.Group className="mb-2" as={Col} xl={4}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Natureza Jurídica*</Form.Label>}
-          <Form.Select
-            value={formData.natureza || ''}
-            name="natureza"
-            onChange={handleFieldChange}
-          >
-            <option value='PF'>Pessoa Física</option>
-            <option value='PJ'>Pessoa Jurídica</option>
-          </Form.Select>
-          <label className='text-danger'>{message ? message.natureza : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={4}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Nome ou Razão Social*</Form.Label>}
-          <Form.Control
-            value={formData.razao_social || ''}
-            name="razao_social"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.razao_social : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={4}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Fantasia</Form.Label>}
-          <Form.Control
-            value={formData.fantasia || ''}
-            name="fantasia"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.fantasia : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={4}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>CPF ou CNPJ*</Form.Label>}
-          <Form.Control
-            value={formData.cpf_cnpj || ''}
-            name="cpf_cnpj"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={4}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Número RG</Form.Label>}
-          <Form.Control
-            value={formData.numero_rg || ''}
-            name="numero_rg"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.numero_rg : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={4}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>CEP Logradouro*</Form.Label>}
-          <Form.Control
-            value={formData.cep_logradouro || ''}
-            name="cep_logradouro"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.cep_logradouro : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Logradouro*</Form.Label>}
-          <Form.Control
-            value={formData.logradouro || ''}
-            name="logradouro"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.logradouro : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Data Nascimento</Form.Label>}
-          <Form.Control
-            value={formData.data_nascimento || ''}
-            name="data_nascimento"
-            onChange={handleFieldChange}
-            type="date"
-          />
-          <label className='text-danger'>{message ? message.data_nascimento : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Contato 01</Form.Label>}
-          <Form.Control
-            value={formData.contato1 || ''}
-            name="contato1"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.contato1 : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Contato 02</Form.Label>}
-          <Form.Control
-            value={formData.contato2 || ''}
-            name="contato2"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.contato2 : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Email 01</Form.Label>}
-          <Form.Control
-            value={formData.email1 || ''}
-            name="email1"
-            onChange={handleFieldChange}
-            type="email"
-          />
-          <label className='text-danger'>{message ? message.email1 : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Email 02</Form.Label>}
-          <Form.Control
-            value={formData.email2 || ''}
-            name="email2"
-            onChange={handleFieldChange}
-            type="email"
-          />
-          <label className='text-danger'>{message ? message.email2 : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} xl={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Categoria Cadastro*</Form.Label>}
-          <Form.Select
-            value={formData.categoria || ''}
-            name="categoria"
-            onChange={handleFieldChange}
-          >
-          {categorias.map(cat =>
-            <option value={cat.value} key={cat.value}>{cat.label}</option>
-          )}
-          </Form.Select>
-          <label className='text-danger'>{message ? message.categoria : ''}</label>
-        </Form.Group>
-
-        {defaultoptions && 
-          <Form.Group className="mb-2" as={Col} xl={4}>
-            {hasLabel && <Form.Label className='fw-bold mb-1'>Município*</Form.Label>}
-            <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/municipios', 'nome_municipio', 'sigla_uf')} 
-              name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio :'') : ''}
-              onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                municipio: selected.value
-                }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.municipio : ''}</label>
-          </Form.Group> 
-        }       
-
-        {defaultoptions && 
-          <Form.Group className="mb-2" as={Col} xl={4}>
-            {hasLabel && <Form.Label className='fw-bold mb-1'>Grupo</Form.Label>}
-            <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/grupos-clientes', 'nome_grupo')} 
-              name='grupo' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.grupo : '') : ''}
-              onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                grupo: selected.value
-                }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.grupo : ''}</label>
-          </Form.Group> 
-        }  
-
-        <Form.Group className="mb-2" as={Col} xl={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Avatar</Form.Label>}
-          <Form.Control
-            name="avatar"
-            onChange={handleFileChange}
-            type="file"
-          />
-          <label className='text-danger'>{message ? message.avatar : ''}</label>
-        </Form.Group>
-
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
+      <Form onSubmit={handleSubmit} encType='multipart/form-data'>
+        <Row xl={2} sm={2}>
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Natureza Jurídica*</Form.Label>}
+            <Form.Select
+              value={formData.natureza || ''}
+              name="natureza"
+              onChange={handleFieldChange}
             >
-              {type === 'edit' ? "Atualizar Pessoa" : "Cadastrar Pessoa"}
-          </Button>
-        </Form.Group>    
+              <option value='PF'>Pessoa Física</option>
+              <option value='PJ'>Pessoa Jurídica</option>
+            </Form.Select>
+            <label className='text-danger'>{message ? message.natureza : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Nome ou Razão Social*</Form.Label>}
+            <Form.Control
+              value={formData.razao_social || ''}
+              name="razao_social"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.razao_social : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Fantasia</Form.Label>}
+            <Form.Control
+              value={formData.fantasia || ''}
+              name="fantasia"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.fantasia : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>CPF ou CNPJ*</Form.Label>}
+            <Form.Control
+              value={formData.cpf_cnpj || ''}
+              name="cpf_cnpj"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Número RG</Form.Label>}
+            <Form.Control
+              value={formData.numero_rg || ''}
+              name="numero_rg"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.numero_rg : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>CEP Logradouro*</Form.Label>}
+            <Form.Control
+              value={formData.cep_logradouro || ''}
+              name="cep_logradouro"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.cep_logradouro : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Logradouro*</Form.Label>}
+            <Form.Control
+              value={formData.logradouro || ''}
+              name="logradouro"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.logradouro : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Data Nascimento</Form.Label>}
+            <Form.Control
+              value={formData.data_nascimento || ''}
+              name="data_nascimento"
+              onChange={handleFieldChange}
+              type="date"
+            />
+            <label className='text-danger'>{message ? message.data_nascimento : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Contato 01</Form.Label>}
+            <Form.Control
+              value={formData.contato1 || ''}
+              name="contato1"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.contato1 : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Contato 02</Form.Label>}
+            <Form.Control
+              value={formData.contato2 || ''}
+              name="contato2"
+              onChange={handleFieldChange}
+              type="text"
+            />
+            <label className='text-danger'>{message ? message.contato2 : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Email 01</Form.Label>}
+            <Form.Control
+              value={formData.email1 || ''}
+              name="email1"
+              onChange={handleFieldChange}
+              type="email"
+            />
+            <label className='text-danger'>{message ? message.email1 : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Email 02</Form.Label>}
+            <Form.Control
+              value={formData.email2 || ''}
+              name="email2"
+              onChange={handleFieldChange}
+              type="email"
+            />
+            <label className='text-danger'>{message ? message.email2 : ''}</label>
+          </Form.Group>
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Categoria Cadastro*</Form.Label>}
+            <Form.Select
+              value={formData.categoria || ''}
+              name="categoria"
+              onChange={handleFieldChange}
+            >
+            {categorias.map(cat =>
+              <option value={cat.value} key={cat.value}>{cat.label}</option>
+            )}
+            </Form.Select>
+            <label className='text-danger'>{message ? message.categoria : ''}</label>
+          </Form.Group>
+
+          {defaultoptions && 
+            <Form.Group className="mb-2" as={Col}>
+              {hasLabel && <Form.Label className='fw-bold mb-1'>Município*</Form.Label>}
+              <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/municipios', 'nome_municipio', 'sigla_uf')} 
+                name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+                defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio :'') : ''}
+                onChange={(selected) => {
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  municipio: selected.value
+                  }));
+                }}>
+              </AsyncSelect>
+              <label className='text-danger'>{message ? message.municipio : ''}</label>
+            </Form.Group> 
+          }       
+
+          {defaultoptions && 
+            <Form.Group className="mb-2" as={Col}>
+              {hasLabel && <Form.Label className='fw-bold mb-1'>Grupo</Form.Label>}
+              <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/grupos-clientes', 'nome_grupo')} 
+                name='grupo' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+                defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.grupo : '') : ''}
+                onChange={(selected) => {
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  grupo: selected.value
+                  }));
+                }}>
+              </AsyncSelect>
+              <label className='text-danger'>{message ? message.grupo : ''}</label>
+            </Form.Group> 
+          }  
+
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Avatar</Form.Label>}
+            <Form.Control
+              name="avatar"
+              onChange={handleFileChange}
+              type="file"
+            />
+            <label className='text-danger'>{message ? message.avatar : ''}</label>
+          </Form.Group>
+        </Row>
+        <Row className='d-flex text-center'>
+          <Form.Group as={Col}>
+            <Button
+              type="submit"
+              >
+                {type === 'edit' ? "Atualizar Pessoa" : "Cadastrar Pessoa"}
+            </Button>
+          </Form.Group> 
+        </Row>
       </Form>
     </>
   );

@@ -11,9 +11,9 @@ router.register(r'tipo-armazenagem', views.TipoArmazenagemView)
 router.register(r'tipo-classificacao', views.TipoClassificacaoView)
 
 urlpatterns = [
-    path('pdf/<int:id>', views.create_pdf_alongamento, name='pdf.alongamento'),
-    path('pdf/download/<int:id>/1', views.download_pdf_page_01, name='download.pages.alongamento'),
-    path('pdf/download/<int:id>/2', views.download_pdf_page_02, name='download.pages.alongamento.2'),
-    path('pdf/download/<int:id>/3', views.download_pdf_page_03, name='download.pages.alongamento.3')
+    path('pdf/<uuid:uuid>', views.create_pdf_alongamento, name='pdf.alongamento'),
+    path('pdf/download/<uuid:uuid>/1', views.download_pdf_page_01, name='download.pages.alongamento'),
+    path('pdf/download/<uuid:uuid>/2', views.download_pdf_page_02, name='download.pages.alongamento.2'),
+    path('pdf/download/<uuid:uuid>/3', views.download_pdf_page_03, name='download.pages.alongamento.3')
 ]
 urlpatterns += router.urls

@@ -25,14 +25,14 @@ const Comments = ({ comments, loadComment }) => {
                 />
               </p>
               <div className="px-2">
-                <a href="#!">Like</a> • <a href="#!">Reply</a> • {postTime}
+                <a>Like</a> • <a>Reply</a> • {postTime}
               </div>
             </div>
           </Flex>
         </div>
       ))}
       {!!loadComment && (
-        <a className="fs--1 text-700 d-inline-block mt-2" href="#!">
+        <a className="fs--1 text-700 d-inline-block mt-2">
           Load more comments ({loadComment})
         </a>
       )}

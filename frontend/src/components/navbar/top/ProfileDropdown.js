@@ -19,11 +19,11 @@ const ProfileDropdown = () => {
 
       <Dropdown.Menu className="dropdown-caret dropdown-menu-card  dropdown-menu-end">
         <div className="bg-white rounded-2 py-2 dark__bg-1000">
-          <Dropdown.Item href="#!">Set status</Dropdown.Item>
+          <Dropdown.Item>Set status</Dropdown.Item>
           <Dropdown.Item as={Link} to="/user/profile">
             Profile &amp; account
           </Dropdown.Item>
-          <Dropdown.Item href="#!">Feedback</Dropdown.Item>
+          <Dropdown.Item>Feedback</Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item as={Link} to="/user/settings">
             Settings

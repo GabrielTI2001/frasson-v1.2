@@ -147,7 +147,7 @@ const AdvanceTable = ({
                         PDF Alongamento
                       </Tooltip>
                     }>
-                      <Link to={`${process.env.REACT_APP_API_URL}/alongamentos/pdf/${row.original.id}`}>
+                      <Link to={`${process.env.REACT_APP_API_URL}/alongamentos/pdf/${row.original.uuid}`}>
                         <FontAwesomeIcon icon={faFilePdf} className='text-danger me-2'/>
                       </Link>
                     </OverlayTrigger>

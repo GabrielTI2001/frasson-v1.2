@@ -109,7 +109,7 @@ const IndexAlongamentos = () => {
                 <AdvanceTableSearchBox table onSearch={search}/>
             </Col>
             <Col xs="auto" sm={6} lg={4}>
-                <Link className="btn btn-sm btn-info px-2" to={'/analytics/credit'}>Operações de Crédito</Link>
+                <Link className="btn btn-sm btn-info px-2" to={'/credit'}>Operações de Crédito</Link>
             </Col>
         </Row>
        
@@ -147,8 +147,9 @@ const IndexAlongamentos = () => {
             size="xl"
             show={modalform.show}
             onHide={() => setModalForm({show:false})}
-            dialogClassName="mt-1"
             aria-labelledby="example-modal-sizes-title-lg"
+            centered
+            scrollable
         >
             <Modal.Header>
             <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>

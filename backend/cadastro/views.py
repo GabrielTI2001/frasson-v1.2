@@ -55,6 +55,7 @@ class MunicipioView(viewsets.ModelViewSet):
 class CartorioView(viewsets.ModelViewSet):
     queryset = Cartorios_Registro.objects.all()
     serializer_class = detailCartorio
+    lookup_field = 'uuid'
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)   

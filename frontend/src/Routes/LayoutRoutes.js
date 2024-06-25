@@ -12,20 +12,13 @@ import TestsIndex from '../App/Admin/Tests/Tests';
 import { ResultDatabase, ResultPipe } from '../App/Admin/Tests/Results';
 //Alongamentos
 import IndexAlongamentos from '../App/Alongamentos/Index';
-//Analytics
-// import IndexRegimes from '../App/Analytics/Regimes/Index';
-// import ViewRegime from '../App/Analytics/Regimes/View';
-// import IndexFarms from '../App/Analytics/Farms/Index';
-// import ViewFarm from '../App/Analytics/Farms/View';
-// import IndexCredit from '../App/Analytics/Credit/Index';
-// import ViewCredit from '../App/Analytics/Credit/View';
-// import MapaCAR from '../App/Analytics/Farms/Mapa';
-
 //Assessments
 import Quiz from '../App/Assessments/Quiz';
 import MyAssessments from '../App/Assessments/My';
 import IndexAssessments from '../App/Assessments/Index';
 import ResultsAssessment from '../App/Assessments/Results';
+//Credit
+import IndexCredit from '../App/Credit/Index';
 //Dashboard
 import DashCredit from '../App/Dashboard/Credit/Index';
 import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
@@ -69,6 +62,15 @@ import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
 import IndexMyIndicators from '../App/Kpi/Index';
 import IndexIndicators from '../App/Kpi/IndexGeral';
 import ViewIndicator from '../App/Kpi/View';
+//Pipeline
+import Products from '../App/Pipeline/products/products';
+//Pipefy
+import IndexProspects from '../App/Pipefy/Prospects/Index';
+import ViewProspect from '../App/Pipefy/Prospects/View';
+import IndexProdutos from '../App/Pipefy/Produtos/Index';
+import ViewCardProduto from '../App/Pipefy/Produtos/View';
+import IndexContratos from '../App/Pipefy/Contratos/Index';
+import ViewContrato from '../App/Pipefy/Contratos/View';
 //Register
 import IndexPessoal from '../App/Register/Pessoal/Index';
 import ViewPessoal from '../App/Register/Pessoal/View';
@@ -81,15 +83,7 @@ import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
 import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
 import NewFeedback from '../App/Register/Feedbacks/New';
 import IndexFeedbacks from '../App/Register/Feedbacks/Index';
-//Pipeline
-import Products from '../App/Pipeline/products/products';
-//Pipefy
-import IndexProspects from '../App/Pipefy/Prospects/Index';
-import ViewProspect from '../App/Pipefy/Prospects/View';
-import IndexProdutos from '../App/Pipefy/Produtos/Index';
-import ViewCardProduto from '../App/Pipefy/Produtos/View';
-import IndexContratos from '../App/Pipefy/Contratos/Index';
-import ViewContrato from '../App/Pipefy/Contratos/View';
+import IndexCartorios from '../App/Register/Cartorios/Index';
 //Processes
 import IndexFollowup from '../App/Processes/Followup/Index';
 import ViewFollowup from '../App/Processes/Followup/View';
@@ -124,6 +118,7 @@ import InsertPoints from '../App/Services/Tools/InsertPoints';
 import KMLPolygon from '../App/Services/Tools/KMLPolygon';
 import ServicesMaps from '../App/Services/Maps';
 import WebSocketComponent from '../App/Pipeline/Websocket';
+import ViewCredit from '../App/Credit/View';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -197,20 +192,15 @@ const LayoutRoutes = () => {
           <Route path="requerimentos/new" element={<NewRequerimento key='appo' type='appo' />} />
           <Route path="requerimentos/appo/:uuid" element={<ViewRequerimentoAPPO />} />
         </Route>
-        {/* <Route path="/analytics">
-          <Route path="regime" element={<IndexRegimes />}/>
-          <Route path="regime/:id" element={<ViewRegime />}/>
-          <Route path="farms" element={<IndexFarms />}/>
-          <Route path="farms/map" element={<MapaCAR />}/>
-          <Route path="farms/:id" element={<ViewFarm />}/>
-          <Route path="credit" element={<IndexCredit />}/>
-          <Route path="credit/:id" element={<ViewCredit />}/>
-        </Route> */}
         <Route path="/assessments">
           <Route path="quiz/:uuid" element={<Quiz />}/>
           <Route path="my" element={<MyAssessments />}/>
           <Route path="" element={<IndexAssessments />}/>
           <Route path="results/:uuid" element={<ResultsAssessment />}/>
+        </Route>
+        <Route path="/credit">
+          <Route path="" element={<IndexCredit />}/>
+          <Route path=":uuid" element={<ViewCredit />}/>
         </Route>
         <Route path="/dashboard">
           <Route path="ambiental" element={<DashAmbiental />}/>
@@ -294,6 +284,7 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/register">
           <Route path="" element={<IndexCadGerais />}/>
+          <Route path="cartorios" element={<IndexCartorios />}/>
           <Route path="pessoal" element={<IndexPessoal />}/>
           <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
           <Route path='machinery' element={<IndexMachinery />}/>

@@ -15,7 +15,8 @@ const customStyles = {
       paddingTop: 0,
       // height: 28,
       paddingBlock: 0,
-      lineHeight: 1.4
+      lineHeight: 1.4,
+      fontSize: 13
     }),
     multiValue: base => ({
       ...base,
@@ -51,7 +52,8 @@ export const customStylesDark = {
     paddingTop: 0,
     // height: 28,
     paddingBlock: 0,
-    lineHeight: 1.4
+    lineHeight: 1.4,
+    fontSize: 13
   }),
   multiValue: base => ({
     ...base,

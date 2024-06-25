@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-
 export const fetchProprietario = async (inputValue) => {
   const token = localStorage.getItem("token")
   try {
@@ -136,11 +134,6 @@ export const columnsCartorio = [
   {
     accessor: 'cnpj',
     Header: 'CNPJ',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
-    accessor: 'str_municipio',
-    Header: 'Município',
     headerProps: { className: 'text-900 p-1' }
   },
   {

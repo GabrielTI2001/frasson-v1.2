@@ -32,7 +32,7 @@ class AlongamentosView(viewsets.ModelViewSet):
             return self.serializer_class
 
 
-def create_pdf_alongamento(request, id):
+def create_pdf_alongamento(request, uuid):
     #CRIA ARQUIVO PDF DO ALONGAMENTO
     left_margin = 40
     right_margin = 40
@@ -43,7 +43,7 @@ def create_pdf_alongamento(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(uuid=uuid)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
         qtd_penhor_kg = locale.format_string('%.0f', alongamento.quant_penhor_kg, True) if alongamento.quant_penhor_kg != None else ''
@@ -299,7 +299,7 @@ def create_pdf_alongamento(request, id):
     except ObjectDoesNotExist:
         return HttpResponse()
 
-def download_pdf_page_01(request, id):
+def download_pdf_page_01(request, uuid):
     #CRIA ARQUIVO PDF DO ALONGAMENTO
     left_margin = 40
     right_margin = 40
@@ -310,7 +310,7 @@ def download_pdf_page_01(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(uuid=uuid)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
         qtd_penhor_kg = locale.format_string('%.0f', alongamento.quant_penhor_kg, True) if alongamento.quant_penhor_kg != None else ''
@@ -439,7 +439,7 @@ def download_pdf_page_01(request, id):
     except ObjectDoesNotExist:
         return HttpResponse(404)
     
-def download_pdf_page_02(request, id):
+def download_pdf_page_02(request, uuid):
     #CRIA ARQUIVO PDF DO ALONGAMENTO
     left_margin = 40
     right_margin = 40
@@ -450,7 +450,7 @@ def download_pdf_page_02(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(uuid=uuid)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
         qtd_penhor_kg = locale.format_string('%.0f', alongamento.quant_penhor_kg, True) if alongamento.quant_penhor_kg != None else ''
@@ -590,7 +590,7 @@ def download_pdf_page_02(request, id):
     except ObjectDoesNotExist:
         return HttpResponse(404)
 
-def download_pdf_page_03(request, id):
+def download_pdf_page_03(request, uuid):
     #CRIA ARQUIVO PDF DO ALONGAMENTO
     left_margin = 40
     right_margin = 40
@@ -601,7 +601,7 @@ def download_pdf_page_03(request, id):
     custom_color = Color(12/255, 23/255, 56/255) 
     
     try:
-        alongamento = Cadastro_Alongamentos.objects.get(pk=id)
+        alongamento = Cadastro_Alongamentos.objects.get(uuid=uuid)
         beneficiario = alongamento.operacao.beneficiario.razao_social
         cpf = alongamento.operacao.beneficiario.cpf_cnpj
         cep = alongamento.agencia_bancaria.cep_logradouro

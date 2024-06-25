@@ -4,17 +4,15 @@ import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
-import { FetchImoveisRurais, fetchPessoal} from '../Pipefy/Data';
-import { fetchAgenciasBancarias, fetchProdutoAgricola, fetchTipoArmazenagem, fetchTipoClassificacao } from './Data';
-import { fetchMunicipio } from '../Ambiental/Data';
 import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
+import { GetRecord, SelectSearchOptions } from '../../helpers/Data';
 
-const FormAlongamento = ({ hasLabel, data, type, submit}) => {
+const FormAlongamento = ({ hasLabel, data, type, submit, operacao}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({user: user.id});
+  const [formData, setFormData] = useState({created_by: user.id});
   const [message, setMessage] = useState()
   const token = localStorage.getItem("token")
   const [defaultoptions, setDefaultOptions] = useState()
@@ -83,7 +81,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
       const {info_operacao, ...rest} = data;
       setFormData({...formData, ...rest})
       setDefaultOptions({municipio:{value:data.municipio_propriedade, label: data.str_municipio}, 
-        propriedade: data.str_propriedade, 
+        propriedades: data.str_propriedade, 
         testemunha01:{value:data.testemunha01, label:data.str_testemunha01}, 
         testemunha02:{value:data.testemunha02,label:data.str_testemunha02},
         fiel_depositario:{value:data.fiel_depositario,label:data.str_fiel_depositario},
@@ -91,13 +89,25 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
     
     }
     const buscar = async () =>{
-      const data_agencias = await fetchAgenciasBancarias()
+      const data_agencias = await GetRecord('', 'register/instituicoes');
+      if (!data_agencias){
+        navigate("/auth/login")
+      }
       setAgencias(data_agencias)
-      const dado_produtos = await fetchProdutoAgricola()
+      const dado_produtos = await GetRecord('', 'alongamentos/produtos-agricolas');
+      if (!dado_produtos){
+        navigate("/auth/login")
+      }
       setProdutos(dado_produtos)
-      const armazenagem = await fetchTipoArmazenagem()
+      const armazenagem = await GetRecord('', 'alongamentos/tipo-armazenagem');
+      if (!armazenagem){
+        navigate("/auth/login")
+      }
       setTipoarmazenagens(armazenagem)
-      const dados_c = await fetchTipoClassificacao()
+      const dados_c = await GetRecord('', 'alongamentos/tipo-classificacao');
+      if (!dados_c){
+        navigate("/auth/login")
+      }
       setTipoclassificacoes(dados_c)
     }
     buscar()
@@ -105,8 +115,9 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
       loadFormData()
     }
     else{
+      setFormData({...formData, operacao:operacao.id})
       if(!defaultoptions){
-        setDefaultOptions({propriedade:{}, finalidade:{}, municipio:{}, testemunha01:{}, testemunha02:{}, fiel_depositario:{}})
+        setDefaultOptions({propriedades:{}, finalidade:{}, municipio:{}, testemunha01:{}, testemunha02:{}, fiel_depositario:{}})
       }
     }
 
@@ -205,27 +216,11 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           >
             <option value={undefined}>----</option>
             {agencias &&( agencias.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
+              <option key={c.id} value={c.id}>{c.razao_social}</option>
             )))}
           </Form.Select>
           <label className='text-danger'>{message ? message.agencia_bancaria : ''}</label>
         </Form.Group>
-
-        {defaultoptions && (
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Município*</Form.Label>}
-          <AsyncSelect loadOptions={fetchMunicipio} name='municipio_propriedade' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-            defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.municipio : null) : null }
-            onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                municipio_propriedade: selected.value
-              }));
-            }}>
-          </AsyncSelect>
-          <label className='text-danger'>{message ? message.municipio_propriedade : ''}</label>
-        </Form.Group>
-        )}
 
         <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Armazenagem*</Form.Label>}
@@ -237,7 +232,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           >
             <option value={undefined}>----</option>
             {tipoarmazenagens &&( tipoarmazenagens.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
+              <option key={c.id} value={c.id}>{c.description}</option>
             )))}
           </Form.Select>
           <label className='text-danger'>{message ? message.tipo_armazenagem : ''}</label>
@@ -246,7 +241,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fiel Depositário*</Form.Label>}
-          <AsyncSelect loadOptions={fetchPessoal} name='fiel_depositario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+          <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social')} name='fiel_depositario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.fiel_depositario : null) : null }
             onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -269,7 +264,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           >
             <option value={undefined}>----</option>
             {produtos &&( produtos.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
+              <option key={c.id} value={c.id}>{c.description}</option>
             )))}
           </Form.Select>
           <label className='text-danger'>{message ? message.produto_agricola : ''}</label>
@@ -296,7 +291,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
           >
             <option value={undefined}>----</option>
             {tipoclassificacoes &&( tipoclassificacoes.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
+              <option key={c.id} value={c.id}>{c.description}</option>
             )))}
           </Form.Select>
           <label className='text-danger'>{message ? message.tipo_classificacao : ''}</label>
@@ -305,7 +300,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Testemunha 01*</Form.Label>}
-          <AsyncSelect loadOptions={fetchPessoal} name='testemunha01' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+          <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social')} name='testemunha01' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.testemunha01 : null) : null }
             onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -321,7 +316,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Testemunha 02*</Form.Label>}
-          <AsyncSelect loadOptions={fetchPessoal} name='testemunha02' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+          <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social')} name='testemunha02' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.testemunha02 : null) : null }
             onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -337,12 +332,12 @@ const FormAlongamento = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} lg={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fazendas*</Form.Label>}
-          <AsyncSelect loadOptions={FetchImoveisRurais} name='propriedade' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-            defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.propriedade : null) : null } isMulti
+          <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'farms/farms', 'nome', 'matricula')} name='propriedade' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.propriedades : null) : null } isMulti
             onChange={(selected) => {
               setFormData((prevFormData) => ({
                 ...prevFormData,
-                propriedade: selected
+                propriedades: selected.map(s => s.value)
               }));
             }}>
           </AsyncSelect>

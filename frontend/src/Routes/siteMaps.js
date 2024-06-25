@@ -2,7 +2,11 @@ import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFr
 faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench,
 faMapLocationDot,
 faFileSignature,
-faTractor} 
+faTractor,
+faCarTunnel,
+faCartShopping,
+faHandshake,
+faCartPlus} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
@@ -92,53 +96,19 @@ export const dashboardRoutes = {
   ]
 };
 
-export const PipefyRoutes = {
-  label: 'Pipefy',
+export const ComercialRoutes = {
+  label: 'Comercial',
   labelDisable: true,
-  icon2: 'Kanban',
+  icon: faCartPlus,
   children: [
     {
-      name: 'Databases',
+      name: 'Teste',
       active: true,
       children: [
         {
-          name: 'Operações Contratadas',
-          to: '/analytics/credit',
-          icon2: 'CashCoin',
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Cadastro Pessoal',
-          to: '/pipefy/pessoal',
-          icon: faPerson,
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Contratos Serviços',
-          to: '/pipefy/contracts',
-          icon: faFileSignature,
-          exact: true,
-          active: true
-        }
-      ]
-    },
-    {
-      name: 'Pipes',
-      active: true,
-      children: [
-        {
-          name: 'Processos Prospects',
-          icon2: 'FunnelFill',
-          to: '/pipefy/pipes/301573049',
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Processos Produtos',
-          icon2: 'GearFill',
-          to: '/pipefy/pipes/301573538',
+          name: 'Teste',
+          icon: faDatabase,
+          to: '/',
           exact: true,
           active: true
         },
@@ -166,29 +136,50 @@ export const operacionalRoutes = {
           active: true
         },
         {
-          name: 'Glebas Imóveis Rurais',
+          name: 'Imóveis Rurais',
+          icon: faTractor,
+          to: '/farms',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Glebas Imóveis',
           icon: faMapLocationDot,
           to: '/glebas',
           exact: true,
           active: true
         },
         {
-          name: 'Fazendas',
-          icon: faTractor,
-          to: '/farms',
-          exact: true,
-          active: true
-        },
-      ]
-    },
-    {
-      name: 'Processos Operacionais',
-      active: true,
-      children: [
-        {
           name: 'Acompanhamento GAI',
           icon2: 'CalendarCheck',
           to: '/processes/followup',
+          exact: true,
+          active: true
+        }
+      ]
+    },
+    {
+      name: 'Fluxos Operacionais',
+      active: true,
+      children: [
+        {
+          name: 'Produtos',
+          icon: faCartShopping,
+          to: '/pipeline/518984721',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Prospects',
+          icon: faHandshake,
+          to: '/pipeline/518984721',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'PVTEC',
+          icon2: 'CalendarCheck',
+          to: '/pipeline/518984721',
           exact: true,
           active: true
         }
@@ -241,12 +232,12 @@ export const creditoRoutes = {
       active: true,
       children: [
         {
-          name: 'Teste',
-          to: '/',
+          name: 'Operações Contratadas',
+          to: '/credit',
           icon2: 'CashCoin',
           exact: true,
           active: true
-        }
+        },
       ]
     }
   ]

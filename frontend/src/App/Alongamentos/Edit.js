@@ -6,7 +6,7 @@ import { Row, Col, Button } from "react-bootstrap";
 import { Placeholder } from "react-bootstrap";
 import FormAlongamento from "./Form";
 
-const Edit = ({id, update}) => {
+const Edit = ({id, update, operacao}) => {
     const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const [alongamento, setAlongamento] = useState()

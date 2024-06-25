@@ -7,12 +7,12 @@ import AdvanceTableFooter from '../../../components/common/advance-table/Advance
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
-import { columnsPessoal } from "../Data";
+import { columnsCartorio } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalDelete from "../../../components/Custom/ModalDelete";
-import PessoaForm from "./Form";
+import CartorioForm from "./Form";
 
-const IndexPessoal = () => {
+const IndexCartorios = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
@@ -41,14 +41,14 @@ const IndexPessoal = () => {
         HandleSearch(value, 'register/cartorios', setter)
     };
     const submit = (type, data, id) => {
-        if (type == 'add'){
+        if (type === 'add'){
             setSearchResults([...searchResults, data])
         }
-        if (type == 'edit'){
+        if (type === 'edit'){
             setSearchResults(searchResults.map(r => r.id === parseInt(id) ? data : r))
         }
-        if (type == 'delete'){
-            setSearchResults(searchResults.filter(r => r.uuid != data))
+        if (type === 'delete'){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
         }
         setShowModal({show:false})
         setModalDelete({show:false})
@@ -79,7 +79,7 @@ const IndexPessoal = () => {
         </ol>
         {searchResults ? 
         <AdvanceTableWrapper
-            columns={columnsPessoal}
+            columns={columnsCartorio}
             data={searchResults}
             sortable
             pagination
@@ -104,7 +104,6 @@ const IndexPessoal = () => {
                 striped: false,
                 className: 'fs-xs mb-0 overflow-hidden',
                 showactions:'true',
-                showview:'true'
             }}
             Click={onClick}
         />
@@ -127,17 +126,16 @@ const IndexPessoal = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {showmodal.data ? 'Editar' : 'Adicionar' } Pessoa
+                    {showmodal.data ? 'Editar' : 'Adicionar' } Cartório
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center sectionform">
                         {showmodal.data
-                           ? <PessoaForm type='edit' hasLabel data={showmodal.data} submit={submit}/>
-                           : <PessoaForm type='add' hasLabel submit={submit}/>
+                           ? <CartorioForm type='edit' hasLabel data={showmodal.data} submit={submit}/>
+                           : <CartorioForm type='add' hasLabel submit={submit}/>
                         }
-                        
                     </Row>
             </Modal.Body>
         </Modal>
@@ -146,5 +144,5 @@ const IndexPessoal = () => {
     );
   };
   
-  export default IndexPessoal;
+  export default IndexCartorios;
   

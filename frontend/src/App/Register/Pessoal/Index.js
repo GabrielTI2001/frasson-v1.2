@@ -119,11 +119,12 @@ const IndexPessoal = () => {
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
-            size="xl"
+            size="lg"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-7"
             aria-labelledby="example-modal-sizes-title-lg"
+            scrollable
+            centered
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>

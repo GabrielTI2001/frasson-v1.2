@@ -12,7 +12,7 @@ class ListAlongamentos(serializers.ModelSerializer):
     
     class Meta:
         model = Cadastro_Alongamentos
-        fields = ['id', 'numero_operacao', 'data', 'beneficiario', 'cpf', 'instituicao', 'produto', 'valor_operacao', 
+        fields = ['id', 'uuid', 'numero_operacao', 'data', 'beneficiario', 'cpf', 'instituicao', 'produto', 'valor_operacao', 
             'valor_total', 'str_tipo_armazenagem']
 
 class detailAlongamentos(serializers.ModelSerializer):
@@ -29,9 +29,10 @@ class detailAlongamentos(serializers.ModelSerializer):
                 'numero_operacao': obj.operacao.numero_operacao, 'valor_operacao':obj.operacao.valor_operacao, 
                 'instituicao':obj.operacao.instituicao.instituicao.abreviatura, 'taxa_juros': obj.operacao.taxa_juros,
                 'beneficiario':obj.operacao.beneficiario.razao_social, 'cpf':obj.operacao.beneficiario.cpf_cnpj,
-                'imovel':obj.operacao.imovel_beneficiado, 'matricula':obj.operacao.matricula_imovel,
+                'imovel':', '.join([i.nome for i in obj.operacao.imoveis_beneficiados.all()]), 
+                'matricula':', '.join([i.matricula for i in obj.operacao.imoveis_beneficiados.all()]),
                 'safra': obj.operacao.safra, 'primeiro_vencimento':obj.operacao.data_primeiro_vencimento,
-                'item': obj.operacao.item_financiado.item if obj.operacao.item_financiado else None, 'url': obj.operacao.url_record
+                'item': obj.operacao.item_financiado.item if obj.operacao.item_financiado else None,
             }
         else:
             return None
@@ -41,7 +42,7 @@ class detailAlongamentos(serializers.ModelSerializer):
         else:
             return None
     def get_str_propriedade(self, obj):
-        propriedades = obj.propriedade.all()
+        propriedades = obj.propriedades.all()
         return [{'value':p.id, 'label':p.nome} for p in propriedades]
     
     def __init__(self, *args, **kwargs):
