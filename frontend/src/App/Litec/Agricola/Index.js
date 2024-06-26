@@ -17,7 +17,7 @@ const InitData = {
     'urlview':'/litec/agricola/', 'title': ''
 }
 
-const IndexProdAgricola = () => {
+const IndexProdAgricola = ({gleba}) => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const {id} = useParams()
@@ -59,14 +59,6 @@ const IndexProdAgricola = () => {
 
     return (
         <>
-        {/* <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
-               {InitData.title}
-            </li>  
-        </ol> */}
         {searchResults ? 
         <AdvanceTableWrapper
             columns={InitData.columns}
@@ -119,8 +111,8 @@ const IndexProdAgricola = () => {
                 <Modal.Body>
                     <Row className="flex-center sectionform">  
                     {!showmodal.data 
-                        ? <FormProdAgricola hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit}/>
-                        : <EditProdAgricola gleba={showmodal.data.gleba} id={showmodal.data.id} submit={submit} />
+                        ? <FormProdAgricola hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit} gleba={gleba.id}/>
+                        : <EditProdAgricola gleba={gleba} id={showmodal.data.id} submit={submit}/>
                     }
                     </Row>
             </Modal.Body>

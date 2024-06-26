@@ -32,14 +32,14 @@ const IndexGlebas = () => {
            navigate("/error/403")
         }
         if (type === 'view'){
-            const url = `${InitData.urlview}${data.id}`
+            const url = `${InitData.urlview}${data.uuid}`
             navigate(url)
         }
         else if (type === 'edit'){
-            RetrieveRecord(data.id, 'glebas/index', (data)=>{setShowModal({show:true, data:data})})
+            RetrieveRecord(data.uuid, 'glebas/index', (data)=>{setShowModal({show:true, data:data})})
         }
         else if (type === 'delete'){
-            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/glebas/index/${data.id}/`})
+            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/glebas/index/${data.uuid}/`})
         }
     }
 
@@ -54,7 +54,7 @@ const IndexGlebas = () => {
         }
         if (type === 'delete'){
             setModalDelete({show:false})
-            setSearchResults(searchResults.filter(s => s.id !== parseInt(data)))
+            setSearchResults(searchResults.filter(s => s.uuid !== data))
         }
     }
 

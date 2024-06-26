@@ -14,7 +14,7 @@ export const ItemTable = ({title, subtitle, data, atribute, disabled, items, col
                 </Col>
                 <Col 
                     className={
-                        `fw-bold text-end fs--1 text-${colorvalue || (data[atribute] < 0 ? 'danger' : 'success')}`
+                        `fw-bold text-end fs--1 text-${colorvalue || (Number(data[atribute].replace(',', '.').split(' ')[1]) < 0 ? 'danger' : 'success')}`
                     } 
                     xl={4}
                 >

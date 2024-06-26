@@ -46,13 +46,13 @@ const SearchForm = ({
   }, [kanbanState]);
 
   return (
-    <Form className='row'
+    <Form className='row d-flex justify-content-xl-end justify-content-sm-center pe-4'
       onSubmit={e => {
         e.preventDefault();
         return submit();
       }}
     >
-      <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+      <Form.Group className="" as={Col} xl={6} sm={8} xs={8}>
         <Form.Control
           size='xs'
           type='text'
@@ -65,7 +65,7 @@ const SearchForm = ({
           value={formData || ''}
         />
       </Form.Group>
-      <Form.Group className="mb-2 text-end px-0 d-flex align-items-center" as={Col} xl='auto' sm='auto' xs='auto'>
+      <Form.Group className="text-end px-0 d-flex align-items-center" as={Col} xl='auto' sm='auto' xs='auto'>
         <FontAwesomeIcon icon={faFilter} className='fs-2 mb-1'/>
       </Form.Group>
     </Form>

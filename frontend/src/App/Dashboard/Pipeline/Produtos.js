@@ -25,38 +25,38 @@ const DashProdutos = () =>{
 
     const setter = (data) => {
         setData(data)
-        setData({...data,   
-            faturamento_estimado_gc: [
-                {
-                  "fase": "FASE A",
-                  "total": 1
-                },
-                {
-                    "fase": "FASE B",
-                    "total": 5
-                }
-            ],
-            faturamento_estimado_gai: [
-                {
-                  "fase": "FASE A",
-                  "total": 1
-                },
-                {
-                    "fase": "FASE B",
-                    "total": 5
-                }
-            ],
-            operacoes_andamento: [
-                {
-                  "fase": "FASE A",
-                  "total": 1
-                },
-                {
-                    "fase": "FASE B",
-                    "total": 5
-                }
-            ]
-        })
+        // setData({...data,   
+        //     faturamento_estimado_gc: [
+        //         {
+        //           "fase": "FASE A",
+        //           "total": 1
+        //         },
+        //         {
+        //             "fase": "FASE B",
+        //             "total": 5
+        //         }
+        //     ],
+        //     faturamento_estimado_gai: [
+        //         {
+        //           "fase": "FASE A",
+        //           "total": 1
+        //         },
+        //         {
+        //             "fase": "FASE B",
+        //             "total": 5
+        //         }
+        //     ],
+        //     operacoes_andamento: [
+        //         {
+        //           "fase": "FASE A",
+        //           "total": 1
+        //         },
+        //         {
+        //             "fase": "FASE B",
+        //             "total": 5
+        //         }
+        //     ]
+        // })
     }
 
     useEffect(()=>{

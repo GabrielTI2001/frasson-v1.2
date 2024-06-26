@@ -5,10 +5,12 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
 from .models import Feedbacks_Category, Feedbacks_System, Welcome_Messages, Detalhamento_Servicos, Instituicoes_Parceiras, Cartorios_Registro
 from pipeline.models import Card_Produtos
+from finances.models import Contratos_Servicos_Pagamentos
 from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
-from django.db.models import Q
+from django.db.models import Q, Subquery, OuterRef, Count, IntegerField
+from django.db.models.functions import Coalesce
 from datetime import date
 from rest_framework import permissions, viewsets, status
 from .models import Cadastro_Pessoal, Instituicoes_Razao_Social
@@ -27,6 +29,12 @@ def home(request):
 class CategoriaCadView(viewsets.ModelViewSet):
     queryset = Categoria_Cadastro.objects.all()
     serializer_class = listCategoriaCadastro
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)   
+        if search_term:
+            queryset = queryset.filter(categoria__icontains=search_term)
+        return queryset
 
 class GrupoClienteView(viewsets.ModelViewSet):
     queryset = Grupos_Clientes.objects.all()
@@ -243,16 +251,63 @@ class ProdutosView(viewsets.ModelViewSet):
     queryset = Produtos_Frasson.objects.all()
     serializer_class = serializer_Cad_Produtos
     permission_classes = [permissions.AllowAny]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        all_term = self.request.query_params.get('all', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(description__icontains=search_term)
+            )
+        elif all_term:
+            queryset = queryset.order_by('-created_at')
+        else:
+            queryset = queryset.order_by('-created_at')[:10]
+        return queryset
 
 class Detalhamento_ServicosView(viewsets.ModelViewSet):
     queryset = Detalhamento_Servicos.objects.all()
     serializer_class = serializerDetalhamento_Servicos
     permission_classes = [permissions.AllowAny]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        all_term = self.request.query_params.get('all', None)
+        contrato_term = self.request.query_params.get('contrato', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(detalhamento_servico__icontains=search_term) | Q(produto__description__icontains=search_term)
+            )
+        if all_term:
+            queryset = queryset.order_by('-created_at')
+        if contrato_term:
+            subquery1 = Contratos_Servicos_Pagamentos.objects.filter(servico_id=OuterRef('id'), contrato_id=contrato_term
+                ).values('servico_id').annotate(total=Count('id')).values('total')[:1]
+            servicos_contrato = Contratos_Servicos.objects.get(pk=contrato_term).servicos.all()
+            queryset = queryset.annotate(
+                total_etapas=Coalesce(Subquery(subquery1, output_field=IntegerField()), 0)
+            ).filter(id__in=[s.id for s in servicos_contrato], total_etapas__lt=3)
+        else:
+            queryset = queryset.order_by('-created_at')[:10]
+        return queryset
 
 class Instituicoes_ParceirasView(viewsets.ModelViewSet):
     queryset = Instituicoes_Parceiras.objects.all()
     serializer_class = serializerInstituicoes_Parceiras
     permission_classes = [permissions.AllowAny]
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        all_term = self.request.query_params.get('all', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(identificacao__icontains=search_term) | Q(instituicao__razao_social__icontains=search_term)
+            )
+        elif all_term:
+            queryset = queryset.order_by('-created_at')
+        else:
+            queryset = queryset.order_by('-created_at')[:10]
+        return queryset
 
 class Instituicoes_RazaosocialView(viewsets.ModelViewSet):
     queryset = Instituicoes_Razao_Social.objects.all()

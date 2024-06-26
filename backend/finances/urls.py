@@ -27,5 +27,6 @@ urlpatterns = [
     path('accounts/', views.index_saldos_contas, name='index.saldos.contas'),
     path('accounts/<int:id>/', views.movimentacao_conta_bancaria, name='movimentacao.conta.bancaria'),
     path('balances/bank-accounts/pdf', views.pdf_saldos_view, name='pdf.saldos.view'),
+    path('contracts-pdf/<uuid:uuid>', views.create_pdf_contrato, name='create.pdf.contrato'),
 ]
 urlpatterns += router.urls

@@ -75,7 +75,7 @@ def dashboard_operacoes_contratadas(request):
     area_total = Operacoes_Contratadas.objects.filter(data_emissao_cedula__year=searched_year).exclude(item_financiado__in=prorrogacao_ids).aggregate(total=Sum('area_beneficiada'))['total'] or 0
 
     #total operações em andamento (de AD ATÉ FOLLOW UP) (FORMALLIZAÇÃO, COMPROVAÇÃO E ENCERRAMENTO NÃO!)
-    produto_gc = 864795372
+    produto_gc = 1
     card_type = "Principal"
     phases_produtos = [310429134, 310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179]
     total_em_aberto = Card_Produtos.objects.filter(card=card_type, detalhamento__produto=produto_gc, phase_id__in=phases_produtos).aggregate(total_aberto=Sum('valor_operacao'))['total_aberto'] or 0
@@ -179,14 +179,14 @@ def dashboard_gestao_credito(request):
 
     #id das fases de AD a FORMALIZACAO
     phases_produtos = [310429134, 310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179]
-    produto_gc = 864795372
+    produto_gc = 1
     card_type = "Principal"
 
     #total de operações de crédito em aberto (De AP a FOLLOW UP)
     total_operacoes_em_aberto = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).aggregate(total=Sum('valor_operacao'))['total'] or 0
 
     #busca o valor total de operações por fase (AP a FOLLOW UP)
-    obj_prod_gc = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('phase_name', 'phase_id').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')
+    obj_prod_gc = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('phase__descricao', 'phase_id').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')
     
     #busca a quantidade de cards ativos de cada produto(Exceto nas Fases Cancelado e Concluído)
     obj_produtos = Card_Produtos.objects.exclude(phase_id__in=[310429136, 310429228]).values('detalhamento__produto', 'detalhamento__produto__description').annotate(total=Count('id'))
@@ -194,7 +194,7 @@ def dashboard_gestao_credito(request):
     for obj in obj_prod_gc:
         if obj["total"] > 0:
             processos_gc.append({
-                'phase_name': obj["phase_name"],
+                'phase_name': obj["phase__descricao"],
                 'total': float(obj["total"]),
                 'phase_id': obj["phase_id"]
             })
@@ -260,7 +260,7 @@ def dashboard_prospects(request):
     #CONTAGEM DE PROSPECTS POR PRODUTO, CLASSIFICAÇÃO E POR FASE
     produtos_db = prospects.values('produto').annotate(count=Count('produto'))
     classificacao_db = prospects.values('classificacao').annotate(count=Count('classificacao'))
-    fases_db = prospects.values('phase_name').annotate(count=Count('phase_name')).order_by('-count')  
+    fases_db = prospects.values('phase__descricao').annotate(count=Count('phase__descricao')).order_by('-count')  
 
     produtos = [{
         'produto': prod['produto'],
@@ -273,7 +273,7 @@ def dashboard_prospects(request):
     } for classif in classificacao_db]
 
     fases = [{
-        'fase': fase['phase_name'],
+        'fase': fase['phase__descricao'],
         'total': fase['count']
     } for fase in fases_db]
 
@@ -291,28 +291,28 @@ def dashboard_prospects(request):
 def dashboard_produtos(request):
     current_year = date.today().year
     type_card = "Principal"
-    produto_gc = 864795372
-    produto_gai = 864795466
+    produto_gc = 1
+    produto_gai = 2
     processos = Card_Produtos.objects.exclude(phase_id__in=[310429136, 310429228]).filter(card=type_card)
     fatu_estimado_total = processos.aggregate(total=Sum('faturamento_estimado'))['total'] or 0
     concluidos_gc = Card_Produtos.objects.filter(phase_id=310429136, card=type_card, detalhamento__produto=produto_gc, created_at__year=current_year).count()
     concluidos_gai = Card_Produtos.objects.filter(phase_id=310429136, card=type_card, detalhamento__produto=produto_gai, created_at__year=current_year).count()
 
-    fatu_estimado_gai = processos.values('phase_name').filter(detalhamento__produto=produto_gai).annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    fatu_estimado_gai = processos.values('phase__descricao').filter(detalhamento__produto=produto_gai).annotate(total=Sum('faturamento_estimado')).order_by('-total')
     faturamento_estimado_gai = [{
-        'fase': fatu['phase_name'],
+        'fase': fatu['phase__descricao'],
         'total': float(fatu['total'] or 0),
     } for fatu in fatu_estimado_gai]
 
-    fatu_estimado_gc = processos.values('phase_name').filter(detalhamento__produto=produto_gc).annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    fatu_estimado_gc = processos.values('phase__descricao').filter(detalhamento__produto=produto_gc).annotate(total=Sum('faturamento_estimado')).order_by('-total')
     faturamento_estimado_gc = [{
-        'fase': fatu['phase_name'],
+        'fase': fatu['phase__descricao'],
         'total': float(fatu['total'] or 0),
     } for fatu in fatu_estimado_gc]
 
-    total_operacoes_andamento = processos.values('phase_name').filter(detalhamento__produto=produto_gc).annotate(total=Sum('valor_operacao')).order_by('-total')
+    total_operacoes_andamento = processos.values('phase__descricao').filter(detalhamento__produto=produto_gc).annotate(total=Sum('valor_operacao')).order_by('-total')
     operacoes_andamento = [{
-        'fase': operacao['phase_name'],
+        'fase': operacao['phase__descricao'],
         'total': float(operacao['total'] or 0),
     } for operacao in total_operacoes_andamento]
 
@@ -335,7 +335,7 @@ def dashboard_gestao_ambiental(request):
     abertos = []
     abertos_last = []
     faturamento = {}
-    produto_gai = 864795466
+    produto_gai = 2
     card_type = "Principal"
     current_year = date.today().year
     last_year = int(current_year - 1)
@@ -347,10 +347,10 @@ def dashboard_gestao_ambiental(request):
     for processo in processos_instituicoes:
         processos[processo['instituicao__instituicao__abreviatura']] = processo['count']
 
-    faturamento_fases = Card_Produtos.objects.filter(phase_id__in=phases_produtos_fatu_estimado, card=card_type, detalhamento__produto=produto_gai).values('phase_name').annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    faturamento_fases = Card_Produtos.objects.filter(phase_id__in=phases_produtos_fatu_estimado, card=card_type, detalhamento__produto=produto_gai).values('phase__descricao').annotate(total=Sum('faturamento_estimado')).order_by('-total')
     
     for phase in faturamento_fases:
-        faturamento[phase['phase_name']] = float(phase['total']) if phase['total'] != None else 0
+        faturamento[phase['phase__descricao']] = float(phase['total']) if phase['total'] != None else 0
     
     processos_abertos = Card_Produtos.objects.filter(created_at__year=current_year, phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
     processos_abertos_last = Card_Produtos.objects.filter(created_at__year=last_year, phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
@@ -472,8 +472,8 @@ def pagamentos_pipefy_dashboard(request):
 def cobrancas_pipefy_dashboard(request):
     #VISUALIZAR DASHBOARD DE COBRANÇAS
     current_year = int(date.today().year)
-    produto_gc = 864795372
-    produto_gai = 864795466
+    produto_gc = 1
+    produto_gai = 2
     produto_avaliacao = 864795628
     produto_tecnologia = 864795734
     #COBRANÇAS ABERTAS

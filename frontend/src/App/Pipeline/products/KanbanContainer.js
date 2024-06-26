@@ -8,11 +8,12 @@ import is from 'is_js';
 import { PipeContext } from '../../../context/Context';
 import AddAnotherFase from '../AddAnotherFase';
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Col, Placeholder, Row } from 'react-bootstrap';
 import { Link, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SearchForm from '../Search';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 library.add(faPlus);
 
 const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
@@ -187,7 +188,7 @@ const KanbanContainer = () => {
   };
 
     return (<>
-      <Row className="gx-1 px-1 d-flex align-items-center">
+      <Row className="gx-1 gy-2 px-0 d-flex align-items-center mb-2">
         <ol className="breadcrumb breadcrumb-alt fs-0 mb-3 col">
             <li className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
@@ -196,14 +197,21 @@ const KanbanContainer = () => {
               Fluxo - Produtos
             </li>  
         </ol>
-        <Col>
+        <Col xs={12} xl={4} sm={4}>
           <SearchForm />
+        </Col>
+        <Col xl={'auto'} sm='auto' xs={'auto'}>
+          <Link className="text-decoration-none btn btn-primary shadow-none fs--2" style={{padding: '2px 5px'}} 
+            to={`settings`}
+          >
+            <FontAwesomeIcon icon={faGear} className='me-2' />Editar Pipe
+          </Link>
         </Col>
       </Row>
       <DragDropContext onDragEnd={handleDragEnd}>
         <div className="kanban-container me-n3" ref={containerRef} xl={8}>
         {/* Pega o array de itens e renderiza um div pra cada*/}
-          {kanbanState.fases ? kanbanState.fases.map((fase)=>{
+          {kanbanState && kanbanState.fases ? kanbanState.fases.map((fase)=>{
             return( 
               <KanbanColumn
                 key={fase.id}

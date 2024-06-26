@@ -3,13 +3,29 @@ from backend.settings import TOKEN_API_INFOSIMPLES
 from django.db.models import Count
 from .frassonUtilities import Frasson
 from background_task import background
-from pipefy.models import Imoveis_Rurais
-from pipefy.models import Certificacao_Sigef_Parcelas, Certificacao_Sigef_Parcelas_Limites, Certificacao_Sigef_Parcelas_Vertices
-from pipefy.models import Cadastro_Ambiental_Rural, Cadastro_Ambiental_Rural_Coordenadas, Cadastro_Ambiental_Rural_Restricoes
+from farms.models import Imoveis_Rurais
+from farms.models import Certificacao_Sigef_Parcelas, Certificacao_Sigef_Parcelas_Limites, Certificacao_Sigef_Parcelas_Vertices
+from farms.models import Cadastro_Ambiental_Rural, Cadastro_Ambiental_Rural_Coordenadas, Cadastro_Ambiental_Rural_Restricoes
 from time import sleep
 from datetime import datetime
-import logging
+import re
 from django.db import transaction, OperationalError, connection
+
+def verificar_e_adicionar_tracos(string):
+    regex_valido = re.compile(r'^[A-Za-z0-9]{2}-[A-Za-z0-9]{7}-.+$')
+
+    if regex_valido.match(string):
+        return string
+    
+    string_limpa = re.sub(r'-', '', string)
+    
+    if len(string_limpa) >= 9:
+        parte1 = string_limpa[:2]
+        parte2 = string_limpa[2:9]
+        parte3 = string_limpa[9:]
+        return f"{parte1}-{parte2}-{parte3}"
+    else:
+        return None
 
 @background(schedule=0)
 def teste():
@@ -82,123 +98,108 @@ def InsertParcelasImoveisRurais(id_imovel, ccir):
             return
 
 @background(schedule=0)
-def InsertCARImoveisRurais(id_imovel, car):
+def InsertCARImoveisRurais(id_imovel, cod_car):
     print("iniciando2")
-    cadastrado = Cadastro_Ambiental_Rural.objects.filter(imovel_id=id_imovel).exists()
-    if not cadastrado:
+    car = verificar_e_adicionar_tracos(cod_car.replace('.',''))
+    imovel = Imoveis_Rurais.objects.get(pk=id_imovel)
+    cadastrado = Cadastro_Ambiental_Rural.objects.filter(numero_car=car)
+    if cadastrado.exists():
+        print("vinculando")
+        imovel.car = cadastrado.first()
+        imovel.save()
+    elif car:
+        print("teste - não cadastrado")
         connection.close()
         obj = Frasson.getCoordinatesCARImovelRural(car)
         connection.connect()
-        cardb = Cadastro_Ambiental_Rural.objects.create(
-            imovel_id = int(id_imovel),
-            numero_car = obj["numero_car"], area_preservacao_permanente = obj["area_preservacao_permanente"],
-            area_uso_restrito = obj["area_uso_restrito"], condicao_cadastro = obj["condicao_cadastro"],
-            area_imovel = obj["area_imovel"], modulos_fiscais = obj["modulos_fiscais"],
-            endereco_municipio = obj["endereco_municipio"], endereco_latitude = obj["endereco_latitude"],
-            endereco_longitude = obj["endereco_longitude"], data_registro = obj["data_registro"],
-            data_analise = obj["data_analise"], data_retificacao = obj["data_retificacao"],
-            reserva_situacao = obj["reserva_situacao"], reserva_area_averbada = obj["reserva_area_averbada"],
-            reserva_area_nao_averbada = obj["reserva_area_nao_averbada"], reserva_legal_proposta = obj["reserva_legal_proposta"],
-            reserva_legal_declarada = obj["reserva_legal_declarada"], situacao = obj["situacao"], solo_area_nativa = obj["solo_area_nativa"], 
-            solo_area_uso = obj["solo_area_uso"], solo_area_servidao = obj["solo_area_servidao"],
-        )
-        restricoes = obj["restricoes"]
-        for r in restricoes:
-            Cadastro_Ambiental_Rural_Restricoes.objects.create(
-                car = cardb,
-                origem = r['origem'],
-                descricao = r['descricao'],
-                data_processamento = datetime.strptime(r['processamento'], '%d/%m/%Y').date() if r['processamento'] else None,
-                area_conflito = r['area_conflito'],
-                percentual = r['percentual']
+        if obj["code"] == 200:
+            cardb = Cadastro_Ambiental_Rural.objects.create(
+                numero_car = obj["numero_car"], area_preservacao_permanente = obj["area_preservacao_permanente"],
+                area_uso_restrito = obj["area_uso_restrito"], condicao_cadastro = obj["condicao_cadastro"],
+                area_imovel = obj["area_imovel"], modulos_fiscais = obj["modulos_fiscais"],
+                endereco_municipio = obj["endereco_municipio"], endereco_latitude = obj["endereco_latitude"],
+                endereco_longitude = obj["endereco_longitude"], data_registro = obj["data_registro"],
+                data_analise = obj["data_analise"], data_retificacao = obj["data_retificacao"],
+                reserva_situacao = obj["reserva_situacao"], reserva_area_averbada = obj["reserva_area_averbada"],
+                reserva_area_nao_averbada = obj["reserva_area_nao_averbada"], reserva_legal_proposta = obj["reserva_legal_proposta"],
+                reserva_legal_declarada = obj["reserva_legal_declarada"], situacao = obj["situacao"], solo_area_nativa = obj["solo_area_nativa"], 
+                solo_area_uso = obj["solo_area_uso"], solo_area_servidao = obj["solo_area_servidao"],
             )
-        coordenadas = obj["coordinates"]
-        for c in coordenadas:
-            Cadastro_Ambiental_Rural_Coordenadas.objects.create(
-                car = cardb,
-                longitude = c["longitude"],
-                latitude = c["latitude"],
-            )
+            restricoes = obj["restricoes"]
+            for r in restricoes:
+                Cadastro_Ambiental_Rural_Restricoes.objects.create(
+                    car = cardb,
+                    origem = r['origem'],
+                    descricao = r['descricao'],
+                    data_processamento = datetime.strptime(r['processamento'], '%d/%m/%Y').date() if r['processamento'] else None,
+                    area_conflito = r['area_conflito'],
+                    percentual = r['percentual']
+                )
+            coordenadas = obj["coordinates"]
+            for c in coordenadas:
+                Cadastro_Ambiental_Rural_Coordenadas.objects.create(
+                    car = cardb,
+                    longitude = c["longitude"],
+                    latitude = c["latitude"],
+                )
+            imovel.car = cardb
+            imovel.save()
+        
     print("finalizado2")
 
 
 def ConferirmoveisRurais():
-    nao_cadastrado_car = Imoveis_Rurais.objects.annotate(total_car = Count('cadastro_ambiental_rural')).filter(
-        total_car=0, ccir__isnull=False)
-    nao_cadastrado_sigef = Imoveis_Rurais.objects.annotate(total_parcelas = Count('certificacao_sigef_parcelas')).filter(
-        total_parcelas=0, car__isnull=False)
-
-    for imovel in nao_cadastrado_car:
-        obj = Frasson.getCoordinatesCARImovelRural(imovel.car)
-        cardb = Cadastro_Ambiental_Rural.objects.create(
-            imovel_id = int(imovel.id_imovel),
-            numero_car = obj["numero_car"], area_preservacao_permanente = obj["area_preservacao_permanente"],
-            area_uso_restrito = obj["area_uso_restrito"], condicao_cadastro = obj["condicao_cadastro"],
-            area_imovel = obj["area_imovel"], modulos_fiscais = obj["modulos_fiscais"],
-            endereco_municipio = obj["endereco_municipio"], endereco_latitude = obj["endereco_latitude"],
-            endereco_longitude = obj["endereco_longitude"], data_registro = obj["data_registro"],
-            data_analise = obj["data_analise"], data_retificacao = obj["data_retificacao"],
-            reserva_situacao = obj["reserva_situacao"], reserva_area_averbada = obj["reserva_area_averbada"],
-            reserva_area_nao_averbada = obj["reserva_area_nao_averbada"], reserva_legal_proposta = obj["reserva_legal_proposta"],
-            reserva_legal_declarada = obj["reserva_legal_declarada"], situacao = obj["situacao"], solo_area_nativa = obj["solo_area_nativa"], 
-            solo_area_uso = obj["solo_area_uso"], solo_area_servidao = obj["solo_area_servidao"],
-        )
-        restricoes = obj["restricoes"]
-        for r in restricoes:
-            Cadastro_Ambiental_Rural_Restricoes.objects.create(
-                car = cardb,
-                origem = r['origem'],
-                descricao = r['descricao'],
-                data_processamento = datetime.strptime(r['processamento'], '%d/%m/%Y').date() if r['processamento'] else None,
-                area_conflito = r['area_conflito'],
-                percentual = r['percentual']
-            )
-        coordenadas = obj["coordinates"]
-        for c in coordenadas:
-            Cadastro_Ambiental_Rural_Coordenadas.objects.create(
-                car = cardb,
-                longitude = c["longitude"],
-                latitude = c["latitude"],
-            )
-        
-    for imovel in nao_cadastrado_sigef:
-        connection.close()
-        obj = Frasson.getParcelasSIGEFImovelRural(imovel.ccir, '030.665.050-90', '339521Dani*')
-        connection.connect()
-        parcelas = obj['parcelas']
-        for p in parcelas:
-            parcela = Certificacao_Sigef_Parcelas.objects.create(
-                imovel_id = int(imovel.id),
-                nome = p['parcela_nome'],
-                area_ha = p['area_ha'],
-                detentor = p['nome_detentor'],
-                cpf_cnpj_detentor = p['cpf_cnpj_detentor'],
-                cns = p['cns'], 
-                data_entrada= datetime.strptime(p['data_entrada'], '%d/%m/%Y').strftime('%Y-%m-%d') if p['data_entrada'] else None,
-                codigo_parcela = p['codigo_parcela'],
-                matricula = p['matricula']
-            )
-            limites = obj[parcela.codigo_parcela]['limites']
-            for l in limites:
-                Certificacao_Sigef_Parcelas_Limites.objects.create(
-                    parcela = parcela,
-                    do_vertice = l['do_vertice'],
-                    ao_vertice = l['ao_vertice'],
-                    tipo = l['tipo'],
-                    lado = l['lado'],
-                    azimute = l['azimute'],
-                    comprimento = l['comprimento'],
-                    confrontante = l['confrontante']
-                )  
-            vertices = obj[parcela.codigo_parcela]['vertices']
-            for v in vertices:
-                Certificacao_Sigef_Parcelas_Vertices.objects.create(
-                    parcela = parcela,
-                    codigo = v['codigo'],
-                    longitude = v['longitude'],
-                    sigma_long = v['sigma_long'],
-                    latitude = v['latitude'],
-                    sigma_lat = v['sigma_lat'],
-                    sigma_altitude = v['sigma_altitude'],
-                    metodo_posicionamento = v['metodo_posicionamento']
-                ) 
+    imoveis = Imoveis_Rurais.objects.filter(codigo_car__isnull=False, car_id__isnull=True)
+    # nao_cadastrado_sigef = Imoveis_Rurais.objects.annotate(total_parcelas = Count('certificacao_sigef_parcelas')).filter(
+    #     total_parcelas=0, ccir__isnull=False)
+    i = 0
+    for imovel in imoveis:
+        car = verificar_e_adicionar_tracos(imovel.codigo_car.replace('.',''))
+        cadastrado = Cadastro_Ambiental_Rural.objects.filter(numero_car=car)
+        if cadastrado.exists():
+            print(f"{imovel.nome} - vinculando")
+            imovel.car = cadastrado.first()
+            imovel.save()
+        elif car:
+            print(f"{car} - {imovel.nome} - NÃO ENCONTRADO")
+            connection.close()
+            obj = Frasson.getCoordinatesCARImovelRural(imovel.codigo_car)
+            connection.connect()
+            if obj["code"] == 200:
+                print(f"{imovel.nome} - Cadastrando CAR")
+                cardb = Cadastro_Ambiental_Rural.objects.create(
+                    numero_car = obj["numero_car"], area_preservacao_permanente = obj["area_preservacao_permanente"],
+                    area_uso_restrito = obj["area_uso_restrito"], condicao_cadastro = obj["condicao_cadastro"],
+                    area_imovel = obj["area_imovel"], modulos_fiscais = obj["modulos_fiscais"],
+                    endereco_municipio = obj["endereco_municipio"], 
+                    endereco_latitude = obj["endereco_latitude"] if type(obj["endereco_latitude"]) != str else None,
+                    endereco_longitude = obj["endereco_longitude"] if type(obj["endereco_longitude"]) != str else None, 
+                    data_registro = obj["data_registro"],
+                    data_analise = obj["data_analise"], data_retificacao = obj["data_retificacao"],
+                    reserva_situacao = obj["reserva_situacao"], reserva_area_averbada = obj["reserva_area_averbada"],
+                    reserva_area_nao_averbada = obj["reserva_area_nao_averbada"], reserva_legal_proposta = obj["reserva_legal_proposta"],
+                    reserva_legal_declarada = obj["reserva_legal_declarada"], situacao = obj["situacao"], solo_area_nativa = obj["solo_area_nativa"], 
+                    solo_area_uso = obj["solo_area_uso"], solo_area_servidao = obj["solo_area_servidao"],
+                )
+                restricoes = obj["restricoes"]
+                for r in restricoes:
+                    Cadastro_Ambiental_Rural_Restricoes.objects.create(
+                        car = cardb,
+                        origem = r['origem'],
+                        descricao = r['descricao'],
+                        data_processamento = datetime.strptime(r['processamento'], '%d/%m/%Y').date() if r['processamento'] else None,
+                        area_conflito = r['area_conflito'],
+                        percentual = r['percentual']
+                    )
+                coordenadas = obj["coordinates"]
+                for c in coordenadas:
+                    Cadastro_Ambiental_Rural_Coordenadas.objects.create(
+                        car = cardb,
+                        longitude = c["longitude"],
+                        latitude = c["latitude"],
+                    )
+                imovel.car = cardb
+                imovel.save()
+        if i == 50:
+            break
+        i+=1

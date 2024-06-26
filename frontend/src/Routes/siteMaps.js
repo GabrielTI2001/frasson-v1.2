@@ -353,6 +353,13 @@ export const financeiroRoutes = {
           exact: true,
           active: true
         },
+        {
+          name: 'Contratos Serviços',
+          to: '/finances/contracts',
+          icon: faFileSignature,
+          exact: true,
+          active: true
+        }
       ]
     },
     {

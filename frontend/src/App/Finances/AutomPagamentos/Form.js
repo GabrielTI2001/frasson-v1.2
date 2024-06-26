@@ -111,7 +111,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
             {hasLabel && <Form.Label className='fw-bold mb-1'>Beneficiário*</Form.Label>}
             <AsyncSelect 
               name='beneficiario' 
-              loadOptions={(value) => SelectSearchOptions(value, 'pipefy/forncolab', 'razao_social')}
+              loadOptions={(value) => SelectSearchOptions(value, 'register/pessoal', 'razao_social')}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={type === 'edit' ? defaultoptions.beneficiario || '' : ''}
               onChange={(selected) => {

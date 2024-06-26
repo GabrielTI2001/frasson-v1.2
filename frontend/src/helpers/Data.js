@@ -74,10 +74,10 @@ export const GetRecord = async (uuid, url) => {
   }
 }
 
-export const SelectSearchOptions = async (inputValue, link, field, field2, join) => {
+export const SelectSearchOptions = async (inputValue, link, field, field2, join=false, params) => {
     const token = localStorage.getItem("token")
     try {
-      const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/?search=${inputValue}`;
+      const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/?search=${inputValue}${params ? '&'+params : ''}`;
       const response = await fetch(apiUrl,{
         headers:{
             'Content-Type': 'application/json',
@@ -107,7 +107,7 @@ export const SelectSearchOptions = async (inputValue, link, field, field2, join)
     }
 };
 
-export const SelectOptions = async (link, field, field2, pkfield) => {
+export const SelectOptions = async (link, field, field2, pkfield, params) => {
     const token = localStorage.getItem("token")
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/`;

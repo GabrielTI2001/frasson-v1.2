@@ -10,8 +10,6 @@ import {
   financeiroRoutes,
   adminRoutes
 } from '../../../Routes/siteMaps';
-import { Dropdown } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
 import NavbarDropdownAmbiental from './NavbarDropdownAmbiental';
 import { useAppContext } from '../../../Main';
 import NavbarDropdownOperacional from './NavbarDropdownOperacional';
@@ -23,6 +21,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Flex from '../../common/Flex';
 import NavbarDropdownComercial from './NavbarDropdownComercial';
 import { Kanban } from 'react-bootstrap-icons';
+import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 
 const NavbarTopDropDownMenus = () => {
   const {
@@ -54,7 +53,7 @@ const NavbarTopDropDownMenus = () => {
     }
     <Flex>
       <span className="nav-link-icon d-flex align-items-center">
-        <Kanban/>
+        <FontAwesomeIcon icon={faCartPlus} />
       </span>
       <NavbarDropdown title="Comercial">
         <NavbarDropdownComercial items={ComercialRoutes.children}/>

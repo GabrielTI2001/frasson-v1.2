@@ -15,7 +15,7 @@ class ProdAgricolaView(viewsets.ModelViewSet):
         gleba = self.request.query_params.get('gleba', None)
         if gleba:
             queryset = queryset.filter(
-                Q(gleba_id=int(gleba))
+                Q(gleba__uuid=gleba)
             )
         else:
             if self.action == 'list':
@@ -38,7 +38,7 @@ class ProdPecuariaView(viewsets.ModelViewSet):
         gleba = self.request.query_params.get('gleba', None)
         if gleba:
             queryset = queryset.filter(
-                Q(gleba_id=int(gleba))
+                Q(gleba__uuid=gleba)
             )
         else:
             if self.action == 'list':

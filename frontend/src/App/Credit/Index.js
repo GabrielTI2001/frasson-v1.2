@@ -182,18 +182,18 @@ const IndexCredit = ({mes, ano}) => {
                         type="text"
                     />
                 </Form.Group>
+                <Col xl={'auto'} sm='auto' xs={'auto'}>
+                    <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
+                        style={{padding: '2px 8px'}} onClick={() =>{setShowModal({show:true})}}
+                    >Novo Cadastro</Link>
+                </Col>
             </>}
-            <Col xl={'auto'} sm='auto' xs={'auto'}>
-                <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
-                    style={{padding: '2px 8px'}} onClick={() =>{setShowModal({show:true})}}
-                >Novo Cadastro</Link>
-            </Col>
             <Col className={`mb- d-flex align-items-center ${mes || ano ? 'justify-content-start' : 'justify-content-end'}`} lg={2}>
                 <span className="fw-bold fs-0 text-primary">{somaDosValores ? Number(somaDosValores).toLocaleString('pt-BR', 
                     {style: 'currency', currency: 'BRL'}) : ''}
                 </span>
             </Col>
-            <Col>
+            <Col xl='auto'>
                 <Form action={`${process.env.REACT_APP_API_URL}/teste`} method="POST" onSubmit={submitExcel}>
                     <Form.Control type="hidden" id="html_content" name="html_content" value={dataexcel || ''} />
                     <Button type="submit" className="btn btn-sm btn-success shadow-none fs--2 fw-normal py-0 px-2" disabled={searchResults && searchResults.length === 0}>

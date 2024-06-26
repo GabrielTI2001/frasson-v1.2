@@ -107,7 +107,7 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
     }
     if (!caixas){ 
       const get = async () => {
-        const dados = await SelectOptions('finances/caixas', 'caixa')
+        const dados = await SelectOptions('finances/caixas', 'nome')
         setCaixas(dados)
       }
       get()

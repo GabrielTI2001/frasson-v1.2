@@ -19,12 +19,12 @@ meses.forEach((mes, index) => {
   monthOrder[mes.name] = index;
 });
 
-const FormProdAgricola = ({ hasLabel, data, type, submit}) => {
+const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const navigate = useNavigate();
   const {id} = useParams()
-  const [formData, setFormData] = useState({user: user.id, gleba:id, plantio:[], colheita:[], safra:'2022/2022'});
+  const [formData, setFormData] = useState({user: user.id, plantio:[], gleba:gleba || null, colheita:[], safra:'2022/2022'});
   const [message, setMessage] = useState()
   const [safras, setSafras] = useState([])
   const [modal, setModal] = useState({show:false})

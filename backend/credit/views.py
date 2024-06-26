@@ -22,6 +22,19 @@ class ItensFinanciadosView(viewsets.ModelViewSet):
     queryset = Itens_Financiados.objects.all()
     serializer_class = listItemsFinanciados
     lookup_field = 'uuid'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        search_term = self.request.query_params.get('search', None)
+        all_term = self.request.query_params.get('all', None)
+        if search_term:
+            queryset = queryset.filter(
+                Q(item__icontains=search_term)
+            )
+        elif all_term:
+            queryset = queryset.order_by('-created_at')
+        else:
+            queryset = queryset.order_by('-created_at')[:10]
+        return queryset
 
 class OperacoesContratadasView(viewsets.ModelViewSet):
     queryset = Operacoes_Contratadas.objects.all()

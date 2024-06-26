@@ -37,18 +37,21 @@ const KanbanProvider = ({ children, code }) => {
         navigate('/authentication/login');
         return;
       }
-
-      const data = await response.json();
-
-      kanbanDispatch({
-        type: 'SET_DATA',
-        payload: {
-          fases: data.fase_set,
-          pipe: data,
-          kanbanModal: {show: false, modalContent: {}}
-          // ... outras propriedades conforme necessário
-        }
-      });
+      else if (response.status === 200){
+        const data = await response.json();
+        kanbanDispatch({
+          type: 'SET_DATA',
+          payload: {
+            fases: data.fase_set,
+            pipe: data,
+            kanbanModal: {show: false, modalContent: {}}
+            // ... outras propriedades conforme necessário
+          }
+        });
+      }
+      else if (response.status === 404){
+        navigate("/errors/404")
+      }
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
     }

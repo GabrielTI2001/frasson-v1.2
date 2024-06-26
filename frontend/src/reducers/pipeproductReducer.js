@@ -134,19 +134,24 @@ export const kanbanReducer = (state, action) => {
           card_produtos_set: f.card_produtos_set.filter(c =>
             Object.values(c).some(val => {
               if (typeof val === 'string') {
-                return val.toLowerCase().includes(payload.toLowerCase());
-              } else if (Array.isArray(val)) {
+                return val.toLowerCase().includes(payload.value.toLowerCase());
+              } 
+              else if (typeof val === 'number') {
+                return val.toString().includes(payload.value.toLowerCase());
+              } 
+              else if (Array.isArray(val)) {
                 return val.some(subVal => {
                   if (typeof subVal === 'object' && subVal !== null) {
                     return Object.values(subVal).some(subValAttr =>
-                      typeof subValAttr === 'string' && subValAttr.toLowerCase().includes(payload.toLowerCase())
+                      typeof subValAttr === 'string' && subValAttr.toLowerCase().includes(payload.value.toLowerCase())
                     );
                   }
                   return false;
                 });
-              } else if (typeof val === 'object' && val !== null) {
+              } 
+              else if (typeof val === 'object' && val !== null) {
                 return Object.values(val).some(subValAttr =>
-                  typeof subValAttr === 'string' && subValAttr.toLowerCase().includes(payload.toLowerCase())
+                  typeof subValAttr === 'string' && subValAttr.toLowerCase().includes(payload.value.toLowerCase())
                 );
               }
               return false;

@@ -11,7 +11,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({
-    user: user.id
+    created_by: user.id
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
   const [defaultoptions, setDefaultOptions] = useState()
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/glebas/index/${type === 'edit' ? data.id+'/':''}`
+    const link = `${process.env.REACT_APP_API_URL}/glebas/index/${type === 'edit' ? data.uuid+'/':''}`
     const method = type === 'edit' ? 'PUT' : 'POST'
     try {
         const response = await fetch(link, {
@@ -82,9 +82,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
           .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
         const { list_propriedades, str_municipio, str_cliente, ...restData } = filteredData;
         setFormData({...formData, ...restData})
-        setDefaultOptions({propriedade:data.list_propriedades, municipio:{value:data.municipio, label:data.str_municipio},
-          cliente:{value:data.cliente, label:data.str_cliente}
-        }); 
+        setDefaultOptions({propriedade:data.list_propriedades,cliente:{value:data.cliente, label:data.str_cliente}}); 
       }
     }
 
@@ -106,7 +104,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Cliente*</Form.Label>}
-            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'pipefy/pessoal', 'razao_social')} name='cliente' 
+            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social')} name='cliente' 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.cliente : '') : '' }
               onChange={(selected) => {
@@ -133,36 +131,19 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4}>
-            {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
-            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'register/municipios', 'nome_municipio', 'sigla_uf')} name='municipio' 
-              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio : '') : '' }
-              onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                municipio: selected.value
-                }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.municipio : ''}</label>
-          </Form.Group>        
-        )}
-
-        {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazendas*</Form.Label>}
-            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'analytics/farms', 'nome_imovel')} name='propriedade' 
+            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'farms/farms', 'nome', 'matricula')} name='propriedades' 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select" isMulti={true}
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.propriedade : '') : '' }
               onChange={(selected) => {
               setFormData((prevFormData) => ({
                 ...prevFormData,
-                propriedade: selected.map(s => s.value)
+                propriedades: selected.map(s => s.value)
                 }))
               }}>
             </AsyncSelect>
-            <label className='text-danger'>{message ? message.propriedade : ''}</label>
+            <label className='text-danger'>{message ? message.propriedades : ''}</label>
           </Form.Group>        
         )}
 
@@ -174,7 +155,7 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
             onChange={handleFile}
             type="file"
           />
-          <label className='text-danger'>{message ? message.non_field_errors : ''}</label>
+          <label className='text-danger'>{message ? message.kml : ''}</label>
         </Form.Group>
 
         <Form.Group className="mb-2" as={Col} xl={3}>

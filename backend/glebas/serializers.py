@@ -6,34 +6,19 @@ from backend.settings import TOKEN_GOOGLE_MAPS_API
 from pykml import parser
 from rest_framework.exceptions import ValidationError
 
-def parse_element_kml(element):
-    coordinates = []
-    for child in element.getchildren():
-        if hasattr(child, 'Polygon'):
-            #get only first child of tag polygon
-            coords = str(child[0].Polygon.outerBoundaryIs.LinearRing.coordinates).strip().split()
-            for coord in coords:
-                coordinates.append({'lat': coord.split(",")[1], 'lng': coord.split(",")[0]})
-            break
-        else:
-            # Recursively handle complex elements like Placemark or Folder
-            coordinates.extend(parse_element_kml(child))
-
-    return coordinates
-
 class listGlebas(serializers.ModelSerializer):
     str_cliente = serializers.CharField(source='cliente.razao_social', required=False, read_only=True)
     list_propriedades = serializers.SerializerMethodField(read_only=True)
     str_municipio = serializers.SerializerMethodField(read_only=True)
     def get_list_propriedades(self, obj):
-        return ', '.join([fazenda.nome_imovel for fazenda in obj.propriedade.all()])
+        return ', '.join([fazenda.nome+' - '+fazenda.matricula for fazenda in obj.propriedades.all()])
     
     def get_str_municipio(self, obj):
-        return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}" if obj.municipio else '-'
+        return f"{obj.propriedades.all()[0].municipio.nome_municipio} - {obj.propriedades.all()[0].municipio.sigla_uf}"
 
     class Meta:
         model = Cadastro_Glebas
-        fields = ['id', 'str_cliente', 'list_propriedades', 'gleba', 'str_municipio', 'area']
+        fields = ['id', 'uuid', 'str_cliente', 'list_propriedades', 'gleba', 'str_municipio', 'area']
 
 class detailGleba(serializers.ModelSerializer):
     str_cliente = serializers.CharField(source='cliente.razao_social', required=False, read_only=True)
@@ -49,44 +34,12 @@ class detailGleba(serializers.ModelSerializer):
     def get_list_propriedades(self, obj):
         return [{
             'value': p.id,
-            'label': p.nome_imovel,
-        } for p in obj.propriedade.all()]
+            'label': p.nome+' - '+p.matricula,
+        } for p in obj.propriedades.all()]
     
     def get_str_municipio(self, obj):
-        return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}" if obj.municipio else ''
+        return f"{obj.propriedades.all()[0].municipio.nome_municipio} - {obj.propriedades.all()[0].municipio.sigla_uf}"
     
-    def save(self, **kwargs):
-        instance = super().save(**kwargs)
-        request = self.context.get('request')
-        if request and request.FILES:
-            kml_file = request.FILES.get('kml')
-            if kml_file:
-                kml_file.seek(0)
-                root = parser.parse(kml_file).getroot().Document
-                coordinates = parse_element_kml(root)
-                gleba_instance = Cadastro_Glebas.objects.get(id=instance.id)
-                Cadastro_Glebas_Coordenadas_list = [
-                    Cadastro_Glebas_Coordenadas(
-                        gleba=gleba_instance,
-                        latitude_gd=coordinate['lat'],
-                        longitude_gd=coordinate['lng']
-                    )
-                    for coordinate in coordinates
-                ]
-                Cadastro_Glebas_Coordenadas.objects.bulk_create(Cadastro_Glebas_Coordenadas_list)
-        return instance
-    
-    def validate(self, data):
-        request = self.context.get('request')
-        if request.FILES:
-            kml_file = request.FILES.get('kml')
-            if kml_file:
-                file_extension = os.path.splitext(kml_file.name)[1]
-                if file_extension.lower() != '.kml':
-                    raise ValidationError("O arquivo deve ser em formato KML!")
-        else:
-            raise ValidationError("Submeta um Arquivo")
-        return data
     class Meta:
         model = Cadastro_Glebas
         fields = '__all__'
@@ -108,9 +61,9 @@ class detailGlebasCoordenadas(serializers.ModelSerializer):
     token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
     
     def get_list_propriedades(self, obj):
-        return ', '.join([fazenda.nome_imovel for fazenda in obj.propriedade.all()])
+        return ', '.join([fazenda.nome for fazenda in obj.propriedades.all()])
     def get_str_municipio(self, obj):
-        return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}" if obj.municipio else ''
+        return f"{obj.propriedades.all()[0].municipio.nome_municipio} - {obj.propriedades.all()[0].municipio.sigla_uf}"
     def get_coordenadas(self, obj):
         query = Cadastro_Glebas_Coordenadas.objects.filter(gleba=obj)
         return [{'id':q.id, 'lat':q.latitude_gd, 'lng':q.longitude_gd } for q in query]

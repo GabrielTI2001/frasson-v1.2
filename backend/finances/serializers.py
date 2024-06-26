@@ -3,11 +3,10 @@ from .models import Lancamentos_Automaticos_Pagamentos, Categorias_Pagamentos, T
 from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Contratos_Servicos, Contratos_Servicos_Pagamentos
 from pipeline.models import Card_Cobrancas, Card_Pagamentos, Card_Produtos
 from backend.frassonUtilities import Frasson
-from backend.pipefyUtils import getTableRecordPipefy
 from django.db.models import Q, Sum
 import locale, requests, json
 from datetime import date, timedelta
-from backend.settings import TOKEN_GOOGLE_MAPS_API, TOKEN_PIPEFY_API, URL_PIFEFY_API
+from backend.settings import TOKEN_GOOGLE_MAPS_API
 
 class listPagamentosPipefy(serializers.ModelSerializer):
     str_categoria = serializers.CharField(source='categoria.category', read_only=True)
@@ -78,18 +77,18 @@ class listTipoReceitaDespesa(serializers.ModelSerializer):
 class listCaixas(serializers.ModelSerializer):
     class Meta:
         model = Caixas_Frasson
-        fields = ['id', 'caixa', 'sigla']
+        fields = ['id', 'nome', 'sigla']
 
 class listTransfContas(serializers.ModelSerializer):
-    str_caixa_origem = serializers.CharField(source='caixa_origem.caixa', read_only=True)
-    str_caixa_destino = serializers.CharField(source='caixa_destino.caixa', read_only=True)
+    str_caixa_origem = serializers.CharField(source='caixa_origem.nome', read_only=True)
+    str_caixa_destino = serializers.CharField(source='caixa_destino.nome', read_only=True)
     class Meta:
         model = Transferencias_Contas
         fields = ['id', 'data', 'str_caixa_origem', 'str_caixa_destino', 'valor', 'description']
 
 class detailTransfContas(serializers.ModelSerializer):
-    str_caixa_origem = serializers.CharField(source='caixa_origem.caixa', read_only=True)
-    str_caixa_destino = serializers.CharField(source='caixa_destino.caixa', read_only=True)
+    str_caixa_origem = serializers.CharField(source='caixa_origem.nome', read_only=True)
+    str_caixa_destino = serializers.CharField(source='caixa_destino.nome', read_only=True)
     def validate_caixa_destino(self, value):
         origem = self.initial_data.get('caixa_origem')
         if int(origem) == value.id:
@@ -106,7 +105,7 @@ class detailTransfContas(serializers.ModelSerializer):
 
 class listMovimentacoes(serializers.ModelSerializer):
     str_tipo = serializers.CharField(source='tipo.description', read_only=True)
-    str_caixa = serializers.CharField(source='caixa.caixa', read_only=True)
+    str_caixa = serializers.CharField(source='caixa.nome', read_only=True)
     valor = serializers.SerializerMethodField(read_only=True)
     def get_valor(self, obj):
         return {'color': 'success' if obj.tipo.tipo == 'R' else 'danger', 'text': locale.format_string('%.2f', obj.valor, True)}
@@ -116,7 +115,7 @@ class listMovimentacoes(serializers.ModelSerializer):
 
 class detailMovimentacoes(serializers.ModelSerializer):
     str_tipo = serializers.CharField(source='tipo.description', read_only=True)
-    str_caixa = serializers.CharField(source='caixa.caixa', read_only=True)
+    str_caixa = serializers.CharField(source='caixa.nome', read_only=True)
     str_rd = serializers.CharField(source='tipo.tipo', read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -128,13 +127,25 @@ class detailMovimentacoes(serializers.ModelSerializer):
         fields = '__all__'
 
 class listReembolsos(serializers.ModelSerializer):
-    str_caixa_destino = serializers.CharField(source='caixa_destino.caixa', read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    status = serializers.SerializerMethodField(read_only=True)
+    def get_status(self, obj):
+        if obj.cobranca == True:
+            return {'text': 'Cobrado', 'color': 'success'}
+        else:
+            return {'text': 'Em Aberto', 'color': 'warning'}
     class Meta:
         model = Reembolso_Cliente
-        fields = ['id', 'data', 'str_caixa_destino', 'valor', 'description']
+        fields = ['id', 'data', 'str_cliente', 'valor', 'description', 'status']
 
 class detailReembolsos(serializers.ModelSerializer):
-    str_caixa_destino = serializers.CharField(source='caixa_destino.caixa', read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    status = serializers.SerializerMethodField(read_only=True)
+    def get_status(self, obj):
+        if obj.cobranca == True:
+            return {'text': 'Cobrado', 'color': 'success'}
+        else:
+            return {'text': 'Em Aberto', 'color': 'warning'}
     class Meta:
         model = Reembolso_Cliente
         fields = '__all__'
@@ -149,7 +160,7 @@ class listContratoServicos(serializers.ModelSerializer):
     class Meta:
         model = Contratos_Servicos
         fields = [
-            'id', 'str_contratante', 'str_servicos', 'str_produto', 'valor', 
+            'id', 'uuid', 'str_contratante', 'str_servicos', 'str_produto', 'valor', 
             'percentual', 'data_assinatura', 'data_vencimento', 'status', 'total_formas'
         ]
 
@@ -180,7 +191,6 @@ class detailContratoServicos(serializers.ModelSerializer):
     str_servicos = serializers.SerializerMethodField(read_only=True)
     str_produtos = serializers.SerializerMethodField(read_only=True)
     list_processos = serializers.SerializerMethodField(read_only=True)
-    # pdf_contrato = serializers.SerializerMethodField(read_only=True)
     def get_etapas(self, obj):
         etapas = Contratos_Servicos_Pagamentos.objects.filter(contrato=obj.id)
         list_etapas = []
@@ -216,7 +226,7 @@ class detailContratoServicos(serializers.ModelSerializer):
                 })    
         return list_etapas 
     def get_str_servicos(self, obj):
-        return ', '.join([c.detalhamento_servico for c in obj.servicos.all()])
+        return [{'value':s.id, 'label':s.detalhamento_servico} for s in obj.servicos.all()]
     def get_str_produtos(self, obj):
         return ', '.join([s['produto__description'] for s in obj.servicos.all().values('produto__description').distinct()])
     def get_list_processos(self, obj):
@@ -226,22 +236,10 @@ class detailContratoServicos(serializers.ModelSerializer):
             'detalhamento': produto.detalhamento.detalhamento_servico,
             'phase': produto.phase.descricao,
             'card': produto.card,
-            'url': produto.card_url,
+            'url': str(produto.phase.pipe.code)+'/'+str(produto.code),
             'beneficiarios': ', '.join([beneficiario.razao_social for beneficiario in produto.beneficiario.all()])
         }for produto in query_produtos]
         return produtos
-    # def get_pdf_contrato(self, obj):
-    #     payload = {"query":"{card (id:" + str(obj.id) + ") {fields{field{id} native_value}}}"}
-    #     response = requests.post(URL_PIFEFY_API, json=payload, headers={"Authorization": TOKEN_PIPEFY_API, "Content-Type": "application/json"})
-    #     obj = json.loads(response.text)
-    #     fields = obj["data"]["card"]["fields"]
-    #     for field in fields:
-    #         if field["field"]["id"] == "contrato_assinado":
-    #             url_pdf_contrato = field["native_value"]
-    #             break
-    #         else:
-    #             url_pdf_contrato = None
-    #     return url_pdf_contrato
     class Meta:
         model = Contratos_Servicos
         fields = '__all__'

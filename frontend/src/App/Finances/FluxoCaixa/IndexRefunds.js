@@ -109,6 +109,7 @@ const IndexReembolsos = () => {
                     striped: false,
                     className: 'fs-xs mb-0 overflow-hidden',
                     showactions: 'true',
+                    index_status: 4
                 }}
                 Click={onClick}
             />

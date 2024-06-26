@@ -108,10 +108,10 @@ const ViewGleba = () => {
             }
         </Tab>
         <Tab eventKey="agricola" title="Produção Agrícola" className='p-3'>
-            <IndexProdAgricola />
+            <IndexProdAgricola gleba={gleba} />
         </Tab>
         <Tab eventKey="pecuaria" title="Produção Pecuária" className='p-3'>
-            <IndexProdPecuaria />
+            <IndexProdPecuaria gleba={gleba}/>
         </Tab>
     </Tabs>
 

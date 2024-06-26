@@ -3,7 +3,7 @@ import { Card, Row, Col, Form, Modal, CloseButton, Placeholder} from "react-boot
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { ColumnLineChart, BarChart, ColumnChart } from "../../../components/Custom/Charts";
-import IndexCredit from "../../Analytics/Credit/Index";
+import IndexCredit from "../../Credit/Index";
 import { HandleSearch } from "../../../helpers/Data";
 
 const meses = [

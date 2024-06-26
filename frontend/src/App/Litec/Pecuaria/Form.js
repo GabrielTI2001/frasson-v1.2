@@ -10,12 +10,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf, faTrash } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 
-const FormProdPecuaria = ({ hasLabel, data, type, submit}) => {
+const FormProdPecuaria = ({ hasLabel, data, type, submit, gleba}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const navigate = useNavigate();
   const {id} = useParams()
-  const [formData, setFormData] = useState({user: user.id, gleba:id, ano:2022, tipo_producao:'P'});
+  const [formData, setFormData] = useState({user: user.id, gleba:gleba || null, ano:2022, tipo_producao:'P'});
   const [message, setMessage] = useState()
   const [anos, setAnos] = useState([])
   const token = localStorage.getItem("token")

@@ -95,10 +95,9 @@ export const columnsReembolso = [
     headerProps: { className: 'text-900 p-1' }
   },
   {
-    accessor: 'str_caixa_destino',
-    Header: 'Caixa',
-    headerProps: { className: 'text-900 p-1' },
-    cellProps: {className: 'text-primary fw-bold p-1' }
+    accessor: 'str_cliente',
+    Header: 'Cliente',
+    headerProps: { className: 'text-900 p-1' }
   },
   {
     accessor: 'valor',
@@ -108,6 +107,49 @@ export const columnsReembolso = [
   {
     accessor: 'description',
     Header: 'Descrição',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'status',
+    Header: 'Cobrança?',
+    headerProps: { className: 'text-900 p-1' }
+  }
+];
+
+export const columnsContratos = [
+  {
+    accessor: 'str_produto',
+    Header: 'Produtos',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_contratante',
+    Header: 'Contratante',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_servicos',
+    Header: 'Serviços',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'percentual',
+    Header: '% GC',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'valor',
+    Header: 'Valor GAI',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'data_assinatura',
+    Header: 'Data',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'status',
+    Header: 'Status',
     headerProps: { className: 'text-900 p-1' }
   }
 ];

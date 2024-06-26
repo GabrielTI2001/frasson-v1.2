@@ -22,8 +22,8 @@ import IndexCredit from '../App/Credit/Index';
 //Dashboard
 import DashCredit from '../App/Dashboard/Credit/Index';
 import DashGestaoCredito from '../App/Dashboard/Credit/GestaoCredito';
-import DashProspects from '../App/Dashboard/Pipefy/Prospects';
-import DashProdutos from '../App/Dashboard/Pipefy/Produtos';
+import DashProspects from '../App/Dashboard/Pipeline/Prospects';
+import DashProdutos from '../App/Dashboard/Pipeline/Produtos';
 import DashAmbiental from '../App/Dashboard/Ambiental/Index';
 import DashBillings from '../App/Dashboard/Finances/Payments';
 import DashRevenues from '../App/Dashboard/Finances/Revenues';
@@ -47,6 +47,8 @@ import IndexMovimentacoes from '../App/Finances/FluxoCaixa/IndexMoviments';
 import IndexReembolsos from '../App/Finances/FluxoCaixa/IndexRefunds';
 import ReportPagamentos from '../App/Finances/Reports/Pagamentos';
 import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
+import IndexContratos from '../App/Finances/Contratos/Index';
+import ViewContrato from '../App/Finances/Contratos/View';
 //Glebas
 import IndexGlebas from '../App/Glebas/Index';
 import MapaGlebas from '../App/Glebas/Mapa';
@@ -65,12 +67,7 @@ import ViewIndicator from '../App/Kpi/View';
 //Pipeline
 import Products from '../App/Pipeline/products/products';
 //Pipefy
-import IndexProspects from '../App/Pipefy/Prospects/Index';
-import ViewProspect from '../App/Pipefy/Prospects/View';
-import IndexProdutos from '../App/Pipefy/Produtos/Index';
-import ViewCardProduto from '../App/Pipefy/Produtos/View';
-import IndexContratos from '../App/Pipefy/Contratos/Index';
-import ViewContrato from '../App/Pipefy/Contratos/View';
+
 //Register
 import IndexPessoal from '../App/Register/Pessoal/Index';
 import ViewPessoal from '../App/Register/Pessoal/View';
@@ -238,6 +235,8 @@ const LayoutRoutes = () => {
           <Route path="refunds" element={<IndexReembolsos />}/>
           <Route path="billings" element={<ReportPagamentos />}/>
           <Route path="revenues" element={<ReportCobrancas />}/>
+          <Route path="contracts" element={<IndexContratos />}/>
+          <Route path="contracts/:id" element={<ViewContrato />}/>
         </Route>
         <Route path="/glebas">
           <Route path="" element={<IndexGlebas />}/>
@@ -267,16 +266,11 @@ const LayoutRoutes = () => {
           <Route path="" element={<Notifications />}/>
         </Route>
         <Route path="/pipefy">
-          <Route path="pipes/301573049" element={<IndexProspects />}/>
-          <Route path="pipes/301573049/cards/:id" element={<ViewProspect />}/>
-          <Route path="pipes/301573538" element={<IndexProdutos />}/>
-          <Route path="pipes/301573538/cards/:id" element={<ViewCardProduto />}/>
-          <Route path="contracts" element={<IndexContratos />}/>
-          <Route path="contracts/:id" element={<ViewContrato />}/>
         </Route>
         <Route path="/pipeline">
           <Route path=":pipe" element={<Products />}/>
           <Route path=":pipe/:code" element={<Products />}/>
+          <Route path=":pipe/settings" element={< IndexContratos/>}/>
         </Route>
         <Route path="/processes">
           <Route path="followup" element={<IndexFollowup />}/>

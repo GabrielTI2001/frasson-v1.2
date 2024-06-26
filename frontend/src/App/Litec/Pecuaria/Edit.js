@@ -39,7 +39,7 @@ const EditProdPecuaria = ({id, gleba, submit}) => {
 
         { producao ? (
             <Row className="mb-2">
-                <FormProdPecuaria hasLabel type='edit' data={producao} submit={submitform}/>
+                <FormProdPecuaria hasLabel type='edit' data={producao} submit={submitform} gleba={gleba.id}/>
             </Row>
         ) : (
         <div>

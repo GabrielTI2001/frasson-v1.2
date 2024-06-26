@@ -122,6 +122,21 @@ const PessoaForm = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} encType='multipart/form-data'>
         <Row xl={2} sm={2}>
+          
+          <Form.Group className="mb-2" as={Col}>
+            {hasLabel && <Form.Label className='fw-bold mb-1'>Categoria Cadastro*</Form.Label>}
+            <Form.Select
+              value={formData.categoria || ''}
+              name="categoria"
+              onChange={handleFieldChange}
+            >
+            {categorias.map(cat =>
+              <option value={cat.value} key={cat.value}>{cat.label}</option>
+            )}
+            </Form.Select>
+            <label className='text-danger'>{message ? message.categoria : ''}</label>
+          </Form.Group>
+
           <Form.Group className="mb-2" as={Col}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Natureza Jurídica*</Form.Label>}
             <Form.Select
@@ -254,20 +269,6 @@ const PessoaForm = ({ hasLabel, type, submit, data}) => {
               type="email"
             />
             <label className='text-danger'>{message ? message.email2 : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col}>
-            {hasLabel && <Form.Label className='fw-bold mb-1'>Categoria Cadastro*</Form.Label>}
-            <Form.Select
-              value={formData.categoria || ''}
-              name="categoria"
-              onChange={handleFieldChange}
-            >
-            {categorias.map(cat =>
-              <option value={cat.value} key={cat.value}>{cat.label}</option>
-            )}
-            </Form.Select>
-            <label className='text-danger'>{message ? message.categoria : ''}</label>
           </Form.Group>
 
           {defaultoptions && 

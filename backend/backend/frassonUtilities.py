@@ -258,7 +258,9 @@ class Frasson(object):
         """Função que retorna os saldos das contas bancárias e os valores em aberto das Cobranças e Pagamentos"""
         saldos_iniciais = {}
         
-        caixas = [{'id': 667993245, 'caixa': 'Banco do Brasil', 'name': 'banco_brasil'}, 
+        caixas = [
+            {'id': 1, 'caixa': 'Caixa A', 'name': 'banco_a'}, 
+            {'id': 667993245, 'caixa': 'Banco do Brasil', 'name': 'banco_brasil'}, 
             {'id': 667993332, 'caixa': 'Caixa Econômica Federal', 'name': 'caixa_economica'}, 
             {'id': 667993459, 'caixa': 'Santander', 'name': 'banco_santander'}, 
             {'id': 667994503, 'caixa': 'Sicredi', 'name': 'banco_sicredi'}, 
@@ -276,19 +278,19 @@ class Frasson(object):
             except ObjectDoesNotExist:
                 obj_saldo = None
 
-            saldos_iniciais[caixa['name']] = round(float(obj_saldo.saldo_inicial) or 0, 2) if obj_saldo != None else 0
+            saldos_iniciais[caixa['name']] = round(float(obj_saldo.saldo_inicial or 0), 2) if obj_saldo != None else 0
 
         # SOMA VALORES REEMBOLSO POR CAIXA
-        reembolsos = {}
-        reembolsos_db = Reembolso_Cliente.objects.values('caixa_destino').annotate(total=Sum('valor'))
-        for caixa in caixas:
-            for reembolso in reembolsos_db:
-                if caixa['id'] in reembolso.values():
-                    reembolsos[caixa['name']] = round(float(reembolso['total']), 2)
-                    break
+        # reembolsos = {}
+        # reembolsos_db = Reembolso_Cliente.objects.values('caixa_destino').annotate(total=Sum('valor'))
+        # for caixa in caixas:
+        #     for reembolso in reembolsos_db:
+        #         if caixa['id'] in reembolso.values():
+        #             reembolsos[caixa['name']] = round(float(reembolso['total']), 2)
+        #             break
             
-            if not caixa['name'] in reembolsos:
-                reembolsos[caixa['name']] = 0
+        #     if not caixa['name'] in reembolsos:
+        #         reembolsos[caixa['name']] = 0
         
         # TOTAL RECEITAS FINANCEIRAS
         receitas_financeiras = {}
@@ -367,7 +369,7 @@ class Frasson(object):
         colors = {}
         valor_total = 0
         for caixa in caixas:
-            saldo = round(saldos_iniciais[caixa['name']] + (cobrancas[caixa['name']] - pagamentos[caixa['name']]) + (entradas_transferencias[caixa['name']] - saidas_transferencias[caixa['name']]) + (receitas_financeiras[caixa['name']] - despesas_financeiras[caixa['name']]) + reembolsos[caixa['name']], 2)
+            saldo = round(saldos_iniciais[caixa['name']] + (cobrancas[caixa['name']] - pagamentos[caixa['name']]) + (entradas_transferencias[caixa['name']] - saidas_transferencias[caixa['name']]) + (receitas_financeiras[caixa['name']] - despesas_financeiras[caixa['name']]), 2)
             valor_total = valor_total + saldo
             saldos[caixa['name']] = locale.currency(saldo, grouping=True)
             colors[caixa['name']] = 'primary' if saldo >= 0 else 'danger'
@@ -494,19 +496,20 @@ class Frasson(object):
 
     def getCoordinatesCARImovelRural(car):
         """Função que retorna as coordenadas do shape CAR do imóvel rural"""
+        car_corr = re.sub(r'[-.]', '', car) #corrige o formato do CAR
         data = {}
         url = "https://api.infosimples.com/api/v2/consultas/car/demonstrativo"  
         connection.close() 
-        response = requests.get(url, params={"car": car,"token": TOKEN_API_INFOSIMPLES, "timeout": 600})
+        response = requests.get(url, params={"car": car_corr,"token": TOKEN_API_INFOSIMPLES, "timeout": 600})
         obj = response.json()
         connection.connect()
         RequestsAPI.objects.create(
-            type='CI', cod_resposta=obj["code"], url=url, codigo=car, api_id=2,
+            type='CI', cod_resposta=obj["code"], url=url, codigo=car_corr, api_id=2,
             text_resposta=obj["code_message"], valor_cobrado=obj["header"]["price"], 
             hora_requisicao=obj["header"]["requested_at"][:19], tempo_decorrido_ms=obj["header"]["elapsed_time_in_milliseconds"]
         )    
-
         if obj["code"] == 200 and obj["data_count"] > 0:
+            data["code"] = obj["code"]
             data["area_preservacao_permanente"] = obj["data"][0]["area_preservacao_permanente"]
             data["area_uso_restrito"] = obj["data"][0]["area_uso_restrito"]
             data["numero_car"] = obj["data"][0]["car"]
@@ -514,7 +517,7 @@ class Frasson(object):
             data["area_imovel"] = obj["data"][0]["imovel"]["area"]
             data["numero_car"] = obj["data"][0]["car"]
             data["modulos_fiscais"] = obj["data"][0]["imovel"]["modulos_fiscais"]
-            data["endereco_municipio"] = obj["data"][0]["imovel"]["endereco_municipio"]
+            data["endereco_municipio"] = f'{obj["data"][0]["imovel"]["endereco_municipio"]} - {obj["data"][0]["imovel"]["endereco_uf"]}' 
             data["endereco_latitude"] = Frasson.convert_dms_to_dd(obj["data"][0]["imovel"]["endereco_latitude"])
             data["endereco_longitude"] = Frasson.convert_dms_to_dd(obj["data"][0]["imovel"]["endereco_longitude"])
             data["data_registro"] = datetime.strptime(obj["data"][0]["imovel"]["registro_data"], '%d/%m/%Y').date()
@@ -537,7 +540,7 @@ class Frasson(object):
             obj2 = response.json()
             connection.connect()
             RequestsAPI.objects.create(
-                type='CC', cod_resposta=obj["code"], url=url, codigo=car, api_id=2,
+                type='CC', cod_resposta=obj["code"], url=url, codigo=car_corr, api_id=2,
                 text_resposta=obj["code_message"], valor_cobrado=obj["header"]["price"], 
                 hora_requisicao=obj["header"]["requested_at"][:19], tempo_decorrido_ms=obj["header"]["elapsed_time_in_milliseconds"]
             )

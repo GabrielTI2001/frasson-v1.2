@@ -16,18 +16,18 @@ const DashProspects = () =>{
 
     const setter = (data) => {
         setData(data)
-        setData({...data,   
-        produtos: [
-            {
-              "produto": "Produto A",
-              "total": 1
-            },
-            {
-                "produto": "Produto B",
-                "total": 5
-            }
-          ]
-        })
+        // setData({...data,   
+        // produtos: [
+        //     {
+        //       "produto": "Produto A",
+        //       "total": 1
+        //     },
+        //     {
+        //         "produto": "Produto B",
+        //         "total": 5
+        //     }
+        //   ]
+        // })
     }
 
     useEffect(()=>{

@@ -17,7 +17,7 @@ const InitData = {
     'urlview':'/litec/pecuaria/', 'title': ''
 }
 
-const IndexProdPecuaria= () => {
+const IndexProdPecuaria= ({gleba}) => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const {id} = useParams()
@@ -112,8 +112,8 @@ const IndexProdPecuaria= () => {
                 <Modal.Body>
                     <Row className="flex-center sectionform">  
                     {!showmodal.data 
-                        ? <FormProdPecuaria hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit}/>
-                        : <EditProdPecuaria gleba={showmodal.data.gleba} id={showmodal.data.id} submit={submit} />
+                        ? <FormProdPecuaria hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit} gleba={gleba.id}/>
+                        : <EditProdPecuaria gleba={gleba} id={showmodal.data.id} submit={submit} />
                     }
                     </Row>
             </Modal.Body>
