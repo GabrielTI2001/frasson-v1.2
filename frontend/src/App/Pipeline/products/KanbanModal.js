@@ -1,10 +1,10 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { CloseButton, Col, Modal, Placeholder, Row } from 'react-bootstrap';
+import { CloseButton, Col, Dropdown, Modal, Nav, Placeholder, Row, Form } from 'react-bootstrap';
 // import '../../../assets/scss/custom.css';
 // import Background from 'components/common/Background';
 // import { Link } from 'react-router-dom';
 import ModalMediaContent from '../ModalMediaContent';
-// import GroupMember from './GroupMember';
+import GroupMember from '../GroupMember';
 // import { members } from 'data/kanban';
 // import ModalLabelContent from './ModalLabelContent';
 // import ModalAttachmentContent from './ModalAttachmentContent';
@@ -21,19 +21,30 @@ import SubtleBadge from '../../../components/common/SubtleBadge';
 import { useAppContext } from '../../../Main';
 import CardInfo, {CardTitle} from '../CardInfo';
 import { TaskDropMenu } from './TaskCard';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Calendar } from 'react-bootstrap-icons';
+import { calcdif } from './TaskCard';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons';
+import EditFormOthers from './EditFormOthers';
+
+const options = {
+  month: "short",
+  day: "numeric",
+  timeZone: 'UTC'
+};
 
 const KanbanModal = ({show}) => {
   const [showForm, setShowForm] = useState({'card':false,'data':false,'beneficiario':false, 
-    'detalhamento': false, 'instituicao': false});
+    'detalhamento': false, 'instituicao': false, 'others':false});
   const {kanbanState: {kanbanModal}, kanbanDispatch} = useContext(PipeContext);
   const navigate = useNavigate()
   const token = localStorage.getItem("token")
-  const {pipe, code} = useParams()
+  const {code} = useParams()
   const [card, setCard] = useState();
   const {config: {theme}} = useAppContext();
 
   const handleClose = () => {
-    navigate('/pipeline/'+pipe)
+    navigate('/pipeline/'+card.pipe_code)
     kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   };
 
@@ -85,7 +96,7 @@ const KanbanModal = ({show}) => {
       })
     }
     setShowForm({...showForm, 'card':false,'data':false,'beneficiario':false,'detalhamento':false, 
-    'instituicao':false, 'contrato':false, 'responsaveis':false, 'data_vencimento':false})
+    'instituicao':false, 'contrato':false})
   }
 
 
@@ -114,13 +125,52 @@ const KanbanModal = ({show}) => {
                     <h4 className="mb-1 fs-0 fw-bold">{card.info_detalhamento.detalhamento_servico}</h4>
                   )}
                 </div>
+                {card &&
+                  <Dropdown>
+                    <Dropdown.Toggle as={Nav.Link}
+                      className='dropdown-caret-none p-0 ms-3 cursor-pointer'
+                    >
+                      <div onClick={() => handleEdit('others')} className='d-flex'>
+                        <GroupMember users={card.list_responsaveis} className='cursor-pointer' onClick={() => handleEdit('others')}/>
+                        <div className='mb-1 mx-2 cursor-pointer'>
+                          <span 
+                            className={`rounded-circle p-1 px-2 me-1 ${calcdif(card.data_vencimento) > 0 ?'bg-success-subtle':'bg-danger-subtle'}`}
+                          >
+                            <FontAwesomeIcon icon={faCalendar} className={`text-${calcdif(card.data_vencimento) > 0 ?'success':'danger'}`}/>
+                          </span>
+                          <SubtleBadge bg={calcdif(card.data_vencimento) > 0 ? 'secondary' : 'danger'} className='me-1 fw-normal fs--2'>
+                            Venc {new Date(card.data_vencimento).toLocaleDateString('pt-BR', options)}
+                          </SubtleBadge> 
+                          {calcdif(card.data_vencimento) > 0 
+                            ? <span style={{fontSize:'0.7rem'}}>em {parseInt(calcdif(card.data_vencimento))} dias</span>
+                            : <span style={{fontSize:'0.7rem'}}>{parseInt(calcdif(card.data_vencimento)) * -1} dias atrás</span>
+                          }
+                          <SubtleBadge bg={`${card.prioridade === 'Alta' ? 'danger' : card.prioridade === 'Média' ? 'warning' : 'success'}`} 
+                            className='ms-2 fw-normal text-body fs--2'>{card.prioridade}
+                          </SubtleBadge>
+                        </div>
+                      </div>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className='text-body px-3'  style={{ width: '400px' }}>
+                      <EditFormOthers 
+                        onSubmit={handleSubmit}
+                        data={{responsaveis:card.list_responsaveis, data_vencimento:card.data_vencimento, prioridade:card.prioridade}} 
+                      />
+                    </Dropdown.Menu>
+                  </Dropdown>
+                }
+
                 <span className='fw-bold fs--1 ms-3'>Formulário Inicial</span>
+                <div className='ps-3 text-secondary fs--2'>Criado por {card.str_created_by} em {' '}
+                  {new Date(card.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
+                  {', às '+new Date(card.created_at).toLocaleTimeString('pt-BR', {timeZone: 'UTC', hour:"numeric", minute:"numeric"})}
+                </div>
                 <div className="rounded-top-lg ps-3 pt-1 pb-0">
                   <span className='fw-bold fs--1'>Processo</span>
-                  <div className="fs--1 ms-3 row-10">#{card.code}</div>
+                  <div className="fs--1 row-10">#{card.code}</div>
                   <CardTitle title='Card*' click={handleEdit} field='card'/>
                   {card.card && !showForm['card'] &&
-                    <div className="fs--1 ms-3 row-10">{card.card}</div>
+                    <div className="fs--1 row-10">{card.card}</div>
                   }
                   <EditForm 
                     onSubmit={handleSubmit} 
@@ -133,7 +183,7 @@ const KanbanModal = ({show}) => {
                 <div className="rounded-top-lg ps-3 pt-1 pb-0 mb-2">
                   <CardTitle title='Beneficiário*' click={handleEdit} field='beneficiario'/>
                   {card.beneficiario && !showForm['beneficiario'] && card.list_beneficiario.map ((b) =>
-                    <CardInfo data={b} title2='CPF/CNPJ:' attr1='razao_social' attr2='cpf_cnpj' key={b.id}/>
+                    <CardInfo data={b} title2='CPF/CNPJ:' attr1='razao_social' attr2='cpf_cnpj' key={b.id} url='register/pessoal'/>
                   )}
                   <EditForm 
                     onSubmit={handleSubmit} 
@@ -172,7 +222,7 @@ const KanbanModal = ({show}) => {
                 <div className="rounded-top-lg ps-3 pt-1 pb-0 mb-2">
                   <CardTitle title='Contrato*' click={handleEdit} field='contrato'/>
                   {!showForm['contrato'] && card.info_contrato && 
-                    <CardInfo data={card.info_contrato} title2='Produto:' attr1='contratante' attr2='produto'/>
+                    <CardInfo data={card.info_contrato} title2='Produto:' attr1='contratante' attr2='produto' url='finances/contracts'/>
                   }
                   <EditForm 
                     onSubmit={handleSubmit} 
@@ -182,24 +232,10 @@ const KanbanModal = ({show}) => {
                     data={card.info_contrato}
                   />
                 </div>
-                <div className="rounded-top-lg ps-3 pt-1 pb-0 mb-2">
-                  <CardTitle title='Vencimento' click={handleEdit} field='data_vencimento'/>
-                  {!showForm['data_vencimento'] && (card.data_vencimento 
-                    ?<div className="fs--1 ms-3 row-10">{new Date(card.data_vencimento).toLocaleDateString('pt-BR', {timeZone:'UTC'})}</div>
-                    :<div className="fs--1 ms-3">-</div>
-                  )}
-                  <EditForm 
-                    onSubmit={handleSubmit} 
-                    show={showForm['data_vencimento']}
-                    fieldkey='data_vencimento'
-                    setShow={setShowForm}
-                    data={card.data_vencimento || ''}
-                  />
-                </div>
                 <span className='fw-bold fs--1 ms-3'>Histórico</span>
                 <div className="rounded-top-lg ps-3 pt-1 pb-0 mb-2">
                   {card.history_fases_list.map(h =>
-                    <div className={`p-1 mb-1 text-body row ms-2 info-pipe ${theme === 'dark' ? 'info-pipe-dark' : ''}`} key={h.id}>
+                    <div className={`p-1 mb-1 text-body row mx-0 info-pipe ${theme === 'dark' ? 'info-pipe-dark' : ''}`} key={h.id}>
                         <label className='row fw-bold fs--1'>{h.phase_name}</label>
                         <label className='row fs--2'>Duração (min): 
                           {' '+Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}
@@ -212,28 +248,6 @@ const KanbanModal = ({show}) => {
                 <div className="rounded-top-lg pt-1 pb-0 mb-2">
                   <span className="mb-1 fs--1 fw-bold d-inline-block me-2">Fase Atual</span>
                   <SubtleBadge>{card.str_fase}</SubtleBadge>
-                </div>
-                <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                  <CardTitle title='Responsáveis*' click={handleEdit} field='responsaveis'/>
-                  {card.responsaveis && card.responsaveis.length > 0 ? 
-                  <div className={`p-1 mb-1 text-body row ms-1 info-pipe ${theme === 'dark' ? 'info-pipe-dark' : ''}`}>
-                    {!showForm['responsaveis'] && card.list_responsaveis.map ((r) =>
-                      <div className='px-1 my-1 col-6' key={r.id}>
-                        <img className='rounded-circle me-2' style={{width:'30px', height:'30px'}} 
-                          src={`${process.env.REACT_APP_API_URL}/${r.avatar}`}
-                        />
-                        <span>{r.nome}</span>
-                      </div>
-                    )}
-                    <EditForm 
-                      onSubmit={handleSubmit} 
-                      show={showForm['responsaveis']}
-                      fieldkey='responsaveis'
-                      setShow={setShowForm}
-                      data={card.list_responsaveis}
-                    />
-                  </div>
-                  : <div>-</div>}
                 </div>
                 <ModalMediaContent title='Comentários'>
                   <ModalCommentContent card={card} />

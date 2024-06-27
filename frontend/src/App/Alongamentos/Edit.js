@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import { RetrieveRecord } from "../../helpers/Data";
 import {useNavigate, Link } from "react-router-dom";
-import { Row, Col, Button } from "react-bootstrap";
-import { Placeholder } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import FormAlongamento from "./Form";
 
-const Edit = ({id, update, operacao}) => {
-    const token = localStorage.getItem("token")
+const Edit = ({id, update}) => {
     const user = JSON.parse(localStorage.getItem("user"))
     const [alongamento, setAlongamento] = useState()
     const navigate = useNavigate();

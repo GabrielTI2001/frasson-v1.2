@@ -24,7 +24,7 @@ const KanbanContainer = () => {
     kanbanDispatch
   } = useContext(PipeContext);
   const token = localStorage.getItem("token")
-  const {code} = useParams()
+  const {pipe, code} = useParams()
   const [showForm, setShowForm] = useState(false);
   const containerRef = useRef(null);
   const fases = kanbanState.fases;
@@ -41,6 +41,7 @@ const KanbanContainer = () => {
           const sourceColumn = getColumn(source.droppableId);
           const destColumn = getColumn(destination.droppableId);
           const movedItems = move(source, destination);
+          console.log(movedItems)
           const idcard = data.code
           kanbanDispatch({
             type: 'UPDATE_DUAL_COLUMN',
@@ -58,11 +59,6 @@ const KanbanContainer = () => {
   }
 
   const handleSubmit = listData => {
-    const newList = {
-      pipe: kanbanState.pipe.id,
-      descricao: listData.descricao,
-      done: listData.done,
-    }
     const isEmpty = !Object.keys(listData).length;
 
     if (!isEmpty) {
@@ -138,7 +134,6 @@ const KanbanContainer = () => {
         source.index,
         destination.index
       );
-
       kanbanDispatch({
         type: 'UPDATE_SINGLE_COLUMN',
         payload: { column, reorderedItems }
@@ -189,7 +184,7 @@ const KanbanContainer = () => {
 
     return (<>
       <Row className="gx-1 gy-2 px-0 d-flex align-items-center mb-2">
-        <ol className="breadcrumb breadcrumb-alt fs-0 mb-3 col">
+        <ol className="breadcrumb breadcrumb-alt fs-0 col">
             <li className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
             </li>

@@ -11,7 +11,7 @@ import {
   adminRoutes
 } from '../../../Routes/siteMaps';
 import NavbarDropdownAmbiental from './NavbarDropdownAmbiental';
-import { useAppContext } from '../../../Main';
+// import { useAppContext } from '../../../Main';
 import NavbarDropdownOperacional from './NavbarDropdownOperacional';
 import NavbarDropdownCredito from './NavbarDropdownCredito';
 import NavbarDropdownServicos from './NavbarDropdownServicos';
@@ -20,25 +20,24 @@ import NavbarDropdownAdmin from './NavbarDropdownAdmin';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Flex from '../../common/Flex';
 import NavbarDropdownComercial from './NavbarDropdownComercial';
-import { Kanban } from 'react-bootstrap-icons';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
 
 const NavbarTopDropDownMenus = () => {
-  const {
-    config: { navbarCollapsed, showBurgerMenu },
-    setConfig
-  } = useAppContext();
+  // const {
+  //   config: { navbarCollapsed, showBurgerMenu },
+  //   setConfig
+  // } = useAppContext();
 
   const user = JSON.parse(localStorage.getItem("user"))
 
-  const handleDropdownItemClick = () => {
-    if (navbarCollapsed) {
-      setConfig('navbarCollapsed', !navbarCollapsed);
-    }
-    if (showBurgerMenu) {
-      setConfig('showBurgerMenu', !showBurgerMenu);
-    }
-  };
+  // const handleDropdownItemClick = () => {
+  //   if (navbarCollapsed) {
+  //     setConfig('navbarCollapsed', !navbarCollapsed);
+  //   }
+  //   if (showBurgerMenu) {
+  //     setConfig('showBurgerMenu', !showBurgerMenu);
+  //   }
+  // };
   return (
     <>
     {user && ((user.permissions && user.permissions.indexOf("ver_menu_operacional") !== -1) || user.is_superuser) &&

@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';

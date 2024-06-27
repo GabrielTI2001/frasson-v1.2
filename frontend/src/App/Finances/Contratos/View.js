@@ -74,7 +74,7 @@ const ViewContrato = () => {
         <Col className='d-flex flex-column'>
             <Row className='mb-2 gx-3'>
                 <Col xl='auto' xs='auto' sm='auto'> 
-                    <img className='p-0 rounded-circle me-0' style={{width: '70px', height: '70px'}} 
+                    <img className='p-0 rounded-circle me-0' style={{width: '70px', height: '70px'}}  alt='avatar'
                         src={`${process.env.REACT_APP_API_URL}/media/avatars/clients/default-avatar.jpg`}
                     />
                 </Col>

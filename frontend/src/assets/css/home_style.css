@@ -62,7 +62,6 @@ a:hover{
 textarea:focus, input:focus{
   outline: none !important;
   box-shadow: none !important;
-  border-color: #c4c4c4 !important;
 }
 
 @media (min-width: 578px){

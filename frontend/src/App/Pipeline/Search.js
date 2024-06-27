@@ -1,25 +1,13 @@
-import classNames from 'classnames';
-import AsyncSelect from 'react-select/async';
 import React, { useEffect, useRef, useState, useContext } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
-import { useAppContext } from '../../Main';
-import api from '../../context/data';
+import { Col, Form} from 'react-bootstrap';
 import { PipeContext } from '../../context/Context';
-import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilter, prefix } from '@fortawesome/free-solid-svg-icons';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
-const SearchForm = ({
-  onSubmit,
-  type,
-  fase
-}) => {
-  const {config: {theme}} = useAppContext();
+const SearchForm = () => {
   const {kanbanState, kanbanDispatch} = useContext(PipeContext);
   const [formData, setFormData] = useState();
-  const [message, setMessage] = useState();
   const inputRef = useRef(null);
-  const token = localStorage.getItem("token")
   const [prevstate, setPrevState] = useState()
 
   const submit = async (value) => {

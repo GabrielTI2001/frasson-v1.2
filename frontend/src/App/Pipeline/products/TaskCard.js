@@ -13,6 +13,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 import api from '../../../context/data';
 import { toast } from 'react-toastify';
+import ModalDeleteCard from '../../../components/Custom/ModalDeleteCard';
+import GroupMember from '../GroupMember';
 
 // Adicione os ícones à biblioteca
 library.add(faEllipsisH);
@@ -23,7 +25,7 @@ const options = {
   timeZone: 'UTC'
 };
 
-const calcdif = (data) => {
+export const calcdif = (data) => {
   const dif = (new Date(data) - new Date())/(24 * 60 * 60 * 1000)
   return dif
 };
@@ -67,7 +69,7 @@ export const TaskDropMenu = ({ card, click }) => {
         </Dropdown.Item>
         <Dropdown.Item>Copy link</Dropdown.Item>
       </Dropdown.Menu>
-      <ModalDelete show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
+      <ModalDeleteCard show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
     </Dropdown>
   );
 };
@@ -80,7 +82,7 @@ const TaskCard = ({
   const navigate = useNavigate()
   const {pipe, code} = useParams()
   const handleModalOpen = () => {
-    navigate(`/pipeline/${pipe}/${task.code}`)
+    navigate(`/pipeline/${pipe}/processo/${task.code}`)
     kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {card: task} });
   };
   // styles we need to apply on draggables
@@ -89,7 +91,7 @@ const TaskCard = ({
     transform: isDragging ? 'rotate(-2deg)' : ''
   });
   return (
-    <Draggable draggableId={`task${task ? task.id : 10}`} index={index}>
+    <Draggable draggableId={`task${task ? task.id : 1}`} index={index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -110,25 +112,25 @@ const TaskCard = ({
                 </SubtleBadge>
               }
               <div className='mb-1'>
-                <h4 className='fw-bold fs--1'>{task.str_detalhamento || '-'}</h4>
+                <h4 className='fw-bold fs--1'>{task && task.str_detalhamento || '-'}</h4>
               </div>
               <div className='mb-1'>
                 <label className='mb-0 text-uppercase fs--2'>Processo</label><br></br>
-                <span className='d-block'>#{task.code}</span>
+                <span className='d-block'>#{task && task.code}</span>
               </div>
               <div className='mb-1'>
                 <label className='mb-0 text-uppercase fs--2'>Card</label><br></br>
-                <SubtleBadge bg='secondary' className='me-2 fw-normal'>{task.card}</SubtleBadge> 
+                <SubtleBadge bg='secondary' className='me-2 fw-normal'>{task && task.card}</SubtleBadge> 
               </div>
               <div className='mb-1'>
                 <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Beneficiário</label>
-                <span className='d-block'>{task.str_beneficiario}</span>
+                <span className='d-block'>{task && task.str_beneficiario}</span>
               </div>
               <div className='mb-1'>
                 <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Data de Abertura</label>
-                <span className='d-block'>{new Date(task.created_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})}</span>
+                <span className='d-block'>{task && new Date(task.created_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})}</span>
               </div>
-              {task.data_vencimento &&
+              {task && task.data_vencimento &&
               <div className='mb-1'>
                 <SubtleBadge bg={calcdif(task.data_vencimento) > 0 ? 'secondary' : 'danger'} className='me-2 fw-normal fs--2'>
                   Venc {new Date(task.data_vencimento).toLocaleDateString('pt-BR', options)}
@@ -139,13 +141,11 @@ const TaskCard = ({
                 }
               </div>
               }
-              <div className='mb-1'> 
-                {task.responsaveis && task.list_responsaveis.map(r => 
-                  <img data-bs-toggle="tooltip" title={r.nome} className='rounded-circle me-2' style={{width:'25px', height:'25px'}} 
-                    src={`${process.env.REACT_APP_API_URL}/${r.avatar}`} key={r.id}
-                  />
-                )}
-              </div>
+              {task &&
+                <div className='mb-1'> 
+                  <GroupMember users={task.list_responsaveis}/>
+                </div>
+              }
             </Card.Body>
           </Card>
         </div>

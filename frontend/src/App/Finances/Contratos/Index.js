@@ -25,7 +25,7 @@ const IndexContratos = () => {
         setSearchResults(data)
     }
     const submit = (type, data, id) => {
-        if (type == 'add'){
+        if (type === 'add'){
             setSearchResults([...searchResults, data])
         }
         setModalform({show:false})

@@ -2,12 +2,10 @@ import React, { useEffect, useState} from 'react';
 import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
-import { useAppContext } from '../../../Main';
 import { SelectOptions } from '../../../helpers/Data';
 import { RetrieveRecord } from '../../../helpers/Data';
 
 const FormTransfer = ({ hasLabel, type, submit, data}) => {
-  const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({
     user: user.id

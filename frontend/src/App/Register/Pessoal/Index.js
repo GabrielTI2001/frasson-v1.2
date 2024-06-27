@@ -41,14 +41,14 @@ const IndexPessoal = () => {
         HandleSearch(value, 'register/pessoal', setter)
     };
     const submit = (type, data, id) => {
-        if (type == 'add'){
+        if (type === 'add'){
             setSearchResults([...searchResults, data])
         }
-        if (type == 'edit'){
+        if (type === 'edit'){
             setSearchResults(searchResults.map(r => r.id === parseInt(id) ? data : r))
         }
-        if (type == 'delete'){
-            setSearchResults(searchResults.filter(r => r.uuid != data))
+        if (type === 'delete'){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
         }
         setShowModal({show:false})
         setModalDelete({show:false})

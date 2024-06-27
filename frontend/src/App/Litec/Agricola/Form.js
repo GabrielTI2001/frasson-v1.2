@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col, Row} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
@@ -23,7 +23,6 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const navigate = useNavigate();
-  const {id} = useParams()
   const [formData, setFormData] = useState({user: user.id, plantio:[], gleba:gleba || null, colheita:[], safra:'2022/2022'});
   const [message, setMessage] = useState()
   const [safras, setSafras] = useState([])

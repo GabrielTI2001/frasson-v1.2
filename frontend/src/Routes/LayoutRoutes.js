@@ -66,8 +66,7 @@ import IndexIndicators from '../App/Kpi/IndexGeral';
 import ViewIndicator from '../App/Kpi/View';
 //Pipeline
 import Products from '../App/Pipeline/products/products';
-//Pipefy
-
+import SettingsPipe from '../App/Pipeline/Settings';
 //Register
 import IndexPessoal from '../App/Register/Pessoal/Index';
 import ViewPessoal from '../App/Register/Pessoal/View';
@@ -269,8 +268,8 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/pipeline">
           <Route path=":pipe" element={<Products />}/>
-          <Route path=":pipe/:code" element={<Products />}/>
-          <Route path=":pipe/settings" element={< IndexContratos/>}/>
+          <Route path="518984721/processo/:code" element={<Products />}/>
+          <Route path=":pipe/settings" element={<SettingsPipe/>}/>
         </Route>
         <Route path="/processes">
           <Route path="followup" element={<IndexFollowup />}/>

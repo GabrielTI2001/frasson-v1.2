@@ -1,5 +1,5 @@
-import React, { useReducer, useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useReducer, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { PipeContext } from '../../context/Context';
 import { kanbanReducer } from '../../reducers/pipeproductReducer';
 

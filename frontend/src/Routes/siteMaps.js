@@ -1,14 +1,13 @@
-import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faPersonArrowUpFromLine, faDroplet, faLocationDot, faFaucetDrip, 
+import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faDroplet, faLocationDot, faFaucetDrip, 
 faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench,
 faMapLocationDot,
 faFileSignature,
 faTractor,
-faCarTunnel,
 faCartShopping,
 faHandshake,
 faCartPlus} 
 from "@fortawesome/free-solid-svg-icons";
-import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faPerson, faRobot} 
+import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
 
 const user = JSON.parse(localStorage.getItem("user"));

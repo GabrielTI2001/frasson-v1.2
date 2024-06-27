@@ -1,11 +1,11 @@
 import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col } from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { GetRecord, SelectOptions, SelectSearchOptions } from '../../../helpers/Data';
+import { GetRecord, SelectSearchOptions } from '../../../helpers/Data';
 
 const CartorioForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();

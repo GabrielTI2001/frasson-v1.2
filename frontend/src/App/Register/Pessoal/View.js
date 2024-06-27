@@ -122,9 +122,9 @@ const ViewPessoal = () => {
                     </Col>
                 </Row>
                 <address className="row mx-0 gx-0 mb-3">
-                    <div className="mb-1"><FontAwesomeIcon icon={faLocationDot} className="me-2"/>{(pessoa && pessoa.endereco) || '-'}</div>
-                    <div className="mb-1"><FontAwesomeIcon icon={faLocationArrow} className="me-2"/>{pessoa && pessoa.municipio}</div>
-                    <div className="mb-1"><FontAwesomeIcon icon={faMapPin} className="me-2"/>{pessoa && pessoa.cep}</div>
+                    <div className="mb-1"><FontAwesomeIcon icon={faLocationDot} className="me-2"/>{(pessoa && pessoa.logradouro) || '-'}</div>
+                    <div className="mb-1"><FontAwesomeIcon icon={faLocationArrow} className="me-2"/>{pessoa && pessoa.str_municipio}</div>
+                    <div className="mb-1"><FontAwesomeIcon icon={faMapPin} className="me-2"/>{pessoa && pessoa.cep_logradouro}</div>
                 </address>
                 <Row className="mb-3">
                     <div><FontAwesomeIcon icon={faCakeCandles} className="me-2"/>

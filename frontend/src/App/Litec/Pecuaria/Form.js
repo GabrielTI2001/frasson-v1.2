@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col, Row} from 'react-bootstrap';
+import { Button, Form, Col} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import { SelectSearchOptions } from '../../../helpers/Data';
@@ -14,7 +14,6 @@ const FormProdPecuaria = ({ hasLabel, data, type, submit, gleba}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const navigate = useNavigate();
-  const {id} = useParams()
   const [formData, setFormData] = useState({user: user.id, gleba:gleba || null, ano:2022, tipo_producao:'P'});
   const [message, setMessage] = useState()
   const [anos, setAnos] = useState([])

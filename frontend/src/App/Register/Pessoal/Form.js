@@ -1,15 +1,11 @@
 import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col, OverlayTrigger, Tooltip, Row} from 'react-bootstrap';
-import { fetchPessoal, FetchImoveisRurais } from '../../Pipefy/Data';
+import { Button, Form, Col, Row} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { faCircleQuestion, faFilePdf } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { GetRecord, SelectOptions, SelectSearchOptions } from '../../../helpers/Data';
-import { Option } from 'react-bootstrap-icons';
 
 const PessoaForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();

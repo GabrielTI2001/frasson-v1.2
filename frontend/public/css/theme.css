@@ -1443,15 +1443,22 @@ body {
 }
 
 div::-webkit-scrollbar {
-  width: 12px;
-  height: 12px;
+  width: 8px;
+  height: 10px;
   background-color: var(--falcon-body-bg);
   border-radius: 10px;
+  visibility: hidden;
 }
 
 div::-webkit-scrollbar-thumb {
   border-radius: 10px;
   background-color: var(--falcon-secondary);
+  visibility: hidden;
+}
+
+div:hover::-webkit-scrollbar,
+div:hover::-webkit-scrollbar-thumb {
+  visibility: visible;
 }
 
 hr {
