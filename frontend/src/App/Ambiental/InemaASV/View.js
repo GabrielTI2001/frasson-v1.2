@@ -144,7 +144,7 @@ const ViewASV = () => {
                         <strong className="text-primary">{asv.info_user.first_name} {asv.info_user.last_name}</strong>
                         {" em " + 
                             new Date(asv.created_at).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+" às "+
-                            new Date(asv.created_at).toLocaleTimeString('pt-BR', {timeZone: 'UTC'})}
+                            new Date(asv.created_at).toLocaleTimeString('pt-BR')}
                         </span>
                 </Col>
             </Row>

@@ -128,7 +128,7 @@ const ViewCredit = () => {
                 <b style={{fontSize:'10px'}}>Criado por: </b>
                 <span className='fw-bold text-info me-1' style={{fontSize:'10px'}}>{operacao.str_created_by}</span>
                 em {new Date(operacao.created_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})+' às '}
-                {new Date(operacao.created_at).toLocaleTimeString('pt-BR', {timeZone:'UTC'})+' '}
+                {new Date(operacao.created_at).toLocaleTimeString('pt-BR')+' '}
             </div>
             <div>
                 <FontAwesomeIcon icon={faHashtag} className='me-2' /><strong className='me-1'>Operação:</strong>

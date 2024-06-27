@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Card_Produtos, Fase, Pipe
-from .models import Phases_History
+from .models import Phases_History, Card_Coments
 from datetime import datetime
 
 def calcduration(first_in, last_in, last_to):
@@ -25,6 +25,7 @@ class serializerCard_Produtos(serializers.ModelSerializer):
     list_beneficiario = serializers.SerializerMethodField(read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
     history_fases_list = serializers.SerializerMethodField(read_only=True)
+    comments = serializers.SerializerMethodField(read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
@@ -39,6 +40,16 @@ class serializerCard_Produtos(serializers.ModelSerializer):
     def get_fases_list(self, obj):
         fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe_id)]
         return fases_list
+    def get_comments(self, obj):
+        print()
+        comments = [
+            {'id':f.id, 'text':f.text, 
+             'user':{'id':f.created_by.id, 'name':f.created_by.first_name+' '+f.created_by.last_name, 'avatar':f.created_by.profile.avatar.name},
+             'created_at': f.created_at
+            } 
+            for f in Card_Coments.objects.filter(card_produto=obj)
+        ]
+        return comments
     def get_str_created_by(self, obj):
         return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_list_beneficiario(self, obj):
@@ -132,4 +143,12 @@ class listPipe(serializers.ModelSerializer):
         return [{'value':r.id, 'label':r.first_name+' '+r.last_name} for r in responsaveis]
     class Meta:
         model = Pipe
+        fields = '__all__'
+
+class serializerComments(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    def get_user(self, obj):
+        return {'id':obj.created_by.id, 'name':obj.created_by.first_name+' '+obj.created_by.last_name, 'avatar':obj.created_by.profile.avatar.name}
+    class Meta:
+        model = Card_Coments
         fields = '__all__'

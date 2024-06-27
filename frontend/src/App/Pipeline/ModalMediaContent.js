@@ -20,7 +20,6 @@ const ModalMediaContent = ({
           {headingContent && headingContent}
         </Flex>
         {children}
-        {isHr && <hr className="my-4" />}
       </div>
     </Flex>
   );

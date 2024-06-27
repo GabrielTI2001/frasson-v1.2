@@ -87,7 +87,7 @@ const IndexFeedbacks = () => {
                             <Col xl='auto' sm='auto' xs={12}>
                                 <span className='fw-bold me-2'>
                                     {new Date(f.created_at).toLocaleDateString('pt-br', {timeZone:'UTC'})+' '}
-                                    {new Date(f.created_at).toLocaleTimeString('pt-br', {timeZone:'UTC'})}
+                                    {new Date(f.created_at).toLocaleTimeString('pt-br')}
                                 </span>
                                 <OverlayTrigger
                                     overlay={

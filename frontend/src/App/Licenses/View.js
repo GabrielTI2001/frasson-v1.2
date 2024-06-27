@@ -114,7 +114,7 @@ const ViewLicenca = () => {
                         <strong className="text-primary">{licenca.info_user.first_name} {licenca.info_user.last_name}</strong>
                         {" em " + 
                             new Date(licenca.created_at).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+" às "+
-                            new Date(licenca.created_at).toLocaleTimeString('pt-BR', {timeZone: 'UTC'})}
+                            new Date(licenca.created_at).toLocaleTimeString('pt-BR')}
                         </span>
                 </Col>
                 <hr className="mb-2 mt-1 ms-3" style={{width: '98%'}}></hr>

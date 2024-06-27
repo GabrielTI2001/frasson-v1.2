@@ -163,7 +163,7 @@ const KanbanModal = ({show}) => {
                 <span className='fw-bold fs--1 ms-3'>Formulário Inicial</span>
                 <div className='ps-3 text-secondary fs--2'>Criado por {card.str_created_by} em {' '}
                   {new Date(card.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
-                  {', às '+new Date(card.created_at).toLocaleTimeString('pt-BR', {timeZone: 'UTC', hour:"numeric", minute:"numeric"})}
+                  {' às '+new Date(card.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
                 </div>
                 <div className="rounded-top-lg ps-3 pt-1 pb-0">
                   <span className='fw-bold fs--1'>Processo</span>
@@ -244,7 +244,7 @@ const KanbanModal = ({show}) => {
                   )}
                 </div>
               </Col>
-              <Col lg={5}>
+              <Col lg={5} className='overflow-auto modal-column-scroll'>
                 <div className="rounded-top-lg pt-1 pb-0 mb-2">
                   <span className="mb-1 fs--1 fw-bold d-inline-block me-2">Fase Atual</span>
                   <SubtleBadge>{card.str_fase}</SubtleBadge>

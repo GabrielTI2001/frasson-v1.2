@@ -90,7 +90,7 @@ const Notifications = () => {
                                                 <span className="fw-bold text-info-emphasis fs--2">{m.str_recipient+' '}</span>
                                                 <span className="fw-bold text-body fs--2 mb-2">
                                                     em {new Date(m.created_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})+' '}
-                                                    {new Date(m.created_at).toLocaleTimeString('pt-BR', {timeZone:'UTC'})}
+                                                    {new Date(m.created_at).toLocaleTimeString('pt-BR')}
                                                 </span>
                                             </div>
                                         </td>
@@ -124,7 +124,7 @@ const Notifications = () => {
                                                 <span className="fw-bold text-info-emphasis fs--2">{m.str_recipient+' '}</span>
                                                 <span className="fw-bold text-body fs--2 mb-2">
                                                     em {new Date(m.created_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})+' '}
-                                                    {new Date(m.created_at).toLocaleTimeString('pt-BR', {timeZone:'UTC'})}
+                                                    {new Date(m.created_at).toLocaleTimeString('pt-BR')}
                                                 </span>
                                             </div>
                                         </td>
@@ -157,7 +157,7 @@ const Notifications = () => {
                                                 <span className="fw-bold text-info-emphasis fs--2">{m.str_recipient+' '}</span>
                                                 <span className="fw-bold text-body fs--2 mb-2">
                                                     em {new Date(m.created_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})+' '}
-                                                    {new Date(m.created_at).toLocaleTimeString('pt-BR', {timeZone:'UTC'})}
+                                                    {new Date(m.created_at).toLocaleTimeString('pt-BR')}
                                                 </span>
                                             </div>
                                         </td>

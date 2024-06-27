@@ -1,7 +1,6 @@
 export default {
     color:'rgb(44, 143, 229)',
-    border: '0px !important',
-    font: '400 12px 20px'
+    border: '0px !important'
 };
 
 export const mentionInputStyleLight = {
@@ -18,9 +17,8 @@ export const mentionInputStyleLight = {
       highlighter: {
         padding: 9,
         color:'blue',
-        border: '1px solid transparent',
         border: '0px !important',
-        font: '400 12px 20px !important'
+        // font: '400 12px 25px !important'
       },
       input: {
         padding: 9,

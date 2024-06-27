@@ -111,7 +111,7 @@ const ViewFeedback = ({feedback, submit}) =>{
                     <Col xl='auto'>
                         <span className='fw-bold me-2'>
                             {new Date(datafeedback.created_at).toLocaleDateString('pt-br', {timeZone:'UTC'})+' '}
-                            {new Date(datafeedback.created_at).toLocaleTimeString('pt-br', {timeZone:'UTC'})}
+                            {new Date(datafeedback.created_at).toLocaleTimeString('pt-br')}
                         </span>
                     </Col>
                 </Card.Header>
@@ -150,7 +150,7 @@ const ViewFeedback = ({feedback, submit}) =>{
                         <Col xl='auto'>
                             <span className='fw-bold me-2'>
                                 {new Date(r.created_at).toLocaleDateString('pt-br', {timeZone:'UTC'})+' '}
-                                {new Date(r.created_at).toLocaleTimeString('pt-br', {timeZone:'UTC'})}
+                                {new Date(r.created_at).toLocaleTimeString('pt-br')}
                             </span>
                         </Col>
                         <Col xl='auto'>

@@ -136,7 +136,7 @@ const ViewIndicator = () => {
             </Col>
             }
             <div className="fs--1 fw-bold mb-2 text-info-emphasis">
-                Atualizado em {new Date(register.updated_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})} {new Date(register.updated_at).toLocaleTimeString('pt-BR', {timeZone:'UTC'})}
+                Atualizado em {new Date(register.updated_at).toLocaleDateString('pt-BR', {timeZone:'UTC'})} {new Date(register.updated_at).toLocaleTimeString('pt-BR')}
             </div>
         </Row>
         : <div className="text-center"><Spinner></Spinner></div>}

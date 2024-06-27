@@ -1,7 +1,7 @@
 from rest_framework import permissions, viewsets, status
 from rest_framework.response import Response
-from .serializers import serializerPipe, serializerFase, serializerCard_Produtos, listPipe
-from .models import Card_Produtos, Fase, Pipe
+from .serializers import *
+from .models import Card_Produtos, Fase, Pipe, Card_Coments
 from .models import Phases_History
 from datetime import datetime, timedelta
 
@@ -62,3 +62,7 @@ class Card_ProdutosView(viewsets.ModelViewSet):
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class CommentView(viewsets.ModelViewSet):
+    queryset = Card_Coments.objects.all()
+    serializer_class = serializerComments
