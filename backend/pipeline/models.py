@@ -144,3 +144,18 @@ class Phases_History(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name_plural = 'Histórico de Fases'
+
+class Card_Coments(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    card_produto = models.ForeignKey(Card_Produtos, null=True, verbose_name='Card Produtos', on_delete=models.CASCADE)
+    card_prospect = models.ForeignKey(Card_Prospects, null=True, verbose_name='Card Prospects', on_delete=models.CASCADE)
+    card_pagamento = models.ForeignKey(Card_Pagamentos, null=True, verbose_name='Card Pagamentos', on_delete=models.CASCADE)
+    card_cobranca = models.ForeignKey(Card_Cobrancas, null=True, verbose_name='Card Cobranças', on_delete=models.CASCADE)
+    text = models.TextField(null=True, verbose_name='Texto')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Criado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Produtos Frasson'
+    def __str__(self):
+        return self.text

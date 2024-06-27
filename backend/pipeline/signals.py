@@ -2,6 +2,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import Card_Produtos, Phases_History
 from datetime import datetime, timedelta
+import re
+
+mention_pattern = re.compile(r'\@\[(.+?)\]\((.+?)\)')
 
 @receiver(post_save, sender=Card_Produtos)
 def create_or_update_phases_history(sender, instance, created, **kwargs):

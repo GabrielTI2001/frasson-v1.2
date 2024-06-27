@@ -15,6 +15,11 @@ class PipeView(viewsets.ModelViewSet):
             return listPipe
         else:
             return self.serializer_class
+        
+class PipeDataView(viewsets.ModelViewSet):
+    lookup_field = 'code'
+    queryset = Pipe.objects.all()
+    serializer_class = listPipe
 
 class FasesView(viewsets.ModelViewSet):
     queryset = Fase.objects.all()

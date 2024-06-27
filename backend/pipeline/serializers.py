@@ -14,7 +14,9 @@ def calcduration(first_in, last_in, last_to):
     return int(result.total_seconds())
 
 class serializerCard_Produtos(serializers.ModelSerializer):
+    pipe_code = serializers.IntegerField(source='phase.pipe.code', read_only=True)
     str_fase = serializers.CharField(source='phase.descricao', read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
     fases_list = serializers.SerializerMethodField(read_only=True)
     info_contrato = serializers.SerializerMethodField(read_only=True)
     list_beneficiario = serializers.SerializerMethodField(read_only=True)
@@ -37,9 +39,11 @@ class serializerCard_Produtos(serializers.ModelSerializer):
     def get_fases_list(self, obj):
         fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe_id)]
         return fases_list
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_list_beneficiario(self, obj):
         beneficiarios = obj.beneficiario.all()
-        return [{'id':b.id, 'razao_social':b.razao_social, 'cpf_cnpj':b.cpf_cnpj} for b in beneficiarios]
+        return [{'id':b.id, 'uuid':b.uuid, 'razao_social':b.razao_social, 'cpf_cnpj':b.cpf_cnpj} for b in beneficiarios]
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
@@ -47,6 +51,7 @@ class serializerCard_Produtos(serializers.ModelSerializer):
         if obj.instituicao:
             return {
                 'id': obj.instituicao.id,
+                'uuid':obj.instituicao.uuid,
                 'razao_social': obj.instituicao.instituicao.razao_social,
                 'identificacao': obj.instituicao.identificacao,
             }
@@ -56,6 +61,7 @@ class serializerCard_Produtos(serializers.ModelSerializer):
         if obj.detalhamento:
             return {
                 'id': obj.detalhamento.id,
+                'uuid': obj.detalhamento.uuid,
                 'detalhamento_servico': obj.detalhamento.detalhamento_servico,
                 'produto': obj.detalhamento.produto.description,
             }
@@ -65,6 +71,7 @@ class serializerCard_Produtos(serializers.ModelSerializer):
         if obj.contrato:
             return {
                 'id': obj.contrato.id,
+                'uuid': obj.contrato.uuid,
                 'contratante': obj.contrato.contratante.razao_social,
                 'produto': ', '.join([s.produto.description for s in obj.contrato.servicos.all()]),
             }
@@ -119,6 +126,10 @@ class serializerPipe(serializers.ModelSerializer):
         fields = '__all__'
 
 class listPipe(serializers.ModelSerializer):
+    list_pessoas = serializers.SerializerMethodField(read_only=True)
+    def get_list_pessoas(self, obj):
+        responsaveis = obj.pessoas.all()
+        return [{'value':r.id, 'label':r.first_name+' '+r.last_name} for r in responsaveis]
     class Meta:
         model = Pipe
         fields = '__all__'
