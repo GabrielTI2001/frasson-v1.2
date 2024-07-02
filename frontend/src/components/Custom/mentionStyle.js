@@ -1,5 +1,4 @@
 export default {
-    color:'rgb(44, 143, 229)',
     border: '0px !important'
 };
 
@@ -17,7 +16,6 @@ export const mentionInputStyleLight = {
       highlighter: {
         padding: 9,
         color:'blue',
-        border: '0px !important',
         // font: '400 12px 25px !important'
       },
       input: {
@@ -72,6 +70,7 @@ export const mentionInputStyleLight = {
       },
       highlighter: {
         padding: 9,
+        color:'blue',
         border: '1px solid transparent',
       },
       input: {

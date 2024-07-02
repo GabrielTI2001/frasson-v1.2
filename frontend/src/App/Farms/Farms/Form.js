@@ -61,12 +61,15 @@ const FarmForm = ({ hasLabel, type, submit, data}) => {
     e.preventDefault();
     const formDataToSend = new FormData();
     for (const key in formData) {
-      if (key === 'file') {
-        formDataToSend.append('file', formData[key]);
+      if (Array.isArray(formData[key])) {
+        formData[key].forEach(value => {
+          formDataToSend.append(key, value);
+        });
       } else {
         formDataToSend.append(key, formData[key]);
       }
     }
+
     await handleApi(formDataToSend);
   };
 
@@ -93,7 +96,7 @@ const FarmForm = ({ hasLabel, type, submit, data}) => {
           const { kml, str_proprietarios, municipio_localizacao, str_cartorio, ...restData } = filteredData;
           setFormData({...formData, ...restData})
           setDefaultOptions({proprietarios:str_proprietarios.map(p => ({value:p.id, label:p.razao_social})), 
-            cartorio:{value:data.cartorio_registro, label:str_cartorio}, municipio:{value:data.municipio, label:municipio_localizacao}
+            cartorio:str_cartorio ? {value:data.cartorio_registro, label:str_cartorio}:null, municipio:{value:data.municipio, label:municipio_localizacao}
           })
         }
       }

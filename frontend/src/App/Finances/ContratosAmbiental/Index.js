@@ -11,14 +11,14 @@ import { columnsContratos } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import ContratoForm from "./FormContrato";
 
-const IndexContratos = () => {
+const IndexContratosAmbiental = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [modalform, setModalform] = useState({show:false, type:''});
 
     const onClick = (id, uuid) =>{
-        const url = `/finances/contracts/${uuid}`
+        const url = `/finances/contracts/environmental/${uuid}`
         navigate(url)
     }
     const setter = (data) => {
@@ -32,15 +32,15 @@ const IndexContratos = () => {
     }
     const handleChange = async (value) => {
         setSearchResults(null)
-        HandleSearch(value, 'finances/contratos-servicos', setter)
+        HandleSearch(value, 'finances/contratos-ambiental', setter)
     };
 
     useEffect(()=>{
         const Search = async () => {
-            const status = await HandleSearch('', 'finances/contratos-servicos', setter) 
+            const status = await HandleSearch('', 'finances/contratos-ambiental', setter) 
             if (status === 401) navigate("/auth/login");
         }
-        if ((user.permissions && user.permissions.indexOf("view_contratos_servicos") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_contratos_ambiental") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!searchResults){
@@ -51,11 +51,8 @@ const IndexContratos = () => {
     return (
         <>
         <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
             <li className="breadcrumb-item fw-bold" aria-current="page">
-                Contratos Serviços
+                Contratos Serviços Ambiental
             </li>  
         </ol>
         
@@ -85,7 +82,7 @@ const IndexContratos = () => {
                 bordered: true,
                 striped: false,
                 className: 'fs-xs mb-0 overflow-hidden',
-                index_status: 6
+                index_status: 5
             }}
             Click={onClick}
         />
@@ -123,5 +120,5 @@ const IndexContratos = () => {
     );
   };
   
-  export default IndexContratos;
+  export default IndexContratosAmbiental;
   

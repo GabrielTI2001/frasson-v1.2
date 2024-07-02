@@ -7,7 +7,8 @@ import locale, json, statistics, uuid
 from django.core import serializers
 from credit.models import Operacoes_Contratadas
 from environmental.models import APPO_INEMA_Coordenadas, Outorgas_INEMA_Coordenadas
-from pipeline.models import Card_Pagamentos, Card_Cobrancas, Card_Produtos, Card_Prospects
+from pipeline.models import Fluxo_Gestao_Ambiental, Fluxo_Gestao_Credito, Fluxo_Prospects
+from finances.models import Pagamentos, Cobrancas
 from irrigation.models import Cadastro_Pivots
 from processes.models import Processos_Andamento
 from kpi.models import Indicadores_Frasson, Metas_Realizados
@@ -78,7 +79,7 @@ def dashboard_operacoes_contratadas(request):
     produto_gc = 1
     card_type = "Principal"
     phases_produtos = [310429134, 310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179]
-    total_em_aberto = Card_Produtos.objects.filter(card=card_type, detalhamento__produto=produto_gc, phase_id__in=phases_produtos).aggregate(total_aberto=Sum('valor_operacao'))['total_aberto'] or 0
+    total_em_aberto = Fluxo_Gestao_Credito.objects.filter(card=card_type, detalhamento__produto=produto_gc, phase_id__in=phases_produtos).aggregate(total_aberto=Sum('valor_operacao'))['total_aberto'] or 0
 
     #cria o objeto com os valores das metas mensais
     for meta in metas_database:
@@ -183,13 +184,13 @@ def dashboard_gestao_credito(request):
     card_type = "Principal"
 
     #total de operações de crédito em aberto (De AP a FOLLOW UP)
-    total_operacoes_em_aberto = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).aggregate(total=Sum('valor_operacao'))['total'] or 0
+    total_operacoes_em_aberto = Fluxo_Gestao_Credito.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).aggregate(total=Sum('valor_operacao'))['total'] or 0
 
     #busca o valor total de operações por fase (AP a FOLLOW UP)
-    obj_prod_gc = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('phase__descricao', 'phase_id').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')
+    obj_prod_gc = Fluxo_Gestao_Credito.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('phase__descricao', 'phase_id').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')
     
     #busca a quantidade de cards ativos de cada produto(Exceto nas Fases Cancelado e Concluído)
-    obj_produtos = Card_Produtos.objects.exclude(phase_id__in=[310429136, 310429228]).values('detalhamento__produto', 'detalhamento__produto__description').annotate(total=Count('id'))
+    obj_produtos = Fluxo_Gestao_Credito.objects.exclude(phase_id__in=[310429136, 310429228]).values('detalhamento__produto', 'detalhamento__produto__description').annotate(total=Count('id'))
    
     for obj in obj_prod_gc:
         if obj["total"] > 0:
@@ -205,10 +206,10 @@ def dashboard_gestao_credito(request):
         })
 
     #busca os cards criados no ano atual (agrupado por mês)
-    cards_current_year = Card_Produtos.objects.filter(created_at__year=current_year, card=card_type, detalhamento__produto=produto_gc).values('created_at__month').annotate(total=Count('id')).order_by('created_at__month')
+    cards_current_year = Fluxo_Gestao_Credito.objects.filter(created_at__year=current_year, card=card_type, detalhamento__produto=produto_gc).values('created_at__month').annotate(total=Count('id')).order_by('created_at__month')
     
     #busca os cards criados no último ano (agrupado por mês)
-    cards_last_year = Card_Produtos.objects.filter(created_at__year=last_year, card=card_type, detalhamento__produto=produto_gc).values('created_at__month').annotate(total=Count('id')).order_by('created_at__month') 
+    cards_last_year = Fluxo_Gestao_Credito.objects.filter(created_at__year=last_year, card=card_type, detalhamento__produto=produto_gc).values('created_at__month').annotate(total=Count('id')).order_by('created_at__month') 
 
     for mes, card in zip(meses, cards_current_year):
         cards_created_current_year.append({
@@ -221,14 +222,14 @@ def dashboard_gestao_credito(request):
         })
    
     #busca o total de operações em andamento por grupo beneficiários (top 10)
-    total_operacoes_beneficiario = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('beneficiario__razao_social').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')[:10]
+    total_operacoes_beneficiario = Fluxo_Gestao_Credito.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('beneficiarios__razao_social').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')[:10]
     
     for beneficiario in total_operacoes_beneficiario:
         if beneficiario['total'] > 0:
             beneficiarios_operacoes.append({beneficiario["beneficiario__razao_social"]: float(beneficiario["total"])})
 
     #busca o total de operações em andamento por instituição financeira
-    total_operacoes_institucoes = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('instituicao__instituicao__abreviatura').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')
+    total_operacoes_institucoes = Fluxo_Gestao_Credito.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gc).values('instituicao__instituicao__abreviatura').annotate(total=Coalesce(Sum('valor_operacao'), 0, output_field=DecimalField())).order_by('-total')
 
     for instituicao in total_operacoes_institucoes:
         if instituicao['total'] > 0:
@@ -252,8 +253,8 @@ def dashboard_prospects(request):
 
     #fases de START a FORMALIZAÇÃO
     prospects_phases = [310425915, 310425916, 310425917, 310426145, 310426175, 310426184, 310426296, 312006210, 310426297]
-    prospects = Card_Prospects.objects.filter(phase_id__in=prospects_phases)
-    prospects_pv = Card_Prospects.objects.filter(phase_id=310426184)
+    prospects = Fluxo_Prospects.objects.filter(phase_id__in=prospects_phases)
+    prospects_pv = Fluxo_Prospects.objects.filter(phase_id=310426184)
     total_pv_inicial =  prospects_pv.aggregate(total=Sum('proposta_inicial'))['total'] or 0
     media_pv_inicial = prospects_pv.aggregate(media=Avg('percentual_inicial'))['media'] or 0
     
@@ -293,22 +294,25 @@ def dashboard_produtos(request):
     type_card = "Principal"
     produto_gc = 1
     produto_gai = 2
-    processos = Card_Produtos.objects.exclude(phase_id__in=[310429136, 310429228]).filter(card=type_card)
-    fatu_estimado_total = processos.aggregate(total=Sum('faturamento_estimado'))['total'] or 0
-    concluidos_gc = Card_Produtos.objects.filter(phase_id=310429136, card=type_card, detalhamento__produto=produto_gc, created_at__year=current_year).count()
-    concluidos_gai = Card_Produtos.objects.filter(phase_id=310429136, card=type_card, detalhamento__produto=produto_gai, created_at__year=current_year).count()
+    processos = Fluxo_Gestao_Credito.objects.exclude(phase_id__in=[310429136, 310429228])
+    # fatu_estimado_total = processos.aggregate(total=Sum('faturamento_estimado'))['total'] or 0
+    fatu_estimado_total = 0
+    concluidos_gc = Fluxo_Gestao_Credito.objects.filter(phase_id=310429136, card=type_card, detalhamento__produto=produto_gc, created_at__year=current_year).count()
+    concluidos_gai = Fluxo_Gestao_Ambiental.objects.filter(phase_id=310429136, detalhamento__produto=produto_gai, created_at__year=current_year).count()
 
-    fatu_estimado_gai = processos.values('phase__descricao').filter(detalhamento__produto=produto_gai).annotate(total=Sum('faturamento_estimado')).order_by('-total')
-    faturamento_estimado_gai = [{
-        'fase': fatu['phase__descricao'],
-        'total': float(fatu['total'] or 0),
-    } for fatu in fatu_estimado_gai]
+    # fatu_estimado_gai = processos.values('phase__descricao').filter(detalhamento__produto=produto_gai).annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    # faturamento_estimado_gai = [{
+    #     'fase': fatu['phase__descricao'],
+    #     'total': float(fatu['total'] or 0),
+    # } for fatu in fatu_estimado_gai]
+    faturamento_estimado_gai = 0
 
-    fatu_estimado_gc = processos.values('phase__descricao').filter(detalhamento__produto=produto_gc).annotate(total=Sum('faturamento_estimado')).order_by('-total')
-    faturamento_estimado_gc = [{
-        'fase': fatu['phase__descricao'],
-        'total': float(fatu['total'] or 0),
-    } for fatu in fatu_estimado_gc]
+    # fatu_estimado_gc = processos.values('phase__descricao').filter(detalhamento__produto=produto_gc).annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    # faturamento_estimado_gc = [{
+    #     'fase': fatu['phase__descricao'],
+    #     'total': float(fatu['total'] or 0),
+    # } for fatu in fatu_estimado_gc]
+    faturamento_estimado_gc = 0
 
     total_operacoes_andamento = processos.values('phase__descricao').filter(detalhamento__produto=produto_gc).annotate(total=Sum('valor_operacao')).order_by('-total')
     operacoes_andamento = [{
@@ -342,18 +346,18 @@ def dashboard_gestao_ambiental(request):
     phases_produtos = [310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179]
     phases_produtos_fatu_estimado = [310429134, 310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179, 310429196]
 
-    processos_instituicoes = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('instituicao__instituicao__abreviatura').annotate(count=Count('id')).order_by('-count')
+    processos_instituicoes = Fluxo_Gestao_Credito.objects.filter(phase_id__in=phases_produtos, detalhamento__produto=produto_gai).values('instituicao__instituicao__abreviatura').annotate(count=Count('id')).order_by('-count')
 
     for processo in processos_instituicoes:
         processos[processo['instituicao__instituicao__abreviatura']] = processo['count']
 
-    faturamento_fases = Card_Produtos.objects.filter(phase_id__in=phases_produtos_fatu_estimado, card=card_type, detalhamento__produto=produto_gai).values('phase__descricao').annotate(total=Sum('faturamento_estimado')).order_by('-total')
+    # faturamento_fases = Fluxo_Gestao_Ambiental.objects.filter(phase_id__in=phases_produtos_fatu_estimado, detalhamento__produto=produto_gai).values('phase__descricao').annotate(total=Sum('faturamento_estimado')).order_by('-total')
     
-    for phase in faturamento_fases:
-        faturamento[phase['phase__descricao']] = float(phase['total']) if phase['total'] != None else 0
+    # for phase in faturamento_fases:
+    #     faturamento[phase['phase__descricao']] = float(phase['total']) if phase['total'] != None else 0
     
-    processos_abertos = Card_Produtos.objects.filter(created_at__year=current_year, phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
-    processos_abertos_last = Card_Produtos.objects.filter(created_at__year=last_year, phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
+    processos_abertos = Fluxo_Gestao_Ambiental.objects.filter(created_at__year=current_year, phase_id__in=phases_produtos, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
+    processos_abertos_last = Fluxo_Gestao_Ambiental.objects.filter(created_at__year=last_year, phase_id__in=phases_produtos, detalhamento__produto=produto_gai).values('created_at__month').annotate(count=Count('id')).order_by('created_at__month')
 
     for processo in processos_abertos:
         abertos.append(processo['count'])
@@ -361,12 +365,12 @@ def dashboard_gestao_ambiental(request):
     for processo in processos_abertos_last:
         abertos_last.append(processo['count'])
 
-    qtd_processos = Card_Produtos.objects.filter(phase_id__in=phases_produtos, card=card_type, detalhamento__produto=produto_gai).count()
+    qtd_processos = Fluxo_Gestao_Ambiental.objects.filter(phase_id__in=phases_produtos, detalhamento__produto=produto_gai).count()
     qtd_pocos = APPO_INEMA_Coordenadas.objects.all().count()
     qtd_outorgas = Outorgas_INEMA_Coordenadas.objects.all().count()
     qtd_pivots = Cadastro_Pivots.objects.all().count()
 
-    days_processos = Processos_Andamento.objects.filter(processo__card=card_type, processo__detalhamento__produto=produto_gai)
+    days_processos = Processos_Andamento.objects.filter(processo__detalhamento__produto=produto_gai)
     tempo_dias_requerimento = []
     tempo_dias_formacao = []
     tempo_dias_formacao_aberto = []
@@ -416,7 +420,7 @@ def pagamentos_pipefy_dashboard(request):
         searched_year = current_year
         searched_month = current_month
 
-    anos = Card_Pagamentos.objects.values_list('data_vencimento__year', flat=True).distinct()
+    anos = Pagamentos.objects.values_list('data_vencimento__year', flat=True).distinct()
     meses = [{'number': 1, 'abrev': 'JAN', 'name': 'janeiro'},
         {'number': 2, 'abrev': 'FEV', 'name': 'fevereiro'},
         {'number': 3, 'abrev': 'MAR', 'name': 'março'},
@@ -431,10 +435,10 @@ def pagamentos_pipefy_dashboard(request):
         {'number': 12, 'abrev': 'DEZ', 'name': 'dezembro'}
     ]
     #TOTAL DE PAGAMENTOS POR FASE
-    query_pagamentos_fases = Card_Pagamentos.objects.filter(query_search).aggregate(
-        conferencia=Sum(Case(When(phase_id=317163730, then='valor_pagamento'), default=0, output_field=DecimalField())),
-        agendado=Sum(Case(When(phase_id=317163731, then='valor_pagamento'), default=0, output_field=DecimalField())),
-        pago=Sum(Case(When(phase_id=317163732, then='valor_pagamento'), default=0, output_field=DecimalField())))
+    query_pagamentos_fases = Pagamentos.objects.filter(query_search).aggregate(
+        conferencia=Sum(Case(When(status='s', then='valor_pagamento'), default=0, output_field=DecimalField())),
+        agendado=Sum(Case(When(status='s', then='valor_pagamento'), default=0, output_field=DecimalField())),
+        pago=Sum(Case(When(status='s', then='valor_pagamento'), default=0, output_field=DecimalField())))
     
     total_conferencia = query_pagamentos_fases.get('conferencia', 0) or 0
     total_agendado = query_pagamentos_fases.get('agendado', 0) or 0
@@ -447,7 +451,7 @@ def pagamentos_pipefy_dashboard(request):
     percentual_pago = round((total_pago / total_pagamentos) * 100, 1) if total_pagamentos != 0 else 0
  
     #PAGAMENTOS POR CATEGORIA
-    pagamentos_categoria = Card_Pagamentos.objects.filter(query_search).values('categoria__category').annotate(total=Sum('valor_pagamento')).order_by('-total')[:10]
+    pagamentos_categoria = Pagamentos.objects.filter(query_search).values('categoria__category').annotate(total=Sum('valor_pagamento')).order_by('-total')[:10]
     for pagamento in pagamentos_categoria:
         categorias[pagamento['categoria__category']] = pagamento['total']
 
@@ -477,11 +481,11 @@ def cobrancas_pipefy_dashboard(request):
     produto_avaliacao = 864795628
     produto_tecnologia = 864795734
     #COBRANÇAS ABERTAS
-    query_cobrancas_abertas= Card_Cobrancas.objects.aggregate(
-        aguardando=Sum(Case(When(phase_id=317532037, then='saldo_devedor'), default=0, output_field=DecimalField())),
-        notificacao=Sum(Case(When(phase_id=317532038, then='saldo_devedor'), default=0, output_field=DecimalField())),
-        faturamento=Sum(Case(When(phase_id=318663454, then='saldo_devedor'), default=0, output_field=DecimalField())),
-        confirmacao=Sum(Case(When(phase_id=317532040, then='saldo_devedor'), default=0, output_field=DecimalField())))
+    query_cobrancas_abertas= Cobrancas.objects.aggregate(
+        aguardando=Sum(Case(When(status='s', then='saldo_devedor'), default=0, output_field=DecimalField())),
+        notificacao=Sum(Case(When(status='s', then='saldo_devedor'), default=0, output_field=DecimalField())),
+        faturamento=Sum(Case(When(status='s', then='saldo_devedor'), default=0, output_field=DecimalField())),
+        confirmacao=Sum(Case(When(status='s', then='saldo_devedor'), default=0, output_field=DecimalField())))
 
     total_aguardando_distribuicao = query_cobrancas_abertas.get('aguardando', 0) or 0
     total_notificacao = query_cobrancas_abertas.get('notificacao', 0) or 0
@@ -491,7 +495,7 @@ def cobrancas_pipefy_dashboard(request):
     #id das fases de cobranças abertas (não pagas - AD, Not, Fatu e Conf)
     id_phases_cobracas_abertas = [317532037, 317532038, 318663454, 317532040]
     #CÁLCULO TOTAL ABERTO POR PRODUTO
-    query_aberto_produtos= Card_Cobrancas.objects.filter(phase_id__in=id_phases_cobracas_abertas).aggregate(
+    query_aberto_produtos= Cobrancas.objects.filter(status='s').aggregate(
         gc=Sum(Case(When(detalhamento__produto=produto_gc, then='saldo_devedor'), default=0, output_field=DecimalField())),
         gai=Sum(Case(When(detalhamento__produto=produto_gai, then='saldo_devedor'), default=0, output_field=DecimalField())),
         ava=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='saldo_devedor'), default=0, output_field=DecimalField())),
@@ -503,7 +507,7 @@ def cobrancas_pipefy_dashboard(request):
     aberto_tecnologia = query_aberto_produtos.get('tec', 0) or 0
 
     #CÁLCULO VALOR TOAL FATURADO (CONSOLIDADO) POR PRODUTO - ANO ATUAL
-    query_faturamento_consolidado= Card_Cobrancas.objects.filter(phase_id=317532039, data_pagamento__year=current_year).aggregate(
+    query_faturamento_consolidado= Cobrancas.objects.filter(status='s', data_pagamento__year=current_year).aggregate(
         gc=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
         gai=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
         ava=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),

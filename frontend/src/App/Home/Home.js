@@ -9,6 +9,7 @@ import { GetRecord, HandleSearch } from '../../helpers/Data';
 const Home = () => {
     const {profileState:{perfil}} = useContext(ProfileContext)
     const {config: {theme}} = useAppContext();
+    const user = JSON.parse(localStorage.getItem('user'))
     const [data, setData] = useState()
     const [pipes, setPipes] = useState()
 
@@ -16,7 +17,7 @@ const Home = () => {
         const getdata = async () =>{
             const dados = await GetRecord('', 'register/landing')
             setData(dados)
-            const status = await HandleSearch('', 'pipeline/pipes', (data) => setPipes(data))
+            const status = await HandleSearch('', 'pipeline/pipe-data', (data) => setPipes(data), `?user=${user.id}`)
         }   
         getdata()
     }, [])

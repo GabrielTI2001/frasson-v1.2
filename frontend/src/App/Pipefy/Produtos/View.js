@@ -25,7 +25,7 @@ const ViewCardProduto = () => {
 
     useEffect(() =>{
         const getdata = async () =>{
-            const status = await RetrieveRecord(id, 'pipefy/cards/produtos', setter)
+            const status = await RetrieveRecord(id, 'pipefy/fluxos/gestao-ambiental', setter)
             if(status === 401){
                 navigate("/auth/login")
             }

@@ -3,13 +3,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Profile
 from rest_framework import status
-from djoser.views import UserViewSet, TokenCreateView
+from djoser.views import UserViewSet
 from djoser import utils
 from djoser.conf import settings
 from .models import Allowed_Emails
 from django.views import View
 from django.http import JsonResponse
 from .models import User
+from pipeline.models import Pipe
 from .serializers import CustomUserCreateSerializer, serializerProfile, ListUsers, serAllowed_Emails
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -96,8 +97,11 @@ class ListUserView(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)
+        pipe_term = self.request.query_params.get('pipe', None)
         if search_term:
             queryset = queryset.filter(Q(first_name__icontains=search_term) | Q(last_name__icontains=search_term))
+        if pipe_term:
+            queryset = Pipe.objects.get(code=int(pipe_term)).pessoas.all()
         return queryset
 
 class AllowedEmailsView(viewsets.ModelViewSet):

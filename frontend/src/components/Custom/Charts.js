@@ -217,7 +217,7 @@ export const ColumnLineChart = ({valuesline, valuescolumn, columns, names, title
   );
 };
 
-export const BarChart = ({columns, title, height, series, hidescale, max, percentual}) => {
+export const BarChart = ({columns, title, height, series, hidescale, max, percentual, ticks}) => {
   const {config: {theme}} = useAppContext();
   const options = {
     chart: {
@@ -228,7 +228,7 @@ export const BarChart = ({columns, title, height, series, hidescale, max, percen
       }
     },
     dataLabels: {
-      enabled: hidescale,
+      enabled: false,
       formatter: function (value) {
         return percentual ? value.toLocaleString('pt-BR', { minimumFractionDigits: 2 }) + '%' : value.toLocaleString('pt-BR', { maximumFractionDigits: 2 })
       }
@@ -269,7 +269,6 @@ export const BarChart = ({columns, title, height, series, hidescale, max, percen
       }
     },
     xaxis: {
-      categories: columns,
       labels: {
         show: !hidescale,
         style: {
@@ -284,14 +283,10 @@ export const BarChart = ({columns, title, height, series, hidescale, max, percen
       }
     },
     yaxis: {
-      max: max ? max : Math.max(...series[0].data) + 2, // Definindo o valor máximo personalizado
-      tickAmount: 4,
-      min: 0,
-      labels: {
-          style: {
-              colors: theme === 'dark' ? '#fff' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
-          }
+      axisTicks: {
+        show: false
       },
+      min: 0,
     }
   }
 
@@ -305,12 +300,12 @@ export const BarChart = ({columns, title, height, series, hidescale, max, percen
   );
 };
 
-export const ColumnChart = ({columns, title, series, height}) => {
+export const ColumnChart = ({columns, title, series, height, ticks}) => {
   const {config: {theme}} = useAppContext();
 
   const options = {
     chart: {
-      height: 350,
+      height: height || 350,
       type: 'column',
       zoom: {
         enabled: false
@@ -349,6 +344,7 @@ export const ColumnChart = ({columns, title, series, height}) => {
     },
     xaxis: {
       categories: columns,
+      tickAmount: ticks || 8,
       labels: {
         style: {
             colors: theme === 'dark' ? '#8299b5' : 'rgba(12, 23, 56, 1)', // Cor dos rótulos das categorias (eixo x)
@@ -356,8 +352,8 @@ export const ColumnChart = ({columns, title, series, height}) => {
       }
     },
     yaxis: {
-        max: Math.max(...series[0].data) + 2, // Definindo o valor máximo personalizado
-        tickAmount: 4,
+        max: series[0].data.length > 0 ? Math.max(...series[0].data) + 2 : 100, // Definindo o valor máximo personalizado
+        tickAmount: ticks || 4,
         min: 0,
         labels: {
             style: {
@@ -366,12 +362,10 @@ export const ColumnChart = ({columns, title, series, height}) => {
         }
     }
   }
-
   return (
     <Chart
       options={options}
       series={series}
-      type="line"
       height={height}
     />
   );

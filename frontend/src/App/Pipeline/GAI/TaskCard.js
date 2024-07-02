@@ -46,7 +46,7 @@ export const TaskDropMenu = ({ card, click }) => {
       type: 'REMOVE_TASK_CARD',
       payload: {idcard: card.id}
     });
-    navigate(`/pipeline/${pipe}`)
+    navigate(`/pipeline/518984721`)
     kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   }
 
@@ -64,7 +64,7 @@ export const TaskDropMenu = ({ card, click }) => {
         <FontAwesomeIcon icon={faEllipsisV} transform="shrink-2" className='fs-2'/>
       </Dropdown.Toggle>
       <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
-        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/cards/produtos/${card.code}/`})}}>
+        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/fluxos/gestao-ambiental/${card.code}/`})}}>
           Excluir Card
         </Dropdown.Item>
         <Dropdown.Item>Copy link</Dropdown.Item>
@@ -82,7 +82,7 @@ const TaskCard = ({
   const navigate = useNavigate()
   const {pipe, code} = useParams()
   const handleModalOpen = () => {
-    navigate(`/pipeline/${pipe}/processo/${task.code}`)
+    navigate(`/pipeline/518984721/processo/${task.code}`)
     kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {card: task} });
   };
   // styles we need to apply on draggables
@@ -119,12 +119,12 @@ const TaskCard = ({
                 <span className='d-block'>#{task && task.code}</span>
               </div>
               <div className='mb-1'>
-                <label className='mb-0 text-uppercase fs--2'>Card</label><br></br>
-                <SubtleBadge bg='secondary' className='me-2 fw-normal'>{task && task.card}</SubtleBadge> 
-              </div>
-              <div className='mb-1'>
                 <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Beneficiário</label>
                 <span className='d-block'>{task && task.str_beneficiario}</span>
+              </div>
+              <div className='mb-1'>
+                <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Instituição</label>
+                <span className='d-block'>{task && task.str_instituicao}</span>
               </div>
               <div className='mb-1'>
                 <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Data de Abertura</label>
@@ -136,8 +136,8 @@ const TaskCard = ({
                   Venc {new Date(task.data_vencimento).toLocaleDateString('pt-BR', options)}
                 </SubtleBadge> 
                 {calcdif(task.data_vencimento) > 0 
-                  ? <span style={{fontSize:'0.7rem'}}>em {parseInt(calcdif(task.data_vencimento))} dias</span>
-                  : <span style={{fontSize:'0.7rem'}}>{parseInt(calcdif(task.data_vencimento)) * -1} dias atrás</span>
+                  ? <span style={{fontSize:'0.7rem'}}>em {parseInt(calcdif(task.data_vencimento))} dia(s)</span>
+                  : <span style={{fontSize:'0.7rem'}}>{parseInt(calcdif(task.data_vencimento)) * -1} dia(s) atrás</span>
                 }
               </div>
               }

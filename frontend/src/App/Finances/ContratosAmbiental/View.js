@@ -10,8 +10,6 @@ import ModalDelete from '../../../components/Custom/ModalDelete';
 import { useAppContext } from '../../../Main';
 import FormEtapa from './Form';
 import ContratoForm from './FormContrato';
-// import FormAcomp from './FormAcomp';
-// import FormProcesso from './FormProcesso';
 
 const ViewContrato = () => {
     const {id} = useParams()
@@ -45,12 +43,12 @@ const ViewContrato = () => {
 
     useEffect(() =>{
         const getdata = async () =>{
-            const status = await RetrieveRecord(id, 'finances/contratos-servicos', setter)
+            const status = await RetrieveRecord(id, 'finances/contratos-ambiental', setter)
             if(status === 401){
                 navigate("/auth/login")
             }
         }
-        if ((user.permissions && user.permissions.indexOf("view_contratos_servicos") === -1) && !user.is_superuser){
+        if ((user.permissions && user.permissions.indexOf("view_contratos_ambiental") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
         if (!card){
@@ -63,10 +61,10 @@ const ViewContrato = () => {
     <>
     <ol className="breadcrumb breadcrumb-alt fs-xs">
         <li className="breadcrumb-item fw-bold">
-            <Link className="link-fx text-primary" to={'/finances/contracts'}>Contratos</Link>
+            <Link className="link-fx text-primary" to={'/finances/contracts/environmental'}>Contratos Ambiental</Link>
         </li>
         <li className="breadcrumb-item fw-bold" aria-current="page">
-            Processo {card && card.processo}
+            {card && card.str_contratante}
         </li>  
     </ol>
     {card ? <>
@@ -82,20 +80,17 @@ const ViewContrato = () => {
                     <strong className='fs--1 fw-bold d-block'>{card.str_contratante}</strong>
                     <strong className='fs--2 fw-bold d-block mb-2'>{card.str_cpf}</strong>
                     {card.str_produtos.split(', ').map(p =>
-                        <span className='fs--2 badge bg-primary' key={p}>{p}</span>
+                        <span className='fs--2 badge bg-primary me-2' key={p}>{p}</span>
                     )}
-                    
                 </Col>
             </Row>
 
             <strong className='mt-2 mb-1'>Serviços Contratados</strong>
-            <Row className='mb-2'>
-                <Col>
-                    {card.str_servicos.map(s =>
-                        <span className='fs--2 badge bg-secondary fw-normal' key={s.value}>{s.label}</span>
-                    )}
-                </Col>
-            </Row>
+            <div className='mb-2'>            
+                {card.str_servicos.map(s =>
+                    <span className='fs--2 badge bg-secondary fw-normal me-2' key={s.value}>{s.label}</span>
+                )}
+            </div>
 
             <Row className='gy-1'>
                 <Col className='mt-0' xl={6} xs={12}>
@@ -139,7 +134,7 @@ const ViewContrato = () => {
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
                     <Link className="text-decoration-none btn btn-danger shadow-none fs--2"
                         style={{padding: '2px 8px'}} 
-                        onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/finances/contratos-servicos/${card.uuid}/`})}
+                        onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/finances/contratos-ambiental/${card.uuid}/`})}
                     >
                         <FontAwesomeIcon icon={faTrash}/> Excluir
                     </Link>
@@ -182,7 +177,7 @@ const ViewContrato = () => {
                         <td className="text-center text-middle fs--2">
                             <FontAwesomeIcon icon={faPencil} className='me-2' onClick={() => setModalform({show:true, data:e})}/>
                             <FontAwesomeIcon icon={faTrash} 
-                                onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/finances/contratos-pagamentos/${e.id}/`})}
+                                onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/finances/contratos-pagamentos-ambiental/${e.id}/`})}
                             />
                         </td>
                     </tr>
@@ -261,7 +256,7 @@ const ViewContrato = () => {
                 : <FormEtapa type='edit' contrato={card} data={modalform.data} submit={submit}/>
             )}
             {card && modalform.type === 'c' &&
-                <ContratoForm type='edit' hasLabel data={card} />
+                <ContratoForm type='edit' hasLabel data={card} submit={submit} />
             }
             </Row>
         </Modal.Body>

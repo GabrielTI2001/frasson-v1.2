@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
 from .models import Feedbacks_Category, Feedbacks_System, Welcome_Messages, Detalhamento_Servicos, Instituicoes_Parceiras, Cartorios_Registro
-from pipeline.models import Card_Produtos
-from finances.models import Contratos_Servicos_Pagamentos
+from pipeline.models import Fluxo_Gestao_Ambiental, Fluxo_Gestao_Credito
+from finances.models import Contratos_Ambiental, Contratos_Ambiental_Pagamentos
 from .serializers import *
 from rest_framework.parsers import MultiPartParser, FormParser
 import os
@@ -16,11 +16,13 @@ from rest_framework import permissions, viewsets, status
 from .models import Cadastro_Pessoal, Instituicoes_Razao_Social
 
 def home(request):
-    produtos_count = Card_Produtos.objects.all().count()
+    fluxo_gai_count = Fluxo_Gestao_Ambiental.objects.all().count()
+    fluxo_gc_count = Fluxo_Gestao_Credito.objects.all().count()
     welcome_message = Welcome_Messages.objects.order_by("?").values('message').first()
     data_hoje_str = date.today().strftime("%A, %d de %B de %Y")
     context = {
-        'produtos_count': produtos_count,
+        'fluxo_gai_count': fluxo_gai_count,
+        'fluxo_gc_count': fluxo_gc_count,
         'message': welcome_message['message'],
         'str_data_hoje': data_hoje_str
     }
@@ -272,23 +274,22 @@ class Detalhamento_ServicosView(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)
-        all_term = self.request.query_params.get('all', None)
-        contrato_term = self.request.query_params.get('contrato', None)
+        contrato_gai = self.request.query_params.get('contratogai', None)
+        produto = self.request.query_params.get('produto', None)
+        query = Q()
         if search_term:
-            queryset = queryset.filter(
-                Q(detalhamento_servico__icontains=search_term) | Q(produto__description__icontains=search_term)
-            )
-        if all_term:
-            queryset = queryset.order_by('-created_at')
-        if contrato_term:
-            subquery1 = Contratos_Servicos_Pagamentos.objects.filter(servico_id=OuterRef('id'), contrato_id=contrato_term
+            query &= (Q(detalhamento_servico__icontains=search_term) | Q(produto__description__icontains=search_term))
+        if produto:
+            query &= Q(produto__acronym=produto)
+        if contrato_gai:
+            subquery1 = Contratos_Ambiental_Pagamentos.objects.filter(servico_id=OuterRef('id'), contrato_id=contrato_gai
                 ).values('servico_id').annotate(total=Count('id')).values('total')[:1]
-            servicos_contrato = Contratos_Servicos.objects.get(pk=contrato_term).servicos.all()
+            servicos_contrato = Contratos_Ambiental.objects.get(pk=contrato_gai).servicos.all()
             queryset = queryset.annotate(
                 total_etapas=Coalesce(Subquery(subquery1, output_field=IntegerField()), 0)
-            ).filter(id__in=[s.id for s in servicos_contrato], total_etapas__lt=3)
-        else:
-            queryset = queryset.order_by('-created_at')[:10]
+            )
+            query &= (Q(id__in=[s.id for s in servicos_contrato]) & Q(total_etapas__lt=3))
+        queryset = queryset.filter(query)
         return queryset
 
 class Instituicoes_ParceirasView(viewsets.ModelViewSet):

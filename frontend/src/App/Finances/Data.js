@@ -133,11 +133,6 @@ export const columnsContratos = [
     headerProps: { className: 'text-900 p-1' }
   },
   {
-    accessor: 'percentual',
-    Header: '% GC',
-    headerProps: { className: 'text-900 p-1' }
-  },
-  {
     accessor: 'valor',
     Header: 'Valor GAI',
     headerProps: { className: 'text-900 p-1' }

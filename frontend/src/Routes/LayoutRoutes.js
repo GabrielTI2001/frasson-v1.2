@@ -47,8 +47,8 @@ import IndexMovimentacoes from '../App/Finances/FluxoCaixa/IndexMoviments';
 import IndexReembolsos from '../App/Finances/FluxoCaixa/IndexRefunds';
 import ReportPagamentos from '../App/Finances/Reports/Pagamentos';
 import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
-import IndexContratos from '../App/Finances/Contratos/Index';
-import ViewContrato from '../App/Finances/Contratos/View';
+import IndexContratos from '../App/Finances/ContratosAmbiental/Index';
+import ViewContrato from '../App/Finances/ContratosAmbiental/View';
 //Glebas
 import IndexGlebas from '../App/Glebas/Index';
 import MapaGlebas from '../App/Glebas/Mapa';
@@ -65,7 +65,7 @@ import IndexMyIndicators from '../App/Kpi/Index';
 import IndexIndicators from '../App/Kpi/IndexGeral';
 import ViewIndicator from '../App/Kpi/View';
 //Pipeline
-import Products from '../App/Pipeline/products/products';
+import Products from '../App/Pipeline/GAI/products';
 import SettingsPipe from '../App/Pipeline/Settings';
 //Register
 import IndexPessoal from '../App/Register/Pessoal/Index';
@@ -115,6 +115,7 @@ import KMLPolygon from '../App/Services/Tools/KMLPolygon';
 import ServicesMaps from '../App/Services/Maps';
 import WebSocketComponent from '../App/Pipeline/Websocket';
 import ViewCredit from '../App/Credit/View';
+import IndexContratosAmbiental from '../App/Finances/ContratosAmbiental/Index';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -234,8 +235,8 @@ const LayoutRoutes = () => {
           <Route path="refunds" element={<IndexReembolsos />}/>
           <Route path="billings" element={<ReportPagamentos />}/>
           <Route path="revenues" element={<ReportCobrancas />}/>
-          <Route path="contracts" element={<IndexContratos />}/>
-          <Route path="contracts/:id" element={<ViewContrato />}/>
+          <Route path="contracts/environmental" element={<IndexContratosAmbiental />}/>
+          <Route path="contracts/environmental/:id" element={<ViewContrato />}/>
         </Route>
         <Route path="/glebas">
           <Route path="" element={<IndexGlebas />}/>
@@ -267,8 +268,10 @@ const LayoutRoutes = () => {
         <Route path="/pipefy">
         </Route>
         <Route path="/pipeline">
-          <Route path=":pipe" element={<Products />}/>
+          <Route path="518984721" element={<Products />}/>
           <Route path="518984721/processo/:code" element={<Products />}/>
+          <Route path="519851272" element={<NotFound />}/>
+          <Route path="519851272/processo/:code" element={<NotFound />}/>
           <Route path=":pipe/settings" element={<SettingsPipe/>}/>
         </Route>
         <Route path="/processes">

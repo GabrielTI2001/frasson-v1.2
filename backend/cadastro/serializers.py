@@ -5,7 +5,7 @@ from backend.frassonUtilities import Frasson
 from rest_framework import serializers
 from .models import Detalhamento_Servicos, Cadastro_Pessoal, Produtos_Frasson, Cartorios_Registro, Categoria_Cadastro
 from .models import Instituicoes_Parceiras, Contas_Bancarias_Clientes, Instituicoes_Razao_Social, Grupos_Clientes
-from finances.models import Contratos_Servicos
+from finances.models import Contratos_Ambiental
 from datetime import datetime
 import requests, json, locale, re, os
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL, TOKEN_GOOGLE_MAPS_API
@@ -353,7 +353,7 @@ class serializerInstituicoes_Parceiras(serializers.ModelSerializer):
     razao_social = serializers.CharField(source='instituicao.razao_social', required=False, read_only=True)
     class Meta:
         model = Instituicoes_Parceiras
-        fields = ['id', 'razao_social', 'identificacao']
+        fields = ['id', 'razao_social', 'identificacao', 'instituicao']
 
 class listInstituicoes_RazaoSocial(serializers.ModelSerializer):
     class Meta:
@@ -373,5 +373,5 @@ class serializerDetalhamento_Servicos(serializers.ModelSerializer):
 class serializerContratos_Servicos(serializers.ModelSerializer):
     contratante = serializers.CharField(source='contratante.razao_social', required=False, read_only=True)
     class Meta:
-        model = Contratos_Servicos
+        model = Contratos_Ambiental
         fields = ['id', 'contratante', 'produto']

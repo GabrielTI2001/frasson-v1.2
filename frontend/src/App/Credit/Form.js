@@ -65,7 +65,13 @@ const OperacoesForm = ({ hasLabel, type, submit, data}) => {
           formDataToSend.append('file', formData[key][i]);
         }
       } else {
-        formDataToSend.append(key, formData[key]);
+        if (Array.isArray(formData[key])) {
+          formData[key].forEach(value => {
+            formDataToSend.append(key, value);
+          });
+        } else {
+          formDataToSend.append(key, formData[key]);
+        }
       }
     }
     await handleApi(formDataToSend);

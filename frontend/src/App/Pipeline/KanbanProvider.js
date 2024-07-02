@@ -43,7 +43,7 @@ const KanbanProvider = ({ children, code }) => {
           type: 'SET_DATA',
           payload: {
             fases: data.fase_set,
-            pipe: data,
+            pipe: {code:data.code, pessoas:data.pessoas, descricao:data.descricao, id:data.id},
             kanbanModal: {show: false, modalContent: {}}
             // ... outras propriedades conforme necessário
           }

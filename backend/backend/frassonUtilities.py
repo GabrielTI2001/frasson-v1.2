@@ -5,8 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, TOKEN_API_INFOSIMPLES
 from environmental.models import Outorgas_INEMA_Coordenadas, APPO_INEMA_Coordenadas
 from administrator.models import RequestsAPI
-from finances.models import Reembolso_Cliente, Resultados_Financeiros, Transferencias_Contas, Caixas_Frasson
-from pipeline.models import Card_Cobrancas, Card_Pagamentos
+from finances.models import Reembolso_Cliente, Resultados_Financeiros, Transferencias_Contas, Caixas_Frasson, Cobrancas, Pagamentos
 from .pipefyUtils import InsertRegistros, ids_pipes_databases, insert_webhooks, init_data
 from pygc import great_circle
 import numpy as np
@@ -235,8 +234,8 @@ class Frasson(object):
         total_saldo_inicial = sum(saldos_iniciais.values())
 
         #TOTAL COBRANÇAS E PAGAMENTOS
-        cobrancas = Card_Cobrancas.objects.filter(phase_id=317532039, data_pagamento__year__in=years).aggregate(total=Sum('valor_faturado'))['total'] or 0
-        pagamentos = Card_Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year__in=years).aggregate(total=Sum('valor_pagamento'))['total'] or 0
+        cobrancas = Cobrancas.objects.filter(phase_id=317532039, data_pagamento__year__in=years).aggregate(total=Sum('valor_faturado'))['total'] or 0
+        pagamentos = Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year__in=years).aggregate(total=Sum('valor_pagamento'))['total'] or 0
         
         #TOTAL RESULTADOS FINANCEIROS
         query_resultados_financeiros = Resultados_Financeiros.objects.filter(data__year__in=years).aggregate(
@@ -342,7 +341,7 @@ class Frasson(object):
 
         #TOTAL PAGAMENTOS POR CAIXA (PAGOS)
         pagamentos = {}
-        pagamentos_db = Card_Pagamentos.objects.filter(phase_id=317163732).values('caixa').annotate(total=Sum('valor_pagamento'))
+        pagamentos_db = Pagamentos.objects.filter(status='e').values('caixa').annotate(total=Sum('valor_pagamento'))
         for caixa in caixas:
             for pagamento in pagamentos_db:
                 if caixa['id'] in pagamento.values():
@@ -354,7 +353,7 @@ class Frasson(object):
         
         #TOTAL COBRANÇAS POR CAIXA (PAGOS)
         cobrancas = {}
-        cobrancas_db = Card_Cobrancas.objects.filter(phase_id=317532039).values('caixa').annotate(total=Sum('valor_faturado'))
+        cobrancas_db = Cobrancas.objects.filter(status='e').values('caixa').annotate(total=Sum('valor_faturado'))
         for caixa in caixas:
             for pagamento in cobrancas_db:
                 if caixa['id'] in pagamento.values():
@@ -375,11 +374,11 @@ class Frasson(object):
             colors[caixa['name']] = 'primary' if saldo >= 0 else 'danger'
 
         #FATURAMENTO CONSOLIDADO POR PRODUTO
-        query_cobrancas_abertas= Card_Cobrancas.objects.aggregate(
-            aguardando=Sum(Case(When(phase_id=317532037, then='saldo_devedor'), default=0, output_field=DecimalField())),
-            notificacao=Sum(Case(When(phase_id=317532038, then='saldo_devedor'), default=0, output_field=DecimalField())),
-            faturamento=Sum(Case(When(phase_id=318663454, then='saldo_devedor'), default=0, output_field=DecimalField())),
-            confirmacao=Sum(Case(When(phase_id=317532040, then='saldo_devedor'), default=0, output_field=DecimalField())))
+        query_cobrancas_abertas= Cobrancas.objects.aggregate(
+            aguardando=Sum(Case(When(status='e', then='saldo_devedor'), default=0, output_field=DecimalField())),
+            notificacao=Sum(Case(When(status='e', then='saldo_devedor'), default=0, output_field=DecimalField())),
+            faturamento=Sum(Case(When(status='e', then='saldo_devedor'), default=0, output_field=DecimalField())),
+            confirmacao=Sum(Case(When(status='e', then='saldo_devedor'), default=0, output_field=DecimalField())))
 
         total_aguardando = query_cobrancas_abertas.get('aguardando', 0) or 0
         total_notificacao = query_cobrancas_abertas.get('notificacao', 0) or 0
@@ -388,9 +387,9 @@ class Frasson(object):
         total_aberto_cobrancas = float(total_aguardando + total_notificacao + total_faturamento + total_confirmacao)
 
         #PAGAMENTOS ABERTOS POR FASE (CONFERÊNCIA E AGENDADO)
-        query_pagamentos_abertos= Card_Pagamentos.objects.aggregate(
-            conferencia=Sum(Case(When(phase_id=317163730, then='valor_pagamento'), default=0, output_field=DecimalField())),
-            agendado=Sum(Case(When(phase_id=317163731, then='valor_pagamento'), default=0, output_field=DecimalField())))
+        query_pagamentos_abertos= Pagamentos.objects.aggregate(
+            conferencia=Sum(Case(When(status='e', then='valor_pagamento'), default=0, output_field=DecimalField())),
+            agendado=Sum(Case(When(status='e', then='valor_pagamento'), default=0, output_field=DecimalField())))
 
         aberto_conferencia = query_pagamentos_abertos.get('conferencia', 0) or 0
         aberto_agendado = query_pagamentos_abertos.get('agendado', 0) or 0

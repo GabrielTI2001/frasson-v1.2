@@ -11,7 +11,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({
-    created_by: user.id
+    created_by: user.id, servicos:[]
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
   const [defaultoptions, setDefaultOptions] = useState();
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/finances/contratos-servicos/${type === 'edit' ? data.uuid+'/':''}`
+    const link = `${process.env.REACT_APP_API_URL}/finances/contratos-ambiental/${type === 'edit' ? data.uuid+'/':''}`
     const method = type === 'edit' ? 'PUT' : 'POST'
     try {
       const response = await fetch(link, {
@@ -45,7 +45,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
         }
         else{
           submit('add', {str_contratante:data.str_contratante, uuid:data.uuid, str_servicos:data.str_servicos.map(s => s.label).join(', '),
-            status:{'text': '-', 'color': 'secondary'}, str_produto:data.str_produto, valor:data.valor, percentual:data.percentual, data_assinatura:data.data_assinatura
+            status:{'text': '-', 'color': 'secondary'}, str_produto:data.str_produto, valor:data.valor, data_assinatura:data.data_assinatura
           })
           toast.success("Registro Efetuado com Sucesso!")
         }
@@ -60,8 +60,10 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
     e.preventDefault();
     const formDataToSend = new FormData();
     for (const key in formData) {
-      if (key === 'file') {
-        formDataToSend.append('file', formData[key]);
+      if (key === 'servicos') {
+        formData[key].forEach(value => {
+          formDataToSend.append('servicos', value);
+        });
       } else {
         formDataToSend.append(key, formData[key]);
       }
@@ -88,7 +90,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
             .filter(([key, value]) => value !== null)
             .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
           
-          const { pdf, str_servicos, str_contratante, etapas, ...restData } = filteredData;
+          const { pdf, str_servicos, str_contratante, str_produtos, list_processos, etapas, ...restData } = filteredData;
           setFormData({...formData, ...restData})
           setDefaultOptions({
             servicos:str_servicos,
@@ -134,30 +136,21 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && 
           <Form.Group className="mb-2" as={Col} xl={6} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Serviço(s) Contratado(s)*</Form.Label>}
-            <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico')} isMulti
+            <AsyncSelect 
+              loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico', null, false, 'produto=GAI')} 
+              isMulti
               name='servicos' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.servicos : '') : ''}
               onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                servicos: selected.map(s => s.value)
-                }));
+                setFormData((prevFormData) => ({
+                  ...prevFormData,
+                  servicos: selected.map(s => s.value)
+                  }));
               }}>
             </AsyncSelect>
             <label className='text-danger'>{message ? message.servicos : ''}</label>
           </Form.Group> 
         }  
-
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Percentual</Form.Label>}
-          <Form.Control
-            value={formData.percentual || ''}
-            name="percentual"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.percentual : ''}</label>
-        </Form.Group>
 
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor*</Form.Label>}

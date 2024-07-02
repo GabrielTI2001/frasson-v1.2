@@ -65,10 +65,6 @@ textarea:focus, input:focus{
 }
 
 @media (min-width: 578px){
-  .modal-body{
-    padding-left: 0px;
-    padding-right: 0px;
-  }
   .gap{
     cursor: pointer;
   }
@@ -221,10 +217,32 @@ textarea:focus, input:focus{
 }
 .modal-column-scroll{
   height: 94vh;
+  margin-bottom: 1rem;
 }
 
 @media (max-width: 992px){
   .modal-custom{
     height: auto;
   }
+  .actionscard{
+    height: 20vh !important;
+  }
+  .modal-column-scroll{
+    height: auto;
+    max-height: 38vh;
+  }
+}
+.modal-delete .modal-backdrop.show{
+  opacity: 0.3 !important;
+}
+.comment-box-expandible{
+  height: auto !important;
+}
+.comment-box-expandible textarea{
+  height: 38px !important;
+  padding-bottom: 4px !important;
+}
+.comment-box-expandible textarea:focus{
+  height: 58px !important;
+  padding-bottom: 4px !important;
 }

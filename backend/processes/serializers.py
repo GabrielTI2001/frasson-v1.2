@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Processos_Andamento, Acompanhamento_Processos, Status_Acompanhamento
-from pipeline.models import Card_Produtos
+from pipeline.models import Fluxo_Gestao_Ambiental
 from datetime import datetime, date, timedelta
 import requests, json, locale
 from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL
@@ -45,7 +45,7 @@ class detailFollowup(serializers.ModelSerializer):
         } for acomp in acompanhamentos_database]
         return acompanhamentos
     def get_pipefy(self, obj):
-        processo_pipefy = Card_Produtos.objects.get(pk=obj.processo_id)
+        processo_pipefy = Fluxo_Gestao_Ambiental.objects.get(pk=obj.processo_id)
         pipefy = {
             'id': processo_pipefy.id,
             'beneficiario': ', '.join([beneficiario.razao_social for beneficiario in processo_pipefy.beneficiario.all()]),

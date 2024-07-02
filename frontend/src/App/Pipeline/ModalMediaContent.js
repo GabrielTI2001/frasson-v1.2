@@ -16,7 +16,7 @@ const ModalMediaContent = ({
     <Flex>
       <div className="flex-1">
         <Flex className={classNames('mb-2', headingClass)}>
-          <h5 className="mb-0 fs--1 fw-bold">{title}</h5>
+          <h5 className="mb-0 fs-0 fw-bold">{title}</h5>
           {headingContent && headingContent}
         </Flex>
         {children}

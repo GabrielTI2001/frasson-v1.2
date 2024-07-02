@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import SweetAlert2 from 'react-sweetalert2'; //Não retirar
 
 //Use sempre barra depois do link
-const ModalDelete = ({show, close, link, update}) => {
+const ModalDelete = ({show, close, link, update, transparent}) => {
   const token = localStorage.getItem("token")
   const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ const ModalDelete = ({show, close, link, update}) => {
       show={show}
       onHide={() => close()}
       aria-labelledby="example-modal-sizes-title-lg"
-      className="align-items-center pt-10"
+      className="align-items-center pt-10 modal-delete"
       dialogClassName="mt-20"
     >
       <Modal.Body className="text-center">

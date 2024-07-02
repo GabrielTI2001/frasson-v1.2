@@ -25,14 +25,14 @@ const ProductForm = ({
   const submit = async () => {
       const isEmpty = !Object.keys(formData).length;
     if (!isEmpty) {
-      api.post('pipeline/cards/produtos/', formData, {headers: {Authorization: `bearer ${token}`}})
+      api.post('pipeline/fluxos/gestao-ambiental/', formData, {headers: {Authorization: `bearer ${token}`}})
       .then((response) => {
         kanbanDispatch({
           type: 'ADD_TASK_CARD',
           payload: { targetListId: fase, 
             novocard:{id: response.data.id, card:response.data.card, str_detalhamento:response.data.info_detalhamento.detalhamento_servico,
-            str_beneficiario:response.data.list_beneficiario[0].razao_social, created_at: response.data.created_at, code:response.data.code,
-            prioridade:response.data.prioridade
+            str_beneficiario:response.data.list_beneficiario.razao_social, created_at: response.data.created_at, code:response.data.code,
+            prioridade:response.data.prioridade, str_instituicao:response.data.info_instituicao.razao_social
           }}
         });
         onSubmit()
@@ -62,22 +62,6 @@ const ProductForm = ({
           }}
         >
           <Form.Group className="mb-2" as={Col}>
-            <Form.Label className='fw-bold mb-1'>Card*</Form.Label>
-            <Form.Select
-              ref={inputRef}
-              onChange={({ target }) =>
-                setFormData({ ...formData, card: target.value })
-              }
-            >
-              <option>---</option>
-              <option value='Principal'>Principal</option>
-              <option value='Paralelo'>Paralelo</option>
-              <option value='Ocorrência'>Ocorrência</option>
-            </Form.Select>  
-            <label className='text-danger fs--2'>{message ? message.card : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Prioridade</Form.Label>
             <Form.Select
               ref={inputRef}
@@ -96,12 +80,12 @@ const ProductForm = ({
           <Form.Group className="mb-2" as={Col}>
             <Form.Label className='fw-bold mb-1'>Beneficiário*</Form.Label>
             <AsyncSelect 
-              ref={inputRef} isMulti styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+              ref={inputRef} styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj')}
-              onChange={(selectedOptions ) => {
+              onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
-                  beneficiario: selectedOptions.map(s => s.value)
+                  beneficiario: selected.value
                 }));
               }} 
               className='mb-1'
@@ -158,7 +142,7 @@ const ProductForm = ({
             <Form.Label className='fw-bold mb-1'>Contrato Vinculado*</Form.Label>
             <AsyncSelect
               ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-servicos', 'str_contratante', 'str_produto')}
+              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-ambiental', 'str_contratante', 'str_produto')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,

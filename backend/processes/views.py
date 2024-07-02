@@ -5,7 +5,7 @@ import requests, json
 from rest_framework.response import Response
 from django.db.models import Q
 from .models import Processos_Andamento, Acompanhamento_Processos, Status_Acompanhamento
-from pipeline.models import Card_Produtos
+from pipeline.models import Fluxo_Gestao_Ambiental
 from .serializers import detailFollowup, detailAcompanhamentoProcessos, listStatus
 from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import date
@@ -62,7 +62,7 @@ class FollowupView(viewsets.ModelViewSet):
             else:
                 query_search = Q(detalhamento__produto=produto_gai) & Q(card=card_type) & (Q(id__icontains=search) | Q(phase_name__icontains=search) | 
                     Q(beneficiario__razao_social__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search) | Q(instituicao__instituicao__razao_social__icontains=search))
-                database_processos = Card_Produtos.objects.filter(query_search).exclude(phase_id__in=[310429136, 310429228])
+                database_processos = Fluxo_Gestao_Ambiental.objects.filter(query_search).exclude(phase_id__in=[310429136, 310429228])
                 
                 for processo in database_processos:
                     processo_acompanhamento = Processos_Andamento.objects.filter(processo=processo.id).first() or None
@@ -111,7 +111,7 @@ class FollowupView(viewsets.ModelViewSet):
         
         else:      # caso não exista parâmetro de busca
             query_search = Q(detalhamento__produto=produto_gai) & Q(card=card_type) & Q(phase_id__in=phases_produtos)
-            database_processos = Card_Produtos.objects.filter(query_search)
+            database_processos = Fluxo_Gestao_Ambiental.objects.filter(query_search)
 
             for processo in database_processos:
                 processo_acompanhamento = Processos_Andamento.objects.filter(processo=processo.id).first() or None

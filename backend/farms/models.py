@@ -76,7 +76,7 @@ class Imoveis_Rurais(models.Model):
     numero_registro = models.CharField(max_length=150, null=True, verbose_name='Número Registro')
     cns = models.CharField(max_length=150, null=True, blank=True, verbose_name='CNS')
     data_registro = models.DateField(null=True, verbose_name='Data Registro')
-    cartorio_registro = models.ForeignKey(Cartorios_Registro, on_delete=models.CASCADE, verbose_name='Cartório Registro')
+    cartorio_registro = models.ForeignKey(Cartorios_Registro, on_delete=models.CASCADE, verbose_name='Cartório Registro', null=True)
     municipio = models.ForeignKey(Municipios, on_delete=models.CASCADE, verbose_name='Município')
     cep = models.CharField(max_length=50, null=True, verbose_name='CEP Localização')
     endereco = models.TextField(null=True, blank=True, verbose_name='Endereço da Fazenda')

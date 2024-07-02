@@ -29,7 +29,7 @@ const ViewPessoal = () => {
     useEffect(() =>{
         const getProcessos = async (params) =>{
             try{
-                const response = await fetch(`${process.env.REACT_APP_API_URL}/pipeline/cards/produtos/?${params}`, {
+                const response = await fetch(`${process.env.REACT_APP_API_URL}/pipeline/fluxos/gestao-ambiental/?${params}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

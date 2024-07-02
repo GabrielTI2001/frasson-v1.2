@@ -31,12 +31,11 @@ class Caixas_Frasson(models.Model):
     def __str__(self):
         return self.nome
 
-class Contratos_Servicos(models.Model):
+class Contratos_Ambiental(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
     servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
     detalhes = models.TextField(null=True, verbose_name='Detalhe Negociação')
-    percentual = models.FloatField(null=True, verbose_name='Percentual')
     valor = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     data_assinatura = models.DateField(null=True, verbose_name='Data Assinatura')
     data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
@@ -45,18 +44,18 @@ class Contratos_Servicos(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Contratos Serviços'
+        verbose_name_plural = 'Contratos Ambiental'
     def __str__(self):
         return self.contratante.razao_social
     
-class Contratos_Servicos_Pagamentos(models.Model):
+class Contratos_Ambiental_Pagamentos(models.Model):
     CHOICES_ETAPAS = (
         ("A", "Assinatura Contrato"),
         ("P", "Protocolo"),
         ("E", "Encerramento")
     )
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    contrato = models.ForeignKey(Contratos_Servicos, on_delete=models.CASCADE, null=True)
+    contrato = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True)
     servico = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True)
     etapa = models.CharField(max_length=1, choices=CHOICES_ETAPAS, null=True, verbose_name="Etapa Pagamento")
     percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
@@ -66,7 +65,40 @@ class Contratos_Servicos_Pagamentos(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Contratos - Forma Pagamento'
+        verbose_name_plural = 'Contratos Ambiental - Forma Pagamento'
+    def __str__(self):
+        return self.contrato.contratante.razao_social
+
+class Contratos_Credito(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
+    servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
+    detalhes = models.TextField(null=True, verbose_name='Detalhe Negociação')
+    percentual = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    data_assinatura = models.DateField(null=True, verbose_name='Data Assinatura')
+    data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
+    pdf = models.FileField(upload_to='finances/contratos', null=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Contratos Crédito'
+    def __str__(self):
+        return self.contratante.razao_social
+
+class Contratos_Credito_Pagamentos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    contrato = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True)
+    servico = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True)
+    etapa = models.CharField(max_length=20, default='Encerramento', null=True, verbose_name="Etapa Pagamento")
+    percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
+    observacoes = models.TextField(null=True, blank=True, verbose_name="Observações")
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Contratos Crédito - Forma Pagamento'
     def __str__(self):
         return self.contrato.contratante.razao_social
 
@@ -170,3 +202,56 @@ class Lancamentos_Automaticos_Pagamentos(models.Model):
         verbose_name_plural = 'Lançamentos Autom. Pagamentos'
     def __str__(self):
         return self.beneficiario.razao_social
+    
+from pipeline.models import gerarcode
+class Pagamentos(models.Model):
+    STATUS_CHOICES = (
+        ("R", "Receita"),
+        ("D", "Despesa")
+    )
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    beneficiario = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True)
+    descricao = models.CharField(max_length=255, null=True, verbose_name='Descrição')
+    detalhamento = models.TextField(null=True, verbose_name='Detalhamento Pagamento')
+    categoria = models.ForeignKey(Categorias_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Categoria')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=True, verbose_name='Status')
+    valor_pagamento = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
+    data_pagamento = models.DateField(null=True, verbose_name='Data Pagamento')
+    caixa = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Caixa Saída')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Pagamentos Pipefy'
+    def __str__(self):
+        return self.beneficiario.razao_social
+
+class Cobrancas(models.Model):
+    STATUS_CHOICES = (
+        ("R", "Receita"),
+        ("D", "Despesa")
+    )
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
+    contrato_ambiental = models.ForeignKey(Contratos_Ambiental, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
+    contrato_credito = models.ForeignKey(Contratos_Credito, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
+    etapa_cobranca = models.CharField(max_length=100, null=True, verbose_name='Etapa da Cobrança')
+    detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhe Demanda')
+    valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Contratado')
+    percentual_contratado = models.DecimalField(max_digits=5, decimal_places=2, null=True, verbose_name='Percentual Contratado')
+    saldo_devedor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Saldo Devedor')
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, null=True, verbose_name='Status')
+    data_previsao = models.DateField(null=True, verbose_name='Data Previsão Pagamento')
+    caixa = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Caixa Entrada')
+    valor_faturado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Faturado')
+    data_pagamento = models.DateField(null=True, verbose_name='Data Pagamento')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Cobranças Pipefy'
+    def __str__(self):
+        return self.cliente.razao_social

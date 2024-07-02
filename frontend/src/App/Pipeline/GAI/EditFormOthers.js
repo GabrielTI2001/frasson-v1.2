@@ -15,6 +15,8 @@ const EditFormOthers = ({
   data
 }) => {
   const [formData, setFormData] = useState({});
+  // const user = JSON.parse(localStorage.getItem('user'))
+  // const [formData, setFormData] = useState({user:user.id});
   const [defaultselected, setdefaultSelected] = useState();
   const inputRef = useRef(null);
   const {config: {theme}} = useAppContext();
@@ -22,6 +24,7 @@ const EditFormOthers = ({
     const ids_resps = data.responsaveis.map(b => ({value: b.id, label: b.nome}));
     setdefaultSelected({...defaultselected, 'responsaveis':ids_resps})
   }, []); 
+  console.log(data)
 
   return (
     <>
@@ -62,7 +65,7 @@ const EditFormOthers = ({
                 onChange={({ target }) =>
                   setFormData({ ...formData, data_vencimento: target.value })
                 }
-                value={formData.data_vencimento || data.data_vencimento}
+                value={formData.data_vencimento || data.data_vencimento.slice(0, 10)}
               /> 
             </Form.Group> 
             <Form.Group>

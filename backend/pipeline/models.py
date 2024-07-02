@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import User, Profile
-from finances.models import Caixas_Frasson, Categorias_Pagamentos, Contratos_Servicos
 from cadastro.models import Cadastro_Pessoal, Instituicoes_Parceiras, Instituicoes_Razao_Social, Produtos_Frasson, Detalhamento_Servicos
+from finances.models import Contratos_Ambiental , Contratos_Credito
 import uuid, time, random
 
 def gerarcode():
@@ -39,30 +39,47 @@ class Fase(models.Model):
     def __str__(self):
         return self.descricao
     
-class Card_Produtos(models.Model):
+class Fluxo_Gestao_Ambiental(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
-    card = models.CharField(max_length=255, null=True, verbose_name='Tipo Card')
     prioridade = models.CharField(max_length=255, null=True, verbose_name='Prioridade')
-    beneficiario = models.ManyToManyField(Cadastro_Pessoal, verbose_name='Nome Beneficiário')
+    beneficiario = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Nome Beneficiário')
     responsaveis = models.ManyToManyField(User, verbose_name='Responsáveis', related_name='responsaveis')
     detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhamento Serviço')
     instituicao = models.ForeignKey(Instituicoes_Parceiras, on_delete=models.SET_NULL, null=True, verbose_name='Instituição Parceira')
-    contrato = models.ForeignKey(Contratos_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
-    valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor da Operação')
-    faturamento_estimado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Faturamento Estimado')
-    data_vencimento = models.DateField(null=True, verbose_name='Data de Vencimento')
+    contrato = models.ForeignKey(Contratos_Ambiental, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
+    data_vencimento = models.DateTimeField(null=True, verbose_name='Data de Vencimento')
     phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase')
-    card_url = models.CharField(max_length=255, null=True, verbose_name='URL do Card')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Criado por')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Produtos Frasson'
+        verbose_name_plural = 'Fluxo Gestão Ambiental'
+    def __str__(self):
+        return self.detalhamento.detalhamento_servico
+
+class Fluxo_Gestao_Credito(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    prioridade = models.CharField(max_length=255, null=True, verbose_name='Prioridade')
+    card = models.CharField(max_length=255, null=True, verbose_name='Tipo Card')
+    beneficiarios = models.ManyToManyField(Cadastro_Pessoal, verbose_name='Nome Beneficiário')
+    responsaveis = models.ManyToManyField(User, verbose_name='Responsáveis', related_name='responsaveis2')
+    detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhamento Serviço')
+    instituicao = models.ForeignKey(Instituicoes_Parceiras, on_delete=models.SET_NULL, null=True, verbose_name='Instituição Parceira')
+    contrato = models.ForeignKey(Contratos_Credito, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
+    valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
+    data_vencimento = models.DateTimeField(null=True, verbose_name='Data de Vencimento')
+    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Criado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Fluxo Gestão Crédito'
     def __str__(self):
         return self.detalhamento.detalhamento_servico
         
-class Card_Prospects(models.Model): 
+class Fluxo_Prospects(models.Model): 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
     cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cadastro Prospect')
@@ -83,58 +100,13 @@ class Card_Prospects(models.Model):
     def __str__(self):
         return self.cliente.razao_social
 
-class Card_Pagamentos(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    code = models.BigIntegerField(unique=True, default=gerarcode)
-    beneficiario = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True)
-    descricao = models.CharField(max_length=255, null=True, verbose_name='Descrição')
-    detalhamento = models.TextField(null=True, verbose_name='Detalhamento Pagamento')
-    categoria = models.ForeignKey(Categorias_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Categoria')
-    phase_id = models.BigIntegerField(null=True, verbose_name='Id da Fase Atual')
-    phase_name = models.CharField(max_length=255, null=True, verbose_name='Nome da Fase Atual')
-    valor_pagamento = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
-    data_pagamento = models.DateField(null=True, verbose_name='Data Pagamento')
-    caixa = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Caixa Saída')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Pagamentos Pipefy'
-    def __str__(self):
-        return self.beneficiario.razao_social
-
-class Card_Cobrancas(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    code = models.BigIntegerField(unique=True, default=gerarcode)
-    cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
-    contrato = models.ForeignKey(Contratos_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
-    etapa_cobranca = models.CharField(max_length=100, null=True, verbose_name='Etapa da Cobrança')
-    detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhe Demanda')
-    valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Contratado')
-    percentual_contratado = models.DecimalField(max_digits=5, decimal_places=2, null=True, verbose_name='Percentual Contratado')
-    saldo_devedor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Saldo Devedor')
-    phase_id = models.BigIntegerField(null=True, verbose_name='Id da Fase Atual')
-    phase_name = models.CharField(max_length=255, null=True, verbose_name='Nome da Fase Atual')
-    data_previsao = models.DateField(null=True, verbose_name='Data Previsão Pagamento')
-    caixa = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Caixa Entrada')
-    valor_faturado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Faturado')
-    data_pagamento = models.DateField(null=True, verbose_name='Data Pagamento')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Cobranças Pipefy'
-    def __str__(self):
-        return self.cliente.razao_social
 
 class Phases_History(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
-    produto = models.ForeignKey(Card_Produtos, on_delete=models.CASCADE, null=True, verbose_name='Produto')
-    prospec = models.ForeignKey(Card_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
-    cobranca = models.ForeignKey(Card_Cobrancas, on_delete=models.CASCADE, null=True, verbose_name='Pagamento')
-    pagamento = models.ForeignKey(Card_Pagamentos, on_delete=models.CASCADE, null=True, verbose_name='Pagamento')
+    fluxo_ambiental = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
+    fluxo_credito = models.ForeignKey(Fluxo_Gestao_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
     first_time_in = models.DateTimeField(null=True)
     last_time_in = models.DateTimeField(null=True)
     last_time_out = models.DateTimeField(null=True)
@@ -147,15 +119,42 @@ class Phases_History(models.Model):
 
 class Card_Coments(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    card_produto = models.ForeignKey(Card_Produtos, null=True, verbose_name='Card Produtos', on_delete=models.CASCADE)
-    card_prospect = models.ForeignKey(Card_Prospects, null=True, verbose_name='Card Prospects', on_delete=models.CASCADE)
-    card_pagamento = models.ForeignKey(Card_Pagamentos, null=True, verbose_name='Card Pagamentos', on_delete=models.CASCADE)
-    card_cobranca = models.ForeignKey(Card_Cobrancas, null=True, verbose_name='Card Cobranças', on_delete=models.CASCADE)
+    fluxo_ambiental = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
+    fluxo_credito = models.ForeignKey(Fluxo_Gestao_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
     text = models.TextField(null=True, verbose_name='Texto')
+    phase = models.ForeignKey(Fase, null=True, verbose_name='Fase', on_delete=models.CASCADE)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Criado por')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Produtos Frasson'
+        verbose_name_plural = 'Comentários Card'
     def __str__(self):
         return self.text
+
+class Card_Activities(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    fluxo_ambiental = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
+    fluxo_credito = models.ForeignKey(Fluxo_Gestao_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    type = models.CharField(null=True, max_length=60, choices=(('ch', 'change'),('co','comment'),('cf','fase')), verbose_name='Tipo')
+    campo = models.CharField(null=True, max_length=60, verbose_name='Campo')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Alterado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Atividades Card'
+    def __str__(self):
+        return self.campo
+
+class Card_Anexos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    fluxo_ambiental = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
+    fluxo_credito = models.ForeignKey(Fluxo_Gestao_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    file = models.FileField(null=True, upload_to='pipeline/anexos', verbose_name='Arquivo')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Alterado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Anexos Card'

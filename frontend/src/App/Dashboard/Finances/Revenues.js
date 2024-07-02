@@ -51,7 +51,7 @@ const DashRevenues = () =>{
                 title='Confirmação' color='#4c78dd' onClick={() => setModal({show:true, phase:317532040})}
             />
         </Row> 
-        <h6 class="fs--2 fw-bold mb-2">Cobranças abertas Por Produto</h6>
+        <h6 className="fs--2 fw-bold mb-2">Cobranças abertas Por Produto</h6>
         <Row className="gx-4 gy-4 mb-4" xs={1} sm={2} xl={4}>
             <CardCobrancas data={data} atribute='aberto_gc' atribute2='percentual_aberto_gc' 
                 title='GESTÃO DE CRÉDITO' color='rgb(234, 88, 12)' onClick={() => setModal({show:true, produto:'gc'})}
@@ -83,7 +83,7 @@ const DashRevenues = () =>{
                 title='TECNOLOGIA E INOVAÇÃO' color='rgb(71, 85, 105)' onClick={() => setModal({show:true, invoice:true, produto:'tec'})}
             />
         </Row>
-        <h6 class="fs--2 fw-bold mb-2">Previsão de Faturamento {new Date().getFullYear()}</h6>
+        <h6 className="fs--2 fw-bold mb-2">Previsão de Faturamento {new Date().getFullYear()}</h6>
         <h6 className="fs-2 fw-bold mb-2">{ data.previsao_faturamento_anual }</h6>
         </>    
         : <div className="text-center"><Spinner></Spinner></div>} 

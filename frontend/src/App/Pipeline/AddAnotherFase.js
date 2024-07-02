@@ -19,7 +19,7 @@ const AddAnotherFase = ({
     kanbanState,
     kanbanDispatch
   } = useContext(PipeContext);
-  const [formData, setFormData] = useState({done:false});
+  const [formData, setFormData] = useState({done:false, pipe:kanbanState.pipe.code});
   const [msg, setMsg] = useState();
   const inputRef = useRef(null);
   const token = localStorage.getItem("token")
@@ -107,7 +107,7 @@ const AddAnotherFase = ({
               placeholder='Dias Prazo'
             />
             <label className='error-msg text-danger'>{msg && msg.dias_prazo}</label>
-            <Row className="gx-2">
+            <Row className="gx-2 gy-2">
               <Col>
                 <Button
                   variant="primary"

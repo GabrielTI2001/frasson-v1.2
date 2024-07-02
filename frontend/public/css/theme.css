@@ -5612,6 +5612,12 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
 }
 .nav-link:hover, .nav-link:focus {
   color: var(--falcon-nav-link-hover-color);
+  background-color: var(--falcon-primary-bg-subtle);
+  text-decoration: none;
+}
+.nav-link:hover, .nav-link:focus {
+  color: var(--falcon-nav-link-hover-color);
+  background-color: var(--falcon-primary-bg-subtle);
   text-decoration: none;
 }
 .nav-link:focus-visible {
@@ -5666,8 +5672,12 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
 }
 .nav-pills .nav-link.active,
 .nav-pills .show > .nav-link {
-  color: var(--falcon-nav-pills-link-active-color);
-  background-color: var(--falcon-nav-pills-link-active-bg);
+  color: var(--falcon-primary) !important;
+  background-color: var(--falcon-primary-bg-subtle);
+}
+
+.nav-link:hover{
+  color: var(--falcon-primary) !important;
 }
 
 .nav-underline {

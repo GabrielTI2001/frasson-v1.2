@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Card_Produtos, Fase, Pipe
-from .models import Phases_History, Card_Coments
+from .models import Fluxo_Gestao_Ambiental, Fase, Pipe
+from .models import Phases_History, Card_Coments, Card_Activities
 from datetime import datetime
 
 def calcduration(first_in, last_in, last_to):
@@ -13,7 +13,7 @@ def calcduration(first_in, last_in, last_to):
         result = last_to - first_in
     return int(result.total_seconds())
 
-class serializerCard_Produtos(serializers.ModelSerializer):
+class serializerFluxoAmbiental(serializers.ModelSerializer):
     pipe_code = serializers.IntegerField(source='phase.pipe.code', read_only=True)
     str_fase = serializers.CharField(source='phase.descricao', read_only=True)
     str_created_by = serializers.SerializerMethodField(read_only=True)
@@ -25,7 +25,6 @@ class serializerCard_Produtos(serializers.ModelSerializer):
     list_beneficiario = serializers.SerializerMethodField(read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
     history_fases_list = serializers.SerializerMethodField(read_only=True)
-    comments = serializers.SerializerMethodField(read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
@@ -40,21 +39,11 @@ class serializerCard_Produtos(serializers.ModelSerializer):
     def get_fases_list(self, obj):
         fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe_id)]
         return fases_list
-    def get_comments(self, obj):
-        print()
-        comments = [
-            {'id':f.id, 'text':f.text, 
-             'user':{'id':f.created_by.id, 'name':f.created_by.first_name+' '+f.created_by.last_name, 'avatar':f.created_by.profile.avatar.name},
-             'created_at': f.created_at
-            } 
-            for f in Card_Coments.objects.filter(card_produto=obj)
-        ]
-        return comments
     def get_str_created_by(self, obj):
         return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_list_beneficiario(self, obj):
-        beneficiarios = obj.beneficiario.all()
-        return [{'id':b.id, 'uuid':b.uuid, 'razao_social':b.razao_social, 'cpf_cnpj':b.cpf_cnpj} for b in beneficiarios]
+        b = obj.beneficiario
+        return [{'id':obj.beneficiario.id, 'uuid':obj.beneficiario.uuid, 'razao_social':b.razao_social, 'cpf_cnpj':b.cpf_cnpj}]
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
@@ -94,32 +83,31 @@ class serializerCard_Produtos(serializers.ModelSerializer):
                 'duration':calcduration(f.first_time_in, f.last_time_in, f.last_time_out), 
                 'phase_name': f.phase.descricao  
             } 
-            for f in Phases_History.objects.filter(produto_id=obj.id)
+            for f in Phases_History.objects.filter(fluxo_ambiental_id=obj.id)
         ]
         return list
     def validate_phase(self, value):
         return value
     class Meta:
-        model = Card_Produtos
+        model = Fluxo_Gestao_Ambiental
         fields = '__all__'
         
-class listCard_Produtos(serializers.ModelSerializer):
+class listFluxoAmbiental(serializers.ModelSerializer):
     str_detalhamento = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
-    str_beneficiario = serializers.SerializerMethodField(read_only=True)
+    str_instituicao = serializers.CharField(source='instituicao.instituicao.razao_social', read_only=True)
+    str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
-    def get_str_beneficiario(self, obj):
-        beneficiarios = obj.beneficiario.all()
-        return beneficiarios[0].razao_social if len(beneficiarios) > 0 else '-'
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
     class Meta:
-        model = Card_Produtos
-        fields = ['id', 'uuid', 'code', 'str_detalhamento', 'str_beneficiario', 'card', 'prioridade', 'created_at', 'data_vencimento', 'list_responsaveis']
+        model = Fluxo_Gestao_Ambiental
+        fields = ['id', 'uuid', 'code', 'str_detalhamento', 'str_beneficiario', 'prioridade', 'created_at', 'data_vencimento', 'list_responsaveis', 
+            'str_instituicao']
 
 
 class serializerFase(serializers.ModelSerializer):
-    card_produtos_set = listCard_Produtos(many=True, read_only=True, required=False)
+    fluxo_gestao_ambiental_set = listFluxoAmbiental(many=True, read_only=True, required=False)
     def validate_done(self, value):
         done = self.initial_data.get('done')
         count_done = Fase.objects.filter(pipe_id=self.initial_data.get('pipe'), done=True).count()
@@ -146,9 +134,21 @@ class listPipe(serializers.ModelSerializer):
         fields = '__all__'
 
 class serializerComments(serializers.ModelSerializer):
+    str_fase = serializers.CharField(source='phase.descricao', read_only=True)
     user = serializers.SerializerMethodField(read_only=True)
     def get_user(self, obj):
         return {'id':obj.created_by.id, 'name':obj.created_by.first_name+' '+obj.created_by.last_name, 'avatar':obj.created_by.profile.avatar.name}
     class Meta:
         model = Card_Coments
+        fields = '__all__'
+
+class serializerActivities(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    def get_user(self, obj):
+        if obj.updated_by:
+            return {'id':obj.updated_by.id, 'name':obj.updated_by.first_name+' '+obj.updated_by.last_name}
+        else:
+            return {'id':'', 'name':'-'+' '+'-'}
+    class Meta:
+        model = Card_Activities
         fields = '__all__'

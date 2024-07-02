@@ -1,7 +1,7 @@
 from django.contrib import admin
-from .models import Card_Produtos, Fase, Pipe
+from .models import Fluxo_Gestao_Ambiental, Fase, Pipe
 
-@admin.register(Card_Produtos)
+@admin.register(Fluxo_Gestao_Ambiental)
 class Card_ProdutosAdmin(admin.ModelAdmin):
     list_display = ('uuid',)
 

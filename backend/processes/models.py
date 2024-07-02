@@ -2,11 +2,11 @@ from django.db import models
 
 # Create your models here.
 from django.db import models
-from pipeline.models import Card_Produtos
+from pipeline.models import Fluxo_Gestao_Ambiental
 from users.models import User
 
 class Processos_Andamento(models.Model):
-    processo = models.ForeignKey(Card_Produtos, on_delete=models.SET_NULL, null=True, verbose_name='Processo Frason')
+    processo = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.SET_NULL, null=True, verbose_name='Processo Frason')
     requerimento = models.CharField(max_length=255, null=True, verbose_name='Número do Requerimento')
     data_requerimento = models.DateField(null=True, verbose_name='Data Requerimento')
     data_enquadramento = models.DateField(null=True, verbose_name='Data Enquadramento')

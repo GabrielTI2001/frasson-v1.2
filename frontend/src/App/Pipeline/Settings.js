@@ -45,7 +45,7 @@ const SettingsPipe = () => {
           <Form.Group className="mb-2" as={Col} xl={5}>
             <Form.Label className='fw-bold mb-1'>Pessoas Autorizadas*</Form.Label>
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'users/users', 'first_name', 'last_name', true)} 
-              name='farm' isMulti
+              isMulti
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={defaultoptions ? defaultoptions.pessoas : ''}
               onChange={(selected) => {

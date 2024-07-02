@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import  {PipeContext  } from '../../context/Context';
 import ModalDelete from '../../components/Custom/ModalDelete';
 import { Modal, CloseButton } from 'react-bootstrap';
-import ProductForm from './products/Form';
+import ProductForm from './GAI/Form';
 
 const KanbanColumnHeader = ({ id, title, itemCount }) => {
   const {kanbanState, kanbanDispatch } = useContext(PipeContext);
@@ -62,8 +62,7 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       </Modal.Header>
       <Modal.Body>
         <Row className="flex-center sectionform">
-          {kanbanState.pipe.descricao === 'Produtos' 
-            ? <ProductForm fase={id} onSubmit={() => setModalForm({show:false})}/>
+          {kanbanState.pipe.descricao === 'Gestão Ambiental' ? <ProductForm fase={id} onSubmit={() => setModalForm({show:false})}/>
             : null
           }
         </Row>

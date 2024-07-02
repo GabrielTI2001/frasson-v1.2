@@ -9,7 +9,7 @@ import ModalDelete from '../../components/Custom/ModalDelete';
 import api from '../../context/data';
 import { toast } from 'react-toastify';
 
-const ModalSidebar = ({code, id, pipe}) => {
+const ModalSidebar = ({code, id, pipe, fases, namefase}) => {
   const {kanbanState: {kanbanModal}, kanbanDispatch} = useContext(PipeContext);
   const token = localStorage.getItem("token")
   const [modaldel, setModaldel] = useState({show:false})
@@ -35,16 +35,15 @@ const ModalSidebar = ({code, id, pipe}) => {
     })
   }
   const [actionMenu] = useState([
-    { icon: faCopy, title: 'Copy', link: '#!' },
-    { icon: faArrowRight, title: 'Move', link: '#!' },
+    ...fases.map(f => ({ icon: faArrowRight, title: f.name}))
   ]);
   return (
     <>
-      <h6 className="mt-3">Actions</h6>
+      <h6 className="mt-1 fs-0 fw-bold">Ações</h6>
       {actionMenu.map(menu => (
-        <Nav key={menu.title} className="flex-lg-column fs--1">
-          <Nav.Item className="me-2 me-lg-0">
-            <Nav.Link as={Link} className="nav-link-card-details" onClick={menu.click}>
+        <Nav key={menu.title} className="flex-lg-column fs--2">
+          <Nav.Item className={`me-2 me-lg-0`}>
+            <Nav.Link as={Link} className={`nav-link-primary ${namefase === menu.title ? 'text-danger' : ''}`} onClick={menu.click}>
               <FontAwesomeIcon icon={menu.icon} className="me-2" />
               {menu.title}
             </Nav.Link>

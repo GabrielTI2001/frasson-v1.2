@@ -353,8 +353,15 @@ export const financeiroRoutes = {
           active: true
         },
         {
-          name: 'Contratos Serviços',
-          to: '/finances/contracts',
+          name: 'Contratos Serviços Ambiental',
+          to: '/finances/contracts/environmental',
+          icon: faFileSignature,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Contratos Serviços Crédito',
+          to: '/finances/contracts/credit',
           icon: faFileSignature,
           exact: true,
           active: true

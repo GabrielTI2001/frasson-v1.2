@@ -10,7 +10,7 @@ import AddAnotherFase from '../AddAnotherFase';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Col, Placeholder, Row } from 'react-bootstrap';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SearchForm from '../Search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -24,10 +24,12 @@ const KanbanContainer = () => {
     kanbanDispatch
   } = useContext(PipeContext);
   const token = localStorage.getItem("token")
-  const {pipe, code} = useParams()
+  const {code} = useParams()
   const [showForm, setShowForm] = useState(false);
   const containerRef = useRef(null);
   const fases = kanbanState.fases;
+  const pipe = kanbanState.pipe
+  const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem("user"))
   const [socket, setSocket] = useState()
   const [clientId] = useState(Math.floor(Math.random() * 1000000));
@@ -41,7 +43,6 @@ const KanbanContainer = () => {
           const sourceColumn = getColumn(source.droppableId);
           const destColumn = getColumn(destination.droppableId);
           const movedItems = move(source, destination);
-          console.log(movedItems)
           const idcard = data.code
           kanbanDispatch({
             type: 'UPDATE_DUAL_COLUMN',
@@ -69,9 +70,14 @@ const KanbanContainer = () => {
       setShowForm(false);
     }
   };
-  
   useEffect(() => {
     setSocket(new WebSocket(SOCKET_SERVER_URL));
+    if (pipe && pipe.pessoas){
+      const pessoas = pipe.pessoas
+      if (!pessoas.some(pessoa => pessoa === user.id)){
+        navigate("/error/403")
+      }
+    }
     if (code) {
       kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {} });
     }
@@ -87,7 +93,7 @@ const KanbanContainer = () => {
         containerRef.current.classList.add('chrome');
       }
     }
-  },[]);
+  },[pipe]);
 
   const getColumn = id => {
     if (fases){
@@ -108,8 +114,8 @@ const KanbanContainer = () => {
   };
 
   const move = (source, destination) => {
-    const sourceItemsClone = [...getColumn(source.droppableId).card_produtos_set];
-    const destItemsClone = [...getColumn(destination.droppableId).card_produtos_set];
+    const sourceItemsClone = [...getColumn(source.droppableId).fluxo_gestao_ambiental_set];
+    const destItemsClone = [...getColumn(destination.droppableId).fluxo_gestao_ambiental_set];
 
     const [removedItem] = sourceItemsClone.splice(source.index, 1);
     destItemsClone.splice(destination.index, 0, removedItem);
@@ -127,7 +133,7 @@ const KanbanContainer = () => {
     }
 
     if (source.droppableId === destination.droppableId) {
-      const items = getColumn(source.droppableId).card_produtos_set;
+      const items = getColumn(source.droppableId).fluxo_gestao_ambiental_set;
       const column = getColumn(source.droppableId);
       const reorderedItems = reorderArray(
         items,
@@ -139,14 +145,14 @@ const KanbanContainer = () => {
         payload: { column, reorderedItems }
       });
     } else {
-      const initialSourceItems = [...getColumn(source.droppableId).card_produtos_set];
-      const initialDestItems = destination.droppableId !== source.droppableId ? [...getColumn(destination.droppableId).card_produtos_set] : null;
+      const initialSourceItems = [...getColumn(source.droppableId).fluxo_gestao_ambiental_set];
+      const initialDestItems = destination.droppableId !== source.droppableId ? [...getColumn(destination.droppableId).fluxo_gestao_ambiental_set] : null;
       const sourceColumn = getColumn(source.droppableId);
       const destColumn = getColumn(destination.droppableId);
 
       const movedItems = move(source, destination);
-      if (getColumn(source.droppableId).card_produtos_set[source.index].code){
-        const idcard = getColumn(source.droppableId).card_produtos_set[source.index].code
+      if (getColumn(source.droppableId).fluxo_gestao_ambiental_set[source.index].code){
+        const idcard = getColumn(source.droppableId).fluxo_gestao_ambiental_set[source.index].code
         kanbanDispatch({
           type: 'UPDATE_DUAL_COLUMN',
           payload: {
@@ -157,7 +163,7 @@ const KanbanContainer = () => {
             updatedDestItems: movedItems.updatedDestItems
           }
         });
-        api.put(`pipeline/cards/produtos/${idcard}/`, {'phase':destColumn.id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
+        api.put(`pipeline/fluxos/gestao-ambiental/${idcard}/`, {'phase':destColumn.id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
         .then((response) => {
           socket.send(
             JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:clientId}}));
@@ -166,16 +172,16 @@ const KanbanContainer = () => {
         .catch((erro) => {
           if (erro.response.status === 400){
             toast.error(erro.response.data.phase[0])
-            kanbanDispatch({
-              type: 'REVERT_DRAG',
-              payload: {
-                sourceColumnId: destination.droppableId,
-                initialSourceItems,
-                destColumnId: source.droppableId,
-                initialDestItems
-              }
-            });
           }
+          kanbanDispatch({
+            type: 'REVERT_DRAG',
+            payload: {
+              sourceColumnId: destination.droppableId,
+              initialSourceItems,
+              destColumnId: source.droppableId,
+              initialDestItems
+            }
+          });
           console.error('erro: '+erro);
         })
       }
@@ -189,7 +195,7 @@ const KanbanContainer = () => {
                 <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
             </li>
             <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
-              Fluxo - Produtos
+              Fluxo - Gestão Ambiental e Irrigação
             </li>  
         </ol>
         <Col xs={12} xl={4} sm={4}>

@@ -1,4 +1,3 @@
-import { Link, useParams } from "react-router-dom";
 import KanbanProvider from "../KanbanProvider";
 import KanbanContainer from "./KanbanContainer";
 

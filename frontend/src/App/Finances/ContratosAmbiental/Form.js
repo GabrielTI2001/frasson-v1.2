@@ -19,7 +19,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
     const [defaultoptions, setDefaultOptions] = useState();
 
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/finances/contratos-pagamentos/${type === 'edit' ? data.id+'/' : ''}`
+        const link = `${process.env.REACT_APP_API_URL}/finances/contratos-pagamentos-ambiental/${type === 'edit' ? data.id+'/' : ''}`
         const method = type === 'edit' ? 'PUT' : 'POST'
         try {
             const response = await fetch(link, {
@@ -53,7 +53,8 @@ const FormEtapa = ({type, data, submit, contrato}) => {
         await handleApi(formData);
     };
     const calcPercent = (v) => {
-        const valor = contrato.valor_gai ? Number(v)/Number(contrato.valor_gai) * 100: 0
+        const valor = contrato.valor ? (Number(contrato.valor/100)) * Number(v): 0
+        console.log()
         setformData({
           ...formData,
           valor: valor, percentual:v
@@ -120,11 +121,11 @@ const FormEtapa = ({type, data, submit, contrato}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={4}>
             <Form.Label className='fw-bold mb-1'>Serviço*</Form.Label>
             <AsyncSelect 
               name='beneficiario' 
-              loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico', null, false, `contrato=${contrato.id}`)}
+              loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico', null, false, `contratogai=${contrato.id}`)}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={type === 'edit' ? defaultoptions.servico || '' : ''}
               onChange={(selected) => {
@@ -138,7 +139,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
           </Form.Group>        
         )}
 
-        <Form.Group as={Col} xl={3} className='mb-3'>
+        <Form.Group as={Col} xl={3} sm={6} className='mb-3'>
             <Form.Label className='mb-0 fw-bold'>Percentual*</Form.Label>
             <Form.Control 
                 type='number'
@@ -149,7 +150,8 @@ const FormEtapa = ({type, data, submit, contrato}) => {
             <label className='text-danger'>{message ? message.percentual : ''}</label>
         </Form.Group>
 
-        <Form.Group as={Col} xl={3} className='mb-3'>
+
+        <Form.Group as={Col} xl={3} sm={6} className='mb-3'>
             <Form.Label className='mb-0 fw-bold'>Valor*</Form.Label>
             <Form.Control 
                 type='number'

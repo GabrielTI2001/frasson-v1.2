@@ -22,12 +22,12 @@ const IndexProdutos = ({phasename}) => {
         setSearchResults(data)
     }
     const search = (value) =>{
-        HandleSearch(value, 'pipefy/cards/produtos', setter)
+        HandleSearch(value, 'pipefy/fluxos/gestao-ambiental', setter)
     }
 
     useEffect(()=>{
         const getdata = async () =>{
-            const status = await HandleSearch('', 'pipefy/cards/produtos', setter, `${phasename ? '?phase='+phasename : ''}`)
+            const status = await HandleSearch('', 'pipefy/fluxos/gestao-ambiental', setter, `${phasename ? '?phase='+phasename : ''}`)
             if (status === 401){
              navigate("/auth/login")
             } 

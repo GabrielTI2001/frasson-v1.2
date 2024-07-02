@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from .models import Lancamentos_Automaticos_Pagamentos, Categorias_Pagamentos, Transferencias_Contas, Caixas_Frasson, Resultados_Financeiros
-from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Contratos_Servicos, Contratos_Servicos_Pagamentos
-from pipeline.models import Card_Cobrancas, Card_Pagamentos, Card_Produtos
+from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Contratos_Ambiental, Contratos_Ambiental_Pagamentos
+from pipeline.models import Fluxo_Gestao_Ambiental
+from finances.models import Pagamentos, Cobrancas
 from backend.frassonUtilities import Frasson
 from django.db.models import Q, Sum
 import locale, requests, json
@@ -14,7 +15,7 @@ class listPagamentosPipefy(serializers.ModelSerializer):
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
     data = serializers.DateField(read_only=True)
     class Meta:
-        model = Card_Pagamentos
+        model = Pagamentos
         fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'phase_name', 'data', 'valor_pagamento', 'card_url']
 
 class listCobrancasPipefy(serializers.ModelSerializer):
@@ -24,7 +25,7 @@ class listCobrancasPipefy(serializers.ModelSerializer):
     data = serializers.DateField(read_only=True)
     valor = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
     class Meta:
-        model = Card_Cobrancas
+        model = Cobrancas
         fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'phase_name', 'data', 'valor', 'card_url']
 
 class listCobrancasInvoices(serializers.ModelSerializer):
@@ -32,7 +33,7 @@ class listCobrancasInvoices(serializers.ModelSerializer):
     str_produto = serializers.CharField(source='detalhamento.produto.description', read_only=True)
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     class Meta:
-        model = Card_Cobrancas
+        model = Cobrancas
         fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'phase_name', 'data_pagamento', 'valor_faturado', 'card_url']
 
 class listAutomPagamentos(serializers.ModelSerializer):
@@ -150,19 +151,12 @@ class detailReembolsos(serializers.ModelSerializer):
         model = Reembolso_Cliente
         fields = '__all__'
 
-class listContratoServicos(serializers.ModelSerializer):
+class listContratoAmbiental(serializers.ModelSerializer):
     str_contratante = serializers.CharField(source='contratante.razao_social', read_only=True)
     str_servicos = serializers.SerializerMethodField(read_only=True)
     str_produto = serializers.SerializerMethodField(read_only=True)
     status = serializers.SerializerMethodField(read_only=True)
     total_formas = serializers.DecimalField(read_only=True, max_digits=15, decimal_places=2)
-
-    class Meta:
-        model = Contratos_Servicos
-        fields = [
-            'id', 'uuid', 'str_contratante', 'str_servicos', 'str_produto', 'valor', 
-            'percentual', 'data_assinatura', 'data_vencimento', 'status', 'total_formas'
-        ]
 
     def get_str_servicos(self, obj):
         return ', '.join([s.detalhamento_servico for s in obj.servicos.all()])
@@ -183,8 +177,15 @@ class listContratoServicos(serializers.ModelSerializer):
             return {'text': 'Finalizado', 'color': 'success'}
         else:
             return {'text': 'Em Andamento', 'color': 'warning'}
+    
+    class Meta:
+        model = Contratos_Ambiental
+        fields = [
+            'id', 'uuid', 'str_contratante', 'str_servicos', 'str_produto', 'valor', 
+            'data_assinatura', 'data_vencimento', 'status', 'total_formas'
+        ]
         
-class detailContratoServicos(serializers.ModelSerializer):
+class detailContratoAmbiental(serializers.ModelSerializer):
     str_contratante = serializers.CharField(source='contratante.razao_social', read_only=True)
     str_cpf = serializers.CharField(source='contratante.cpf_cnpj', read_only=True)
     etapas = serializers.SerializerMethodField(read_only=True)
@@ -192,11 +193,11 @@ class detailContratoServicos(serializers.ModelSerializer):
     str_produtos = serializers.SerializerMethodField(read_only=True)
     list_processos = serializers.SerializerMethodField(read_only=True)
     def get_etapas(self, obj):
-        etapas = Contratos_Servicos_Pagamentos.objects.filter(contrato=obj.id)
+        etapas = Contratos_Ambiental_Pagamentos.objects.filter(contrato=obj.id)
         list_etapas = []
         for e in etapas:
             if e.etapa:
-                cobrancas = Card_Cobrancas.objects.filter(Q(contrato=obj.id) & Q(etapa_cobranca=e.get_etapa_display()))
+                cobrancas = Cobrancas.objects.filter(Q(contrato_ambiental_id=obj.id) & Q(etapa_cobranca=e.get_etapa_display()))
                 if len(cobrancas) > 0:
                     etapa_cobranca = cobrancas[0].etapa_cobranca
                     fase = cobrancas[0].phase_id
@@ -230,7 +231,7 @@ class detailContratoServicos(serializers.ModelSerializer):
     def get_str_produtos(self, obj):
         return ', '.join([s['produto__description'] for s in obj.servicos.all().values('produto__description').distinct()])
     def get_list_processos(self, obj):
-        query_produtos = Card_Produtos.objects.filter(contrato=obj.id)
+        query_produtos = Fluxo_Gestao_Ambiental.objects.filter(contrato=obj.id)
         produtos = [{
             'id': produto.id,
             'detalhamento': produto.detalhamento.detalhamento_servico,
@@ -240,11 +241,16 @@ class detailContratoServicos(serializers.ModelSerializer):
             'beneficiarios': ', '.join([beneficiario.razao_social for beneficiario in produto.beneficiario.all()])
         }for produto in query_produtos]
         return produtos
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['contratante', 'valor', 'data_vencimento', 'data_assinatura']:
+                field.required = True
     class Meta:
-        model = Contratos_Servicos
+        model = Contratos_Ambiental
         fields = '__all__'
 
-class serContratosPagamentos(serializers.ModelSerializer): 
+class serContratosPagamentosAmbiental(serializers.ModelSerializer): 
     etapa_display = serializers.CharField(source='get_etapa_display', read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -258,16 +264,16 @@ class serContratosPagamentos(serializers.ModelSerializer):
         if self.instance:
             etapa_anterior = self.instance.etapa
             if etapa_atual:
-                total_percentual = Contratos_Servicos_Pagamentos.objects.filter(contrato_id=int(contrato)).exclude(etapa=etapa_anterior
+                total_percentual = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=int(contrato)).exclude(etapa=etapa_anterior
                     ).aggregate(total=Sum('percentual'))
             else:
-                total_percentual = Contratos_Servicos_Pagamentos.objects.filter(contrato_id=int(contrato)).exclude(etapa=etapa_atual
+                total_percentual = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=int(contrato)).exclude(etapa=etapa_atual
                     ).aggregate(total=Sum('percentual'))
         else:
-            total_percentual = Contratos_Servicos_Pagamentos.objects.filter(contrato_id=int(contrato)).aggregate(total=Sum('percentual'))
+            total_percentual = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=int(contrato)).aggregate(total=Sum('percentual'))
         if (total_percentual['total'] or 0) + percentual > 100.00:
             raise serializers.ValidationError('O total das parcelas ultrapassa 100% do contrato')
         return value
     class Meta:
-        model = Contratos_Servicos_Pagamentos
+        model = Contratos_Ambiental_Pagamentos
         fields = '__all__'

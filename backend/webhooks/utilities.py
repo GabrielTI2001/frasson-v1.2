@@ -1,15 +1,15 @@
-from pipeline.models import Card_Produtos, Card_Prospects, Cadastro_Pessoal, Card_Cobrancas, Card_Pagamentos
+from pipeline.models import Fluxo_Gestao_Ambiental, Fluxo_Prospects, Cadastro_Pessoal
 from farms.models import Imoveis_Rurais, Regimes_Exploracao
 from cadastro.models import Instituicoes_Parceiras, Instituicoes_Razao_Social, Produtos_Frasson
 from cadastro.models import Detalhamento_Servicos, Grupos_Clientes, Contas_Bancarias_Clientes
 from credit.models import Operacoes_Contratadas, Itens_Financiados
-from finances.models import Categorias_Pagamentos, Caixas_Frasson, Contratos_Servicos
+from finances.models import Categorias_Pagamentos, Caixas_Frasson, Contratos_Ambiental, Cobrancas, Pagamentos
 from django.core.exceptions import ObjectDoesNotExist
 from users.models import Profile
 from datetime import datetime
 
 def createCardProdutos(obj):
-    current = Card_Produtos.objects.create(
+    current = Fluxo_Gestao_Ambiental.objects.create(
         id = obj["id"],
         card = obj["card"] if "card" in obj else None,
         detalhamento_id = obj["detalhamento_demanda_2"] if "detalhamento_demanda_2" in obj else None,
@@ -33,14 +33,14 @@ def updateCardProdutos(id_card, id_field_updated, new_value_updated):
     if id_field_updated in pipefyMySQLFields.keys(): #se o campo atualizado é um campo de interesse
         if id_field_updated in ['contrato_vinculado', 'institui_o_vinculada', 'detalhamento_demanda_2']: #campos conectores
             if len(new_value_updated) >= 1:
-                Card_Produtos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
+                Fluxo_Gestao_Ambiental.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
         elif id_field_updated == 'benefici_rio_s':
             if len(new_value_updated) >= 1:
-                card = Card_Produtos.objects.get(pk=id_card)
+                card = Fluxo_Gestao_Ambiental.objects.get(pk=id_card)
                 card.beneficiario.set(new_value_updated)
                 card.save()
         else:
-            Card_Produtos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
+            Fluxo_Gestao_Ambiental.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
 
 def createCardProspects(obj):
     fields_resps = {'START':'respons_vel', 'CONTATO INICIAL':'respons_vel_pelo_contato_incial', 'BACK OFFICE':'respons_vel_pelo_back_office',
@@ -52,7 +52,7 @@ def createCardProspects(obj):
         'ANÁLISE E PROCESSAMENTO':'prazo_para_a_an_lise_e_processamento', 'ANÁLISE TÉCNICA':'prazo_para_a_litec_1', 'PROPOSTA DE VALOR':'prazo_para_a_proposta_de_valor', 
         'MINUTA CONTRATO':'prazo_para_a_proposta_de_valor_1', 'ENCERRAMENTO':'prazo_para_encerramento', 'CONCLUÍDO':'prazo_para_encerramento', 
         'PERDIDO':'prazo_para_encerramento','GANHO':'prazo_para_encerramento', 'CANCELADO':'prazo_para_encerramento'}
-    current = Card_Prospects.objects.create(
+    current = Fluxo_Prospects.objects.create(
         id = obj["id"],
         prospect_id = obj["prospect_2"] if "prospect_2" in obj else None,
         produto = obj["produto"] if "produto" in obj else None,
@@ -79,14 +79,14 @@ def updateCardProspects(id_card, id_field_updated, new_value_updated):
     if id_field_updated in pipefyMySQLFields.keys(): #se o campo atualizado é um campo de interesse
         if id_field_updated in ['prospect_2']: #campos conectores
             if len(new_value_updated) >= 1:
-                Card_Prospects.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
+                Fluxo_Prospects.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
         else:
-            Card_Prospects.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
+            Fluxo_Prospects.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
     else:
         if id_field_updated in ['prazo_para_encaminhamento', 'prazo_para_a_an_lise_e_processamento', 'prazo_para_o_back_office', 'prazo_para_a_proposta_de_valor'
             'prazo_para_a_proposta_de_valor_1', 'prazo_para_encerramento', 'prazo_para_a_litec_1', 'prazo_para_o_contato_inicial']:
                 new_value_updated = new_value_updated[:19]
-                Card_Prospects.objects.filter(pk=id_card).update(**{'data_vencimento': new_value_updated, 'updated_at': datetime.now()})
+                Fluxo_Prospects.objects.filter(pk=id_card).update(**{'data_vencimento': new_value_updated, 'updated_at': datetime.now()})
         elif id_field_updated in ['respons_vel','respons_vel_pela_proposta_de_valor_1','respons_vel_pelo_back_office','respons_vel_pela_an_lise_t_cnica',
             'respons_vel_pelo_contato_incial','respons_vel_pela_proposta_de_valor', 'respons_vel_pelo_encerramento', 'prazo_para_a_litec']: 
             resps = []
@@ -96,10 +96,10 @@ def updateCardProspects(id_card, id_field_updated, new_value_updated):
                     resps.append(perfil)
                 except ObjectDoesNotExist:
                     pass
-            Card_Prospects.objects.get(pk=id_card).responsavel.set(resps)
+            Fluxo_Prospects.objects.get(pk=id_card).responsavel.set(resps)
 
 def createCardPagamento(card):
-    Card_Pagamentos.objects.create(
+    Pagamentos.objects.create(
         id = card["id"],
         beneficiario_id = card["benefici_rio_pagamento"] if "benefici_rio_pagamento" in card else None,
         descricao = card["descri_o"] if "descri_o" in card else None,
@@ -121,12 +121,12 @@ def updateCardPagamento(id_card, id_field_updated, new_value_updated):
     if id_field_updated in pipefyMySQLFields.keys(): #se o campo atualizado é um campo de interesse
         if id_field_updated in ['benefici_rio_pagamento', 'categoria_pagamento', 'caixa_sa_da']: #campos conectores
             if len(new_value_updated) >= 1:
-                Card_Pagamentos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
+                Pagamentos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
         else:
-            Card_Pagamentos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
+            Pagamentos.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
 
 def createCardCobrancas(card):          
-    Card_Cobrancas.objects.create(
+    Cobrancas.objects.create(
         id = card["id"],
         cliente_id = card["cliente"] if "cliente" in card else None,
         contrato_id = card["contrato"] if "contrato" in card else None,
@@ -154,9 +154,9 @@ def updateCardCobrancas(id_card, id_field_updated, new_value_updated):
     if id_field_updated in pipefyMySQLFields.keys(): #se o campo atualizado é um campo de interesse
         if id_field_updated in ['cliente', 'contrato', 'detalhe_demanda', 'faturado_no_caixa']: #campos conectores
             if len(id_field_updated) >= 1:
-                Card_Cobrancas.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
+                Cobrancas.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: int(new_value_updated[0]), 'updated_at': datetime.now()}) 
         else:
-            Card_Cobrancas.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
+            Cobrancas.objects.filter(pk=id_card).update(**{pipefyMySQLFields[id_field_updated]: new_value_updated, 'updated_at': datetime.now()})
 
 def createCadastroPessoal(registro):
     reg = Cadastro_Pessoal.objects.create(
@@ -173,17 +173,6 @@ def createCadastroPessoal(registro):
         created_at = registro['createdAt'][:19], updated_at = registro['createdAt'][:19]
     )
     reg.socios.set(registro["s_cios"] if "s_cios" in registro else [])
-
-def createFornColab(reg):
-    Fornecedores_Colaboradores.objects.create(
-        id = reg['id'], razao_social = reg['nome'], 
-        cpf_cnpj = reg['cpf_cnpj'] if 'cpf_cnpj' in reg else None, endereco = reg['endere_o'] if 'endere_o' in reg else None,
-        bairro = reg['bairro'] if 'bairro' in reg else None, municipio = reg['munic_pio'] if 'munic_pio' in reg else None, 
-        uf = reg['uf'] if 'uf' in reg else None, cep = reg['cep'] if 'cep' in reg else None, 
-        nome_representante = reg['nome_do_representante']  if 'nome_do_representante' in reg else None, 
-        contato_01 = reg['contato_1'] if 'contato_1' in reg else None, contato_02 = reg['contato_2'] if 'contato_2' in reg else None, 
-        email = reg['e_mail'] if 'e_mail' in reg else None, record_url = reg['url'], created_at = reg['createdAt'][:19], 
-        updated_at = reg['createdAt'][:19])
 
 def createImoveisRurais(imovel):
     Imoveis_Rurais.objects.create(
@@ -230,7 +219,7 @@ def updateImovelRural(id_card, id_field_updated, new_value_updated):
 
 
 def createContratosServicos(contrato):
-    current = Contratos_Servicos.objects.create(
+    current = Contratos_Ambiental.objects.create(
         id = contrato["id"],
         contratante_id = contrato["contratante"] if "contratante" in contrato else None,
         detalhes_negociacao = contrato["detalhes_da_negocia_o"] if "detalhes_da_negocia_o" in contrato else None,
@@ -314,7 +303,7 @@ def createDetalhamentoServicos(reg):
         created_at = reg["createdAt"][:19], updated_at = reg["createdAt"][:19])
     
 def createCadastroProspects(prospect):
-    Cadastro_Prospects.objects.create(
+    flux.objects.create(
         id = prospect["id"],
         cliente = prospect["cliente"] if "cliente" in prospect else None,
         representante = prospect["representante"] if "representante" in prospect else None,
@@ -346,7 +335,7 @@ def createRegimesExploracao(regime):
     )
 
 def createContasClientes(contas):
-    ContasBancarias_Clientes.objects.create(
+    Contas_Bancarias_Clientes.objects.create(
         id = contas["id"],
         cliente_id = contas["nome_ou_raz_o_social"] if "nome_ou_raz_o_social" in contas else None,
         instituicao_id = contas["institui_o_financeira"] if "institui_o_financeira" in contas else None,

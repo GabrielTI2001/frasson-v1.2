@@ -205,20 +205,19 @@ const DashCredit = () =>{
                     {data.realizado_ultimo_ano && !data.realizado_ultimo_ano.null &&
                         <Col>
                             <Card as={Col}>
-                                <ColumnChart type='column' 
+                                <ColumnChart
                                     columns={meses.map(m => m.name)} 
                                     title={`Operações de Crédito ${formData && formData.ano} X ${formData && formData.ano-1}`}
                                     height={'150vh'}
+                                    ticks={4}
                                     series = {[
                                         {
                                             name: `${formData && formData.ano}`,
                                             data: [...Object.values(data.realizado)],
-                                            type:'bar'
                                         },
                                         {
                                             name: `${formData && formData.ano-1}`,
                                             data: [...Object.values(data.realizado_ultimo_ano)],
-                                            type:'bar'
                                         }
                                     ]}
                                 />

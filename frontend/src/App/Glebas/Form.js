@@ -58,7 +58,13 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
     e.preventDefault();
     const formDataToSend = new FormData();
     for (const key in formData) {
-      formDataToSend.append(key, formData[key])
+      if (Array.isArray(formData[key])) {
+        formData[key].forEach(value => {
+          formDataToSend.append(key, value);
+        });
+      } else {
+        formDataToSend.append(key, formData[key]);
+      }
     }
     await handleApi(formDataToSend);
   };

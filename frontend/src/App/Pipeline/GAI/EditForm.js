@@ -14,7 +14,8 @@ const EditForm = ({
   setShow,
   data
 }) => {
-  const [formData, setFormData] = useState({});
+  const user = JSON.parse(localStorage.getItem('user'))
+  const [formData, setFormData] = useState({user:user.id});
   const [defaultselected, setdefaultSelected] = useState();
   const inputRef = useRef(null);
   const {config: {theme}} = useAppContext();
@@ -85,13 +86,13 @@ const EditForm = ({
             </Form.Select>  
           )}
           {fieldkey === 'beneficiario' &&( defaultselected &&
-            <AsyncSelect ref={inputRef} isMulti defaultValue={defaultselected['beneficiario']}
+            <AsyncSelect ref={inputRef} defaultValue={defaultselected['beneficiario']}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj')}
-              onChange={(selectedOptions ) => {
+              onChange={(selectedOption) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
-                  beneficiario: selectedOptions.map(s => s.value)
+                  beneficiario: selectedOption.value
                 }));
               }
               } className='mb-1'/>
