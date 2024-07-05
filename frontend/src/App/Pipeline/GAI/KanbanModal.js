@@ -290,7 +290,7 @@ const KanbanModal = ({show, movercard}) => {
           </Col>
           <Col lg={2} className='mb-1 overflow-auto modal-column-scroll actionscard'>
           {card ?
-            <ModalSidebar card={card} pipe={card.pipe_code} fases={card.fases_list} namefase={card.str_fase}/>
+            <ModalSidebar card={card} pipe={card.pipe_code} fases={card.fases_list} namefase={card.str_fase} move={movercard}/>
           : kanbanModal.show &&
             <SkeletBig />
           }

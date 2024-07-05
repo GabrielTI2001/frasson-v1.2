@@ -87,7 +87,7 @@ export const kanbanReducer = (state, action) => {
     case 'UPDATE_DUAL_COLUMN':
       return {
         ...state,
-        fases: state.fases.map(fase =>
+        fases: state.fases && state.fases.map(fase =>
           fase.id === payload.sourceColumn.id ||
           fase.id === payload.destColumn.id
             ? {

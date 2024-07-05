@@ -15,6 +15,7 @@ import SearchForm from '../Search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
+const clientId = Math.floor(Math.random() * 1000000)
 
 const KanbanContainer = () => {
   const {
@@ -30,29 +31,27 @@ const KanbanContainer = () => {
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem("user"))
   const [socket, setSocket] = useState()
-
-  if (socket){
+  
+  if (socket && kanbanState.fases){
     socket.onmessage = (event) => {
       if (JSON.parse(event.data)){
         const data = JSON.parse(event.data).message;
-        if (data.type === 'movecardproduto' && data.clientId !== kanbanState.clientId){
-          console.log(kanbanState.clientId)
-          console.log(data.clientId)
-          // const { source, destination } = data.data;
-          // const sourceColumn = getColumn(source.droppableId);
-          // const destColumn = getColumn(destination.droppableId);
-          // const movedItems = move(source, destination);
-          // const idcard = data.code
-          // kanbanDispatch({
-          //   type: 'UPDATE_DUAL_COLUMN',
-          //   payload: {
-          //     idcard,
-          //     sourceColumn,
-          //     updatedSourceItems: movedItems.updatedSourceItems,
-          //     destColumn,
-          //     updatedDestItems: movedItems.updatedDestItems
-          //   }
-          // });
+        if (data.type === 'movecardproduto' && Number(data.clientId) !== Number(kanbanState.clientId)){
+          const { source, destination } = data.data;
+          const sourceColumn = getColumn(source.droppableId);
+          const destColumn = getColumn(destination.droppableId);
+          const movedItems = move(source, destination);
+          const idcard = data.code
+          kanbanDispatch({
+            type: 'UPDATE_DUAL_COLUMN',
+            payload: {
+              idcard,
+              sourceColumn,
+              updatedSourceItems: movedItems.updatedSourceItems,
+              destColumn,
+              updatedDestItems: movedItems.updatedDestItems
+            }
+          });
         }
       }
     };
@@ -187,6 +186,10 @@ const KanbanContainer = () => {
     }
   };
 
+  const movercardmodal = (type, result, code) =>{
+    socket.send(JSON.stringify({message:{type:type, data:result, code:code, clientId:clientId}}));
+  }
+
   return (<>
     <Row className="gx-1 gy-2 px-0 d-flex align-items-center mb-2">
       <ol className="breadcrumb breadcrumb-alt fs-0 col">
@@ -196,10 +199,6 @@ const KanbanContainer = () => {
           <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
             Fluxo - Gestão Ambiental e Irrigação
           </li>  
-          {kanbanState.clientId && 
-            <button onClick={() => {if (socket) socket.send(JSON.stringify({message:{type:"movecardproduto", clientId:kanbanState.clientId}}))}}></button>
-          }
-          
       </ol>
       <Col xs={12} xl={4} sm={4}>
         <SearchForm />
@@ -233,7 +232,7 @@ const KanbanContainer = () => {
         </div>   
         }
       </div>
-      <KanbanModal show={kanbanState.kanbanModal.show}/>
+      <KanbanModal show={kanbanState.kanbanModal.show} movercard={movercardmodal}/>
     </DragDropContext></>
   );
 };

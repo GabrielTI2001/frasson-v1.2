@@ -12,12 +12,11 @@ import { GetRecord } from '../../helpers/Data';
 
 const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
 
-const ModalSidebar = ({card, pipe}) => {
+const ModalSidebar = ({card, pipe, move}) => {
   const {kanbanState, kanbanDispatch} = useContext(PipeContext);
   const token = localStorage.getItem("token")
   const user = JSON.parse(localStorage.getItem("user"))
   const [socket, setSocket] = useState()
-  const clientId = kanbanState.clientId
   const [modaldel, setModaldel] = useState({show:false})
   const [modal, setModal] = useState({show:false})
   const navigate = useNavigate()
@@ -30,26 +29,23 @@ const ModalSidebar = ({card, pipe}) => {
 
   const handleMove = (id) => {
     const result = {destination: {droppableId: id, index: 0}, source: {index: 0, droppableId: card.phase}, code:card.code}
-    if (socket) socket.send(JSON.stringify({message:{type:"movecardproduto", data:{}, code:{}, clientId:kanbanState.clientId}}));
-    // api.put(`pipeline/fluxos/gestao-ambiental/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
-    // .then((response) => {
-    //     if (socket){
-    //       socket.send(JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:kanbanState.clientId}}));
-    //     } 
-    //     toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
-    //     kanbanDispatch({
-    //       type: 'SET_DATA',
-    //       payload: {
-    //         fases:null, pipe:null
-    //       }
-    //     })
-    //   })
-    // .catch((erro) => {
-    //   if (erro.status === 400){
-    //     toast.error(erro.response.data.phase[0])
-    //   }
-    //   console.error('erro: '+erro);
-    // })
+    api.put(`pipeline/fluxos/gestao-ambiental/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
+    .then((response) => {
+        move("movecardproduto", result, response.data.code)
+        toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
+        kanbanDispatch({
+          type: 'SET_DATA',
+          payload: {
+            fases:null, pipe:null
+          }
+        })
+      })
+    .catch((erro) => {
+      if (erro.status === 400){
+        toast.error(erro.response.data.phase[0])
+      }
+      console.error('erro: '+erro);
+    })
     navigate(`/pipeline/${pipe}`)
     kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   };
@@ -78,9 +74,11 @@ const ModalSidebar = ({card, pipe}) => {
         setActionMenu([...fase.list_destinos.map(f => ({ title: f.descricao, id:f.id, click:() => handleMove(f.id)}))])
       }
     }
-    setSocket(new WebSocket(SOCKET_SERVER_URL));
     getfase()
   }, [card])
+  useEffect(() =>{
+    setSocket(new WebSocket(SOCKET_SERVER_URL));
+  }, [])
 
   return (
     <>
