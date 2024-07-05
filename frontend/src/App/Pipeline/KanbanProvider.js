@@ -43,7 +43,8 @@ const KanbanProvider = ({ children, code }) => {
           payload: {
             fases: data.fase_set,
             pipe: {code:data.code, pessoas:data.pessoas, descricao:data.descricao, id:data.id},
-            kanbanModal: {show: false, modalContent: {}}
+            kanbanModal: {show: false, modalContent: {}},
+            clientId:Math.floor(Math.random() * 1000000)
             // ... outras propriedades conforme necessário
           }
         });

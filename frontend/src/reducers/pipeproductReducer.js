@@ -6,7 +6,8 @@ export const kanbanReducer = (state, action) => {
       return {
         ...state,
         pipe: action.payload.pipe,
-        fases: action.payload.fases
+        fases: action.payload.fases,
+        clientId: action.payload.clientId
         // ... outras propriedades conforme necessário
       };
 

@@ -91,7 +91,7 @@ const ConfigMoverCard = ({type, data, submit, card}) => {
             id={`fase-${f.id}`}
           >
             <Form.Check.Input className='col-auto fs-0' onChange={handleFieldChange} value={f.id} 
-              checked={formData.destinos_permitidos && formData.destinos_permitidos.some(d => parseInt(d) === f.id)}/>
+              checked={formData.destinos_permitidos ? formData.destinos_permitidos.some(d => parseInt(d) === f.id) : false}/>
             <Form.Check.Label className='col-auto mb-0'>{f.descricao}</Form.Check.Label>
           </Form.Check>
         </Form.Group>

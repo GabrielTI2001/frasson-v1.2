@@ -74,7 +74,6 @@ const FormEtapa = ({type, data, submit, contrato}) => {
         const getoptions = () =>{
             const list = [{value:'A', label:'Assinatura Contrato'}, {value:'P', label:'Protocolo'}, {value:'E', label:'Encerramento'}]
             const max = contrato.servicos.length
-            // console.log(list)
             if (type !== 'edit'){
                 for (let i = list.length - 1; i >= 0; i--){
                     const label = list[i].label

@@ -87,7 +87,9 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
         ]
         return list
     def validate_phase(self, value):
-        
+        fase_anterior = self.instance.phase
+        if (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
+            raise serializers.ValidationError("Não é permitido mover para essa fase")
         return value
     def update(self, instance, validated_data):
         responsaveis_data = validated_data.pop('responsaveis', [])

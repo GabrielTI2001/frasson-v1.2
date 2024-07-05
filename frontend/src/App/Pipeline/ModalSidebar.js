@@ -17,10 +17,9 @@ const ModalSidebar = ({card, pipe}) => {
   const token = localStorage.getItem("token")
   const user = JSON.parse(localStorage.getItem("user"))
   const [socket, setSocket] = useState()
-  const [clientId] = useState(Math.floor(Math.random() * 1000000));
+  const clientId = kanbanState.clientId
   const [modaldel, setModaldel] = useState({show:false})
   const [modal, setModal] = useState({show:false})
-  // const [fases, setFases] = useState({show:false})
   const navigate = useNavigate()
   const [actionMenu, setActionMenu] = useState();
 
@@ -31,25 +30,26 @@ const ModalSidebar = ({card, pipe}) => {
 
   const handleMove = (id) => {
     const result = {destination: {droppableId: id, index: 0}, source: {index: 0, droppableId: card.phase}, code:card.code}
-    api.put(`pipeline/fluxos/gestao-ambiental/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
-    .then((response) => {
-        if (socket){
-          socket.send(JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:clientId}}));
-        } 
-        toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
-        kanbanDispatch({
-          type: 'SET_DATA',
-          payload: {
-            fases:null, pipe:null
-          }
-        })
-      })
-    .catch((erro) => {
-      if (erro.status === 400){
-        toast.error(erro.response.data.phase[0])
-      }
-      console.error('erro: '+erro);
-    })
+    if (socket) socket.send(JSON.stringify({message:{type:"movecardproduto", data:{}, code:{}, clientId:kanbanState.clientId}}));
+    // api.put(`pipeline/fluxos/gestao-ambiental/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
+    // .then((response) => {
+    //     if (socket){
+    //       socket.send(JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:kanbanState.clientId}}));
+    //     } 
+    //     toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
+    //     kanbanDispatch({
+    //       type: 'SET_DATA',
+    //       payload: {
+    //         fases:null, pipe:null
+    //       }
+    //     })
+    //   })
+    // .catch((erro) => {
+    //   if (erro.status === 400){
+    //     toast.error(erro.response.data.phase[0])
+    //   }
+    //   console.error('erro: '+erro);
+    // })
     navigate(`/pipeline/${pipe}`)
     kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   };
@@ -62,8 +62,7 @@ const ModalSidebar = ({card, pipe}) => {
     toast.success("Card Deletado com Sucesso!")
     handleClose()
   }
-  console.log(actionMenu)
-
+  
   const update = (type, data) =>{
     setActionMenu([...data.map(f => ({ title: f.descricao, id:f.id, click:() => handleMove(f.id)}))])
     setModal({show:false})
@@ -81,7 +80,7 @@ const ModalSidebar = ({card, pipe}) => {
     }
     setSocket(new WebSocket(SOCKET_SERVER_URL));
     getfase()
-  }, [])
+  }, [card])
 
   return (
     <>

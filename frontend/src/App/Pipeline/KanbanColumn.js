@@ -22,7 +22,7 @@ const KanbanColumn = ({ kanbanColumnItem}) => {
 
   return (
     <div className={classNames('kanban-column')}>
-      <KanbanColumnHeader id={id} title={descricao} itemCount={fluxo_gestao_ambiental_set ? fluxo_gestao_ambiental_set.length : 0} />
+      <KanbanColumnHeader id={id} title={descricao} itemCount={kanbanColumnItem && fluxo_gestao_ambiental_set ? fluxo_gestao_ambiental_set.length : 0} />
       <Droppable droppableId={`${id}`} type="KANBAN">
         {provided => (
           <>
@@ -32,7 +32,7 @@ const KanbanColumn = ({ kanbanColumnItem}) => {
               id={`container-${id}`}
               className="kanban-items-container scrollbar"
             >
-              {fluxo_gestao_ambiental_set && fluxo_gestao_ambiental_set.map((card, index) => (
+              {kanbanColumnItem && fluxo_gestao_ambiental_set && fluxo_gestao_ambiental_set.map((card, index) => (
                 <TaskCard key={card && card.id} index={index} task={card}/>
               ))}
               {provided.placeholder}

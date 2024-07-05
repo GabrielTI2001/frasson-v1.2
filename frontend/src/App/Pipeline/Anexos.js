@@ -25,7 +25,6 @@ export const Anexos = ({card, updatedactivity}) => {
   const [isUploading, setIsUploading] = useState(false);
 
   if (formData.file && !isUploading){
-    console.log("teste")
     setIsUploading(true)
     const formDataToSend = new FormData();
     for (const key in formData) {

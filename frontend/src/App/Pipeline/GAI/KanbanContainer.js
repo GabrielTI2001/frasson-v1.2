@@ -30,28 +30,29 @@ const KanbanContainer = () => {
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem("user"))
   const [socket, setSocket] = useState()
-  const [clientId] = useState(Math.floor(Math.random() * 1000000));
 
   if (socket){
     socket.onmessage = (event) => {
       if (JSON.parse(event.data)){
         const data = JSON.parse(event.data).message;
-        if (data.type === 'movecardproduto' && data.clientId !== clientId){
-          const { source, destination } = data.data;
-          const sourceColumn = getColumn(source.droppableId);
-          const destColumn = getColumn(destination.droppableId);
-          const movedItems = move(source, destination);
-          const idcard = data.code
-          kanbanDispatch({
-            type: 'UPDATE_DUAL_COLUMN',
-            payload: {
-              idcard,
-              sourceColumn,
-              updatedSourceItems: movedItems.updatedSourceItems,
-              destColumn,
-              updatedDestItems: movedItems.updatedDestItems
-            }
-          });
+        if (data.type === 'movecardproduto' && data.clientId !== kanbanState.clientId){
+          console.log(kanbanState.clientId)
+          console.log(data.clientId)
+          // const { source, destination } = data.data;
+          // const sourceColumn = getColumn(source.droppableId);
+          // const destColumn = getColumn(destination.droppableId);
+          // const movedItems = move(source, destination);
+          // const idcard = data.code
+          // kanbanDispatch({
+          //   type: 'UPDATE_DUAL_COLUMN',
+          //   payload: {
+          //     idcard,
+          //     sourceColumn,
+          //     updatedSourceItems: movedItems.updatedSourceItems,
+          //     destColumn,
+          //     updatedDestItems: movedItems.updatedDestItems
+          //   }
+          // });
         }
       }
     };
@@ -73,7 +74,7 @@ const KanbanContainer = () => {
     setSocket(new WebSocket(SOCKET_SERVER_URL));
     if (pipe && pipe.pessoas){
       const pessoas = pipe.pessoas
-      if (!pessoas.some(pessoa => pessoa === user.id)){
+      if (!pessoas.some(pessoa => pessoa === user.id) && !user.is_superuser){
         navigate("/error/403")
       }
     }
@@ -164,8 +165,7 @@ const KanbanContainer = () => {
         });
         api.put(`pipeline/fluxos/gestao-ambiental/${idcard}/`, {'phase':destColumn.id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
         .then((response) => {
-          socket.send(
-            JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:clientId}}));
+          socket.send(JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:kanbanState.clientId}}));
           toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
         })
         .catch((erro) => {
@@ -196,6 +196,10 @@ const KanbanContainer = () => {
           <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
             Fluxo - Gestão Ambiental e Irrigação
           </li>  
+          {kanbanState.clientId && 
+            <button onClick={() => {if (socket) socket.send(JSON.stringify({message:{type:"movecardproduto", clientId:kanbanState.clientId}}))}}></button>
+          }
+          
       </ol>
       <Col xs={12} xl={4} sm={4}>
         <SearchForm />

@@ -47,8 +47,8 @@ const KanbanModal = ({show, movercard}) => {
       navigate('/pipeline/'+card.pipe_code)
     }
     kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
-    setCard()
-    setActivities()
+    setCard(null)
+    setActivities(null)
   };
 
   const handleTabSelect = async (key) => {
