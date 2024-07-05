@@ -106,7 +106,7 @@ const TaskCard = ({
             onClick={handleModalOpen}
           >
             <Card.Body className='p-2'>
-              {task.prioridade && 
+              {task && task.prioridade && 
                 <SubtleBadge bg={`${task.prioridade === 'Alta' ? 'danger' : task.prioridade === 'Média' ? 'warning' : 'success'}`} 
                   className='me-2 fw-normal text-body fs--2'>{task.prioridade}
                 </SubtleBadge>
