@@ -35,7 +35,6 @@ const KanbanProvider = ({ children, code }) => {
       if (response.status === 401) {
         // Token inválido, redirecione para a página de login
         navigate('/authentication/login');
-        return;
       }
       else if (response.status === 200){
         const data = await response.json();
@@ -58,8 +57,10 @@ const KanbanProvider = ({ children, code }) => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (!kanbanState.fases){
+      fetchData();
+    }
+  }, [kanbanState]);
 
   return (
     <PipeContext.Provider

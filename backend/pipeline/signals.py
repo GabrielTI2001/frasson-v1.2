@@ -1,8 +1,8 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from .models import Fluxo_Gestao_Ambiental, Phases_History, Card_Coments, Card_Activities
+from .models import Fluxo_Gestao_Ambiental, Phases_History, Card_Comments, Card_Activities, Card_Anexos
 from datetime import datetime, timedelta, time
-import re
+import re, os
 from django.core.mail import send_mail
 
 mention_pattern = re.compile(r'\@\[(.+?)\]\((.+?)\)')
@@ -25,7 +25,7 @@ def create_or_update_phases_history(sender, instance, created, **kwargs):
             instance.data_vencimento = data_e_hora_vencimento
         instance.save()
 
-@receiver(post_save, sender=Card_Coments)
+@receiver(post_save, sender=Card_Comments)
 def mention_coment(sender, instance, created, **kwargs):
     if created:
         Card_Activities.objects.create(type='co', updated_by_id=instance.created_by.id, fluxo_ambiental_id=instance.fluxo_ambiental.id, campo=instance.text)
@@ -41,3 +41,15 @@ def mention_coment(sender, instance, created, **kwargs):
             # )
             print(f"User mentioned: {display}")
         
+@receiver(pre_delete, sender=Card_Anexos)
+def excluir_arquivo_no_delete(sender, instance, **kwargs):
+    if instance.file:
+        if os.path.isfile(instance.file.path):
+            os.remove(instance.file.path)
+
+@receiver(post_save, sender=Card_Anexos)
+def anexo_atividade(sender, instance, created, **kwargs):
+    if created:
+        if instance.fluxo_ambiental:
+            Card_Activities.objects.create(type='ch', updated_by_id=instance.uploaded_by.id, 
+                fluxo_ambiental_id=instance.fluxo_ambiental.id, campo='a Lista de Anexos')

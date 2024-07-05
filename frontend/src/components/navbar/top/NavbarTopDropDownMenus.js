@@ -73,7 +73,7 @@ const NavbarTopDropDownMenus = () => {
         <span className="nav-link-icon d-flex align-items-center">
           <FontAwesomeIcon icon={ambientalRoutes.icon} />
         </span>
-        <NavbarDropdown title="Ambiental">
+        <NavbarDropdown title="Ambiental" c>
           <NavbarDropdownAmbiental items={ambientalRoutes.children} />
         </NavbarDropdown>
       </Flex>

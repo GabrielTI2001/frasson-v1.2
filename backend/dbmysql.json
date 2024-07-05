@@ -1202,18 +1202,6 @@
         }
     },
     {
-        "model": "pipeline.Pipe",
-        "fields": {
-            "id": 4,
-            "uuid": "624112c285a24d1198c5588bacf5c34c",
-            "code": 518984182,
-            "descricao": "PVTEC",
-            "created_by_id": 1,
-            "created_at": "2022-09-01 00:00:00",
-            "updated_at": "2022-09-01 00:00:00"
-        }
-    },
-    {
         "model": "pipeline.Fase",
         "fields": {
             "uuid": "86d9bd0650754ef3acf4ef98b03f2ea9",

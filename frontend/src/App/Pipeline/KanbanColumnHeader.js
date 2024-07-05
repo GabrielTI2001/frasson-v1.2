@@ -31,8 +31,7 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
         </Dropdown.Toggle>
 
         <Dropdown.Menu className="py-0">
-          <Dropdown.Item href="" onClick={() => setModalForm({show:true})}>Novo Card</Dropdown.Item>
-          <Dropdown.Item href="">Edit</Dropdown.Item>
+          <Dropdown.Item onClick={() => setModalForm({show:true})}>Novo Card</Dropdown.Item>
           <Dropdown.Divider />
           <Dropdown.Item
             onClick={() => setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/fases/${id}/`})}

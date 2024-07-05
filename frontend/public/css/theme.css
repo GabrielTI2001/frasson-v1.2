@@ -5605,17 +5605,19 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
   border: 0;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
+.nav-link.nav-link-secondary{
+  color: var(--falcon-gray-700);
+}
+.nav-link-secondary:hover{
+  color: var(--falcon-secondary) !important;
+  background-color: var(--falcon-secondary-bg-subtle) !important;
+}
 @media (prefers-reduced-motion: reduce) {
   .nav-link {
     transition: none;
   }
 }
-.nav-link:hover, .nav-link:focus {
-  color: var(--falcon-nav-link-hover-color);
-  background-color: var(--falcon-primary-bg-subtle);
-  text-decoration: none;
-}
-.nav-link:hover, .nav-link:focus {
+.nav-link:not(.nav-not-hover):hover{
   color: var(--falcon-nav-link-hover-color);
   background-color: var(--falcon-primary-bg-subtle);
   text-decoration: none;
@@ -5676,7 +5678,7 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
   background-color: var(--falcon-primary-bg-subtle);
 }
 
-.nav-link:hover{
+.nav-link:not(.nav-not-hover):hover{
   color: var(--falcon-primary) !important;
 }
 
@@ -8695,7 +8697,7 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
   color: RGBA(var(--falcon-primary-rgb), var(--falcon-link-opacity, 1)) !important;
   text-decoration-color: RGBA(var(--falcon-primary-rgb), var(--falcon-link-underline-opacity, 1)) !important;
 }
-.link-primary:hover, .link-primary:focus {
+.link-primary:hover{
   color: RGBA(35, 98, 183, var(--falcon-link-opacity, 1)) !important;
   text-decoration-color: RGBA(35, 98, 183, var(--falcon-link-underline-opacity, 1)) !important;
 }
@@ -8704,7 +8706,7 @@ fieldset:disabled .tox .tox-dialog__footer .tox-button--secondary,
   color: RGBA(var(--falcon-secondary-rgb), var(--falcon-link-opacity, 1)) !important;
   text-decoration-color: RGBA(var(--falcon-secondary-rgb), var(--falcon-link-underline-opacity, 1)) !important;
 }
-.link-secondary:hover, .link-secondary:focus {
+.link-secondary:hover{
   color: RGBA(93, 103, 118, var(--falcon-link-opacity, 1)) !important;
   text-decoration-color: RGBA(93, 103, 118, var(--falcon-link-underline-opacity, 1)) !important;
 }

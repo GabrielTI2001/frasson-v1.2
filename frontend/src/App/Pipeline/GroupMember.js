@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Avatar from '../../components/common/Avatar';
-import { Dropdown, Form, Nav, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import classNames from 'classnames';
 import { useAppContext } from '../../Main';
 

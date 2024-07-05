@@ -54,7 +54,6 @@ const FormEtapa = ({type, data, submit, contrato}) => {
     };
     const calcPercent = (v) => {
         const valor = contrato.valor ? (Number(contrato.valor/100)) * Number(v): 0
-        console.log()
         setformData({
           ...formData,
           valor: valor, percentual:v

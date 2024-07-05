@@ -43,10 +43,6 @@ const EditForm = ({
           sel = data ? {value: data.id, label: data.contratante, produto: data.produto} : {};
           setdefaultSelected({...defaultselected, 'contrato':sel})
           break
-        case 'others':
-          const ids_resps = data.responsaveis.map(b => ({value: b.id, label: b.nome}));
-          setdefaultSelected({...defaultselected, 'responsaveis':ids_resps})
-          break
         default:
           setdefaultSelected({...defaultselected})
       }
@@ -68,23 +64,6 @@ const EditForm = ({
             return handleSubmit(formData);
           }}
         >
-          {fieldkey === 'card' &&(
-            <Form.Select
-              ref={inputRef}
-              rows={2}
-              className="mb-2 w-50 fs-xs py-0 px-1 ms-2 shadow-none outline-none"
-              onChange={({ target }) =>
-                setFormData({ ...formData, card: target.value })
-              }
-              defaultValue={data}
-              value={formData.card}
-            >
-              <option>---</option>
-              <option value='Principal'>Principal</option>
-              <option value='Paralelo'>Paralelo</option>
-              <option value='Ocorrência'>Ocorrência</option>
-            </Form.Select>  
-          )}
           {fieldkey === 'beneficiario' &&( defaultselected &&
             <AsyncSelect ref={inputRef} defaultValue={defaultselected['beneficiario']}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"

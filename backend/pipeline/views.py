@@ -1,12 +1,14 @@
 from rest_framework import permissions, viewsets, status
 from django.db.models import Q
 from rest_framework.response import Response
+from rest_framework.parsers import FormParser, MultiPartParser
 from .serializers import *
-from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, Card_Coments
+from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, Card_Comments
 from .models import Phases_History, Card_Activities
 from users.models import User
 from datetime import datetime, timedelta, time
 from .utils import fields_cardproduto_info
+import os
 
 class PipeView(viewsets.ModelViewSet):
     lookup_field = 'code'
@@ -35,8 +37,13 @@ class PipeDataView(viewsets.ModelViewSet):
 
 class FasesView(viewsets.ModelViewSet):
     queryset = Fase.objects.all()
-    serializer_class = serializerFase
-    permission_classes = [permissions.AllowAny]
+    serializer_class = listFase
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        pipe = self.request.query_params.get('pipe', None)   
+        if pipe:
+            queryset = queryset.filter(Q(pipe__code=int(pipe)))
+        return queryset
 
 class FluxoAmbientalView(viewsets.ModelViewSet):
     queryset = Fluxo_Gestao_Ambiental.objects.all()
@@ -66,7 +73,8 @@ class FluxoAmbientalView(viewsets.ModelViewSet):
                         fluxo_ambiental_id=instance.pk, moved_by_id=user)
                 
                 responsaveis = [r.id for r in historico_fase_atual.phase.responsaveis.all()]
-                instance.responsaveis.set(responsaveis)
+                if len(responsaveis ) > 0:
+                    instance.responsaveis.set(responsaveis)
                 if historico_fase_atual.phase.dias_prazo:
                     data_vencimento = datetime.now().date() + timedelta(days=historico_fase_atual.phase.dias_prazo)
                     data_e_hora_vencimento = datetime.combine(data_vencimento, time(18, 0))
@@ -89,7 +97,7 @@ class FluxoAmbientalView(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CommentView(viewsets.ModelViewSet):
-    queryset = Card_Coments.objects.all().order_by('created_at')
+    queryset = Card_Comments.objects.all().order_by('-created_at')
     serializer_class = serializerComments
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -107,3 +115,64 @@ class ActivityView(viewsets.ModelViewSet):
         if fluxogai:
             queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
         return queryset
+
+class AnexoView(viewsets.ModelViewSet):
+    queryset = Card_Anexos.objects.all().order_by('-created_at')
+    serializer_class = serializerAnexos
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        fluxogai = self.request.query_params.get('fluxogai', None)   
+        pvtec = self.request.query_params.get('pvtec', None)  
+        is_response = self.request.query_params.get('isresponse', None)  
+        if fluxogai:
+            queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
+        if pvtec:
+            if is_response:
+                queryset = queryset.filter(Q(pvtec_id=int(pvtec)) & Q(pvtec_response=True))
+            else:
+                queryset = queryset.filter(Q(pvtec_id=int(pvtec)) & Q(pvtec_response=False))
+        return queryset
+    def create(self, request, *args, **kwargs):
+        response_data = []
+        serializer = self.get_serializer(data=request.data)
+        files = request.FILES.getlist('file')
+        if serializer.is_valid():
+            for i in files:
+                reg = Card_Anexos.objects.create(
+                    pvtec_id=request.data.get('pvtec') if request.data.get('pvtec') else None, 
+                    fluxo_ambiental_id=request.data.get('fluxo_ambiental') if request.data.get('fluxo_ambiental') else None, 
+                    uploaded_by_id=request.data.get('uploaded_by'), 
+                    pvtec_response=True if request.data.get('pvtec_response') else False, 
+                    file=i
+                )
+                response_data.append({
+                    'id': reg.id, 
+                    'file': '/media/' + reg.file.name, 
+                    'name': reg.name, 
+                    'user':{'name':reg.uploaded_by.first_name+' '+reg.uploaded_by.last_name, 'id':reg.uploaded_by.id},
+                    'created_at': reg.created_at
+                })
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        
+class PVTECView(viewsets.ModelViewSet):
+    queryset = PVTEC.objects.all().order_by('-created_at')
+    serializer_class = detailPVTEC
+    parser_classes = (MultiPartParser, FormParser)
+    lookup_field = 'uuid'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        fluxogai = self.request.query_params.get('fluxogai', None)  
+        if fluxogai:
+            queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
+        return queryset
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        files = request.FILES.getlist('file')
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            if request.FILES:
+                for i in files:
+                    Card_Anexos.objects.create(pvtec=serializer.instance, uploaded_by=request.user, file=i)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

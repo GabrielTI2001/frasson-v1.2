@@ -109,7 +109,6 @@ class BenfeitoriasView(viewsets.ModelViewSet):
             return ListBenfeitorias
         else:
             return self.serializer_class
-        
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         images = request.FILES.getlist('file')

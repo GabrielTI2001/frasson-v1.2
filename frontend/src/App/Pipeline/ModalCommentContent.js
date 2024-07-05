@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import Flex from '../../components/common/Flex';
 import Avatar from '../../components/common/Avatar';
-import { Form, Button, Dropdown } from 'react-bootstrap';
+import { Form, Button, Spinner } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faPaperclip, faAt, faImage, faEllipsisV, faTrash, faCircleXmark} from '@fortawesome/free-solid-svg-icons';
+import { faCircleXmark} from '@fortawesome/free-solid-svg-icons';
 import { MentionsInput, Mention } from 'react-mentions';
-import mentionStyle, { mentionInputStyleDark, mentionInputStyleLight } from '../../components/Custom/mentionStyle';
+import { mentionInputStyleDark, mentionInputStyleLight } from '../../components/Custom/mentionStyle';
 import { useAppContext } from '../../Main';
-import { GetRecord, HandleSearch } from '../../helpers/Data';
+import { HandleSearch } from '../../helpers/Data';
 import api from '../../context/data';
 import { toast } from 'react-toastify';
 import ModalDelete from '../../components/Custom/ModalDelete';
-library.add(faPaperclip, faAt, faImage );
+import { useNavigate } from 'react-router-dom';
 
 export const renderComment = (comment) => {
   const parts = comment ? comment.split(/(\@\[[^\]]+\]\([^)]+\))/g) : [];
@@ -21,7 +20,7 @@ export const renderComment = (comment) => {
     if (mentionMatch) {
       const [_, display, id] = mentionMatch;
       return (
-        <strong key={index} style={{ color: 'blue' }}>
+        <strong key={index} style={{ color: 'blue' }} className='fs--1'>
           @{display}
         </strong>
       );
@@ -36,6 +35,7 @@ const ModalCommentContent = ({card, updatedactivity}) => {
   const [formData, setFormData] = useState({created_by:user.id, fluxo_ambiental:card.id, phase:card.phase});
   const [users, setUsers] = useState([]);
   const [comentarios, setComentarios] = useState();
+  const navigate = useNavigate()
   const {config: {theme, isRTL}} = useAppContext();
   const token = localStorage.getItem("token")
   const [modaldel, setModaldel] = useState({show:false})
@@ -46,7 +46,7 @@ const ModalCommentContent = ({card, updatedactivity}) => {
       api.post('pipeline/card-comments/', formData, {headers: {Authorization: `bearer ${token}`}})
       .then((response) => {
         setFormData({...formData, text:''})
-        setComentarios([...comentarios, response.data].reverse())
+        setComentarios([response.data, ...comentarios])
         updatedactivity({type:'co', campo:response.data.text, created_at:response.data.created_at, user:response.data.user})
         toast.success("Comentário adicionado com sucesso!")
       })
@@ -60,12 +60,15 @@ const ModalCommentContent = ({card, updatedactivity}) => {
   useEffect(() =>{
     const getusers = async () =>{
       if (!comentarios){
-        HandleSearch('', 'pipeline/card-comments',(data) => {setComentarios(data.reverse())}, `?fluxogai=${card.id}`)
+        HandleSearch('', 'pipeline/card-comments',(data) => {setComentarios(data)}, `?fluxogai=${card.id}`)
       }
-      HandleSearch('', 'users/users',
+      const status = HandleSearch('', 'users/users',
         (data) => {setUsers(data.map(r => ({'id':r.id, 'display':r.first_name+' '+r.last_name})))}, 
         `?pipe=${card.pipe_code}`
       )
+      if (status === 401){
+        navigate("/auth/login")
+      }
     }
     getusers()
   },[])
@@ -101,7 +104,7 @@ const ModalCommentContent = ({card, updatedactivity}) => {
         </div>
       </Flex>
 
-      {comentarios && (comentarios.map(comment => (
+      {comentarios ? (comentarios.map(comment => (
         <Flex key={comment.id} className="mb-3 pe-3">
           <div>
             <Avatar src={`${process.env.REACT_APP_API_URL}/media/${comment.user.avatar}`} size="l" />
@@ -112,12 +115,12 @@ const ModalCommentContent = ({card, updatedactivity}) => {
                 {comment.user.name}
               </span>
               {parseInt(comment.user.id) === parseInt(user.id) &&
-              <div 
-                className='cursor-pointer'
-                onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/card-comments/${comment.id}/`})}}
-              >
-                <FontAwesomeIcon icon={faCircleXmark} transform="shrink-2" className='fs-0 m-0'/>
-              </div>
+                <div 
+                  className='cursor-pointer'
+                  onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/card-comments/${comment.id}/`})}}
+                >
+                  <FontAwesomeIcon icon={faCircleXmark} transform="shrink-2" className='fs-0 m-0'/>
+                </div>
               }
               <ModalDelete show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
             </div>
@@ -131,7 +134,11 @@ const ModalCommentContent = ({card, updatedactivity}) => {
             </div>
           </div>
         </Flex>
-      )))}
+      ))) : 
+      <div className='text-center'>
+          <Spinner />
+      </div> 
+      }
     </>
   );
 };

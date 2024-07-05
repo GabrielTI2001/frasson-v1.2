@@ -4,8 +4,6 @@ import TaskCard from './GAI/TaskCard';
 import { Droppable } from 'react-beautiful-dnd';
 import classNames from 'classnames';
 import { PipeContext } from '../../context/Context';
-import IconButton from '../../components/common/IconButton';
-import { faPlus } from '@fortawesome/free-solid-svg-icons';
 
 const KanbanColumn = ({ kanbanColumnItem}) => {
   const { id, descricao, fluxo_gestao_ambiental_set } = kanbanColumnItem;
@@ -35,7 +33,7 @@ const KanbanColumn = ({ kanbanColumnItem}) => {
               className="kanban-items-container scrollbar"
             >
               {fluxo_gestao_ambiental_set && fluxo_gestao_ambiental_set.map((card, index) => (
-                <TaskCard key={card.id} index={index} task={card}/>
+                <TaskCard key={card && card.id} index={index} task={card}/>
               ))}
               {provided.placeholder}
               <div ref={formViewRef}></div>

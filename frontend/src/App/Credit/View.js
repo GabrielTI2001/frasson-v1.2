@@ -66,7 +66,6 @@ const ViewCredit = () => {
             formDataToSend.append('operacao', operacao.id);
             const response = await ApiCedula(formDataToSend, null, 'add')
             const data = await response.json()
-            console.log(data)
             if (response.status === 200 || response.status === 201){
                 toast.success("Arquivo Adicionado com Sucesso!")
                 setOperacao({...operacao, cedulas:[...operacao.cedulas, ...data.map(d => ({id:d.id, url:d.url, name:`Cédula ${d.id}`}))]})

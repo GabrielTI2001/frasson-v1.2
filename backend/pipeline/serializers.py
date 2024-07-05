@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Fluxo_Gestao_Ambiental, Fase, Pipe
-from .models import Phases_History, Card_Coments, Card_Activities
+from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, PVTEC
+from .models import Phases_History, Card_Comments, Card_Activities, Card_Anexos
 from datetime import datetime
 
 def calcduration(first_in, last_in, last_to):
@@ -87,7 +87,15 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
         ]
         return list
     def validate_phase(self, value):
+        
         return value
+    def update(self, instance, validated_data):
+        responsaveis_data = validated_data.pop('responsaveis', [])
+        instance = super().update(instance, validated_data)
+        if responsaveis_data:
+            responsaveis_ids = [r.id for r in responsaveis_data]
+            instance.responsaveis.set(responsaveis_ids)
+        return instance
     class Meta:
         model = Fluxo_Gestao_Ambiental
         fields = '__all__'
@@ -118,6 +126,24 @@ class serializerFase(serializers.ModelSerializer):
         model = Fase
         fields = '__all__'
 
+class listFase(serializers.ModelSerializer):
+    list_destinos = serializers.SerializerMethodField(read_only=True, required=False)
+    def get_list_destinos(self, obj):
+        destinos_permitidos = obj.destinos_permitidos.all()
+        return [{'id':r.id, 'descricao':r.descricao} for r in destinos_permitidos]
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['pipe', 'responsaveis', 'descricao']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
+    class Meta:
+        model = Fase
+        fields = '__all__'
+
 class serializerPipe(serializers.ModelSerializer):
     fase_set = serializerFase(many=True, read_only=True, required=False)
     class Meta:
@@ -139,7 +165,7 @@ class serializerComments(serializers.ModelSerializer):
     def get_user(self, obj):
         return {'id':obj.created_by.id, 'name':obj.created_by.first_name+' '+obj.created_by.last_name, 'avatar':obj.created_by.profile.avatar.name}
     class Meta:
-        model = Card_Coments
+        model = Card_Comments
         fields = '__all__'
 
 class serializerActivities(serializers.ModelSerializer):
@@ -151,4 +177,50 @@ class serializerActivities(serializers.ModelSerializer):
             return {'id':'', 'name':'-'+' '+'-'}
     class Meta:
         model = Card_Activities
+        fields = '__all__'
+
+class serializerAnexos(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    def get_user(self, obj):
+        if obj.uploaded_by:
+            return {'id':obj.uploaded_by.id, 'name':obj.uploaded_by.first_name+' '+obj.uploaded_by.last_name}
+        else:
+            return {'id':'', 'name':'-'+' '+'-'}
+    class Meta:
+        model = Card_Anexos
+        fields = '__all__'
+
+class detailPVTEC(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    list_responsaveis = serializers.SerializerMethodField(read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    atividade_display = serializers.CharField(source='get_atividade_display', read_only=True)
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    def get_list_responsaveis(self, obj):
+        responsaveis = obj.responsaveis.all()
+        return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
+    def get_user(self, obj):
+        if obj.created_by:
+            return {'id':obj.created_by.id, 'name':obj.created_by.first_name+' '+obj.created_by.last_name}
+        else:
+            return {'id':'', 'name':'-'+' '+'-'}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['orientacoes', 'status', 'atividade', 'responsaveis']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
+                field.allow_empty = True
+    def update(self, instance, validated_data):
+        responsaveis_data = validated_data.pop('responsaveis', [])
+        instance = super().update(instance, validated_data)
+        if responsaveis_data:
+            responsaveis_ids = [r.id for r in responsaveis_data]
+            instance.responsaveis.set(responsaveis_ids)
+        return instance
+    class Meta:
+        model = PVTEC
         fields = '__all__'

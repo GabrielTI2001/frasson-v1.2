@@ -1,13 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { CloseButton, Col, Dropdown, Modal, Nav, Placeholder, Row, Form, Tab } from 'react-bootstrap';
-// import '../../../assets/scss/custom.css';
-// import Background from 'components/common/Background';
-// import { Link } from 'react-router-dom';
+import { CloseButton, Col, Dropdown, Modal, Nav, Row, Tab } from 'react-bootstrap';
 import ModalMediaContent from '../ModalMediaContent';
 import GroupMember from '../GroupMember';
-// import { members } from 'data/kanban';
-// import ModalLabelContent from './ModalLabelContent';
-// import ModalAttachmentContent from './ModalAttachmentContent';
 import ModalCommentContent from '../ModalCommentContent';
 import ModalActivityContent from '../ModalActivityContent';
 import { PipeContext } from '../../../context/Context';
@@ -27,6 +21,8 @@ import { faCalendar, faComment, faFilter, faMoneyBill, faPaperclip } from '@fort
 import EditFormOthers from './EditFormOthers';
 import { SkeletBig } from '../../../components/Custom/Skelet';
 import {Anexos} from '../Anexos';
+import PVTEC from '../PVTEC/PVTEC';
+import NavGai from './Nav';
 
 const options = {
   month: "short",
@@ -34,7 +30,7 @@ const options = {
   timeZone: 'UTC'
 };
 
-const KanbanModal = ({show}) => {
+const KanbanModal = ({show, movercard}) => {
   const [showForm, setShowForm] = useState({'card':false,'data':false,'beneficiario':false, 
     'detalhamento': false, 'instituicao': false, 'others':false});
   const {kanbanState: {kanbanModal}, kanbanDispatch} = useContext(PipeContext);
@@ -141,9 +137,9 @@ const KanbanModal = ({show}) => {
                   <h4 className="mb-1 fs-1 fw-bold">{card.info_detalhamento.detalhamento_servico}</h4>
                 )}
               </div>
-              <Dropdown className='mb-1'>
+              <Dropdown className='mb-2'>
                 <Dropdown.Toggle as={Nav}
-                  className='dropdown-caret-none p-0 ms-3 cursor-pointer'
+                  className='dropdown-caret-none p-0 ms-3 cursor-pointer w-50'
                 >
                   <div onClick={() => handleEdit('others')} className='d-flex'>
                     <GroupMember users={card.list_responsaveis} className='cursor-pointer' onClick={() => handleEdit('others')}/>
@@ -175,73 +171,12 @@ const KanbanModal = ({show}) => {
               </Dropdown>
               <Tab.Container id="left-tabs-example" defaultActiveKey="processo" onSelect={handleTabSelect}>
                 <div className='ms-3 my-2'>
-                  <Nav variant="pills" className="flex-row fs--2">
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2" eventKey="processo">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>Processo
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="comments">
-                              <FontAwesomeIcon icon={faComment} className="me-1"/>Comentários
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="anexos">
-                              <FontAwesomeIcon icon={faPaperclip} className="me-1"/>Anexos
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="pvtec">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>PVTEC
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="prospects">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>Prospects
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="cobrancas">
-                              <FontAwesomeIcon icon={faMoneyBill} className="me-1"/>Cobranças
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="analise">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>Análise e Processamento
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab mb-2" eventKey="litec">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>LITEC
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="template">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>Template
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="protocolo">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>Protocolo
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="followup">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>Follow Up
-                          </Nav.Link>
-                      </Nav.Item>
-                      <Nav.Item>
-                          <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab" eventKey="encerramento">
-                              <FontAwesomeIcon icon={faFilter} className="me-1"/>Encerramento
-                          </Nav.Link>
-                      </Nav.Item>
-                  </Nav>
+                  <NavGai card={card} />
                 </div>
-                <div className='ms-3 mt-1'>
+                <div className='ms-3 mt-3'>
                   <Tab.Content>
                     <Tab.Pane eventKey="processo">
-                      <span className='fw-bold fs-0'>Informações do Processo</span>
+                      <h5 className="mb-0 fs-0 fw-bold">Informações do Processo</h5>
                       <div className='text-secondary fs--2'>Criado por {card.str_created_by} em {' '}
                         {new Date(card.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
                         {' às '+new Date(card.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
@@ -249,17 +184,6 @@ const KanbanModal = ({show}) => {
                       <div className="rounded-top-lg pt-1 pb-0">
                         <span className='fw-bold fs--1'>Processo</span>
                         <div className="fs--1 row-10">#{card.code}</div>
-                        <CardTitle title='Card*' click={handleEdit} field='card'/>
-                        {card.card && !showForm['card'] &&
-                          <div className="fs--1 row-10">{card.card}</div>
-                        }
-                        <EditForm 
-                          onSubmit={handleSubmit} 
-                          show={showForm['card']}
-                          fieldkey='card'
-                          setShow={setShowForm}
-                          data={card.card}
-                        />
                       </div>
                       <div className="rounded-top-lg pt-1 pb-0 mb-2">
                         <CardTitle title='Beneficiário*' click={handleEdit} field='beneficiario'/>
@@ -327,7 +251,7 @@ const KanbanModal = ({show}) => {
                     </Tab.Pane>
                     <Tab.Pane eventKey="anexos">
                       {activeTab === 'anexos' && 
-                        <ModalMediaContent title='Anexos'><Anexos /></ModalMediaContent>
+                        <ModalMediaContent title='Anexos'><Anexos card={card} updatedactivity={(a) => setActivities([a, ...activities])}/></ModalMediaContent>
                       }
                     </Tab.Pane>
                     <Tab.Pane eventKey="comments">
@@ -337,6 +261,11 @@ const KanbanModal = ({show}) => {
                         }
                       </ModalMediaContent>
                     </Tab.Pane>
+                    <Tab.Pane eventKey="pvtec">
+                      {activeTab === 'pvtec' && 
+                        <PVTEC card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
+                      }
+                    </Tab.Pane>
                   </Tab.Content>
                 </div>
               </Tab.Container></>
@@ -345,7 +274,7 @@ const KanbanModal = ({show}) => {
             }
             
           </Col>
-          <Col lg={5} className='overflow-auto modal-column-scroll'>
+          <Col lg={5} className='overflow-auto modal-column-scroll border border-bottom-0 border-top-0'>
             {card ? <>
               <div className="rounded-top-lg pt-1 pb-0 mb-2">
                 <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Fase Atual</span>
@@ -360,7 +289,11 @@ const KanbanModal = ({show}) => {
             }
           </Col>
           <Col lg={2} className='mb-1 overflow-auto modal-column-scroll actionscard'>
-            {card && <ModalSidebar id={card.id} code={code} pipe='produtos' fases={card.fases_list} namefase={card.str_fase}/>}
+          {card ?
+            <ModalSidebar card={card} pipe={card.pipe_code} fases={card.fases_list} namefase={card.str_fase}/>
+          : kanbanModal.show &&
+            <SkeletBig />
+          }
           </Col>
         </Row>
       </Modal.Body>

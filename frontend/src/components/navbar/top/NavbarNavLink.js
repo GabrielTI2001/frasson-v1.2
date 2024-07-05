@@ -35,7 +35,8 @@ const NavbarNavLink = ({ title, route, icon, icon2 }) => {
         'py-1': !title,
         '': !title && route?.active,
         'px-0':true,
-        'submenu-a': true
+        'submenu-a': true,
+        'nav-not-hover': true
       })}
       to={route?.to}
       onClick={handleClick}

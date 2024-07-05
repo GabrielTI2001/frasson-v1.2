@@ -28,7 +28,7 @@ const NavbarDropdown = ({ title, children }) => {
       }}
       className="me-3"
     >
-      <Dropdown.Toggle as={Link} to="#!" className="nav-link ps-1 fw-semi-bold text-body">
+      <Dropdown.Toggle as={Link} to="#!" className="nav-link ps-1 fw-semi-bold text-body nav-not-hover">
         {capitalize(title)}
       </Dropdown.Toggle>
       <Dropdown.Menu className="dropdown-menu-card mt-0 dropdown-caret">

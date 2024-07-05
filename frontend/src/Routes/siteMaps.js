@@ -5,7 +5,8 @@ faFileSignature,
 faTractor,
 faCartShopping,
 faHandshake,
-faCartPlus} 
+faCartPlus,
+faFilter} 
 from "@fortawesome/free-solid-svg-icons";
 import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faRobot} 
 from "@fortawesome/free-solid-svg-icons";
@@ -41,7 +42,7 @@ export const dashboardRoutes = {
       ]
     },
     {
-      name: 'Fluxos Pipefy',
+      name: 'Fluxos',
       active: true,
       children: [
         {
@@ -101,13 +102,13 @@ export const ComercialRoutes = {
   icon: faCartPlus,
   children: [
     {
-      name: 'Teste',
+      name: 'PVTEC',
       active: true,
       children: [
         {
-          name: 'Teste',
-          icon: faDatabase,
-          to: '/',
+          name: 'PVTEC',
+          icon: faFilter,
+          to: '/comercial/pvtec',
           exact: true,
           active: true
         },

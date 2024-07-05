@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import AsyncSelect from 'react-select/async';
-import React, { useEffect, useRef, useState, useContext } from 'react';
-import { Button, Col, Form, Row } from 'react-bootstrap';
+import React, { useRef, useState, useContext } from 'react';
+import { Button, Col, Form} from 'react-bootstrap';
 import { SelectSearchOptions } from '../../../helpers/Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
@@ -23,7 +23,7 @@ const ProductForm = ({
   const token = localStorage.getItem("token")
 
   const submit = async () => {
-      const isEmpty = !Object.keys(formData).length;
+    const isEmpty = !Object.keys(formData).length;
     if (!isEmpty) {
       api.post('pipeline/fluxos/gestao-ambiental/', formData, {headers: {Authorization: `bearer ${token}`}})
       .then((response) => {
@@ -162,11 +162,8 @@ const ProductForm = ({
               type="submit"
             >
               <span>Adicionar</span>
-          </Button>
+            </Button>
           </Form.Group>
-
-          <Row className="gx-2 w-50 ms-2">
-          </Row>  
         </Form>
       </div>   
     </>

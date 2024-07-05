@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+<Document>
+	<name>Poço Da Matta</name>
+	<description><![CDATA[Powered by Neyton<br/>http://tbn2.blogspot.com/]]></description>
+	<visibility>1</visibility>
+	<open>1</open>
+	<Style id="icones">
+		<IconStyle>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pal4/icon24.png</href>
+			</Icon>
+		</IconStyle>
+	</Style>
+
+	<Style id="Novo Poço DaMatta">
+		<LineStyle id="lNovo Poço DaMattaLineStyle">
+			<color>ffFFFFFF</color>
+		</LineStyle>
+		<PolyStyle id="pNovo Poço DaMattaPolyStyle">
+			<color>7fFFFFFF</color>
+			<fill>1</fill>
+			<outline>1</outline>
+		</PolyStyle>
+	</Style>
+
+	<Folder>
+		<name>Novo Poço DaMatta</name>
+		<visibility>1</visibility>
+		<open>0</open>
+
+		<Placemark>			<name>Novo Poços DaMatta</name>
+			<description><![CDATA[]]></description>
+			<styleUrl>#icones</styleUrl>
+			<visibility>1</visibility>
+			<open>0</open>
+			<Point>
+				<coordinates>-45.89074774501646,-14.20474555379526,0</coordinates>
+				<altitudeMode>clampedToGround</altitudeMode>
+			</Point>
+		</Placemark>
+
+	</Folder>
+
+</Document>
+</kml>

@@ -7,14 +7,12 @@ import IconButton from '../../../components/common/IconButton';
 import is from 'is_js';
 import { PipeContext } from '../../../context/Context';
 import AddAnotherFase from '../AddAnotherFase';
-import { library } from '@fortawesome/fontawesome-svg-core';
 import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Col, Placeholder, Row } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SearchForm from '../Search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-library.add(faPlus);
 
 const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
 
@@ -59,17 +57,18 @@ const KanbanContainer = () => {
     };
   }
 
-  const handleSubmit = listData => {
-    const isEmpty = !Object.keys(listData).length;
+  // const handleSubmit = listData => {
+  //   const isEmpty = !Object.keys(listData).length;
 
-    if (!isEmpty) {
-      kanbanDispatch({
-        type: 'ADD_KANBAN_COLUMN',
-        payload: listData
-      });
-      setShowForm(false);
-    }
-  };
+  //   if (!isEmpty) {
+  //     kanbanDispatch({
+  //       type: 'ADD_KANBAN_COLUMN',
+  //       payload: listData
+  //     });
+  //     setShowForm(false);
+  //   }
+  // };
+
   useEffect(() => {
     setSocket(new WebSocket(SOCKET_SERVER_URL));
     if (pipe && pipe.pessoas){
@@ -188,70 +187,51 @@ const KanbanContainer = () => {
     }
   };
 
-    return (<>
-      <Row className="gx-1 gy-2 px-0 d-flex align-items-center mb-2">
-        <ol className="breadcrumb breadcrumb-alt fs-0 col">
-            <li className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
-              Fluxo - Gestão Ambiental e Irrigação
-            </li>  
-        </ol>
-        <Col xs={12} xl={4} sm={4}>
-          <SearchForm />
-        </Col>
-        <Col xl={'auto'} sm='auto' xs={'auto'}>
-          <Link className="text-decoration-none btn btn-primary shadow-none fs--2" style={{padding: '2px 5px'}} 
-            to={`settings`}
-          >
-            <FontAwesomeIcon icon={faGear} className='me-2' />Editar Pipe
-          </Link>
-        </Col>
-      </Row>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <div className="kanban-container me-n3" ref={containerRef} xl={8}>
-        {/* Pega o array de itens e renderiza um div pra cada*/}
-          {kanbanState && kanbanState.fases ? kanbanState.fases.map((fase)=>{
-            return( 
-              <KanbanColumn
-                key={fase.id}
-                kanbanColumnItem={fase}
-              />
-            )
-          })
-          :
-          <div className='kanban-column'>
-            <Placeholder animation="glow">
-                <Placeholder xs={7} /> <Placeholder xs={4} /> 
-                <Placeholder xs={4} />
-                <Placeholder xs={6} /> <Placeholder xs={8} />
-            </Placeholder>    
-          </div>   
-          }
-          <div className="kanban-column w-25">
-            <AddAnotherFase
-              type="list"
-              onSubmit={handleSubmit}
-              showForm={showForm}
-              setShowForm={setShowForm}
+  return (<>
+    <Row className="gx-1 gy-2 px-0 d-flex align-items-center mb-2">
+      <ol className="breadcrumb breadcrumb-alt fs-0 col">
+          <li className="breadcrumb-item fw-bold">
+              <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
+          </li>
+          <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
+            Fluxo - Gestão Ambiental e Irrigação
+          </li>  
+      </ol>
+      <Col xs={12} xl={4} sm={4}>
+        <SearchForm />
+      </Col>
+      <Col xl={'auto'} sm='auto' xs={'auto'}>
+        <Link className="text-decoration-none btn btn-primary shadow-none fs--2" style={{padding: '2px 5px'}} 
+          to={`settings`}
+        >
+          <FontAwesomeIcon icon={faGear} className='me-2' />Editar Pipe
+        </Link>
+      </Col>
+    </Row>
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <div className="kanban-container me-n3" ref={containerRef} xl={8}>
+      {/* Pega o array de itens e renderiza um div pra cada*/}
+        {kanbanState && kanbanState.fases ? kanbanState.fases.map((fase)=>{
+          return( 
+            <KanbanColumn
+              key={fase.id}
+              kanbanColumnItem={fase}
             />
-            {!showForm && (
-              <IconButton
-                variant="secondary"
-                className="d-block border-400 bg-400 fs--1"
-                icon={faPlus}
-                iconClassName="me-1"
-                onClick={() => setShowForm(true)}
-              >
-                Adicionar Fase
-              </IconButton>
-            )}
-          </div>
-        </div>
-        <KanbanModal show={kanbanState.kanbanModal.show}/>
-      </DragDropContext></>
-    );
+          )
+        })
+        :
+        <div className='kanban-column'>
+          <Placeholder animation="glow">
+              <Placeholder xs={7} /> <Placeholder xs={4} /> 
+              <Placeholder xs={4} />
+              <Placeholder xs={6} /> <Placeholder xs={8} />
+          </Placeholder>    
+        </div>   
+        }
+      </div>
+      <KanbanModal show={kanbanState.kanbanModal.show}/>
+    </DragDropContext></>
+  );
 };
 
 export default KanbanContainer;

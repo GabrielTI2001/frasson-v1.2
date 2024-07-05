@@ -132,12 +132,12 @@ const IndexBenfeitorias = () => {
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
                     Adicionar Benfeitoria
                 </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row className="flex-center sectionform">
-                        <BenfeitoriaForm hasLabel type='add' submit={submit}/>
-                    </Row>
+                <CloseButton onClick={() => setShowModal(false)}/>
+            </Modal.Header>
+            <Modal.Body>
+                <Row className="flex-center sectionform">
+                    <BenfeitoriaForm hasLabel type='add' submit={submit}/>
+                </Row>
             </Modal.Body>
         </Modal>
         <ModalDelete show={modalDelete.show} link={modalDelete.link} close={() => setModalDelete({show: false, link:''})} update={submit}/>

@@ -108,7 +108,7 @@ const IndexUsers = () => {
         <Row>
         <h4 className="fw-600 fs--1">Usuários</h4>
         {users && 
-        <Table responsive>
+        <Table responsive size="sm">
             <thead className="bg-300">
                 <tr>
                     <th scope="col">Nome</th>

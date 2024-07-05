@@ -23,7 +23,6 @@ const LogoutContent = ({ layout, titleTag: TitleTag }) => {
                   'Authorization': `Bearer ${token}`
               },
           });
-          console.log(response.status)
           if (response.status === 401){
             localStorage.setItem("login", JSON.stringify(false));
             localStorage.setItem('token', "");

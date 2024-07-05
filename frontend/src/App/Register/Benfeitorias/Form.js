@@ -185,7 +185,6 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
         {type === 'add' && <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fotos*</Form.Label>}
           <Form.Control
-            placeholder={!hasLabel ? 'Arquivo PDF' : ''}
             name="file"
             onChange={handleImageChange}
             type="file"

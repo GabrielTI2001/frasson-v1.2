@@ -1,18 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import Flex from '../../components/common/Flex';
-import { Link } from 'react-router-dom';
-import Avatar from '../../components/common/Avatar';
-import { useAppContext } from '../../Main';
-import { HandleSearch } from '../../helpers/Data';
-import { mentionInputStyleDark, mentionInputStyleLight } from '../../components/Custom/mentionStyle';
-import { Button, Form } from 'react-bootstrap';
-import { Mention, MentionsInput } from 'react-mentions';
-import { toast } from 'react-toastify';
-import api from '../../context/data';
 import { renderComment } from './ModalCommentContent';
 import PaginationList from '../../components/Custom/PaginationList';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faComment, faPencil, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { Spinner } from 'react-bootstrap';
 
 const ListActivities = ({item}) => {
   return (<>
@@ -25,7 +17,7 @@ const ListActivities = ({item}) => {
           {/* <Avatar size="l" src={`${process.env.REACT_APP_API_URL}/media/${item.user.avatar}`}/> */}
           {item.type === 'co' ? 
             <FontAwesomeIcon icon={faComment} className='text-primary'/>
-          : item.type === 'ch' ? <FontAwesomeIcon icon={faPencil} className='text-secondary'/> 
+          : item.type === 'ch' ? <FontAwesomeIcon icon={faPencil} className='text-primary'/> 
           : <FontAwesomeIcon icon={faRightToBracket} className='text-primary'/>
           }
         </span>
@@ -33,7 +25,7 @@ const ListActivities = ({item}) => {
       <div className="flex-1 ms-2 fs--1">
         <div className="mb-0">
           <span className="fw-semi-bold fs--1">
-            {item.user.name}{' '}
+            {item.user && item.user.name}{' '}
           </span>
           <span className='fs--1'>{item.type === 'ch' ? 'atualizou' : item.type === 'cf' ? 'moveu' : 'comentou'}</span>{' '}
           {item.type === 'co' ?
@@ -50,14 +42,16 @@ const ListActivities = ({item}) => {
 }
 
 const ModalActivityContent = ({card, atividades}) => {
-  const {config: {theme, isRTL}} = useAppContext();
-
   return (
     <>
-      {atividades &&
+      {atividades ?
         <PaginationList items={atividades} initialVisibleCount={20} incrementCount={10}>
           <ListActivities />
         </PaginationList>
+      :
+      <div className='text-center'>
+          <Spinner />
+      </div>  
       }
     </>
   );

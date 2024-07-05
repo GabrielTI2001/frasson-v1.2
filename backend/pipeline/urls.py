@@ -10,7 +10,8 @@ router.register(r'fases', views.FasesView)
 router.register(r'fluxos/gestao-ambiental', views.FluxoAmbientalView)
 router.register(r'card-comments', views.CommentView)
 router.register(r'card-activities', views.ActivityView)
-router.register(r'card-anexos', views.CommentView)
+router.register(r'card-anexos', views.AnexoView)
+router.register(r'pvtec', views.PVTECView)
 
 
 urlpatterns = [
