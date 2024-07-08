@@ -26,6 +26,7 @@ const ViewLicenca = () => {
 
     const setter = (data) =>{
         setLicenca(data)
+        setModal({show:false})
     }
 
     useEffect(() =>{
@@ -155,7 +156,7 @@ const ViewLicenca = () => {
             </Modal.Header>
             <Modal.Body>
                 <Row className="flex-center sectionform">
-                    <FormLicenca hasLabel type='edit' data={licenca} />
+                    <FormLicenca hasLabel type='edit' data={licenca} submit={setter}/>
                 </Row>
         </Modal.Body>
     </Modal>

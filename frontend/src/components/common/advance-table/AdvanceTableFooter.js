@@ -28,10 +28,10 @@ export const AdvanceTableFooter = ({
     <Flex
       className={classNames(
         className,
-        'align-items-center justify-content-between'
+        'align-items-center justify-content-between flex-wrap'
       )}
     >
-      <Flex alignItems="center" className="fs--1 text-body">
+      <Flex alignItems="center" className="fs--1 text-body mb-2">
         {rowInfo && (
           <p className="mb-0">
             <span className="d-none d-sm-inline-block me-2">

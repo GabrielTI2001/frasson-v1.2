@@ -195,12 +195,25 @@ class serializerAnexos(serializers.ModelSerializer):
 class detailPVTEC(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
-    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    str_cliente = serializers.SerializerMethodField(read_only=True)
+    info_detalhamento = serializers.SerializerMethodField(read_only=True)
     atividade_display = serializers.CharField(source='get_atividade_display', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
+    def get_str_cliente(self, obj):
+        if obj.fluxo_ambiental:
+            return obj.fluxo_ambiental.beneficiario.razao_social
+        if obj.fluxo_credito:
+            return obj.fluxo_ambiental.beneficiarios.all()[0].razao_social
+    def get_info_detalhamento(self, obj):
+        if obj.fluxo_ambiental:
+            return {'detalhamento':obj.fluxo_ambiental.detalhamento.detalhamento_servico, 
+                'produto': obj.fluxo_ambiental.detalhamento.produto.description}
+        if obj.fluxo_credito:
+            return {'detalhamento':obj.fluxo_credito.detalhamento.detalhamento_servico,
+                    'produto': obj.fluxo_credito.detalhamento.produto.description}
     def get_user(self, obj):
         if obj.created_by:
             return {'id':obj.created_by.id, 'name':obj.created_by.first_name+' '+obj.created_by.last_name}
@@ -226,3 +239,32 @@ class detailPVTEC(serializers.ModelSerializer):
     class Meta:
         model = PVTEC
         fields = '__all__'
+
+class listPVTEC(serializers.ModelSerializer):
+    str_responsaveis = serializers.SerializerMethodField(read_only=True)
+    str_cliente = serializers.SerializerMethodField(read_only=True)
+    str_detalhamento = serializers.SerializerMethodField(read_only=True)
+    atividade_display = serializers.CharField(source='get_atividade_display', read_only=True)
+    info_status = serializers.SerializerMethodField(read_only=True)
+    def get_str_responsaveis(self, obj):
+        responsaveis = obj.responsaveis.all()
+        return ', '.join([r.first_name+' '+r.last_name for r in responsaveis])
+    def get_str_cliente(self, obj):
+        if obj.fluxo_ambiental:
+            return obj.fluxo_ambiental.beneficiario.razao_social
+        if obj.fluxo_credito:
+            return obj.fluxo_ambiental.beneficiarios.all()[0].razao_social
+    def get_str_detalhamento(self, obj):
+        if obj.fluxo_ambiental:
+            return obj.fluxo_ambiental.detalhamento.detalhamento_servico
+        if obj.fluxo_credito:
+            return obj.fluxo_ambiental.detalhamento.detalhamento_servico
+    def get_info_status(self, obj):
+        if obj.status:
+            return {
+                'color': 'warning' if obj.status == 'EA' else 'success', 
+                'text': obj.get_status_display()
+            }
+    class Meta:
+        model = PVTEC
+        fields = ['uuid', 'str_cliente', 'str_detalhamento', 'str_responsaveis', 'atividade_display', 'info_status']

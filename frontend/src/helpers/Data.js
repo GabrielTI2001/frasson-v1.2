@@ -139,3 +139,28 @@ export const SelectOptions = async (link, field, field2, pkfield, params) => {
       return [];
     }
 };
+
+export const sendData = async ({type, url, keyfield, dadosform, is_json=true}) => {
+  const token = localStorage.getItem("token")
+  const link = `${process.env.REACT_APP_API_URL}/${url}/${type === 'edit' ? keyfield+'/' : ''}`
+  const method = type === 'edit' ? 'PUT' : 'POST'
+  const headers = {'Authorization': `Bearer ${token}`};
+  if (is_json) {
+    headers['Content-Type'] = 'application/json';
+  }
+  try {
+      const response = await fetch(link, {
+          method: method,
+          headers: headers,
+          body: is_json ? JSON.stringify(dadosform) : dadosform
+      });
+      if (response.status === 401){
+        localStorage.setItem("login", JSON.stringify(false));
+        localStorage.setItem('token', "");
+      }
+      const data = await response.json();
+      return {response:response, dados:data || null}
+  } catch (error) {
+      console.error('Erro:', error);
+  }
+};

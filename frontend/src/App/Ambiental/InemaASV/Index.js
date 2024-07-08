@@ -61,7 +61,7 @@ const IndexASV = () => {
                 data={searchResults}
                 sortable
                 pagination
-                perPage={5}
+                perPage={15}
             >
             <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
                 <Col xl={4} sm={6} xs={12}>

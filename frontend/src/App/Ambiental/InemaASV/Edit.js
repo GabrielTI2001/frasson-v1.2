@@ -145,7 +145,7 @@ const EditASV = () => {
                     data={areas}
                     sortable
                     pagination
-                    perPage={5}
+                    perPage={15}
                 >
                     <AdvanceTable
                         table

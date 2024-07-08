@@ -116,6 +116,7 @@ import ServicesMaps from '../App/Services/Maps';
 import WebSocketComponent from '../App/Pipeline/Websocket';
 import ViewCredit from '../App/Credit/View';
 import IndexContratosAmbiental from '../App/Finances/ContratosAmbiental/Index';
+import IndexPVTEC from '../App/Comercial/PVTEC/Index';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -198,6 +199,10 @@ const LayoutRoutes = () => {
         <Route path="/credit">
           <Route path="" element={<IndexCredit />}/>
           <Route path=":uuid" element={<ViewCredit />}/>
+        </Route>
+        <Route path="/comercial">
+          <Route path="pvtec" element={<IndexPVTEC />}/>
+          <Route path="pvtec/:uuid" element={<IndexPVTEC />}/>
         </Route>
         <Route path="/dashboard">
           <Route path="ambiental" element={<DashAmbiental />}/>

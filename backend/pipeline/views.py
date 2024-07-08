@@ -9,6 +9,20 @@ from users.models import User
 from datetime import datetime, timedelta, time
 from .utils import fields_cardproduto_info
 import os
+from django.db.models import Q
+import operator
+from functools import reduce
+from django.shortcuts import get_object_or_404
+
+class MultipleFieldLookupMixin(object):
+    def get_object(self):
+        queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)  
+        filter = {}
+        for field in self.lookup_fields:
+            filter[field] = self.kwargs[field]
+        q = reduce(operator.or_, (Q(x) for x in filter.items()))
+        return get_object_or_404(queryset, q)
 
 class PipeView(viewsets.ModelViewSet):
     lookup_field = 'code'
@@ -161,10 +175,23 @@ class PVTECView(viewsets.ModelViewSet):
     lookup_field = 'uuid'
     def get_queryset(self):
         queryset = super().get_queryset()
-        fluxogai = self.request.query_params.get('fluxogai', None)  
+        fluxogai = self.request.query_params.get('fluxogai', None)   
+        search_term = self.request.query_params.get('search', None) 
+        responsavel = self.request.query_params.get('resp', None)        
+        query = Q()
         if fluxogai:
-            queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
+            query &= Q(fluxo_ambiental_id=int(fluxogai))
+        if search_term:
+            query &= (Q(atividade__icontains=search_term) | Q(orientacoes__icontains=search_term))
+        if responsavel:
+            query &= Q(responsaveis__in=[int(responsavel)])
+        queryset = queryset.filter(query)
         return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listPVTEC
+        else:
+            return self.serializer_class
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         files = request.FILES.getlist('file')

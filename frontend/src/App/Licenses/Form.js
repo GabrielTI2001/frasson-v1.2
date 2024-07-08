@@ -7,6 +7,7 @@ import { Button, Form, Col} from 'react-bootstrap';
 import { fetchInstituicoesRazaoSocial, fetchPessoal, fetchDetalhamentoServicos, FetchImoveisRurais } from '../Pipefy/Data';
 import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
+import { SelectSearchOptions, sendData } from '../../helpers/Data';
 
 const FormLicenca = ({ hasLabel, data, type, submit}) => {
   const {config: {theme}} = useAppContext();
@@ -17,41 +18,25 @@ const FormLicenca = ({ hasLabel, data, type, submit}) => {
   const token = localStorage.getItem("token")
   const [defaultoptions, setDefaultOptions] = useState()
 
-  const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/licenses/index/${type === 'edit' ? data.uuid+'/' : ''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(dadosform)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          navigate("/auth/login");
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            toast.success("Registro Atualizado com Sucesso!")
-            submit(data)
-          }
-          else{
-            toast.success("Registro Efetuado com Sucesso!")
-            submit('add', {...data, list_propriedades:data.list_propriedades.map(l => l.label).join(", ")})
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+  const handledata = async (form) =>{
+    const {response, dados} = await sendData({type:type, url:'licenses/index', keyfield:type === 'edit' ? data.uuid : null, dadosform:form})
+    if(response.status === 400){
+      setMessage({...dados})
     }
-  };
+    else if (response.status === 401){
+      navigate("/auth/login");
+    }
+    else if (response.status === 201 || response.status === 200){
+      if (type === 'edit'){
+        toast.success("Registro Atualizado com Sucesso!")
+        submit(dados)
+      }
+      else{
+        toast.success("Registro Efetuado com Sucesso!")
+        submit('add', {...dados, list_propriedades:data.list_propriedades.map(l => l.label).join(", ")})
+      }
+    }
+  }
 
   const handleSubmit = e => {
     if (formData.data_validade === ''){
@@ -62,7 +47,8 @@ const FormLicenca = ({ hasLabel, data, type, submit}) => {
     }
     setMessage(null)
     e.preventDefault();
-    handleApi(formData);
+    // handleApi(formData);
+    handledata(formData)
   };
 
   const handleFieldChange = e => {
@@ -100,7 +86,7 @@ const FormLicenca = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Beneficiário*</Form.Label>}
-          <AsyncSelect loadOptions={fetchPessoal} name='beneficiario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+          <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/pessoal', 'razao_social')} styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.beneficiario : null) : null }
             onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -115,7 +101,7 @@ const FormLicenca = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Instituição*</Form.Label>}
-          <AsyncSelect loadOptions={fetchInstituicoesRazaoSocial} name='beneficiario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+          <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/instituicoes-razaosocial', 'razao_social')} styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.instituicao : null) : null }
             onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -130,7 +116,7 @@ const FormLicenca = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} xl={4} sm={6}> 
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Licença*</Form.Label>}
-          <AsyncSelect loadOptions={fetchDetalhamentoServicos} name='tipo_licenca' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+          <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico')} styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.tipo_licenca : null) : null }
             onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -145,7 +131,7 @@ const FormLicenca = ({ hasLabel, data, type, submit}) => {
         {defaultoptions && (
         <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Propriedades*</Form.Label>}
-          <AsyncSelect loadOptions={FetchImoveisRurais} name='propriedades' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+          <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'farms/farms', 'nome', 'matricula')} styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
             defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.propriedades : null) : null }
             onChange={(selected) => {
               setFormData((prevFormData) => ({

@@ -146,7 +146,7 @@ const Edit = () => {
                     data={coordenadas}
                     sortable
                     pagination
-                    perPage={5}
+                    perPage={15}
                 >
                     <AdvanceTable
                         table

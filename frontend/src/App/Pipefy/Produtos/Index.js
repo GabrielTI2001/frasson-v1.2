@@ -53,7 +53,7 @@ const IndexProdutos = ({phasename}) => {
             data={searchResults}
             sortable
             pagination
-            perPage={5}
+            perPage={15}
         >
             <Row className="flex-end-center justify-content-start mb-3">
             {!phasename && 

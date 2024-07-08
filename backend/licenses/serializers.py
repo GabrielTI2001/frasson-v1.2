@@ -26,7 +26,7 @@ class listLicenses(serializers.ModelSerializer):
             }
     def get_list_propriedades(self, obj):
         if obj.propriedades:
-            return ', '.join([f"{r.nome_imovel}" for r in obj.propriedades.all()])
+            return ', '.join([f"{r.nome}" for r in obj.propriedades.all()])
         else:
             return '-'
     class Meta:
@@ -42,7 +42,7 @@ class detailLicenses(serializers.ModelSerializer):
     info_user = serializers.SerializerMethodField(read_only=True, required=False)
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', required=False, read_only=True)
     cpf_cnpj = serializers.CharField(source='beneficiario.cpf_cnpj', required=False, read_only=True)
-    str_instituicao = serializers.CharField(source='instituicao.abreviatura', required=False, read_only=True)
+    str_instituicao = serializers.CharField(source='instituicao.razao_social', required=False, read_only=True)
     str_tipo_licenca = serializers.CharField(source='tipo_licenca.detalhamento_servico', required=False, read_only=True)
     def get_info_user(self, obj):
         if obj.created_by:
@@ -66,7 +66,7 @@ class detailLicenses(serializers.ModelSerializer):
             }
     def get_list_propriedades(self, obj):
         if obj.propriedades:
-            farms = [{'value':r.id, 'label':r.nome_imovel} for r in obj.propriedades.all()]
+            farms = [{'value':r.id, 'label':r.nome} for r in obj.propriedades.all()]
             return farms
     def get_data_renovacao(self, obj):
         data_renovacao = obj.data_validade - timedelta(days=obj.dias_renovacao)
