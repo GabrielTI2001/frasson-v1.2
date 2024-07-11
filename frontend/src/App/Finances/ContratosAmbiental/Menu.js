@@ -29,18 +29,17 @@ export const calcdif = (data) => {
   return dif
 };
 
-export const DropMenu = ({ record, click }) => {
+export const DropMenu = ({ record, reducer }) => {
   const [modaldel, setModaldel] = useState({show:false})
   const navigate = useNavigate()
-  const token = localStorage.getItem("token")
-  const {pipe, code} = useParams()
 
   const {
     config: { isRTL }
   } = useContext(AppContext);
 
-  const handledelete = () =>{
-    navigate(`/pipeline/518984721`)
+  const handledelete = (type, uuid) =>{
+    navigate(`/finances/contracts/environmental`)
+    reducer(type, uuid)
   }
 
   return (
@@ -57,11 +56,11 @@ export const DropMenu = ({ record, click }) => {
         <FontAwesomeIcon icon={faEllipsisV} transform="shrink-2" className='fs-2'/>
       </Dropdown.Toggle>
       <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
-        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/pvtec/${record.uuid}/`})}}>
-          Excluir PVTEC
+        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/contratos-ambiental/${record.uuid}/`})}}>
+          Excluir Contrato
         </Dropdown.Item>
       </Dropdown.Menu>
-      <ModalDeleteCard show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
+      <ModalDeleteCard name='contrato' show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
     </Dropdown>
   );
 };

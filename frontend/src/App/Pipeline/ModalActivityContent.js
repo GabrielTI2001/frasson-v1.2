@@ -3,7 +3,7 @@ import Flex from '../../components/common/Flex';
 import { renderComment } from './ModalCommentContent';
 import PaginationList from '../../components/Custom/PaginationList';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComment, faPencil, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faCheckCircle, faCheckSquare, faComment, faPencil, faRightToBracket } from '@fortawesome/free-solid-svg-icons';
 import { Spinner } from 'react-bootstrap';
 
 const ListActivities = ({item}) => {
@@ -15,9 +15,9 @@ const ListActivities = ({item}) => {
       <div>
         <span className='rounded-circle bg-200 p-2'>
           {/* <Avatar size="l" src={`${process.env.REACT_APP_API_URL}/media/${item.user.avatar}`}/> */}
-          {item.type === 'co' ? 
-            <FontAwesomeIcon icon={faComment} className='text-primary'/>
+          {item.type === 'co' ? <FontAwesomeIcon icon={faComment} className='text-primary'/>
           : item.type === 'ch' ? <FontAwesomeIcon icon={faPencil} className='text-primary'/> 
+          : item.type === 'c' ? <FontAwesomeIcon icon={faCheck} className='text-primary'/> 
           : <FontAwesomeIcon icon={faRightToBracket} className='text-primary'/>
           }
         </span>
@@ -27,7 +27,8 @@ const ListActivities = ({item}) => {
           <span className="fw-semi-bold fs--1">
             {item.user && item.user.name}{' '}
           </span>
-          <span className='fs--1'>{item.type === 'ch' ? 'atualizou' : item.type === 'cf' ? 'moveu' : 'comentou'}</span>{' '}
+          <span className='fs--1'>{item.type === 'ch' ? 'atualizou' : item.type === 'cf' ? 'moveu' : item.type === 'c' ? 'concluiu'
+            : 'comentou'}</span>{' '}
           {item.type === 'co' ?
             <div className="flex-1 fs--1 border border-300 rounded-3 p-2">{renderComment(item.campo)}</div>
             : item.campo

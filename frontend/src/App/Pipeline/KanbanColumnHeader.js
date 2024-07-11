@@ -61,7 +61,7 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       </Modal.Header>
       <Modal.Body>
         <Row className="flex-center sectionform">
-          {kanbanState.pipe.descricao === 'Gestão Ambiental e Irrigação' ? <ProductForm fase={id} onSubmit={() => setModalForm({show:false})}/>
+          {kanbanState.pipe.code === 518984721 ? <ProductForm fase={id} onSubmit={() => setModalForm({show:false})}/>
             : null
           }
         </Row>

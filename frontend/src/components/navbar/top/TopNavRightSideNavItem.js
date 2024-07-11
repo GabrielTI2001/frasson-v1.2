@@ -3,18 +3,10 @@ import NotificationDropdown from '../../../components/navbar/top/NotificationDro
 import ProfileDropdown from '../../../components/navbar/top/ProfileDropdown';
 import { Nav } from 'react-bootstrap';
 import ThemeControlDropdown from './ThemeControlDropdown';
-import { useAppContext } from '../../../Main';
 import '../../../assets/css/home_style.css'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSliders } from '@fortawesome/free-solid-svg-icons';
 
 
 const TopNavRightSideNavItem = () => {
-  const { setConfig } = useAppContext();
-  const handleClick = () => {
-    setConfig('showSettingPanel', true);
-  };
-
   return (
     <Nav
       navbar

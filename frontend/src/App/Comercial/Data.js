@@ -1,5 +1,10 @@
 export const columnsPVTEC = [
   {
+    accessor: 'str_produto',
+    Header: 'Produto Origem',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
     accessor: 'str_detalhamento',
     Header: 'Detalhamento',
     headerProps: { className: 'text-900 p-1' }
@@ -11,7 +16,7 @@ export const columnsPVTEC = [
   },
   {
     accessor: 'atividade_display',
-    Header: 'Categoria',
+    Header: 'Atividade',
     headerProps: { className: 'text-900 p-1' }
   },
   {

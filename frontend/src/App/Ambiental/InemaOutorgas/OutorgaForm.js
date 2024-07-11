@@ -8,6 +8,7 @@ import { fetchCaptacao, fetchFinalidade, fetchMunicipio} from './../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { AmbientalContext } from '../../../context/Context';
 import { useAppContext } from '../../../Main';
+import { sendData } from '../../../helpers/Data';
 
 const OutorgaForm = ({ hasLabel, type, submit, addpoint}) => {
   const {config: {theme}} = useAppContext();
@@ -17,7 +18,6 @@ const OutorgaForm = ({ hasLabel, type, submit, addpoint}) => {
     created_by: user.id, processo_frasson: false
   });
   const [message, setMessage] = useState()
-  const channel = new BroadcastChannel('meu_canal');
   const navigate = useNavigate();
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
@@ -27,39 +27,27 @@ const OutorgaForm = ({ hasLabel, type, submit, addpoint}) => {
   const handleApi = async (dadosform) => {
     const link = `${process.env.REACT_APP_API_URL}/environmental/inema/outorgas/${type === 'edit' ? uuid+'/' : ''}`
     const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(dadosform)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          navigate("/auth/login");
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            ambientalDispatch({type:'SET_DATA', payload:{
-              outorga: {coordenadas:ambientalState.outorga.coordenadas,...formData}
-            }})
-            channel.postMessage({ tipo: 'atualizar_outorga', outorga_id:ambientalState.outorga.id, reg:data});
-            toast.success("Registro Atualizado com Sucesso!")
-          }
-          else{
-            toast.success("Registro Efetuado com Sucesso!")
-            navigate(`/ambiental/inema/outorgas/edit/${data.uuid}`);
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {response, dados} = await sendData({type:type, url:'environmental/inema/outorgas', keyfield: type === 'edit' ? uuid : null, 
+      dadosform:dadosform})
+    if(response.status === 400){
+      setMessage({...dados})
+    }
+    else if (response.status === 401){
+      localStorage.setItem("login", JSON.stringify(false));
+      localStorage.setItem('token', "");
+      navigate("/auth/login");
+    }
+    else if (response.status === 201 || response.status === 200){
+      if (type === 'edit'){
+        ambientalDispatch({type:'SET_DATA', payload:{
+          outorga: {coordenadas:ambientalState.outorga.coordenadas,...formData}
+        }})
+        toast.success("Registro Atualizado com Sucesso!")
+      }
+      else{
+        toast.success("Registro Efetuado com Sucesso!")
+        navigate(`/ambiental/inema/outorgas/edit/${dados.uuid}`);
+      }
     }
   };
 

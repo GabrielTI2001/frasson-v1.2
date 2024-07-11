@@ -2,10 +2,10 @@ from django.shortcuts import render
 from django.http import JsonResponse, FileResponse, HttpResponse
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
-from .models import Reembolso_Cliente, Resultados_Financeiros, Lancamentos_Automaticos_Pagamentos, Contratos_Ambiental_Pagamentos
+from .models import Reembolso_Cliente, Resultados_Financeiros, Lancamentos_Automaticos_Pagamentos, Contratos_Ambiental_Pagamentos, Anexos
 from pipeline.models import Fluxo_Gestao_Ambiental, Fluxo_Gestao_Credito, Fluxo_Prospects
 from .models import Cobrancas, Pagamentos
 from cadastro.models import Detalhamento_Servicos
@@ -29,6 +29,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.lib.enums import TA_JUSTIFY, TA_RIGHT, TA_LEFT
 from reportlab.lib.colors import Color
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import transaction
 
 class PagamentosView(viewsets.ModelViewSet):
     queryset = Pagamentos.objects.all()
@@ -308,7 +309,7 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)
         subquery = Cobrancas.objects.filter(contrato_ambiental_id=OuterRef('id')).values('contrato_ambiental_id').annotate(
             num_cobrancas=Count('id')).values('num_cobrancas')[:1]
-        subquery2 = Cobrancas.objects.filter(contrato_ambiental_id=OuterRef('id'), status='s').values('contrato_ambiental_id').annotate(
+        subquery2 = Cobrancas.objects.filter(contrato_ambiental_id=OuterRef('id'), status='pago').values('contrato_ambiental_id').annotate(
             num_cobrancas=Count('id')).values('num_cobrancas')[:1]
         subquery3 = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=OuterRef('id')).values('contrato_id').annotate(
             total=Count('id')).values('total')[:1]
@@ -332,10 +333,89 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
             ).order_by('-created_at')[:50]
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        servicos_etapas = request.POST.getlist('servicos_etapas')
+        filtered_servicos_etapas = [item for item in servicos_etapas if json.loads(item).get('dados')]
+        if len(filtered_servicos_etapas) < len(request.POST.getlist('servicos')):
+            return Response({'non_fields_errors':'Cadastre pelo menos uma etapa de pagamento para cada serviço'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        total_percentages = {}
+        for s in filtered_servicos_etapas:
+            reg = json.loads(s)
+            servico = reg['servico']
+            total_percentages[servico] = total_percentages.get(servico, 0) + sum(e['percentual'] for e in reg['dados'])
+        # Check if total percentage is 100% for each service
+        for servico, total in total_percentages.items():
+            if total != 100:
+                name_serv = Detalhamento_Servicos.objects.get(pk=servico).detalhamento_servico
+                return Response({'non_fields_errors': f'O total de percentual para o serviço "{name_serv}" deve ser 100%. Atual: {total}%'},
+                                status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            with transaction.atomic():
+                self.perform_create(serializer)
+                for s in servicos_etapas:
+                    reg = json.loads(s)
+                    for e in reg['dados']:
+                        ser = serContratosPagamentosAmbiental(data={'servico':reg["servico"], 'etapa':e['etapa'], 'percentual':e['percentual'],
+                            'valor':e['valor'], 'contrato':serializer.data['id']})
+                        if ser.is_valid():
+                            ser.save()
+                        else:
+                            transaction.set_rollback(True)
+                            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+                files = request.FILES.getlist('file')
+                if request.FILES:
+                    for i in files:
+                        Anexos.objects.create(contrato_ambiental=serializer.instance, uploaded_by_id=request.data['created_by'], file=i)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        servicos_etapas = request.POST.getlist('servicos_etapas')
+        if servicos_etapas:
+            filtered_servicos_etapas = [item for item in servicos_etapas if json.loads(item).get('dados')]
+            if len(filtered_servicos_etapas) < len(request.POST.getlist('servicos')):
+                return Response({'non_fields_errors':'Cadastre pelo menos uma etapa de pagamento para cada serviço'}, status=status.HTTP_400_BAD_REQUEST)
+            total_percentages = {}
+            for s in filtered_servicos_etapas:
+                reg = json.loads(s)
+                servico = reg['servico']
+                total_percentages[servico] = total_percentages.get(servico, 0) + sum(e['percentual'] for e in reg['dados'])
+            # Check if total percentage is 100% for each service
+            for servico, total in total_percentages.items():
+                if total != 100:
+                    name_serv = Detalhamento_Servicos.objects.get(pk=servico).detalhamento_servico
+                    return Response({'non_fields_errors': f'O total de percentual para o serviço "{name_serv}" deve ser 100%. Atual: {total}%'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            contrato = serializer.save()
+            for s in servicos_etapas:
+                reg = json.loads(s)
+                for e in reg['dados']:
+                    ser = serContratosPagamentosAmbiental(data={'servico':reg["servico"], 'etapa':e['etapa'], 'percentual':e['percentual'],
+                        'valor':e['valor'], 'contrato':contrato.id})
+                    etapas = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=contrato.id, servico_id=reg["servico"], 
+                        etapa=e['etapa'])
+                    if etapas.exists():
+                        etapas.update(**{'percentual':e['percentual'], 'valor':e['valor']})
+                    else:
+                        if ser.is_valid():
+                            ser.save()
+                        else:
+                            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)            
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class ContratosPagamentosAmbientalView(viewsets.ModelViewSet):
     serializer_class = serContratosPagamentosAmbiental
     queryset = Contratos_Ambiental_Pagamentos.objects.all()
+
 
 def index_dre_consolidado(request):
     #DRE CONSOLIDADO

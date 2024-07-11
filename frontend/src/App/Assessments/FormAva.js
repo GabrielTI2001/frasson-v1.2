@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
-import { json, useNavigate} from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';
@@ -9,7 +9,6 @@ import { SelectSearchOptions } from '../../helpers/Data';
 
 const FormAvaliacao = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
-  const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({});
   const [message, setMessage] = useState()
   const navigate = useNavigate();

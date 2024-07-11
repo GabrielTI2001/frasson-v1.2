@@ -141,7 +141,7 @@ const ViewPivot = () => {
                     />
                 </Col>
                 <Col>
-                    <Info title="Fabricante Bomba" description={`${registro.lat_center_gd} | ${registro.long_center_gd}`} />
+                    <Info title="Coordenadas" description={`${registro.lat_center_gd} | ${registro.long_center_gd}`} />
                 </Col>
             </Row>
         ) : (

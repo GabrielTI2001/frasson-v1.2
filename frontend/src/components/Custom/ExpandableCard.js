@@ -50,7 +50,7 @@ const ExpandableCard = ({ data, attr1, attr2, className, url, children, footer, 
                 </Link>
               </Button>
             }
-            {data && isExpanded &&
+            {data && isExpanded && clickdelete &&
               // <div className='mt-1 text-end'>
                 <Button
                   onClick={clickdelete}

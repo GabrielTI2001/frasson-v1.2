@@ -28,7 +28,8 @@ def create_or_update_phases_history(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Card_Comments)
 def mention_coment(sender, instance, created, **kwargs):
     if created:
-        Card_Activities.objects.create(type='co', updated_by_id=instance.created_by.id, fluxo_ambiental_id=instance.fluxo_ambiental.id, campo=instance.text)
+        Card_Activities.objects.create(type='co', updated_by_id=instance.created_by.id, 
+            fluxo_ambiental=instance.fluxo_ambiental, pvtec=instance.pvtec, campo=instance.text)
         mentions = mention_pattern.findall(instance.text)
         for display, id in mentions:
             # mentioned_user = get_object_or_404(User, id=id)

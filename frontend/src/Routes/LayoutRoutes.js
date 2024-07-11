@@ -241,7 +241,7 @@ const LayoutRoutes = () => {
           <Route path="billings" element={<ReportPagamentos />}/>
           <Route path="revenues" element={<ReportCobrancas />}/>
           <Route path="contracts/environmental" element={<IndexContratosAmbiental />}/>
-          <Route path="contracts/environmental/:id" element={<ViewContrato />}/>
+          <Route path="contracts/environmental/:uuid" element={<IndexContratosAmbiental />}/>
         </Route>
         <Route path="/glebas">
           <Route path="" element={<IndexGlebas />}/>

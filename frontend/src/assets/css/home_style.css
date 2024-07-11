@@ -265,3 +265,9 @@ textarea:focus, input:focus{
   background-color: #007bff80 !important;
   border-color: transparent !important;
 }
+.fixed-footer {
+  position: sticky;
+  bottom: 0;
+  padding: 10px;
+  z-index: 500;
+}

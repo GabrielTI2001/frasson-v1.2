@@ -14,10 +14,11 @@ import { Anexos } from './Anexos';
 import EditForm from './EditForm';
 import {CardTitle} from '../CardInfo';
 
-const PVTEC = ({card, updatedactivity}) => {
+const indexAcompGAI = ({card, updatedactivity}) => {
   const user = JSON.parse(localStorage.getItem('user'))
   const [users, setUsers] = useState([]);
-  const [pvtecs, setPvtecs] = useState();
+  const [acomp, setAcomp] = useState();
+  const [updatesacomp, setUpdatesAcomp] = useState();
   const {config: {theme, isRTL}} = useAppContext();
   const token = localStorage.getItem("token")
   const [showmodal, setShowModal] = useState({show:false})
@@ -26,7 +27,7 @@ const PVTEC = ({card, updatedactivity}) => {
 
   const submit = (type, data) => {
     if (type === 'add'){
-      setPvtecs([{...data, str_responsaveis:data.list_responsaveis.map(l => l.nome).join(', ')}, ...pvtecs])
+      setUpdatesAcomp([{...data, str_responsaveis:data.list_responsaveis.map(l => l.nome).join(', ')}, ...updatesacomp])
     } 
     setShowModal({show:false})
     updatedactivity({type:'ch', campo:'PVTECs', created_at:data.created_at, user:data.user})
@@ -59,7 +60,7 @@ const PVTEC = ({card, updatedactivity}) => {
       api.put(`pipeline/pvtec/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
       .then((response) => {
         toast.success("PVTEC Atualizada com Sucesso!")
-        setPvtecs(pvtecs.map(p => p.uuid === uuid ? response.data : p))
+        setUpdatesAcomp(updatesacomp.map(p => p.uuid === uuid ? response.data : p))
         if (response.data.activity){
           updatedactivity(response.data.activity)
         }
@@ -73,21 +74,18 @@ const PVTEC = ({card, updatedactivity}) => {
   }
 
   const handledelete = (type, data) =>{
-    setPvtecs(pvtecs.filter(c => c.uuid !== data))
+    setUpdatesAcomp(updatesacomp.filter(c => c.uuid !== data))
   }
 
   useEffect(() =>{
-    const getusers = async () =>{
-      if (!pvtecs){
-        HandleSearch('', 'pipeline/pvtec',(data) => {setPvtecs(data)}, `?fluxogai=${card.id}`)
+    const getdata = async () =>{
+      if (acomp && !updatesacomp){
+        HandleSearch('', 'pipeline/followup/atualizacoes-gai',(data) => {setUpdatesAcomp(data)}, `?acomp=${acomp[0].id}`)
       }
-      HandleSearch('', 'users/users',
-        (data) => {setUsers(data.map(r => ({'id':r.id, 'display':r.first_name+' '+r.last_name})))}, 
-        `?pipe=${card.pipe_code}`
-      )
+      HandleSearch('', 'pipeline/followup/acompanhamentos-gai', (data) => {setAcomp(data)}, `?fluxogai=${card.id}`)
     }
-    getusers()
-  },[])
+    getdata()
+  },[acomp])
 
   return (
     <>
@@ -103,12 +101,12 @@ const PVTEC = ({card, updatedactivity}) => {
       </ExpandableCard>
     }
 
-    {pvtecs && pvtecs.filter(p => p.status === 'EA').length > 0 &&
+    {updatesacomp &&
       <span className='text-uppercase d-block' style={{fontWeight:'500'}}>
-        Em Andamento ({pvtecs.filter(p => p.status === 'EA').length})
+        Atualizações de Acompanhamento ({updatesacomp.length})
       </span>
     }
-    {pvtecs && pvtecs.filter(p => p.status === 'EA').length > 0 ? pvtecs.filter(p => p.status === 'EA').map(p =>
+    {updatesacomp ? updatesacomp.map(p =>
       <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='pipeline/pvtec'
         footer={`Criado por ${p.user.name} em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
@@ -171,90 +169,9 @@ const PVTEC = ({card, updatedactivity}) => {
       <Spinner />
     </div> 
     }
-
-    {pvtecs && pvtecs.filter(p => p.status === 'OK').length > 0 &&
-      <span className='text-uppercase' style={{fontWeight:'500'}}>
-        Concluído ({pvtecs.filter(p => p.status === 'OK').length})
-      </span>
-    }
-    {pvtecs && pvtecs.filter(p => p.status === 'OK').map(p =>
-      <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='pipeline/pvtec'
-        footer={`Criado em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
-        timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
-        clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/pvtec/${p.uuid}/`})}}
-      >
-        {!showForm.atividade &&
-          <div className='my-2'>
-            <CardTitle title='Atividade' click={handleEdit} field='atividade'/>
-            <div>
-              {p.atividade_display}
-            </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['atividade']}
-          fieldkey='atividade'
-          setShow={setShowForm}
-          data={p.atividade}
-          pipe={card.pipe_code}
-        />
-        {!showForm.orientacoes &&
-          <div className='my-2'>
-            <CardTitle title='Orientações' click={handleEdit} field='orientacoes'/>
-            <div className='text-justify'>
-              {p.orientacoes}
-            </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['orientacoes']}
-          fieldkey='orientacoes'
-          setShow={setShowForm}
-          data={p.orientacoes}
-          pipe={card}
-        />
-        {!showForm.status &&
-          <div className='my-2'>
-            <CardTitle title='Status' click={handleEdit} field='status'/>
-            <div>
-              <span className={`badge bg-${p.status_display === 'Concluído' ? 'success' : 'warning'} fs--2 p-1`}>{p.status_display}</span>
-            </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['status']}
-          fieldkey='status'
-          setShow={setShowForm}
-          data={p.status}
-          pipe={card.pipe_code}
-        />
-        {!showForm.responsaveis &&
-          <div className='my-2'>
-            <CardTitle title='Responsáveis:' click={handleEdit} field='responsaveis'/>
-            <div>
-              {p.list_responsaveis.map(r => r.nome).join(', ')}
-            </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['responsaveis']}
-          fieldkey='responsaveis'
-          setShow={setShowForm}
-          data={p.list_responsaveis}
-          pipe={card.pipe_code}
-        />
-        <div>
-          <Anexos pvtec={p} />
-        </div>
-      </ExpandableCard>
-    )}
     <ModalDelete show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
     </>
   );
 };
 
-export default PVTEC;
+export default indexAcompGAI;

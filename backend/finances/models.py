@@ -1,7 +1,12 @@
 from django.db import models
 from cadastro.models import Cadastro_Pessoal, Detalhamento_Servicos
 from users.models import User
-import uuid
+import uuid, os, time, random
+
+def gerarcode():
+    timenumber = int(time.time())
+    code = timenumber - 1200000000 + random.randint(1, 10000)
+    return code
 
 class MyAppPermissions(models.Model):
     class Meta:
@@ -33,12 +38,12 @@ class Caixas_Frasson(models.Model):
 
 class Contratos_Ambiental(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
     contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
     servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
     detalhes = models.TextField(null=True, blank=True, verbose_name='Detalhe Negociação')
     valor = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     data_assinatura = models.DateField(null=True, blank=True, verbose_name='Data Assinatura')
-    data_vencimento = models.DateField(null=True, blank=True, verbose_name='Data Vencimento')
     pdf = models.FileField(upload_to='finances/contratos', null=True, blank=True, verbose_name='PDF Contrato')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -60,7 +65,6 @@ class Contratos_Ambiental_Pagamentos(models.Model):
     etapa = models.CharField(max_length=1, choices=CHOICES_ETAPAS, null=True, verbose_name="Etapa Pagamento")
     percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
     valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
-    observacoes = models.TextField(null=True, blank=True, verbose_name="Observações")
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -71,6 +75,7 @@ class Contratos_Ambiental_Pagamentos(models.Model):
 
 class Contratos_Credito(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
     contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
     servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
     detalhes = models.TextField(null=True, verbose_name='Detalhe Negociação')
@@ -93,7 +98,6 @@ class Contratos_Credito_Pagamentos(models.Model):
     etapa = models.CharField(max_length=20, default='Encerramento', null=True, verbose_name="Etapa Pagamento")
     percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
     valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
-    observacoes = models.TextField(null=True, blank=True, verbose_name="Observações")
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -203,7 +207,6 @@ class Lancamentos_Automaticos_Pagamentos(models.Model):
     def __str__(self):
         return self.beneficiario.razao_social
     
-from pipeline.models import gerarcode
 class Pagamentos(models.Model):
     STATUS_CHOICES = (
         ("R", "Receita"),
@@ -255,3 +258,42 @@ class Cobrancas(models.Model):
         verbose_name_plural = 'Cobranças Pipefy'
     def __str__(self):
         return self.cliente.razao_social
+
+class Activities(models.Model):
+    TYPE_CHOICES = (('ch', 'change'), ('c','concluiu'))
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    contrato_ambiental = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    contrato_credito = models.ForeignKey(Contratos_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    type = models.CharField(null=True, max_length=60, choices=TYPE_CHOICES, verbose_name='Tipo')
+    campo = models.TextField(null=True, verbose_name='Campo')
+    updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Alterado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Atividades'
+    def __str__(self):
+        return self.campo
+
+def upload_anexo(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{instance.uuid}.{ext}'
+    if instance.contrato_credito:
+        return os.path.join('finances/contrato-gc-anexos/', filename)
+    else:
+        return os.path.join('finances/contrato-gai-anexos/', filename)
+
+class Anexos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    contrato_ambiental = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Contrato GAI')
+    contrato_credito = models.ForeignKey(Contratos_Credito, on_delete=models.CASCADE, null=True, verbose_name='Contrato GAI')
+    file = models.FileField(null=True, upload_to=upload_anexo, verbose_name='Arquivo')
+    name = models.CharField(null=True, max_length=100, verbose_name='Nome Arquivo')
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Alterado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Anexos'
+    def save(self, *args, **kwargs):
+        if self.file and not self.name:
+            self.name = self.file.name
+        super().save(*args, **kwargs)

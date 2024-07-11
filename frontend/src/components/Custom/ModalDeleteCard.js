@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 
 //Use sempre barra depois do link
-const ModalDeleteCard = ({show, close, link, update}) => {
+const ModalDeleteCard = ({show, close, link, update, name}) => {
   const token = localStorage.getItem("token")
   const navigate = useNavigate();
 
@@ -41,13 +41,13 @@ const ModalDeleteCard = ({show, close, link, update}) => {
       dialogClassName="mt-20"
     >
       <Modal.Body className="text-center">
-        <h2 className="mt-4" id="" style={{display: 'block', fontSize:'18px'}}>Excluir este card</h2>
+        <h2 className="mt-4" id="" style={{display: 'block', fontSize:'18px'}}>Excluir este {name || 'card'}</h2>
         <div className=" mt-3" id="" style={{display: 'block'}}>
-          <div style={{fontSize: '13px'}}>Todas as informações deste card serão excluídas. Essa ação não poderá ser desfeita.</div>
+          <div style={{fontSize: '13px'}}>Todas as informações deste {name || 'card'} serão excluídas. Essa ação não poderá ser desfeita.</div>
         </div>
         <div className="d-block sectionform mt-3 text-end">
             <Button className="btn-light w-30 m-1" onClick={()=>{close()}}>Cancelar</Button>
-            <Button className="btn-warning w-30 m-1" onClick={deletePoint}>Excluir Card</Button>
+            <Button className="btn-warning w-30 m-1" onClick={deletePoint}>Excluir {name || 'Card'}</Button>
         </div>
       </Modal.Body>
     </Modal>

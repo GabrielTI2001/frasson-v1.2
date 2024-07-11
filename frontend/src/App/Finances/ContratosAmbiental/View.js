@@ -30,6 +30,7 @@ const ViewContrato = () => {
     const submit = (type, data) =>{
         if (type === 'delete'){ 
             setModal({show:false})
+            navigate("/finances/contracts/environmental")
         }
         setModalform({show:false})
         setCard(null)
@@ -37,7 +38,7 @@ const ViewContrato = () => {
     const posdelete = (type, data) =>{
         if (type === 'delete'){ 
             setModal({show:false})
-            navigate("/finances/contracts")
+            navigate("/finances/contracts/environmental")
         }
     }
 
@@ -88,7 +89,7 @@ const ViewContrato = () => {
             <strong className='mt-2 mb-1'>Serviços Contratados</strong>
             <div className='mb-2'>            
                 {card.str_servicos.map(s =>
-                    <span className='fs--2 badge bg-secondary fw-normal me-2' key={s.value}>{s.label}</span>
+                    <span className='fs--2 badge bg-secondary fw-normal me-2 mb-1' key={s.value}>{s.label}</span>
                 )}
             </div>
 
@@ -152,6 +153,7 @@ const ViewContrato = () => {
             <Table responsive className="mt-1">
                 <thead className="bg-300">
                     <tr>
+                    <th scope="col" className="text-center text-middle">Serviço</th>
                         <th scope="col" className="text-center text-middle">Etapa</th>
                         <th scope="col" className="text-center text-middle">Valor (R$)</th>
                         <th scope="col" className="text-center text-middle">Perc. (%)</th>
@@ -165,6 +167,7 @@ const ViewContrato = () => {
                     <tr key={e.id} style={{cursor:'pointer'}} 
                         className={`${theme === 'light' ? 'hover-table-light': 'hover-table-dark'} py-0`}
                     >
+                        <td className="text-center text-middle fs--2">{e.servico_str}</td>
                         <td className="text-center text-middle fs--2">{e.etapa}</td>
                         <td className="text-center text-middle fs--2">{e.valor || '-'}</td>
                         <td className="text-center text-middle fs--2">{e.percentual || '-'}</td>

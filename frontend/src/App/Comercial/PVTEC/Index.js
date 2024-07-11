@@ -7,12 +7,12 @@ import AdvanceTable from "../../../components/common/advance-table/AdvanceTable"
 import AdvanceTableFooter from "../../../components/common/advance-table/AdvanceTableFooter"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { HandleSearch } from "../../../helpers/Data"
-import { SkeletBig } from "../../../components/Custom/Skelet"
 import PVTECModal from "./Modal"
 
 const IndexPVTEC = () =>{
     const [searchResults, setSearchResults] = useState()
     const [searchResultsall, setSearchResultsall] = useState()
+    const [activeTab, setActiveTab] = useState("my")
     const user = JSON.parse(localStorage.getItem('user'))
     const [modal, setModal] = useState({})
     const navigate = useNavigate();
@@ -22,9 +22,7 @@ const IndexPVTEC = () =>{
         const url = `/comercial/pvtec/${uuid}`
         navigate(url)
     }
-    const reducer = (type, data) => {
-
-    }
+    const reducer = () => {}
     const handleChange = async (value) => {
         setSearchResults(null)
         const status = await HandleSearch(value, 'pipeline/pvtec', (data) => setSearchResults(data), `?resp=${user.id}`)
@@ -36,6 +34,7 @@ const IndexPVTEC = () =>{
         if (status === 401) navigate("/auth/login")
     };
     const handleTabSelect = async (key) => {
+        setActiveTab(key)
         if (key  === "all"){
             handleChange2('')
         }
@@ -50,9 +49,12 @@ const IndexPVTEC = () =>{
         }
         else{
             setModal({show:false})
-        }
-        if (!searchResults){
-            handleChange('')
+            if (activeTab  === "all"){
+                handleChange2('')
+            }
+            if (activeTab  === "my"){
+                handleChange('')
+            }
         }
     },[uuid])
     
@@ -85,7 +87,7 @@ const IndexPVTEC = () =>{
                             bordered: true,
                             striped: false,
                             className: 'fs-xs mb-0 overflow-hidden',
-                            index_status: 4
+                            index_status: 5
                         }}
                         Click={onClick}
                     />
@@ -132,7 +134,7 @@ const IndexPVTEC = () =>{
                             bordered: true,
                             striped: false,
                             className: 'fs-xs mb-0 overflow-hidden',
-                            index_status: 4
+                            index_status: 5
                         }}
                         Click={onClick}
                     />

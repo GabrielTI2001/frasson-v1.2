@@ -86,6 +86,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
         }
         const setform = () =>{
             setformData({...data, ...formData, etapa:data.etapa.substr(0,1).toUpperCase()})
+            setDefaultOptions({...defaultoptions, servico:{value:data.servico, label:data.servico_str}})
         }
         if (!etapaslist && contrato){
             getoptions()
@@ -95,14 +96,14 @@ const FormEtapa = ({type, data, submit, contrato}) => {
         }
         else{
             if(!defaultoptions){
-                setDefaultOptions({beneficiario:{}, categoria_pagamento:{}})
+                setDefaultOptions({servico:{}})
             }
         }
     },[])
 
     return (
     <Form onSubmit={handleSubmit} className='row'>
-        <Form.Group className="mb-2" as={Col} xl={4}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
             <Form.Label className='fw-bold mb-1'>Etapa Pagamento*</Form.Label>
             <Form.Select
               value={formData.etapa || ''}
@@ -119,7 +120,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             <Form.Label className='fw-bold mb-1'>Serviço*</Form.Label>
             <AsyncSelect 
               name='beneficiario' 
@@ -137,7 +138,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
           </Form.Group>        
         )}
 
-        <Form.Group as={Col} xl={3} sm={6} className='mb-3'>
+        <Form.Group as={Col} xl={6} sm={6} className='mb-3'>
             <Form.Label className='mb-0 fw-bold'>Percentual*</Form.Label>
             <Form.Control 
                 type='number'
@@ -148,8 +149,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
             <label className='text-danger'>{message ? message.percentual : ''}</label>
         </Form.Group>
 
-
-        <Form.Group as={Col} xl={3} sm={6} className='mb-3'>
+        <Form.Group as={Col} xl={6} sm={6} className='mb-3'>
             <Form.Label className='mb-0 fw-bold'>Valor*</Form.Label>
             <Form.Control 
                 type='number'
@@ -158,17 +158,6 @@ const FormEtapa = ({type, data, submit, contrato}) => {
                 name='valor'
             />
             <label className='text-danger'>{message ? message.valor : ''}</label>
-        </Form.Group>
-
-        <Form.Group as={Col} xl={12} className='mb-3'>
-            <Form.Label className='mb-0 fw-bold'>Observações</Form.Label>
-            <Form.Control 
-                as='textarea' 
-                value={formData.observacoes || ''} 
-                onChange={handleFieldChange}
-                name='observacoes'
-            />
-            <label className='text-danger'>{message ? message.observacoes : ''}</label>
         </Form.Group>
 
         <Form.Group as={Col} className='text-end'>

@@ -12,7 +12,8 @@ router.register(r'card-comments', views.CommentView)
 router.register(r'card-activities', views.ActivityView)
 router.register(r'card-anexos', views.AnexoView)
 router.register(r'pvtec', views.PVTECView)
-
+router.register(r'followup/acompanhamentos-gai', views.FollowupGAIView)
+router.register(r'followup/atualizacoes-gai', views.AtualizacoesGAIView)
 
 urlpatterns = [
 ]

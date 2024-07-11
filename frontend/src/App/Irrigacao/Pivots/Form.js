@@ -7,7 +7,7 @@ import { fetchMunicipio } from '../../Ambiental/Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { useAppContext } from '../../../Main';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { SelectSearchOptions, sendData } from '../../../helpers/Data';
 
 const PivotForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -23,37 +23,23 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
   const [defaultoptions, setDefaultOptions] = useState();
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/irrigation/pivots/${type === 'edit' ? uuid+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-      const response = await fetch(link, {
-        method: method,
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
-        body: dadosform
-      });
-      const data = await response.json();
-      if(response.status === 400){
-        setMessage({...data})
+    const {response, dados} = await sendData({type:type, url:'irrigation/pivots', keyfield:type === 'edit' ? uuid : null, 
+      dadosform:dadosform, is_json:false})
+    if(response.status === 400){
+      setMessage({...dados})
+    }
+    else if (response.status === 401){
+      navigate("/auth/login");
+    }
+    else if (response.status === 201 || response.status === 200){
+      if (type === 'edit'){
+        submit('edit', dados)
+        toast.success("Registro Atualizado com Sucesso!")
       }
-      else if (response.status === 401){
-        localStorage.setItem("login", JSON.stringify(false));
-        localStorage.setItem('token', "");
-        navigate("/auth/login");
+      else{
+        submit('add', dados)
+        toast.success("Registro Efetuado com Sucesso!")
       }
-      else if (response.status === 201 || response.status === 200){
-        if (type === 'edit'){
-          submit('edit', data)
-          toast.success("Registro Atualizado com Sucesso!")
-        }
-        else{
-          submit('add', data)
-          toast.success("Registro Efetuado com Sucesso!")
-        }
-      }
-    } catch (error) {
-        console.error('Erro:', error);
     }
   };
 
@@ -119,7 +105,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
             {hasLabel && <Form.Label className='fw-bold mb-1'>Proprietário*</Form.Label>}
             <AsyncSelect 
               name='proprietario' 
-              loadOptions={(value) => SelectSearchOptions(value, 'pipefy/pessoal', 'razao_social')}
+              loadOptions={(value) => SelectSearchOptions(value, 'register/pessoal', 'razao_social')}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.proprietario : null) : null }
               onChange={(selected) => {
@@ -148,7 +134,8 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
-            <AsyncSelect loadOptions={fetchMunicipio} name='municipio_localizacao' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/municipios', 'nome_municipio', 'sigla_uf')} 
+              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio_localizacao : null) : null }
               onChange={(selected) => {
                 setFormData((prevFormData) => ({
@@ -204,7 +191,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.area_circular_ha : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} sm={3} xl={3} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Latitude (GD)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Latitude (GD)' : ''}
@@ -215,11 +202,11 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.lat_center_gd : ''}</label>
         </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-start p-3" as={Col} xl={1}>
+        <Form.Group className="mb-2 d-flex align-items-start p-3" as={Col} xl={1} sm={2}>
           <Button onClick={() => {setShowModal({show:true, type: 'latitude'})}} className='mt-2'>GMS</Button>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} xl={3} xxl={2}>
+        <Form.Group className="mb-2" as={Col} sm={3} xl={3} xxl={2}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Longitude (GD)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Longitude (GD)' : ''}
@@ -230,7 +217,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.long_center_gd : ''}</label>
         </Form.Group>
-        <Form.Group className="mb-2 d-flex align-items-start pt-3" as={Col} xl={1}>
+        <Form.Group className="mb-2 d-flex align-items-start pt-3" as={Col} xl={1} sm={2}>
           <Button onClick={() => {setShowModal({show:true, type: 'longitude'})}} className='mt-2'>GMS</Button>
         </Form.Group>
 

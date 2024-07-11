@@ -30,9 +30,11 @@ export const renderComment = (comment) => {
 };
 
 
-const ModalCommentContent = ({card, updatedactivity}) => {
+const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc}) => {
   const user = JSON.parse(localStorage.getItem('user'))
-  const [formData, setFormData] = useState({created_by:user.id, fluxo_ambiental:card.id, phase:card.phase});
+  const [formData, setFormData] = useState({created_by:user.id, fluxo_ambiental:!ispvtec ? card.id : null, phase:!ispvtec ? card.phase: null,
+    pvtec:ispvtec ? card.id : null, fluxo_credito: isgc ? card.id : null
+  });
   const [users, setUsers] = useState([]);
   const [comentarios, setComentarios] = useState();
   const navigate = useNavigate()
@@ -42,8 +44,9 @@ const ModalCommentContent = ({card, updatedactivity}) => {
 
   const handlesubmit = (e) => {
     e.preventDefault(); 
+    const filteredData = Object.entries(formData).filter(([key, value]) => value !== null).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
     if (formData.text !== '' && formData.text !== null){
-      api.post('pipeline/card-comments/', formData, {headers: {Authorization: `bearer ${token}`}})
+      api.post('pipeline/card-comments/', filteredData, {headers: {Authorization: `bearer ${token}`}})
       .then((response) => {
         setFormData({...formData, text:''})
         setComentarios([response.data, ...comentarios])
@@ -60,11 +63,12 @@ const ModalCommentContent = ({card, updatedactivity}) => {
   useEffect(() =>{
     const getusers = async () =>{
       if (!comentarios){
-        HandleSearch('', 'pipeline/card-comments',(data) => {setComentarios(data)}, `?fluxogai=${card.id}`)
+        const param = ispvtec ? 'pvtec' : isgc ? 'fluxogc' : 'fluxogai'
+        HandleSearch('', 'pipeline/card-comments',(data) => {setComentarios(data)}, `?${param}=${card.id}`)
       }
       const status = HandleSearch('', 'users/users',
         (data) => {setUsers(data.map(r => ({'id':r.id, 'display':r.first_name+' '+r.last_name})))}, 
-        `?pipe=${card.pipe_code}`
+        `${card.pipe_code ? '?pipe='+card.pipe_code : ''}`
       )
       if (status === 401){
         navigate("/auth/login")

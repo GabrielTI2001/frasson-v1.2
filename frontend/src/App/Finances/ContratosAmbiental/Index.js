@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Spinner, Modal, CloseButton} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
@@ -10,11 +10,14 @@ import { Link } from "react-router-dom";
 import { columnsContratos } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import ContratoForm from "./FormContrato";
+import ModalContract from "./Modal";
 
 const IndexContratosAmbiental = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
+    const {uuid} = useParams();
+    const [modal, setModal] = useState({})
     const [modalform, setModalform] = useState({show:false, type:''});
 
     const onClick = (id, uuid) =>{
@@ -26,7 +29,13 @@ const IndexContratosAmbiental = () => {
     }
     const submit = (type, data, id) => {
         if (type === 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
+        }
+        if (type === 'edit'){
+            setSearchResults(null)
+        }
+        if (type === 'delete'){
+            setSearchResults([...searchResults.filter(c => c.uuid !== data)])
         }
         setModalform({show:false})
     }
@@ -36,17 +45,25 @@ const IndexContratosAmbiental = () => {
     };
 
     useEffect(()=>{
-        const Search = async () => {
-            const status = await HandleSearch('', 'finances/contratos-ambiental', setter) 
-            if (status === 401) navigate("/auth/login");
-        }
         if ((user.permissions && user.permissions.indexOf("view_contratos_ambiental") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!searchResults){
-            Search()
-        }
     },[])
+    useEffect(() => {
+        const search = async () => {
+            const status = await HandleSearch('', 'finances/contratos-ambiental', setter) 
+            if (status === 401) navigate("/auth/login");
+        }
+        if (uuid){
+            setModal({show:true})
+        }
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -97,11 +114,14 @@ const IndexContratosAmbiental = () => {
         </div></>
         : <div className="text-center"><Spinner></Spinner></div>}
         </AdvanceTableWrapper> 
+
+        <ModalContract show={modal.show} reducer={submit}/>
+        
         <Modal
-            size="xl"
+            size="md"
             show={modalform.show}
             onHide={() => setModalform({show:false})}
-            dialogClassName="mt-7"
+            centered scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -110,7 +130,7 @@ const IndexContratosAmbiental = () => {
             </Modal.Title>
                 <CloseButton onClick={() => setModalform({show:false})}/>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="pb-0">
                 <Row className="flex-center sectionform">
                     <ContratoForm type='add' hasLabel submit={submit}/>
                 </Row>

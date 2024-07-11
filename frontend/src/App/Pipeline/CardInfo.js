@@ -32,9 +32,11 @@ export const CardTitle = ({title, click, icon, field, className}) =>{
     return (
         <>
             <span className='fw-bold fs--1'>{title}</span>
-            <span className='modal-editar ms-2 fs--1' onClick={() => click(field)}>
+            {click && 
+              <span className='modal-editar ms-2 fs--1' onClick={() => click(field)}>
                 <FontAwesomeIcon icon={faPencil} className='me-1'/>Editar
-            </span>
+              </span>
+            }
         </>
     )
 }

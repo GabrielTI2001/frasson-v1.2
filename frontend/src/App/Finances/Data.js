@@ -134,7 +134,7 @@ export const columnsContratos = [
   },
   {
     accessor: 'valor',
-    Header: 'Valor GAI',
+    Header: 'Valor',
     headerProps: { className: 'text-900 p-1' }
   },
   {

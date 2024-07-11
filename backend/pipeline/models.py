@@ -166,11 +166,12 @@ class Card_Comments(models.Model):
         return self.text
 
 class Card_Activities(models.Model):
-    TYPE_CHOICES = (('ch', 'change'),('co','comment'),('cf','fase'),)
+    TYPE_CHOICES = (('ch', 'change'),('co','comment'), ('cf','fase'), ('c','concluiu'))
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     fluxo_ambiental = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
     fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
     fluxo_credito = models.ForeignKey(Fluxo_Gestao_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    pvtec = models.ForeignKey(PVTEC, on_delete=models.CASCADE, null=True, verbose_name='PVTEC')
     type = models.CharField(null=True, max_length=60, choices=TYPE_CHOICES, verbose_name='Tipo')
     campo = models.TextField(null=True, verbose_name='Campo')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Alterado por')
@@ -211,3 +212,44 @@ class Card_Anexos(models.Model):
         if self.file and not self.name:
             self.name = self.file.name
         super().save(*args, **kwargs)
+
+
+class Acompanhamento_GAI(models.Model):
+    processo = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.SET_NULL, null=True, verbose_name='Processo Frason')
+    requerimento = models.CharField(max_length=255, null=True, verbose_name='Número do Requerimento')
+    data_requerimento = models.DateField(null=True, verbose_name='Data Requerimento')
+    data_enquadramento = models.DateField(null=True, verbose_name='Data Enquadramento')
+    data_validacao = models.DateField(null=True, verbose_name='Data Validação Prévia')
+    valor_boleto = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor do Boleto')
+    vencimento_boleto = models.DateField(null=True, verbose_name='Data Vencimento Boleto')
+    data_formacao = models.DateField(null=True, verbose_name='Data Formação do Processo')
+    numero_processo = models.CharField(max_length=255, null=True, verbose_name='Número do Processo')
+    processo_sei  = models.CharField(max_length=255, null=True, verbose_name='Número do Processo SEI')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='acompgai')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Processos Gestão Ambiental'
+
+class Status_Acompanhamento(models.Model):
+    description = models.CharField(max_length=255, null=True, verbose_name='Descrição do Status')
+    sigla = models.CharField(max_length=255, null=True, verbose_name='Sigla Status')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Status Processos GAI'
+    def __str__(self):
+        return self.description
+
+class Atualizacoes_Acompanhamento_GAI(models.Model):
+    processo = models.ForeignKey(Acompanhamento_GAI, on_delete=models.CASCADE, null=True, verbose_name='Processo')
+    data = models.DateField(null=True, verbose_name='Data da atualização')
+    status  = models.ForeignKey(Status_Acompanhamento, on_delete=models.SET_NULL, null=True, verbose_name='Status Processos')
+    detalhamento = models.TextField(null=True, verbose_name='Detalhamento da Atualização')
+    proxima_consulta = models.DateField(null=True, verbose_name='Próxima Consulta')
+    file = models.FileField(upload_to='inema/followup', null=True, blank=True, default=None, verbose_name='Arquivo PDF')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='atualizaacomp')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Registros de Acompanhamento'

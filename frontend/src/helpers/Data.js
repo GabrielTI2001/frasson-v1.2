@@ -162,5 +162,6 @@ export const sendData = async ({type, url, keyfield, dadosform, is_json=true}) =
       return {response:response, dados:data || null}
   } catch (error) {
       console.error('Erro:', error);
+      return {response:error, dados:null}
   }
 };

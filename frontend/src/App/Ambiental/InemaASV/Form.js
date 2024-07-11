@@ -45,7 +45,6 @@ const ASVForm = ({ hasLabel, type, addarea}) => {
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
           const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
-          toast.error("Sua Sessão Expirou")
           navigate(`/auth/login?next=${next}`);
         }
         else if (response.status === 201 || response.status === 200){

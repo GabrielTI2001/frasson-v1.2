@@ -11,10 +11,10 @@ import { toast } from 'react-toastify';
 import api from '../../context/data';
 import ModalDelete from '../../components/Custom/ModalDelete';
 
-export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) => {
+export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
   const user = JSON.parse(localStorage.getItem('user'))
-  const [formData, setFormData] = useState({fluxo_ambiental:!ispvtec ? card.id : null, uploaded_by:user.id, 
-    pvtec:ispvtec ? card.id : null, pvtec_response: pvtecresponse ? true : null, fluxo_credito: isgc ? card.id : null});
+  const [formData, setFormData] = useState({contrato_ambiental:isgai ? record.id : null, 
+    contrato_credito:isgc ? record.id : null, uploaded_by:user.id});
   const [accFiles, setaccFiles] = useState();
   const {config: {theme, isRTL}} = useAppContext();
   const [anexos, setAnexos] = useState();
@@ -45,7 +45,7 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
         formDataToSend.append(key, filteredData[key]);
       }
     }
-    api.post('pipeline/card-anexos/', formDataToSend, {headers: {Authorization: `bearer ${token}`}, 
+    api.post('finances/anexos/', formDataToSend, {headers: {Authorization: `bearer ${token}`}, 
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         setProgress(percentCompleted);
@@ -61,7 +61,6 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
     })
     .catch((error) =>{
       setIsUploading(false)
-      console.log(error)
       setFormData({...formData, file:null})
       if (error.response.status === 400) {toast.error(error.response.data.file[0])}
       else{toast.error("Ocorreu Um Erro!")}
@@ -93,9 +92,9 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
   useEffect(() =>{
     const getdata = async () =>{
       if (!anexos){
-        const param = ispvtec ? 'pvtec' : isgc ? 'fluxogc' : 'fluxogai'
-        const param2 = pvtecresponse ? '&isresponse=1' : ''
-        const status = await HandleSearch('', 'pipeline/card-anexos',(data) => {setAnexos(data)}, `?${param}=${card.id}&${param2}`)
+        const param = isgai ? 'contratogai' : isgc ? 'contratogc' : 'fluxogai'
+        const param2 = ''
+        const status = await HandleSearch('', 'finances/anexos',(data) => {setAnexos(data)}, `?${param}=${record.id}&${param2}`)
         if (status === 401){
           navigate("/auth/login")
         }
@@ -114,7 +113,7 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
               :
               <Flex justifyContent="center" alignItems="center">
                 <span className='text-midle'><FontAwesomeIcon icon={faCloudArrowUp} className='mt-1 fs-2 text-secondary'/></span>
-                <p className="fs-9 mb-0 text-700 ms-2">Arraste o arquivo aqui</p>
+                <p className="fs-9 mb-0 text-700 ms-2">Arraste o(s) arquivo(s) aqui</p>
             </Flex>
             }
         </div>
@@ -139,7 +138,7 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
                     <span className='col-10'>{a.name}</span>
                 </Link>
                 <span className='col-auto text-end rounded-circle modal-editar' 
-                onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/card-anexos/${a.id}/`})}}>
+                onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/anexos/${a.id}/`})}}>
                     <FontAwesomeIcon icon={faClose} className='fs-0 text-body'/>
                 </span>
                 <div className='text-600 fs--2'>Carregado por {a.user.name} em

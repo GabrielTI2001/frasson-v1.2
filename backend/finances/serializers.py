@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Lancamentos_Automaticos_Pagamentos, Categorias_Pagamentos, Transferencias_Contas, Caixas_Frasson, Resultados_Financeiros
 from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Contratos_Ambiental, Contratos_Ambiental_Pagamentos
 from pipeline.models import Fluxo_Gestao_Ambiental
+from cadastro.models import Detalhamento_Servicos
 from finances.models import Pagamentos, Cobrancas
 from backend.frassonUtilities import Frasson
 from django.db.models import Q, Sum
@@ -182,52 +183,48 @@ class listContratoAmbiental(serializers.ModelSerializer):
         model = Contratos_Ambiental
         fields = [
             'id', 'uuid', 'str_contratante', 'str_servicos', 'str_produto', 'valor', 
-            'data_assinatura', 'data_vencimento', 'status', 'total_formas'
+            'data_assinatura', 'status', 'total_formas'
         ]
         
 class detailContratoAmbiental(serializers.ModelSerializer):
-    str_contratante = serializers.CharField(source='contratante.razao_social', read_only=True)
+    info_contratante = serializers.SerializerMethodField(read_only=True)
     str_cpf = serializers.CharField(source='contratante.cpf_cnpj', read_only=True)
     etapas = serializers.SerializerMethodField(read_only=True)
     str_servicos = serializers.SerializerMethodField(read_only=True)
     str_produtos = serializers.SerializerMethodField(read_only=True)
+    str_produto = serializers.SerializerMethodField(read_only=True)
     list_processos = serializers.SerializerMethodField(read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    def get_str_produto(self, obj):
+        return ', '.join([s['produto__acronym'] for s in obj.servicos.all().values('produto__acronym').distinct()])
     def get_etapas(self, obj):
         etapas = Contratos_Ambiental_Pagamentos.objects.filter(contrato=obj.id)
         list_etapas = []
         for e in etapas:
-            if e.etapa:
-                cobrancas = Cobrancas.objects.filter(Q(contrato_ambiental_id=obj.id) & Q(etapa_cobranca=e.get_etapa_display()))
-                if len(cobrancas) > 0:
-                    etapa_cobranca = cobrancas[0].etapa_cobranca
-                    fase = cobrancas[0].phase_id
-                else:
-                    etapa_cobranca = None
-                    fase = None
-                list_etapas.append({
-                    'id': e.id,
-                    'valor': e.valor,
-                    'percentual': e.percentual,
-                    'etapa': e.get_etapa_display() if e.etapa else '-',
-                    'aberta': 'Sim' if etapa_cobranca == e.get_etapa_display() else 'Não',
-                    'color': 'success' if etapa_cobranca == e.get_etapa_display() else 'danger',
-                    'status': 'Pago' if fase == 317532039 else '-' if fase == None else 'Em Aberto',
-                    'color_status': 'success' if fase == 317532039 else 'secondary' if fase == None else 'warning'
-                })
+            cobrancas = Cobrancas.objects.filter(Q(contrato_ambiental_id=obj.id) & Q(etapa_cobranca=e.get_etapa_display()))
+            if len(cobrancas) > 0:
+                etapa_cobranca = cobrancas[0].etapa_cobranca
+                fase = cobrancas[0].status
             else:
-                list_etapas.append({
-                    'id': e.id,
-                    'valor': e.valor,
-                    'percentual': e.percentual,
-                    'etapa': '-',
-                    'aberta': '-',
-                    'color': '',
-                    'status': '-',
-                    'color_status': '-'
-                })    
+                etapa_cobranca = None
+                fase = None
+            list_etapas.append({
+                'id': e.id,
+                'valor': e.valor,
+                'servico': e.servico.id,
+                'servico_str': e.servico.detalhamento_servico,
+                'percentual': e.percentual,
+                'etapa': e.get_etapa_display() if e.etapa else '-',
+                # 'aberta': 'Sim' if etapa_cobranca == e.get_etapa_display() else 'Não',
+                # 'color': 'success' if etapa_cobranca == e.get_etapa_display() else 'danger',
+                'status': 'Pago' if fase == 317532039 else 'Sem Cobrança Aberta' if fase == None else 'Cobrança Aberta',
+                'color_status': 'success' if fase == 317532039 else 'warning' if fase == None else 'warning'
+            })    
         return list_etapas 
     def get_str_servicos(self, obj):
-        return [{'value':s.id, 'label':s.detalhamento_servico} for s in obj.servicos.all()]
+        return [{'value':s.id, 'label':s.detalhamento_servico, 'produto':s.produto.description} for s in obj.servicos.all()]
+    def get_info_contratante(self, obj):
+        return {'uuid':obj.contratante.uuid, 'value':obj.contratante.id, 'label':obj.contratante.razao_social, 'cpf_cnpj':obj.contratante.cpf_cnpj}
     def get_str_produtos(self, obj):
         return ', '.join([s['produto__description'] for s in obj.servicos.all().values('produto__description').distinct()])
     def get_list_processos(self, obj):
@@ -236,16 +233,29 @@ class detailContratoAmbiental(serializers.ModelSerializer):
             'id': produto.id,
             'detalhamento': produto.detalhamento.detalhamento_servico,
             'phase': produto.phase.descricao,
-            'card': produto.card,
-            'url': str(produto.phase.pipe.code)+'/'+str(produto.code),
-            'beneficiarios': ', '.join([beneficiario.razao_social for beneficiario in produto.beneficiario.all()])
+            'url': str(produto.phase.pipe.code)+'/processo/'+str(produto.code),
+            'beneficiarios': produto.beneficiario.razao_social
         }for produto in query_produtos]
         return produtos
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name in ['contratante', 'valor', 'data_vencimento', 'data_assinatura']:
-                field.required = True
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['contratante', 'valor', 'servicos', 'data_assinatura']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
+                field.allow_empty = True
+    def update(self, instance, validated_data):
+        servicos = validated_data.pop('servicos', [])
+        instance = super().update(instance, validated_data)
+        if servicos:
+            ids = [r.id for r in servicos]
+            instance.servicos.set(ids)
+        return instance
     class Meta:
         model = Contratos_Ambiental
         fields = '__all__'
@@ -257,22 +267,14 @@ class serContratosPagamentosAmbiental(serializers.ModelSerializer):
         for field_name, field in self.fields.items():
             if field_name in ['etapa', 'percentual', 'valor']:
                 field.required = True
-    def validate_percentual(self, value):
-        percentual = value
+    def validate_etapa(self, value):
+        etapa_anterior = self.instance.etapa if self.instance else None
         etapa_atual = self.initial_data.get('etapa')
         contrato = self.initial_data.get('contrato')
-        if self.instance:
-            etapa_anterior = self.instance.etapa
-            if etapa_atual:
-                total_percentual = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=int(contrato)).exclude(etapa=etapa_anterior
-                    ).aggregate(total=Sum('percentual'))
-            else:
-                total_percentual = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=int(contrato)).exclude(etapa=etapa_atual
-                    ).aggregate(total=Sum('percentual'))
-        else:
-            total_percentual = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=int(contrato)).aggregate(total=Sum('percentual'))
-        if (total_percentual['total'] or 0) + percentual > 100.00:
-            raise serializers.ValidationError('O total das parcelas ultrapassa 100% do contrato')
+        servico = self.initial_data.get('servico')
+        if etapa_atual != etapa_anterior:
+            if Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=int(contrato), servico_id=int(servico), etapa=etapa_atual).exists():
+                raise serializers.ValidationError('Etapa não pode se repetir para um mesmo serviço')
         return value
     class Meta:
         model = Contratos_Ambiental_Pagamentos

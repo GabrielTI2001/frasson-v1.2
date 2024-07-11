@@ -103,7 +103,7 @@ const EditForm = ({
           {fieldkey === 'contrato' &&( defaultselected &&
             <AsyncSelect ref={inputRef} isMulti={false} defaultValue={defaultselected['contrato']} 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-servicos', 'str_contratante', 'str_produto')}
+              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-ambiental', 'str_contratante', 'str_produto')}
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
