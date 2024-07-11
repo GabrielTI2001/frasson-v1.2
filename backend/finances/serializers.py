@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Lancamentos_Automaticos_Pagamentos, Categorias_Pagamentos, Transferencias_Contas, Caixas_Frasson, Resultados_Financeiros
-from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Contratos_Ambiental, Contratos_Ambiental_Pagamentos
+from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Contratos_Ambiental, Contratos_Ambiental_Pagamentos, Anexos, Activities
 from pipeline.models import Fluxo_Gestao_Ambiental
 from cadastro.models import Detalhamento_Servicos
 from finances.models import Pagamentos, Cobrancas
@@ -278,4 +278,26 @@ class serContratosPagamentosAmbiental(serializers.ModelSerializer):
         return value
     class Meta:
         model = Contratos_Ambiental_Pagamentos
+        fields = '__all__'
+
+class serializerAnexos(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    def get_user(self, obj):
+        if obj.uploaded_by:
+            return {'id':obj.uploaded_by.id, 'name':obj.uploaded_by.first_name+' '+obj.uploaded_by.last_name}
+        else:
+            return {'id':'', 'name':'-'+' '+'-'}
+    class Meta:
+        model = Anexos
+        fields = '__all__'
+
+class serializerActivities(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    def get_user(self, obj):
+        if obj.updated_by:
+            return {'id':obj.updated_by.id, 'name':obj.updated_by.first_name+' '+obj.updated_by.last_name}
+        else:
+            return {'id':'', 'name':'-'+' '+'-'}
+    class Meta:
+        model = Activities
         fields = '__all__'

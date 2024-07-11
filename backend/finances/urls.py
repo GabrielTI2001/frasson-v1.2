@@ -17,6 +17,8 @@ router.register(r'category-payments', views.CategoriaPagamentosView)
 router.register(r'tipo-receita-despesa', views.ReceitaDespesaView)
 router.register(r'contratos-ambiental', views.ContratoAmbientalView)
 router.register(r'contratos-pagamentos-ambiental', views.ContratosPagamentosAmbientalView)
+router.register(r'activities', views.ActivityView)
+router.register(r'anexos', views.AnexoView)
 
 urlpatterns = [
     path('billings-report/', views.pagamentos_pipefy_report_pdf, name='billings.pipefy.report.pdf'),

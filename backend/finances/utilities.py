@@ -198,3 +198,7 @@ def calcdre(year):
         'percentual_fatu_tributado': f"{locale.format_string('%.1f', percentual_fatu_tributado, True)}%",
     }
     return context
+
+fields_contratogai = {
+    'serviços':'Serviços', 'contratante':'Contratante', 'data_assinatura':'Data de Assinatura', 'detalhes': 'Detalhes da Negociação'
+}

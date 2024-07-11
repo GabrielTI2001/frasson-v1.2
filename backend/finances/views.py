@@ -30,6 +30,7 @@ from reportlab.lib.enums import TA_JUSTIFY, TA_RIGHT, TA_LEFT
 from reportlab.lib.colors import Color
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+from .utilities import fields_contratogai
 
 class PagamentosView(viewsets.ModelViewSet):
     queryset = Pagamentos.objects.all()
@@ -407,8 +408,17 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
                             ser.save()
                         else:
                             return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+            activity = None
+            for key in fields_contratogai.keys():
+                if key in request.data:
+                    activity = Activities.objects.create(contrato_ambiental_id=instance.pk, type='ch', campo=fields_contratogai[key], 
+                        updated_by_id=request.data['user'])
             headers = self.get_success_headers(serializer.data)
-            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)            
+            response_data = serializer.data.copy()
+            if activity:
+                activity_serializer = serializerActivities(activity)
+                response_data.update({'activity':activity_serializer.data if activity else None})
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -416,6 +426,52 @@ class ContratosPagamentosAmbientalView(viewsets.ModelViewSet):
     serializer_class = serContratosPagamentosAmbiental
     queryset = Contratos_Ambiental_Pagamentos.objects.all()
 
+class ActivityView(viewsets.ModelViewSet):
+    queryset = Activities.objects.all().order_by('-created_at')
+    serializer_class = serializerActivities
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        contratogai = self.request.query_params.get('contratogai', None)   
+        contratogc = self.request.query_params.get('contratogc', None)   
+        if contratogai:
+            queryset = queryset.filter(Q(contrato_ambiental_id=int(contratogai)))
+        if contratogc:
+            queryset = queryset.filter(Q(contrato_credito_id=int(contratogc)))
+        return queryset
+
+class AnexoView(viewsets.ModelViewSet):
+    queryset = Anexos.objects.all().order_by('-created_at')
+    serializer_class = serializerAnexos
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        contratogai = self.request.query_params.get('contratogai', None)   
+        contratogc = self.request.query_params.get('contratogc', None)  
+        if contratogai:
+            queryset = queryset.filter(Q(contrato_ambiental_id=int(contratogai)))
+        if contratogc:
+            queryset = queryset.filter(Q(contrato_credito_id=int(contratogc)))
+        return queryset
+    def create(self, request, *args, **kwargs):
+        response_data = []
+        serializer = self.get_serializer(data=request.data)
+        files = request.FILES.getlist('file')
+        if serializer.is_valid():
+            for i in files:
+                reg = Anexos.objects.create(
+                    contrato_credito_id=request.data.get('contrato_credito') if request.data.get('contrato_credito') else None, 
+                    contrato_ambiental_id=request.data.get('contrato_ambiental') if request.data.get('contrato_ambiental') else None, 
+                    uploaded_by_id=request.data.get('uploaded_by'), 
+                    file=i
+                )
+                response_data.append({
+                    'id': reg.id, 
+                    'file': '/media/' + reg.file.name, 
+                    'name': reg.name, 
+                    'user':{'name':reg.uploaded_by.first_name+' '+reg.uploaded_by.last_name, 'id':reg.uploaded_by.id},
+                    'created_at': reg.created_at
+                })
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 def index_dre_consolidado(request):
     #DRE CONSOLIDADO

@@ -76,7 +76,7 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
                 'id': obj.contrato.id,
                 'uuid': obj.contrato.uuid,
                 'contratante': obj.contrato.contratante.razao_social,
-                'produto': ', '.join([s.produto.description for s in obj.contrato.servicos.all()]),
+                'produto': ', '.join([s.produto.description for s in obj.contrato.servicos.all().distinct()]),
             }
         else:
             return None

@@ -1,26 +1,10 @@
-import { faPencil, faTrash, faTrashCan } from "@fortawesome/free-solid-svg-icons"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { CloseButton, Modal, Row, Spinner, Table } from "react-bootstrap"
+import { Table } from "react-bootstrap"
 import { useAppContext } from "../../../Main";
-import { useEffect, useState } from "react";
 import ExpandableCard from "../../../components/Custom/ExpandableCard";
 import {CardTitle} from '../../Pipeline/CardInfo';
 import SubtleBadge from "../../../components/common/SubtleBadge";
-import ModalDelete from "../../../components/Custom/ModalDelete";
-import FormEtapa from "./Form";
 
-const Etapas = ({etapas, servicos, contrato}) =>{
-    const {config: {theme}} = useAppContext();
-    const [modaldel, setModaldel] = useState({show:false, type:''});
-    const [modalform, setModalform] = useState({show:false, type:''});
-
-    const submit = (type, data) =>{
-        if (type === 'delete'){ 
-            setModaldel({show:false})
-        }
-        setModalform({show:false})
-    }
-
+const Etapas = ({etapas, servicos}) =>{
     return(<>
     {servicos.map(s => 
       etapas && etapas.filter(e => parseInt(e.servico) === parseInt(s.value)).length > 0 &&
@@ -36,9 +20,6 @@ const Etapas = ({etapas, servicos, contrato}) =>{
             <div key={e.id}>
                 <div className='mt-1'>
                     <CardTitle title={e.etapa}/>
-                    <FontAwesomeIcon icon={faTrashCan} className="ms-2 modal-editar text-danger" 
-                        onClick={() => setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/contratos-pagamentos-ambiental/${e.id}/`})}
-                    />
                 </div>
                 <div className='mb-1'>
                     <span>{e.percentual}% ({Number(e.valor).toLocaleString('pt-BR', {style:'currency',currency:'BRL'})})</span>
@@ -48,31 +29,6 @@ const Etapas = ({etapas, servicos, contrato}) =>{
         )}
       </ExpandableCard>
     )}
-    <ModalDelete show={modaldel.show} link={modaldel.link} close={() => setModaldel({...modaldel, show:false})} 
-        update={submit} 
-    />
-    <Modal
-        size="md"
-        show={modalform.show}
-        onHide={() => setModalform({show:false})}
-        dialogClassName="mt-7"
-        aria-labelledby="example-modal-sizes-title-lg"
-    >
-        <Modal.Header>
-        <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-            {!modalform.data ? 'Adicionar Etapa' : 'Atualizar Etapa'}
-        </Modal.Title>
-            <CloseButton onClick={() => setModalform({show:false})}/>
-        </Modal.Header>
-        <Modal.Body>
-            <Row className="flex-center sectionform">
-            {contrato && (modalform.data 
-                ? <FormEtapa type='edit' contrato={contrato} data={modalform.data} submit={submit}/>
-                : <FormEtapa type='add' contrato={contrato} submit={submit}/> 
-            )}
-            </Row>
-        </Modal.Body>
-    </Modal>
     </>
     )
 }

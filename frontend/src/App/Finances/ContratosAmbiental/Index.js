@@ -80,8 +80,8 @@ const IndexContratosAmbiental = () => {
             pagination
             perPage={15}
         >
-            <Row className="flex-end-center justify-content-start mb-3">
-                <Col xs="auto" sm={6} lg={4}>
+            <Row className="flex-end-center justify-content-start mb-3 gy-2">
+                <Col sm={6} lg={4}>
                     <AdvanceTableSearchBox table onSearch={handleChange}/>
                 </Col>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>

@@ -47,8 +47,6 @@ import IndexMovimentacoes from '../App/Finances/FluxoCaixa/IndexMoviments';
 import IndexReembolsos from '../App/Finances/FluxoCaixa/IndexRefunds';
 import ReportPagamentos from '../App/Finances/Reports/Pagamentos';
 import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
-import IndexContratos from '../App/Finances/ContratosAmbiental/Index';
-import ViewContrato from '../App/Finances/ContratosAmbiental/View';
 //Glebas
 import IndexGlebas from '../App/Glebas/Index';
 import MapaGlebas from '../App/Glebas/Mapa';

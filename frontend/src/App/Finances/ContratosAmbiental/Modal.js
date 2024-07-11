@@ -15,6 +15,8 @@ import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import NavContract from './Nav.js';
 import EditForm from './EditForm.js';
 import Etapas, { Processos } from './Etapas.js';
+import { Anexos } from '../Anexos.js';
+import ModalActivityContent from '../../Pipeline/ModalActivityContent.js';
 
 const options = {
   month: "short",
@@ -30,11 +32,13 @@ const ModalContract = ({show, reducer}) => {
   const {uuid} = useParams()
   const [record, setRecord] = useState();
   const {config: {theme}} = useAppContext();
+  const [activities, setActivities] = useState();
   const [activeTab, setActiveTab] = useState('main');
 
   const handleClose = () => {
     navigate('/finances/contracts/environmental/')
     setRecord(null)
+    setActivities(null)
   };
 
   const handleTabSelect = async (key) => {
@@ -54,6 +58,9 @@ const ModalContract = ({show, reducer}) => {
           navigate("/error/404")
         }
         setRecord(reg)
+        if (!activities){
+          HandleSearch('', 'finances/activities',(data) => {setActivities(data)}, `?contratogai=${reg.id}`)
+        }
       }
     }
     if(show && uuid){getData()}
@@ -99,6 +106,9 @@ const ModalContract = ({show, reducer}) => {
         setShowForm({...showForm, 'detalhes':false, 'data_assinatura':false, 'data_vencimento':false, 'servicos':false, 
           'contratante':false})
         setRecord(response.data)
+        if (response.data.activity){
+          setActivities([response.data.activity, ...activities])
+        }
       })
       .catch((erro) => {
         if (erro.response.status === 400){
@@ -148,6 +158,21 @@ const ModalContract = ({show, reducer}) => {
                         <div className="fs--1 row-10">{record.str_produtos}</div>
                       </div>
 
+                      {!showForm.contratante ?
+                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
+                          <CardTitle title='Contratante' field='contratante' click={handleEdit}/>
+                          <CardInfo data={record.info_contratante} title2='CPF/CNPJ:' attr1='label' attr2='cpf_cnpj' url='register/pessoal'/>
+                        </div>
+                        :
+                        <EditForm 
+                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
+                          show={showForm['contratante']}
+                          fieldkey='contratante'
+                          setShow={setShowForm}
+                          data={record.info_contratante}
+                        />
+                      }
+
                       {!showForm.servicos ?
                         <div className="rounded-top-lg pt-1 pb-0 mb-2">
                           <CardTitle title='Serviços' field='servicos' click={handleEdit}/>
@@ -163,21 +188,6 @@ const ModalContract = ({show, reducer}) => {
                           setShow={setShowForm}
                           data={record.str_servicos}
                           contrato={record}
-                        />
-                      }
-
-                      {!showForm.contratante ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Contratante' field='contratante' click={handleEdit}/>
-                          <CardInfo data={record.info_contratante} title2='CPF/CNPJ:' attr1='label' attr2='cpf_cnpj' url='register/pessoal'/>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['contratante']}
-                          fieldkey='contratante'
-                          setShow={setShowForm}
-                          data={record.info_contratante}
                         />
                       }
 
@@ -217,10 +227,11 @@ const ModalContract = ({show, reducer}) => {
                       }
                     </Tab.Pane>
                     <Tab.Pane eventKey="anexo">
-                        <CardTitle title='PDF Contrato' />
-                        {(record.etapas.length > 0 && record.pdf && record.valor) ?
-                            <div><Link className='btn btn-sm btn-warning py-0 fs--2' to={record.pdf_contrato}>PDF Contrato</Link></div>
-                        : <div>-</div>}
+                      {activeTab === "anexo" && 
+                        <ModalMediaContent title='Anexos do Contrato'>
+                          <Anexos isgai record={record} updatedactivity={(a) => setActivities([a, ...activities])}/>
+                        </ModalMediaContent>
+                      }
                     </Tab.Pane>
                     <Tab.Pane eventKey="formas_pagamento">
                         <ModalMediaContent title='Etapas de Pagamento do Contrato'>
@@ -245,6 +256,9 @@ const ModalContract = ({show, reducer}) => {
               <div className="rounded-top-lg pt-1 pb-0 mb-2">
                 <span className="mb-1 fs-1 fw-bold d-inline-block me-2">Status</span>
                 <SubtleBadge>Em Andamento</SubtleBadge>
+                <ModalMediaContent title='Atividades'>
+                    <ModalActivityContent atividades={activities}/>
+                </ModalMediaContent>
               </div>
               </>
             : uuid &&
