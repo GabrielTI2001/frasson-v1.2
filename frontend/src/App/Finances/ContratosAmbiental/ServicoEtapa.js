@@ -10,7 +10,6 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
     const [listdata, setListData] = useState([]);
     const [formData, setformData] = useState({});
     const [isListDataInitialized, setIsListDataInitialized] = useState(false);
-    console.log(formData)
 
     const insertData = (dados, etapa, s) => {
         const etapas = ['assinatura', 'protocolo', 'encerramento'];
@@ -49,18 +48,21 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
         if (e.target.name.includes('percentual')) {
             calcPercent(e.target.value, e.target.name.split('_')[1], s);
         } else {
-            console.log(e)
-            setformData({
-                ...formData,
-                [e.target.name]: e.target.values.value, [`valor_assinatura_${s}`]:'', [`percentual_assinatura_${s}`]:'',[`valor_protocolo_${s}`]:'',
-                [`percentual_protocolo_${s}`]:'', [`valor_encerramento_${s}`]:'', [`percentual_encerramento_${s}`]:'',
-            });
-            setListData(listdata.map(l => l.servico === s
-                ? { ...l, valor: e.target.values.float, dados:[]} : l)
-            );
+            const newValue = e.target.values.value;
+            const fieldName = e.target.name;
+            if (formData[fieldName] !== Number(newValue)) {
+                setformData(prevFormData => ({
+                    ...prevFormData,
+                    [fieldName]: newValue, [`valor_assinatura_${s}`]: '', [`percentual_assinatura_${s}`]: '',
+                    [`valor_protocolo_${s}`]: '', [`percentual_protocolo_${s}`]: '', [`valor_encerramento_${s}`]: '',
+                    [`percentual_encerramento_${s}`]: ''
+                }));
+                setListData(prevListData => prevListData.map(l => 
+                    l.servico === s ? { ...l, valor: e.target.values.float, dados: [] } : l
+                ));
+            }
         }
     };
-
     const calculateTotalValues = (list) => {
         let updatedFormData = {};
         const updatedListData = list.map(servico => {

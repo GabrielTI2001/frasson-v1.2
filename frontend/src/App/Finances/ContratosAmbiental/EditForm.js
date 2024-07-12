@@ -22,7 +22,6 @@ const EditForm = ({
   const [servicesSelected, setServicesSelected] = useState();
   const inputRef = useRef(null);
   const {config: {theme}} = useAppContext();
-  console.log(formData)
 
   useEffect(() => {
     if (show) {
