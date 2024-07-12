@@ -200,5 +200,6 @@ def calcdre(year):
     return context
 
 fields_contratogai = {
-    'serviços':'Serviços', 'contratante':'Contratante', 'data_assinatura':'Data de Assinatura', 'detalhes': 'Detalhes da Negociação'
+    'servicos':'Serviços', 'contratante':'Contratante', 'data_assinatura':'Data de Assinatura', 'detalhes': 'Detalhes da Negociação',
+    'servicos_etapas': 'Etapas de Pagamento dos Serviços'
 }

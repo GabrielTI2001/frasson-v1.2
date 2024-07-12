@@ -2,7 +2,7 @@ import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col, FormGroup} from 'react-bootstrap';
+import { Button, Form, Col, FormGroup, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import { SelectSearchOptions } from '../../../helpers/Data';
@@ -25,6 +25,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
   const [etapas, setEtapas] = useState();
   const [selectedServices, setSelectedServices] = useState([]);
   const [isDragActive, setIsDragActive] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { getRootProps: getRootProps, getInputProps: getInputProps } = useDropzone({
     multiple: true,
@@ -72,9 +73,11 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
     } catch (error) {
         console.error('Erro:', error);
     }
+    setIsLoading(false)
   };
 
   const handleSubmit = async e => {
+    setIsLoading(true)
     setMessage(null)
     e.preventDefault();
     const formDataToSend = new FormData();
@@ -227,7 +230,12 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
             className="w-50"
             type="submit"
             >
-              {type === 'edit' ? "Atualizar Contrato" : "Cadastrar Contrato"}
+              {isLoading ? 
+                <Spinner size='sm' className='p-0'/>
+              : 
+                'Cadastrar Contrato'
+              }
+              
           </Button>
         </Form.Group>    
       

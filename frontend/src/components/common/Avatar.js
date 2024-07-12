@@ -93,13 +93,6 @@ Avatar.propTypes = {
   icon: PropTypes.string
 };
 
-Avatar.defaultProps = {
-  size: 'xl',
-  rounded: 'circle',
-  emoji: '😊',
-  isExact: false
-};
-
 AvatarGroup.propTypes = {
   children: PropTypes.node.isRequired,
   className: PropTypes.string,

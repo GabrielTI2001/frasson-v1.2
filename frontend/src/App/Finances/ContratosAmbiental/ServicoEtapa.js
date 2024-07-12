@@ -2,17 +2,15 @@ import React,{useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
 import { Button, Col, Row} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import AsyncSelect from 'react-select/async';
-import { SelectSearchOptions } from '../../../helpers/Data';
-import customStyles, { customStylesDark } from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
+import CurrencyInput from 'react-currency-input-field';
 
 const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
     const { config: { theme } } = useAppContext();
     const [listdata, setListData] = useState([]);
     const [formData, setformData] = useState({});
     const [isListDataInitialized, setIsListDataInitialized] = useState(false);
+    console.log(formData)
 
     const insertData = (dados, etapa, s) => {
         const etapas = ['assinatura', 'protocolo', 'encerramento'];
@@ -39,7 +37,7 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
     };
 
     const calcPercent = (v, etapa, s) => {
-        const valor = formData[`valor_${s}`] ? (Number(formData[`valor_${s}`] / 100)) * Number(v) : 0;
+        const valor = formData[`valor_${s}`] ? (Number(formData[`valor_${s}`].replace(',','.'))/ 100) * Number(v) : 0;
         insertData({ valor: valor !== '' && Number(valor), percentual: v ? Number(v) : '' }, etapa, s);
         setformData({
             ...formData,
@@ -51,13 +49,14 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
         if (e.target.name.includes('percentual')) {
             calcPercent(e.target.value, e.target.name.split('_')[1], s);
         } else {
+            console.log(e)
             setformData({
                 ...formData,
-                [e.target.name]: e.target.value, [`valor_assinatura_${s}`]:'', [`percentual_assinatura_${s}`]:'',[`valor_protocolo_${s}`]:'',
+                [e.target.name]: e.target.values.value, [`valor_assinatura_${s}`]:'', [`percentual_assinatura_${s}`]:'',[`valor_protocolo_${s}`]:'',
                 [`percentual_protocolo_${s}`]:'', [`valor_encerramento_${s}`]:'', [`percentual_encerramento_${s}`]:'',
             });
             setListData(listdata.map(l => l.servico === s
-                ? { ...l, valor: e.target.value, dados:[]} : l)
+                ? { ...l, valor: e.target.values.float, dados:[]} : l)
             );
         }
     };
@@ -121,15 +120,18 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
             <div className='border border-1 p-2 rounded-2 mb-2' key={s.value}>
                 <Row>
                     <Col xl={12} className='text-middle d-flex align-items-center mb-1'>
-                        <h5 className='fw-bold fs--1 text-uppercase'>{s.label} - Etapas</h5>
+                        <h5 className='fw-bold fs--1'>{s.label} - Etapas</h5>
                     </Col>
                     <Form.Group className="mb-2" as={Col} xl={5} sm={6}>
-                        <Form.Label className='fw-bold mb-1'>Valor Total*</Form.Label>
-                        <Form.Control
+                        <Form.Label className='fw-bold mb-1'>Valor Total (R$)*</Form.Label>
+                        <CurrencyInput
+                            className='form-control'
+                            decimalsLimit={2}
                             value={formData[`valor_${s.value}`] || ''}
+                            decimalSeparator="," groupSeparator="."
+                            intlConfig={{ locale: 'pt-BR', currency: 'BRL' }}
                             name={`valor_${s.value}`}
-                            onChange={(e) => handleFieldChange(e, s.value)}
-                            type="number"
+                            onValueChange={(value, name, values) => handleFieldChange({target:{name:name, values:values}}, s.value)}
                         />
                     </Form.Group>
                 </Row>
@@ -145,7 +147,10 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
                     </Form.Group>
                     <Form.Group as={Col} xl={4} sm={4} className='mb-1'>
                         <Form.Label className='mb-0 fw-bold'>Valor</Form.Label>
-                        <Form.Label className='mb-0 fs-0 d-block'>R$ {formData[`valor_assinatura_${s.value}`] || ''}</Form.Label>
+                        <Form.Label className='mb-0 fs--1 d-block'>R$ {formData[`valor_assinatura_${s.value}`] ? 
+                           Number(formData[`valor_assinatura_${s.value}`]).toLocaleString('pt-BR', {minimumFractionDigits:2})
+                            : ''}
+                        </Form.Label>
                     </Form.Group>
                 </Row>
                 <Row>
@@ -161,7 +166,10 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
                     </Form.Group>
                     <Form.Group as={Col} xl={4} sm={4} className='mb-1'>
                         <Form.Label className='mb-0 fw-bold'>Valor</Form.Label>
-                        <Form.Label className='mb-0 fs-0 d-block'>R$ {formData[`valor_protocolo_${s.value}`] || ''}</Form.Label>
+                        <Form.Label className='mb-0 fs--1 d-block'>R$ {formData[`valor_protocolo_${s.value}`] ? 
+                            Number(formData[`valor_protocolo_${s.value}`]).toLocaleString('pt-BR', {minimumFractionDigits:2})
+                            : ''}
+                        </Form.Label>
                     </Form.Group>
                 </Row>
                 <Row>
@@ -176,7 +184,10 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
                     </Form.Group>
                     <Form.Group as={Col} xl={4} sm={4} className='mb-1'>
                         <Form.Label className='mb-0 fw-bold'>Valor</Form.Label>
-                        <Form.Label className='mb-0 fs-0 d-block'>R$ {formData[`valor_encerramento_${s.value}`] || ''}</Form.Label>
+                        <Form.Label className='mb-0 fs--1 d-block'>R$ {formData[`valor_encerramento_${s.value}`] ? 
+                            Number(formData[`valor_encerramento_${s.value}`]).toLocaleString('pt-BR', {minimumFractionDigits:2})
+                            : ''}
+                        </Form.Label>
                     </Form.Group>
                 </Row>
             </div>

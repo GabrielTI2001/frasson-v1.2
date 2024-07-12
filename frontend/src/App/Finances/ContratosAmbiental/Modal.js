@@ -10,7 +10,7 @@ import { useAppContext } from '../../../Main.js';
 import CardInfo, {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendar } from '@fortawesome/free-solid-svg-icons';
+import { faBolt, faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import NavContract from './Nav.js';
 import EditForm from './EditForm.js';
@@ -32,6 +32,7 @@ const ModalContract = ({show, reducer}) => {
   const {uuid} = useParams()
   const [record, setRecord] = useState();
   const {config: {theme}} = useAppContext();
+  const [message, setMessage] = useState();
   const [activities, setActivities] = useState();
   const [activeTab, setActiveTab] = useState('main');
 
@@ -109,10 +110,12 @@ const ModalContract = ({show, reducer}) => {
         if (response.data.activity){
           setActivities([response.data.activity, ...activities])
         }
+        setMessage()
       })
       .catch((erro) => {
         if (erro.response.status === 400){
           toast.error(erro.response.data.non_fields_errors, {autoClose:4000})
+          setMessage(erro.response.data)
         }
         console.error('erro: '+erro);
       })
@@ -161,7 +164,7 @@ const ModalContract = ({show, reducer}) => {
                       {!showForm.contratante ?
                         <div className="rounded-top-lg pt-1 pb-0 mb-2">
                           <CardTitle title='Contratante' field='contratante' click={handleEdit}/>
-                          <CardInfo data={record.info_contratante} title2='CPF/CNPJ:' attr1='label' attr2='cpf_cnpj' url='register/pessoal'/>
+                          <CardInfo data={record.info_contratante} attr1='label' attr2='cpf_cnpj' url='register/pessoal'/>
                         </div>
                         :
                         <EditForm 
@@ -177,7 +180,7 @@ const ModalContract = ({show, reducer}) => {
                         <div className="rounded-top-lg pt-1 pb-0 mb-2">
                           <CardTitle title='Serviços' field='servicos' click={handleEdit}/>
                           {record.str_servicos.map ((s) =>
-                            <CardInfo data={s} title2='Produto:' attr1='label' attr2='produto' key={s.id}/>
+                            <CardInfo data={s} attr1='label' attr2='produto' key={s.value}/>
                           )}
                         </div>
                         :
@@ -185,11 +188,12 @@ const ModalContract = ({show, reducer}) => {
                           onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
                           show={showForm['servicos']}
                           fieldkey='servicos'
-                          setShow={setShowForm}
+                          setShow={(data) => {setShowForm(data); setMessage()}}
                           data={record.str_servicos}
                           contrato={record}
                         />
                       }
+                      {message && <label className='text-danger'>{message.servicos}</label>}
 
                       <div className="rounded-top-lg pt-1 pb-0 mb-2">
                         <CardTitle title='Valor do Contrato'/>
@@ -225,6 +229,17 @@ const ModalContract = ({show, reducer}) => {
                           data={record.detalhes}
                         />
                       }
+                      <div>
+                        <strong className='fs--1'>Outras Ações</strong>
+                        {record.etapas.length > 0 && (record.valor || record.percentual) ?
+                            <div className='mt-1'>
+                                <Link className='btn btn-sm btn-success py-0 fs--2' 
+                                    to={`${process.env.REACT_APP_API_URL}/finances/contracts-pdf/${record.uuid}`}
+                                ><FontAwesomeIcon icon={faBolt} className='me-1' />Gerar Contrato</Link>
+                            </div>
+                        : <div className='text-primary mt-1'>Nenhuma Ação disponível</div>
+                        }
+                      </div>
                     </Tab.Pane>
                     <Tab.Pane eventKey="anexo">
                       {activeTab === "anexo" && 

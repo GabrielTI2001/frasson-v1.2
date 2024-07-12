@@ -6,8 +6,8 @@ from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'billings', views.PagamentosView)
-router.register(r'revenues', views.CobrancasView)
-router.register(r'revenues-invoices', views.CobrancasInvoicesView)
+router.register(r'revenues', views.CobrancasView, basename='cobrancas')
+router.register(r'revenues-invoices', views.CobrancasInvoicesView, basename='invoices')
 router.register(r'automation/payments', views.AutomPagamentosView)
 router.register(r'transfers', views.TransfContasView)
 router.register(r'moviments', views.MovimentacoesView)

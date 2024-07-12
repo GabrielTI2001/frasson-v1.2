@@ -43,6 +43,4 @@ Logo.propTypes = {
   textClass: PropTypes.string
 };
 
-Logo.defaultProps = { at: 'auth', width: 58 };
-
 export default Logo;

@@ -118,8 +118,8 @@ export const columnsReembolso = [
 
 export const columnsContratos = [
   {
-    accessor: 'str_produto',
-    Header: 'Produtos',
+    accessor: 'code',
+    Header: 'Código',
     headerProps: { className: 'text-900 p-1' }
   },
   {

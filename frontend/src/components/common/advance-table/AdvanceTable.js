@@ -54,54 +54,58 @@ const AdvanceTable = ({
   return (
     <div className="table-responsive scrollbar fs-xs">
       <Table {...getTableProps(tableProps)}>
-        <thead className={headerClassName+' bg-300'}>
+        <thead className={`${headerClassName} bg-300`}>
           <tr>
-            {headers.map((column, index) => (
-              <th
-                key={index}
-                {...column.getHeaderProps(
-                  column.getSortByToggleProps(column.headerProps)
-                )}
-                className='text-center'
-              >
-                {column.render('Header')}
-                {column.canSort ? (
-                  column.isSorted ? (
-                    column.isSortedDesc ? (
-                      <span className="sort desc" />
+            {headers.map((column, index) => {
+              // Desestrutura a key e obtém o resto das propriedades
+              const { key, ...rest } = column.getHeaderProps(column.getSortByToggleProps(column.headerProps));
+              return (
+                <th
+                  key={index}
+                  {...rest}
+                  className="text-center"
+                >
+                  {column.render('Header')}
+                  {column.canSort ? (
+                    column.isSorted ? (
+                      column.isSortedDesc ? (
+                        <span className="sort desc" />
+                      ) : (
+                        <span className="sort asc" />
+                      )
                     ) : (
-                      <span className="sort asc" />
+                      <span className="sort" />
                     )
                   ) : (
-                    <span className="sort" />
-                  )
-                ) : (
-                  ''
-                )}
-              </th>
-            ))}
-            {tableProps.showactions &&(
-              <th className='text-center'>Ações</th>
+                    ''
+                  )}
+                </th>
+              );
+            })}
+            {tableProps.showactions && (
+              <th className="text-center">Ações</th>
             )}
-            {tableProps.followup &&
-              <th className='text-center'>Ações</th>
-            }
-            {tableProps.alongamento &&
-              <th className='text-center'>Ações</th>
-            }
+            {tableProps.followup && (
+              <th className="text-center">Ações</th>
+            )}
+            {tableProps.alongamento && (
+              <th className="text-center">Ações</th>
+            )}
           </tr>
         </thead>
         <tbody className={`${bodyClassName} ${theme === 'light' ? 'bg-light': 'bg-200'}`}>
           {page.map((row, i) => {
             prepareRow(row);
+            const { key, ...rest } = row.getRowProps();
             return (
-              <tr key={i} className={rowClassName+`${theme === 'light'? ' hover-table-light' : ' hover-table-dark'}`} {...row.getRowProps()} onClick={() => !tableProps.showactions 
+              <tr key={i} className={rowClassName+`${theme === 'light'? ' hover-table-light' : ' hover-table-dark'}`} {...rest} onClick={() => !tableProps.showactions 
               && !tableProps.alongamento && (Click(row.original.id, row.original.uuid))}>
                 {row.cells.map((cell, index) => {
+                  const { key, ...rest } = cell.getCellProps(cell.column.cellProps);
                   return (
                     <td
                       key={index}
-                      {...cell.getCellProps(cell.column.cellProps)}
+                      {...rest}
                       className={`text-center ${cell.column.cellProps && cell.column.cellProps.className}`}
                     >
                       {tableProps.index_status && index === tableProps.index_status ? 

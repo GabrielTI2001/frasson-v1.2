@@ -1,7 +1,7 @@
 import { Table } from "react-bootstrap"
 import { useAppContext } from "../../../Main";
 import ExpandableCard from "../../../components/Custom/ExpandableCard";
-import {CardTitle} from '../../Pipeline/CardInfo';
+import CardInfo, {CardTitle} from '../../Pipeline/CardInfo';
 import SubtleBadge from "../../../components/common/SubtleBadge";
 
 const Etapas = ({etapas, servicos}) =>{
@@ -40,25 +40,12 @@ export const Processos = ({processos}) =>{
     const {config: {theme}} = useAppContext();
 
     return(<>
-        <span className='text-info ms-1 mt-0'>({processos && processos.length} card(s) em produtos)</span>
-        <Table responsive className="mt-1">
-            <thead className="bg-300">
-                <tr>
-                    <th scope="col" className="text-center text-middle">Detalhamento</th>
-                    <th scope="col" className="text-center text-middle">Fase</th>
-                </tr>
-            </thead>
-            <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
-                {processos && processos.map(p => 
-                    <tr key={p.id} style={{cursor:'pointer'}} onClick={() => window.open('/pipeline/'+p.url,'_blank') } 
-                        className={`${theme === 'light' ? 'hover-table-light': 'hover-table-dark'} py-0`}
-                    >
-                        <td className="text-center text-middle fs--2">{p.detalhamento || '-'}</td>
-                        <td className="text-center text-middle fs--2">{p.phase || '-'}</td>
-                    </tr>
-                )} 
-            </tbody>
-        </Table>
+        <span className='ms-1 mt-0'>{processos && processos.length} card(s) em produtos</span>
+        {processos && processos.map(p => 
+            <div className="rounded-top-lg pt-1 pb-0 mb-2">
+                <CardInfo data={p} title2='Em: ' attr1='detalhamento' attr2='phase' url='pipeline/518984721/processo'/>
+            </div>
+        )} 
     </>
     )
 }

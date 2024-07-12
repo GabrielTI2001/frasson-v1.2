@@ -1,6 +1,6 @@
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
-from .models import Activities, Anexos
+from .models import Activities, Anexos, Contratos_Ambiental
 import re, os
 from django.core.mail import send_mail
 
@@ -18,4 +18,12 @@ def anexo_atividade(sender, instance, created, **kwargs):
         Activities.objects.create(type='ch', updated_by_id=instance.uploaded_by.id, 
             contrato_ambiental_id=instance.contrato_ambiental.id if instance.contrato_ambiental else None, 
             campo='a Lista de Anexos'
+        )
+
+@receiver(post_save, sender=Contratos_Ambiental)
+def anexo_atividade(sender, instance, created, **kwargs):
+    if created:
+        Activities.objects.create(type='cr', updated_by_id=instance.created_by.id, 
+            contrato_ambiental_id=instance.id,
+            campo='o Contrato'
         )

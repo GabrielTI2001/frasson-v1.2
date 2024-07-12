@@ -188,7 +188,7 @@ const KanbanModal = ({show, movercard}) => {
                       <div className="rounded-top-lg pt-1 pb-0 mb-2">
                         <CardTitle title='Beneficiário*' click={handleEdit} field='beneficiario'/>
                         {card.beneficiario && !showForm['beneficiario'] && card.list_beneficiario.map ((b) =>
-                          <CardInfo data={b} title2='CPF/CNPJ:' attr1='razao_social' attr2='cpf_cnpj' key={b.id} url='register/pessoal'/>
+                          <CardInfo data={b} attr1='razao_social' attr2='cpf_cnpj' key={b.id} url='register/pessoal'/>
                         )}
                         <EditForm 
                           onSubmit={handleSubmit} 
@@ -201,7 +201,7 @@ const KanbanModal = ({show, movercard}) => {
                       <div className="rounded-top-lg mb-2">
                         <CardTitle title='Detalhamento da Demanda*' click={handleEdit} field='detalhamento'/>
                         {card.info_detalhamento && !showForm['detalhamento'] &&
-                          <CardInfo data={card.info_detalhamento} title2='Produto:' attr1='detalhamento_servico' attr2='produto'/>
+                          <CardInfo data={card.info_detalhamento} attr1='detalhamento_servico' attr2='produto'/>
                         }
                         <EditForm 
                           onSubmit={handleSubmit} 
@@ -214,7 +214,7 @@ const KanbanModal = ({show, movercard}) => {
                       <div className="rounded-top-lg pt-1 pb-0 mb-2">
                         <CardTitle title='Instituição Vinculada*' click={handleEdit} field='instituicao'/>
                         {card.info_instituicao && !showForm['instituicao'] &&
-                          <CardInfo data={card.info_instituicao} title2='Identificação:' attr1='razao_social' attr2='identificacao'/>
+                          <CardInfo data={card.info_instituicao} attr1='razao_social' attr2='identificacao'/>
                         }
                         <EditForm 
                           onSubmit={handleSubmit} 
@@ -227,7 +227,7 @@ const KanbanModal = ({show, movercard}) => {
                       <div className="rounded-top-lg pt-1 pb-0 mb-2">
                         <CardTitle title='Contrato Serviço*' click={handleEdit} field='contrato'/>
                         {!showForm['contrato'] && card.info_contrato && 
-                          <CardInfo data={card.info_contrato} title2='Produto:' attr1='contratante' attr2='produto' url='finances/contracts/environmental'/>
+                          <CardInfo data={card.info_contrato} attr1='contratante' attr2='produto' url='finances/contracts/environmental'/>
                         }
                         <EditForm 
                           onSubmit={handleSubmit} 

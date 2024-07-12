@@ -239,10 +239,8 @@ class Cobrancas(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
     cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
-    contrato_ambiental = models.ForeignKey(Contratos_Ambiental, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
-    contrato_credito = models.ForeignKey(Contratos_Credito, on_delete=models.SET_NULL, null=True, verbose_name='Contrato Serviço')
-    etapa_cobranca = models.CharField(max_length=100, null=True, verbose_name='Etapa da Cobrança')
-    detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhe Demanda')
+    etapa_ambiental = models.ForeignKey(Contratos_Ambiental_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Etapa da Cobrança GAI')
+    etapa_credito = models.ForeignKey(Contratos_Credito_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Etapa da Cobrança GC')
     valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Contratado')
     percentual_contratado = models.DecimalField(max_digits=5, decimal_places=2, null=True, verbose_name='Percentual Contratado')
     saldo_devedor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Saldo Devedor')
@@ -255,12 +253,12 @@ class Cobrancas(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Cobranças Pipefy'
+        verbose_name_plural = 'Cobranças'
     def __str__(self):
         return self.cliente.razao_social
 
 class Activities(models.Model):
-    TYPE_CHOICES = (('ch', 'change'), ('c','concluiu'))
+    TYPE_CHOICES = (('cr', 'criou'), ('ch', 'change'), ('c','concluiu'))
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     contrato_ambiental = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
     contrato_credito = models.ForeignKey(Contratos_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')

@@ -22,6 +22,7 @@ const EditForm = ({
   const [servicesSelected, setServicesSelected] = useState();
   const inputRef = useRef(null);
   const {config: {theme}} = useAppContext();
+  console.log(formData)
 
   useEffect(() => {
     if (show) {
@@ -92,11 +93,14 @@ const EditForm = ({
                   ...prevFormData,
                   servicos: selected.map(s => s.value)
                 }));
+                console.log(selected)
                 setServicesSelected(selected)
               }
             } className='mb-1 fs--1'/>
             <ServicoEtapa servicos={servicesSelected} valor_contrato={contrato && contrato.valor} 
-              change={(data) => setFormData({...formData, servicos_etapas:data})} etapas_current={contrato && contrato.etapas}
+              change={(data) => setFormData({...formData, servicos_etapas:data, 
+                servicos:data.map(d => d.servico)
+              })} etapas_current={contrato && contrato.etapas}
             />
 
           </>)}

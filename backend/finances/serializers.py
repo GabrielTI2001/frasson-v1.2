@@ -17,7 +17,7 @@ class listPagamentosPipefy(serializers.ModelSerializer):
     data = serializers.DateField(read_only=True)
     class Meta:
         model = Pagamentos
-        fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'phase_name', 'data', 'valor_pagamento', 'card_url']
+        fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'data', 'valor_pagamento']
 
 class listCobrancasPipefy(serializers.ModelSerializer):
     str_detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
@@ -25,9 +25,13 @@ class listCobrancasPipefy(serializers.ModelSerializer):
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     data = serializers.DateField(read_only=True)
     valor = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.required = False
     class Meta:
         model = Cobrancas
-        fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'phase_name', 'data', 'valor', 'card_url']
+        fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'data', 'valor']
 
 class listCobrancasInvoices(serializers.ModelSerializer):
     str_detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
@@ -35,7 +39,7 @@ class listCobrancasInvoices(serializers.ModelSerializer):
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     class Meta:
         model = Cobrancas
-        fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'phase_name', 'data_pagamento', 'valor_faturado', 'card_url']
+        fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'data_pagamento', 'valor_faturado']
 
 class listAutomPagamentos(serializers.ModelSerializer):
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', required=False, read_only=True)
@@ -182,7 +186,7 @@ class listContratoAmbiental(serializers.ModelSerializer):
     class Meta:
         model = Contratos_Ambiental
         fields = [
-            'id', 'uuid', 'str_contratante', 'str_servicos', 'str_produto', 'valor', 
+            'id', 'uuid', 'code', 'str_contratante', 'str_servicos', 'str_produto', 'valor', 
             'data_assinatura', 'status', 'total_formas'
         ]
         
@@ -201,7 +205,7 @@ class detailContratoAmbiental(serializers.ModelSerializer):
         etapas = Contratos_Ambiental_Pagamentos.objects.filter(contrato=obj.id)
         list_etapas = []
         for e in etapas:
-            cobrancas = Cobrancas.objects.filter(Q(contrato_ambiental_id=obj.id) & Q(etapa_cobranca=e.get_etapa_display()))
+            cobrancas = Cobrancas.objects.filter(Q(etapa_ambiental__contrato_id=obj.id) & Q(etapa_ambiental__etapa=e.get_etapa_display()))
             if len(cobrancas) > 0:
                 etapa_cobranca = cobrancas[0].etapa_cobranca
                 fase = cobrancas[0].status
@@ -230,7 +234,7 @@ class detailContratoAmbiental(serializers.ModelSerializer):
     def get_list_processos(self, obj):
         query_produtos = Fluxo_Gestao_Ambiental.objects.filter(contrato=obj.id)
         produtos = [{
-            'id': produto.id,
+            'uuid': produto.code,
             'detalhamento': produto.detalhamento.detalhamento_servico,
             'phase': produto.phase.descricao,
             'url': str(produto.phase.pipe.code)+'/processo/'+str(produto.code),
@@ -248,11 +252,11 @@ class detailContratoAmbiental(serializers.ModelSerializer):
         else:
             for field_name, field in self.fields.items():
                 field.required = False
-                field.allow_empty = True
+                field.allow_empty = False
     def update(self, instance, validated_data):
         servicos = validated_data.pop('servicos', [])
         instance = super().update(instance, validated_data)
-        if servicos:
+        if servicos and len(servicos) > 0:
             ids = [r.id for r in servicos]
             instance.servicos.set(ids)
         return instance

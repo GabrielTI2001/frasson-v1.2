@@ -14,21 +14,28 @@ const CardInfo = ({data, attr1, title2, attr2, url}) =>{
                 <label className='fw-bold fs-0'>{data[attr1]}</label>
                 <FontAwesomeIcon icon={faArrowUpRightFromSquare} />
               </div>
-              <label className='row fs--1'>{data[attr2]}</label>
+              {title2 ? 
+                <div className="px-0 fs--1">{title2} {data[attr2]}</div>
+              : <label className='row fs--1'>{data[attr2]}</label>
+              }
             </Link>
           ) : (
             <div className={`p-2 mb-1 text-body row mx-0 info-pipe ${theme === 'dark' ? 'info-pipe-dark' : ''}`}>
               <div className="d-flex justify-content-between px-0">
                 <label className='fw-bold fs-0'>{data[attr1]}</label>
               </div>
-              <label className='row fs--1'>{data[attr2]}</label>
+              {title2 ? 
+                <div className="px-0 fs--1">{title2} {data[attr2]}</div>
+              : <label className='row fs--1'>{data[attr2]}</label>
+              }
+              
             </div>
           )
     )
 }
 export default CardInfo;
 
-export const CardTitle = ({title, click, icon, field, className}) =>{
+export const CardTitle = ({title, click, field, className}) =>{
     return (
         <>
             <span className='fw-bold fs--1'>{title}</span>
