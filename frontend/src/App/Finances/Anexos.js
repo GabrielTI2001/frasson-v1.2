@@ -128,7 +128,7 @@ export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
     </Form>
     <div className='mt-2 pe-2'>
         {anexos ? anexos.map(a => 
-            <div className='p-1 gx-2 d-flex row flex-row rounded-2 my-2 justify-content-between nav-link cursor-pointer div-hover-children' 
+            <div className='p-1 gx-2 d-flex row flex-row rounded-2 my-2 justify-content-between nav-link cursor-pointer hover-children' 
               key={a.id}
             >
                 <Link target='__blank' to={a.file} 

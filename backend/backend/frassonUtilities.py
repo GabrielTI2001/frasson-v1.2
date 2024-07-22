@@ -234,8 +234,8 @@ class Frasson(object):
         total_saldo_inicial = sum(saldos_iniciais.values())
 
         #TOTAL COBRANÇAS E PAGAMENTOS
-        cobrancas = Cobrancas.objects.filter(phase_id=317532039, data_pagamento__year__in=years).aggregate(total=Sum('valor_faturado'))['total'] or 0
-        pagamentos = Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year__in=years).aggregate(total=Sum('valor_pagamento'))['total'] or 0
+        cobrancas = Cobrancas.objects.filter(status='PG', data_pagamento__year__in=years).aggregate(total=Sum('valor_faturado'))['total'] or 0
+        pagamentos = Pagamentos.objects.filter(status='PG', data_pagamento__year__in=years).aggregate(total=Sum('valor_pagamento'))['total'] or 0
         
         #TOTAL RESULTADOS FINANCEIROS
         query_resultados_financeiros = Resultados_Financeiros.objects.filter(data__year__in=years).aggregate(

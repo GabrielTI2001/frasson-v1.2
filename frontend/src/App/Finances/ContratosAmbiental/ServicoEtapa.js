@@ -64,13 +64,10 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
         }
     };
     const calculateTotalValues = (list) => {
-        let updatedFormData = {};
         const updatedListData = list.map(servico => {
             const valor = servico.dados.reduce((acc, curr) => acc + (curr.valor || 0), 0);
-            updatedFormData[`valor_${servico.servico}`] = valor;
             return { ...servico, valor };
         });
-        // setformData({...formData, ...updatedFormData})
         return updatedListData;
     };
 

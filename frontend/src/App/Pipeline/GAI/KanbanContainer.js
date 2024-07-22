@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import KanbanColumn from '../KanbanColumn';
 import api from '../../../context/data';
 import KanbanModal from './KanbanModal';
-import { DragDropContext } from 'react-beautiful-dnd';
+import { DragDropContext } from '@hello-pangea/dnd';
 import IconButton from '../../../components/common/IconButton';
 import is from 'is_js';
 import { PipeContext } from '../../../context/Context';

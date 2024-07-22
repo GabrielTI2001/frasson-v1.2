@@ -8,7 +8,7 @@ const ListContas = ({contas}) => {
     return (
         <>
         {contas ? 
-        <Table responsive style={{width: '700px'}}>
+        <Table responsive style={{width: '450px'}}>
             <thead className="bg-300">
                 <tr>
                     <th scope="col" className="text-center">Banco</th>

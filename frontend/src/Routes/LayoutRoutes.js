@@ -35,7 +35,6 @@ import IndexAppFarms from '../App/Farms/Index';
 import IndexFarms from '../App/Farms/Farms/Index';
 import IndexRegimes from '../App/Farms/Regimes/Index';
 import ViewRegime from '../App/Farms/Regimes/View';
-import ViewFarm from '../App/Farms/Farms/View';
 import MapaCAR from '../App/Farms/Farms/Mapa';
 //Finances
 import DREConsolidado from '../App/Finances/DREActual';
@@ -67,14 +66,10 @@ import Products from '../App/Pipeline/GAI/products';
 import SettingsPipe from '../App/Pipeline/Settings';
 //Register
 import IndexPessoal from '../App/Register/Pessoal/Index';
-import ViewPessoal from '../App/Register/Pessoal/View';
 import IndexCadGerais from '../App/Register/Index';
 import IndexMachinery from '../App/Register/Machinery/Index';
 import IndexBenfeitorias from '../App/Register/Benfeitorias/Index';
-import ViewBenfeitoria from '../App/Register/Benfeitorias/View';
-import BenfeitoriaEdit from '../App/Register/Benfeitorias/Edit';
 import IndexAnaliseSolo from '../App/Register/Analises/SoloIndex';
-import ViewAnaliseSolo from '../App/Register/Analises/SoloView';
 import NewFeedback from '../App/Register/Feedbacks/New';
 import IndexFeedbacks from '../App/Register/Feedbacks/Index';
 import IndexCartorios from '../App/Register/Cartorios/Index';
@@ -223,10 +218,10 @@ const LayoutRoutes = () => {
         <Route path="/farms">
           <Route path="" element={<IndexAppFarms />}/>
           <Route path="regime" element={<IndexRegimes />}/>
-          <Route path="regime/:uuid" element={<ViewRegime />}/>
+          <Route path="regime/:uuid" element={<IndexRegimes />}/>
           <Route path="farms" element={<IndexFarms />}/>
           <Route path="farms/map" element={<MapaCAR />}/>
-          <Route path="farms/:uuid" element={<ViewFarm />}/>
+          <Route path="farms/:uuid" element={<IndexFarms />}/>
         </Route>
         <Route path="/finances">
           <Route path="dre/actual" element={<DREConsolidado />}/>
@@ -285,13 +280,12 @@ const LayoutRoutes = () => {
           <Route path="" element={<IndexCadGerais />}/>
           <Route path="cartorios" element={<IndexCartorios />}/>
           <Route path="pessoal" element={<IndexPessoal />}/>
-          <Route path="pessoal/:uuid" element={<ViewPessoal />}/>
+          <Route path="pessoal/:uuid" element={<IndexPessoal />}/>
           <Route path='machinery' element={<IndexMachinery />}/>
           <Route path='farm-assets' element={<IndexBenfeitorias />}/>
-          <Route path='farm-assets/:uuid' element={<ViewBenfeitoria />}/>
-          <Route path='farm-assets/edit/:uuid' element={<BenfeitoriaEdit />}/>
+          <Route path='farm-assets/:uuid' element={<IndexBenfeitorias />}/>
           <Route path='analysis/soil' element={<IndexAnaliseSolo />}/>
-          <Route path='analysis/soil/:uuid' element={<ViewAnaliseSolo />}/>
+          <Route path='analysis/soil/:uuid' element={<IndexAnaliseSolo />}/>
           <Route path='feedback/new' element={<NewFeedback />}/>
           <Route path='feedbacks' element={<IndexFeedbacks />}/>
         </Route>

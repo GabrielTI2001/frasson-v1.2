@@ -18,20 +18,19 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
   const [message, setMessage] = useState()
   const [showModal, setShowModal] = useState({show:false, type:''})
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
   const uuid = data ? data.uuid : '';
   const [defaultoptions, setDefaultOptions] = useState();
 
   const handleApi = async (dadosform) => {
-    const {response, dados} = await sendData({type:type, url:'irrigation/pivots', keyfield:type === 'edit' ? uuid : null, 
+    const {resposta, dados} = await sendData({type:type, url:'irrigation/pivots', keyfield:type === 'edit' ? uuid : null, 
       dadosform:dadosform, is_json:false})
-    if(response.status === 400){
+    if(resposta.status === 400){
       setMessage({...dados})
     }
-    else if (response.status === 401){
+    else if (resposta.status === 401){
       navigate("/auth/login");
     }
-    else if (response.status === 201 || response.status === 200){
+    else if (resposta.status === 201 || resposta.status === 200){
       if (type === 'edit'){
         submit('edit', dados)
         toast.success("Registro Atualizado com Sucesso!")

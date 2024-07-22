@@ -50,7 +50,7 @@ class PagamentosView(viewsets.ModelViewSet):
                                 (Q(beneficiario__razao_social__icontains=search) | Q(status__icontains=search) | Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)))
                 queryset = Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
-                        When(status='s', then=F('data_pagamento')),
+                        When(status__is_null=False, then=F('data_pagamento')),
                         default=F('data_vencimento'),
                         output_field=DateField()
                     )
@@ -63,7 +63,7 @@ class PagamentosView(viewsets.ModelViewSet):
                                 ))
                 queryset = Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
-                        When(status='s', then=F('data_pagamento')),
+                        When(status__is_null=False, then=F('data_pagamento')),
                         default=F('data_vencimento'),
                         output_field=DateField()
                     )
@@ -87,7 +87,7 @@ class PagamentosView(viewsets.ModelViewSet):
         
 class CobrancasView(viewsets.ModelViewSet):
     queryset = Cobrancas.objects.all()
-    serializer_class = listCobrancasPipefy
+    serializer_class = detailCobrancas
     # permission_classes = [IsAuthenticated]
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -97,50 +97,60 @@ class CobrancasView(viewsets.ModelViewSet):
         search_pago = True if self.request.query_params.get('status', '0') == "1" else False
         phase = self.request.query_params.get('phase', None)
         produto = self.request.query_params.get('produto', None)
+        fluxogai = self.request.query_params.get('fluxogai', None)
         
         if search_year:
             search_year = int(search_year)
             if search_month:
                 search_month = int(search_month)
                 if search_pago:
-                    query_search = (Q(status='s') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                    query_search = (Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
                         (Q(data_pagamento__month=search_month) | Q(data_previsao__month=search_month)) & 
                             (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
 
                 else:
-                    query_search = (~Q(status='s') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                    query_search = (~Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
                         (Q(data_pagamento__month=search_month) | Q(data_previsao__month=search_month)) & 
                             (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
                     
                 queryset = Cobrancas.objects.filter(query_search).annotate(
-                valor=Case(When(status='s', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
-                data=Case(When(status='s', then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year, data__month=search_month).order_by('data')
+                valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+                data=Case(When(status='PG', then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year, data__month=search_month).order_by('data')
             
             else:
                 if search_pago:
-                    query_search = (Q(status='s') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                    query_search = (Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
                         (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
                 else:
-                    query_search = (~Q(status='s') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                    query_search = (~Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
                         (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
                 queryset = Cobrancas.objects.filter(query_search).annotate(
-                valor=Case(When(status='s', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
-                data=Case(When(status='s', then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year).order_by('data')
+                valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+                data=Case(When(status='PG', then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year).order_by('data')
 
         else: #se não houver nenhuma busca (carregada pela primeira vez)
-            queryset = Cobrancas.objects.filter(status__in=['s']).annotate(
-            valor=Case(When(status='s', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
-            data=Case(When(status='s', then=F('data_pagamento')), default='data_previsao')).order_by('data')
+            queryset = Cobrancas.objects.annotate(
+            valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(status='PG', then=F('data_pagamento')), default='data_previsao')).order_by('data')
 
         if phase:
             queryset = Cobrancas.objects.filter(status='s').annotate(
-            valor=Case(When(status='s', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
-            data=Case(When(status='s', then=F('data_pagamento')), default='data_previsao')).order_by('data')
+            valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(status='PG', then=F('data_pagamento')), default='data_previsao')).order_by('data')
 
         if produto:
             queryset = Cobrancas.objects.filter(detalhamento__produto_id=int(produto)).annotate(
-            valor=Case(When(status='s', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
-            data=Case(When(status='s', then=F('data_pagamento')), default='data_previsao')).order_by('data')
+            valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+            data=Case(When(status='PG', then=F('data_pagamento')), default='data_previsao')).order_by('data')
+        
+        if fluxogai:
+            try:
+                contrato = Fluxo_Gestao_Ambiental.objects.get(pk=int(fluxogai)).contrato.id
+                queryset = Cobrancas.objects.filter(etapa_ambiental__contrato__id=int(contrato)).annotate(
+                valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
+                data=Case(When(status='PG', then=F('data_pagamento')), default='data_previsao')).order_by('-data')
+            except ObjectDoesNotExist:
+                queryset = []
         return queryset
     
     def list(self, request, *args, **kwargs):
@@ -154,9 +164,37 @@ class CobrancasView(viewsets.ModelViewSet):
         return Response(response_data)
     def get_serializer_class(self):
         if self.action == 'list':
-            return listCobrancasPipefy
+            if self.request.query_params.get('fluxogai', None):
+                return detailCobrancas
+            if self.request.query_params.get('fluxogc', None):
+                return detailCobrancas
+            return listCobrancas
         else:
             return self.serializer_class
+        
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        contrato = request.POST.get('contrato')
+        servico = request.POST.get('servico')
+        etapa = request.POST.get('etapa')
+        if serializer.is_valid():
+            if contrato:
+                etapa = Contratos_Ambiental_Pagamentos.objects.filter(contrato=contrato, servico=servico, etapa=etapa).first()
+                if etapa:
+                    cobranca = Cobrancas.objects.filter(etapa_ambiental=etapa)
+                    if not cobranca:
+                        serializer.validated_data['etapa_ambiental_id'] = etapa.id
+                        serializer.validated_data['saldo_devedor'] = etapa.valor
+                        self.perform_create(serializer)
+                        headers = self.get_success_headers(serializer.data)
+                        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+                    else:
+                        return Response({'non_fields_errors':'Já existe uma cobrança gerada para essa etapa e serviço'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    return Response({'non_fields_errors':'Não existe essa etapa de pagamento para esse serviço no contrato'}, 
+                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CobrancasInvoicesView(viewsets.ModelViewSet):
     queryset = Cobrancas.objects.all()
@@ -167,8 +205,8 @@ class CobrancasInvoicesView(viewsets.ModelViewSet):
         produto = self.request.query_params.get('produto', None)
         current_year = int(date.today().year)
         if produto:
-            queryset = queryset.filter(status='s', data_pagamento__year=current_year,
-                detalhamento__produto_id=produto).order_by('-data_pagamento')
+            queryset = queryset.filter(status='PG', data_pagamento__year=current_year,
+                etapa_ambiental__servico__produto_id=produto).order_by('-data_pagamento')
         else:
             queryset = queryset.filter(status='s', data_pagamento__year=current_year).order_by('-data_pagamento')
         return queryset
@@ -310,7 +348,7 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)
         subquery = Cobrancas.objects.filter(etapa_ambiental__contrato_id=OuterRef('id')).values('etapa_ambiental__contrato_id').annotate(
             num_cobrancas=Count('id')).values('num_cobrancas')[:1]
-        subquery2 = Cobrancas.objects.filter(etapa_ambiental__contrato_id=OuterRef('id'), status='pago').values('etapa_ambiental__contrato_id').annotate(
+        subquery2 = Cobrancas.objects.filter(etapa_ambiental__contrato_id=OuterRef('id'), status='PG').values('etapa_ambiental__contrato_id').annotate(
             num_cobrancas=Count('id')).values('num_cobrancas')[:1]
         subquery3 = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=OuterRef('id')).values('contrato_id').annotate(
             total=Count('id')).values('total')[:1]
@@ -321,7 +359,7 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
                 total_cobrancas=Coalesce(Subquery(subquery, output_field=IntegerField()), 0),
                 total_pago=Coalesce(Subquery(subquery2, output_field=IntegerField()), 0),
                 total_formas=Coalesce(Subquery(subquery3, output_field=IntegerField()), 0),
-                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_cobrancas')) & Q(total_cobrancas=F('total_formas'))),
+                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_pago')) & Q(total_cobrancas=F('total_formas'))),
                     then=Value('Finalizado')), default=Value('Em Andamento'))
             ).distinct().order_by('-created_at')
         else:
@@ -329,7 +367,7 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
                 total_cobrancas=Coalesce(Subquery(subquery, output_field=IntegerField()), 0),
                 total_pago=Coalesce(Subquery(subquery2, output_field=IntegerField()), 0),
                 total_formas=Coalesce(Subquery(subquery3, output_field=IntegerField()), 0),
-                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_cobrancas')) & Q(total_cobrancas=F('total_formas'))),
+                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_pago')) & Q(total_cobrancas=F('total_formas'))),
                     then=Value('Finalizado')), default=Value('Em Andamento'))
             ).order_by('-created_at')[:50]
         serializer = self.get_serializer(queryset, many=True)
@@ -528,8 +566,8 @@ def index_dre_consolidado(request):
     
     #FATURAMENTO CONSOLIDADO POR PRODUTO
     query_faturado_total= Cobrancas.objects.filter(data_pagamento__year=year, status='').aggregate(
-        credito=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
-        ambiental=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
+        credito=Sum(Case(When(etapa_credito__servico__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
+        ambiental=Sum(Case(When(etapa_ambiental__servico__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
         avaliacao=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),
         tecnologia=Sum(Case(When(detalhamento__produto=produto_tecnologia, then='valor_faturado'), default=0, output_field=DecimalField())))
 
@@ -546,7 +584,7 @@ def index_dre_consolidado(request):
     percentual_faturado_tecnologia = (faturado_tecnologia / faturado_total * 100) if faturado_total > 0 else 0
 
     #FATURAMENTO TRIBUTADO E SEM TRIBUTAÇÃO
-    query_fatu_tributacao = Cobrancas.objects.filter(data_pagamento__year=year, status='s').aggregate(
+    query_fatu_tributacao = Cobrancas.objects.filter(data_pagamento__year=year, status='PG').aggregate(
         faturamento_tributado=Sum(Case(When(~Q(caixa_id=667994628), then='valor_faturado'), default=0, output_field=DecimalField())),
         faturamento_sem_tributacao=Sum(Case(When(caixa_id=667994628, then='valor_faturado'), default=0, output_field=DecimalField())))
 
@@ -556,7 +594,7 @@ def index_dre_consolidado(request):
     percentual_fatu_sem_tributacao = (faturamento_sem_tributacao / faturado_total) * 100 if faturado_total > 0 else 0
  
     #IMPOSTOS INDIRETOS (ISS, PIS E COFINS) - VALOR TOTAL E PERCENTUAL
-    query_total_impostos_indiretos = Pagamentos.objects.filter(status='s', data_pagamento__year=year).aggregate(
+    query_total_impostos_indiretos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         total_iss=Sum(Case(When(categoria_id=687761062, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_pis=Sum(Case(When(categoria_id=687760058, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_cofins=Sum(Case(When(categoria_id=687760600, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -573,7 +611,7 @@ def index_dre_consolidado(request):
     receita_liquida = faturado_total - total_impostos_indiretos
  
     #TOTAL CUSTOS, DESPESAS OPERACIONAIS E DESPESAS NÃO OPERACIONAIS
-    query_total_despesas = Pagamentos.objects.filter(status='s', data_pagamento__year=year).aggregate(
+    query_total_despesas = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         total_custos=Sum(Case(When(categoria__classification=class_custo, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_oper=Sum(Case(When(categoria__classification=class_desp_oper, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_nao_oper=Sum(Case(When(categoria__classification=class_desp_nao_oper, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -603,7 +641,7 @@ def index_dre_consolidado(request):
     ebitda = lucro_operacional + resultado_financeiro
 
     #CÁLCULO IMPOSTOS DIRETOS (CSLL E IRPJ)
-    query_total_impostos_diretos = Pagamentos.objects.filter(status='s', data_pagamento__year=year).aggregate(
+    query_total_impostos_diretos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         total_csll=Sum(Case(When(categoria_id=687761501, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_irpj=Sum(Case(When(categoria_id=687761676, then='valor_pagamento'), default=0, output_field=DecimalField())))
 
@@ -626,7 +664,7 @@ def index_dre_consolidado(request):
     percentual_impostos_total = (total_impostos / faturado_total * 100) if faturado_total > 0 else 0
 
     #CALCULA SALDOS CONSIDERANDO RETIRADAS DE SÓCIO, PAG. COMISSÃO, ATIVOS IMOB. E OUTROS ACERTOS
-    query_dre_saldos = Pagamentos.objects.filter(status='s', data_pagamento__year=year).aggregate(
+    query_dre_saldos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         retirada_socios=Sum(Case(When(categoria__classification=class_retirada, then='valor_pagamento'), default=0, output_field=DecimalField())),
         pagamento_comissao=Sum(Case(When(categoria__classification=class_comissao, then='valor_pagamento'), default=0, output_field=DecimalField())),
         ativos_imobilizados=Sum(Case(When(categoria__classification=class_ativos, then='valor_pagamento'), default=0,  output_field=DecimalField())),
@@ -703,8 +741,8 @@ def index_dre_consolidado(request):
 def index_dre_provisionado(request):
     #DRE PROVISIONADO
     year = date.today().year
-    produto_gc = 864795372
-    produto_gai = 864795466
+    produto_gc = 1
+    produto_gai = 2
     produto_avaliacao = 864795628
     produto_tecnologia = 864795734
     class_custo = 'Custo Operacional'
@@ -714,9 +752,9 @@ def index_dre_provisionado(request):
     type_card = 'Principal'
 
     #FATURAMENTO CONSOLIDADO POR PRODUTO
-    query_faturado_total= Cobrancas.objects.filter(data_pagamento__year=year, status='s').aggregate(
-        credito=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
-        ambiental=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
+    query_faturado_total= Cobrancas.objects.filter(data_pagamento__year=year, status='PG').aggregate(
+        credito=Sum(Case(When(etapa_ambiental__servico__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
+        ambiental=Sum(Case(When(etapa_credito__servico__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
         avaliacao=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),
         tecnologia=Sum(Case(When(detalhamento__produto=produto_tecnologia, then='valor_faturado'), default=0, output_field=DecimalField())))
 
@@ -727,7 +765,7 @@ def index_dre_provisionado(request):
     faturado_total = float(faturado_gai + faturado_gc + faturado_avaliacao + faturado_tecnologia)
 
     #CÁCULO IMPOSTOS INDIRETOS (ISS, PIS, COFINS) QUE FORAM PAGOS
-    query_impostos_indiretos = Pagamentos.objects.filter(status='s', data_pagamento__year=year).aggregate(
+    query_impostos_indiretos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         total_iss=Sum(Case(When(categoria_id=687761062, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_pis=Sum(Case(When(categoria_id=687760058, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_cofins=Sum(Case(When(categoria_id=687760600, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -738,21 +776,22 @@ def index_dre_provisionado(request):
     total_impostos_indiretos = float(total_iss + total_pis + total_cofins)
 
     #TOTAL DE COBRANÇAS ABERTAS POR PRODUTO
-    cobrancas_abertas_phases = [317532037, 317532038, 318663454, 317532040] #fases aguardando distrib., notificação, faturamento e confirmação 
-    query_cobrancas_abertas = Cobrancas.objects.filter(phase_id__in=cobrancas_abertas_phases).aggregate(
-        total_gc=Sum(Case(When(detalhamento__produto=produto_gc, then='saldo_devedor'), default=0, output_field=DecimalField())),
-        total_gai=Sum(Case(When(detalhamento__produto=produto_gai, then='saldo_devedor'), default=0, output_field=DecimalField())),
+    cobrancas_abertas_phases = ['AD', 'NT', 'FT', 'AG'] #fases aguardando distrib., notificação, faturamento e confirmação 
+    query_cobrancas_abertas = Cobrancas.objects.filter(status__in=cobrancas_abertas_phases).aggregate(
+        total_gc=Sum(Case(When(etapa_credito__servico__produto=produto_gc, then='saldo_devedor'), default=0, output_field=DecimalField())),
+        total_gai=Sum(Case(When(etapa_ambiental__servico__produto=produto_gai, then='saldo_devedor'), default=0, output_field=DecimalField())),
         total_avaliacao=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='saldo_devedor'), default=0, output_field=DecimalField())),
         total_tecnologia=Sum(Case(When(detalhamento__produto=produto_tecnologia, then='saldo_devedor'), default=0, output_field=DecimalField())))
 
     aberto_gc = query_cobrancas_abertas.get('total_gc', 0) or 0
     aberto_gai = query_cobrancas_abertas.get('total_gai', 0) or 0
+    print( Cobrancas.objects.filter(status__in=cobrancas_abertas_phases).values())
     aberto_avaliacao = query_cobrancas_abertas.get('total_avaliacao', 0) or 0
     aberto_tecnologia = query_cobrancas_abertas.get('total_tecnologia', 0) or 0
     aberto_total = float(aberto_gc + aberto_gai + aberto_avaliacao + aberto_tecnologia)
 
     #Valores em PV no Prospect. Calcula o % restante de ano (por enquanto vamos considerar que só é possível realizar o percentual restante do ano)
-    total_pv_prospect = Fluxo_Prospects.objects.filter(status='s', produto=produto_gai).aggregate(total=Sum('proposta_inicial'))['total'] or 0
+    total_pv_prospect = Fluxo_Prospects.objects.filter(phase__descricao='PROPOSTA INICIAL', produto=produto_gai).aggregate(total=Sum('proposta_inicial'))['total'] or 0
     days_passed = (date.today() - date(date.today().year, 1, 1)).days
     total_days = 366 if date.today().year % 4 == 0 and (date.today().year % 100 != 0 or date.today().year % 400 == 0) else 365
     percentage_left_year = 1 - (days_passed / total_days)
@@ -761,14 +800,14 @@ def index_dre_provisionado(request):
 
     #cálculo faturamento estimado conforme operações em andamento (Gestão de Crédito)
     phases_andamento_gc = [310429134, 310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178, 310429179]
-    faturamento_provisionado_gc_total = Fluxo_Gestao_Ambiental.objects.filter(card=type_card, detalhamento__produto=produto_gc, phase_id__in=phases_andamento_gc).aggregate(total=Sum('valor_operacao'))['total'] or 0
+    faturamento_provisionado_gc_total = Fluxo_Gestao_Credito.objects.filter(detalhamento__produto=produto_gc, phase_id__in=phases_andamento_gc).aggregate(total=Sum('contrato__valor'))['total'] or 0
     faturamento_provisionado_gc = 0.008 * float(faturamento_provisionado_gc_total) # 0.8% de ticket médio
     
     #calcula o faturamento restante do GAI em operações em andamento
     #AQUI TEM QUE CRIAR UMA ROTINA MAGAIVER PRA CALCULAR O ESTIMADO A RECEBER DO GAI
     phases_ate_protocolo = [310429134, 310429135, 310429174, 310429173, 310429175, 310429177, 310496731, 310429178]
-    total_ate_protocolo_gai = Fluxo_Gestao_Ambiental.objects.filter(card=type_card, detalhamento__produto=produto_gai, phase_id__in=phases_ate_protocolo).aggregate(total=Sum('faturamento_estimado'))['total'] or 0
-    total_followup_gai = Fluxo_Gestao_Ambiental.objects.filter(card=type_card, detalhamento__produto=produto_gai, status='s').aggregate(total=Sum('faturamento_estimado'))['total'] or 0
+    total_ate_protocolo_gai = Fluxo_Gestao_Ambiental.objects.filter(detalhamento__produto=produto_gai, phase_id__in=phases_ate_protocolo).aggregate(total=Sum('contrato__valor'))['total'] or 0
+    total_followup_gai = Fluxo_Gestao_Ambiental.objects.filter(detalhamento__produto=produto_gai, phase=1).aggregate(total=Sum('contrato__valor'))['total'] or 0
     faturamento_provisionado_gai = (0.8 * float(total_ate_protocolo_gai)) + (0.2 * float(total_followup_gai))
 
     #RECEITA TOTAL PROVISIONADA (proposta de valor + operações de crédito em andamento + faturamento GAI am andamento)
@@ -787,7 +826,7 @@ def index_dre_provisionado(request):
     receita_liquida = float(faturado_total + faturamento_provisionado_estimado - total_impostos_indiretos - total_previsao_impostos_indiretos)
    
     #TOTAL CUSTOS E DESPESAS
-    query_total_custos_despesas = Pagamentos.objects.filter(status='s', data_pagamento__year=year).aggregate(
+    query_total_custos_despesas = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         custos=Sum(Case(When(categoria__classification=class_custo, then='valor_pagamento'), default=0, output_field=DecimalField())),
         despesas_operacionais=Sum(Case(When(categoria__classification=class_desp_oper, then='valor_pagamento'), default=0, output_field=DecimalField())),
         despesas_nao_operacionais=Sum(Case(When(categoria__classification=class_desp_nao_oper, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -799,7 +838,7 @@ def index_dre_provisionado(request):
 
     #CÁLCULO ESTIMATIVA DOS CUSTOS RESTANTES
     custos_estimativa = Pagamentos.objects.values('data_pagamento__year', 'data_pagamento__month').filter(
-        status='s', categoria__classification=class_custo).annotate(total=Sum('valor_pagamento')
+        status__in=['AG', 'AD'], categoria__classification=class_custo).annotate(total=Sum('valor_pagamento')
         ).order_by('data_pagamento__year', 'data_pagamento__month')
     custos_mensais = defaultdict(list)
 
@@ -843,7 +882,7 @@ def index_dre_provisionado(request):
     ebitda = lucro_operacional + resultado_financeiro 
 
     #CÁLCULO IMPOSTOS DIRETOS (CSLL e IRPJ) PAGOS
-    query_impostos_diretos = Pagamentos.objects.filter(status='s', data_pagamento__year=year).aggregate(
+    query_impostos_diretos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         csll=Sum(Case(When(categoria_id=687761501, then='valor_pagamento'), default=0, output_field=DecimalField())),
         irpj=Sum(Case(When(categoria_id=687761676, then='valor_pagamento'), default=0, output_field=DecimalField())))
     

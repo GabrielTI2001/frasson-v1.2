@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Placeholder, Modal, CloseButton} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
@@ -12,6 +12,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FarmForm from "./Form";
+import ModalRecord from "./Modal";
 
 const InitData = {
     'urlapilist':'farms/farms', 
@@ -23,21 +24,25 @@ const IndexFarms = () => {
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState({show:false})
+    const [modal, setModal] = useState({show:false})
+    const {uuid} = useParams()
 
     const onClick = (id, uuid) =>{
         const url = `/farms/farms/${uuid}`
         navigate(url)
     }
 
-    const setter = (data) =>{
-        setSearchResults(data);
-    }
-
     const submit = (type, data, id) => {
-        if (type == 'add'){
+        if (type === 'add'){
             setSearchResults([...searchResults, data])
+            setShowModal({show:false})
         }
-        setShowModal({show:false})
+        if (type === 'edit'){
+            setSearchResults()
+        }
+        if (type === 'delete'){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
+        }
     }
 
     const handleChange = async (value) => {
@@ -46,17 +51,25 @@ const IndexFarms = () => {
     };
 
     useEffect(()=>{
-        const getdata = async () =>{
-            const status = await HandleSearch('', InitData.urlapilist, setter)
-            if (status === 401) navigate("/auth/login");
-        }
         if ((user.permissions && user.permissions.indexOf("view_imoveis_rurais") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!searchResults){
-            getdata()
-        }
     },[])
+    useEffect(() => {
+        const search = async () => {
+            const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
+            if (status === 401) navigate("/auth/login");
+        }
+        if (uuid){
+            setModal({show:true})
+        }
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -86,9 +99,7 @@ const IndexFarms = () => {
                     >Novo Cadastro</Link>
                 </Col>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-info shadow-none fs--1"
-                        style={{padding: '2px 8px'}} to={'map'}
-                    >
+                    <Link className="text-decoration-none btn btn-info shadow-none fs--1" style={{padding: '2px 8px'}} to={'map'}>
                         <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa
                     </Link>
                 </Col>
@@ -122,6 +133,7 @@ const IndexFarms = () => {
             </Placeholder>    
         </div>   
         }
+        <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
             size="xl"
             show={showmodal.show}
@@ -132,7 +144,7 @@ const IndexFarms = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {showmodal.data ? 'Editar' : 'Adicionar' } Imóvel Rural
+                    {showmodal.data ? 'Editar' : 'Adicionar' } Regime de Exploração
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>

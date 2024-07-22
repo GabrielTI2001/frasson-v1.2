@@ -19,19 +19,32 @@ class listPagamentosPipefy(serializers.ModelSerializer):
         model = Pagamentos
         fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'data', 'valor_pagamento']
 
-class listCobrancasPipefy(serializers.ModelSerializer):
-    str_detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
-    str_produto = serializers.CharField(source='detalhamento.produto.description', read_only=True)
+class listCobrancas(serializers.ModelSerializer):
+    str_detalhe = serializers.CharField(source='etapa_ambiental.servico.detalhamento_servico', read_only=True)
+    str_produto = serializers.CharField(source='etapa_ambiental.servico.produto.description', read_only=True)
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     data = serializers.DateField(read_only=True)
     valor = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
+    class Meta:
+        model = Cobrancas
+        fields = ['id', 'status', 'saldo_devedor', 'str_cliente', 'str_produto', 'str_detalhe', 'data', 'valor']
+
+class detailCobrancas(serializers.ModelSerializer):
+    str_detalhe = serializers.CharField(source='etapa_ambiental.servico.detalhamento_servico', read_only=True)
+    str_produto = serializers.CharField(source='etapa_ambiental.servico.produto.description', read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    data = serializers.DateField(read_only=True)
+    valor = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            field.required = False
+            field.required = False 
     class Meta:
         model = Cobrancas
-        fields = ['id', 'str_cliente', 'str_produto', 'str_detalhe', 'data', 'valor']
+        fields = '__all__'
 
 class listCobrancasInvoices(serializers.ModelSerializer):
     str_detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
@@ -205,12 +218,10 @@ class detailContratoAmbiental(serializers.ModelSerializer):
         etapas = Contratos_Ambiental_Pagamentos.objects.filter(contrato=obj.id)
         list_etapas = []
         for e in etapas:
-            cobrancas = Cobrancas.objects.filter(Q(etapa_ambiental__contrato_id=obj.id) & Q(etapa_ambiental__etapa=e.get_etapa_display()))
+            cobrancas = Cobrancas.objects.filter(Q(etapa_ambiental__contrato_id=obj.id) & Q(etapa_ambiental__etapa=e.etapa))
             if len(cobrancas) > 0:
-                etapa_cobranca = cobrancas[0].etapa_cobranca
                 fase = cobrancas[0].status
             else:
-                etapa_cobranca = None
                 fase = None
             list_etapas.append({
                 'id': e.id,
@@ -221,8 +232,8 @@ class detailContratoAmbiental(serializers.ModelSerializer):
                 'etapa': e.get_etapa_display() if e.etapa else '-',
                 # 'aberta': 'Sim' if etapa_cobranca == e.get_etapa_display() else 'Não',
                 # 'color': 'success' if etapa_cobranca == e.get_etapa_display() else 'danger',
-                'status': 'Pago' if fase == 317532039 else 'Sem Cobrança Aberta' if fase == None else 'Cobrança Aberta',
-                'color_status': 'success' if fase == 317532039 else 'warning' if fase == None else 'warning'
+                'status': 'Pago' if fase == 'PG' else 'Sem Cobrança Aberta' if fase == None else 'Cobrança Aberta',
+                'color_status': 'success' if fase == 'PG' else 'warning' if fase == None else 'primary'
             })    
         return list_etapas 
     def get_str_servicos(self, obj):

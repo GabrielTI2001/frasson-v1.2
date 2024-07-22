@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import KanbanColumnHeader from './KanbanColumnHeader';
 import TaskCard from './GAI/TaskCard';
-import { Droppable } from 'react-beautiful-dnd';
+import { Droppable } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { PipeContext } from '../../context/Context';
 

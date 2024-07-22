@@ -13,7 +13,7 @@ const LoginForm = ({ hasLabel, layout }) => {
   const [message, setMessage] = useState("")
   const navigate = useNavigate();
   const [isload, setIsLoad] = useState(false)
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
 
   const handleLogin = async (credentials) => {
     try {

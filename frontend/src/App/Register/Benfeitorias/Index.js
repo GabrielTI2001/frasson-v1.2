@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Spinner} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
@@ -13,6 +13,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import BenfeitoriaForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
+import ModalBenfeitoria from "./Modal";
 
 const InitData = {
     'columns':columnsBenfeitorias, 'urlapilist':'register/farm-assets', 
@@ -25,22 +26,15 @@ const IndexBenfeitorias = () => {
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
     const [modalDelete, setModalDelete] = useState({show:false, link:''})
+    const [modal, setModal] = useState({show:false})
+    const {uuid} = useParams()
 
-    const onClick = (data, type) =>{
+    const onClick = (id, uuid) =>{
         if ((user.permissions && user.permissions.indexOf("view_benfeitorias_fazendas") === -1) && !user.is_superuser){
            navigate("/error/403")
         }
-        if (type === 'view'){
-            const url = `${InitData.urlview}${data.uuid}`
-            navigate(url)
-        }
-        else if (type === 'edit'){
-            const url = `${InitData.urlview}edit/${data.uuid}`
-            navigate(url)
-        }
-        else if (type === 'delete'){
-            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/register/farm-assets/${data.uuid}/`})
-        }
+        const url = `${InitData.urlview}${uuid}`
+        navigate(url)
     }
 
     const submit = (type, data, id) => {
@@ -51,14 +45,25 @@ const IndexBenfeitorias = () => {
     }
 
     useEffect(()=>{
-        const getdata = async () =>{
+        if ((user.permissions && user.permissions.indexOf("view_benfeitorias_fazendas") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
+    },[])
+    useEffect(() => {
+        const search = async () => {
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
             if (status === 401) navigate("/auth/login");
         }
-        if (!searchResults){
-            getdata()
+        if (uuid){
+            setModal({show:true})
         }
-    },[searchResults])
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
@@ -105,9 +110,7 @@ const IndexBenfeitorias = () => {
                 tableProps={{
                     bordered: true,
                     striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden',
-                    showactions: 'true',
-                    showview: 'true'
+                    className: 'fs-xs mb-0 overflow-hidden'
                 }}
                 Click={onClick}
             />
@@ -121,6 +124,7 @@ const IndexBenfeitorias = () => {
                 />
             </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+        <ModalBenfeitoria show={modal.show} reducer={submit}/>
         <Modal
             size="xl"
             show={showmodal}

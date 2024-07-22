@@ -75,7 +75,7 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
             return {
                 'id': obj.contrato.id,
                 'uuid': obj.contrato.uuid,
-                'contratante': obj.contrato.contratante.razao_social,
+                'contratante': obj.contrato.contratante.razao_social if obj.contrato.contratante else '-',
                 'produto': ', '.join([s.produto.description for s in obj.contrato.servicos.all().distinct()]),
             }
         else:
@@ -110,13 +110,14 @@ class listFluxoAmbiental(serializers.ModelSerializer):
     str_instituicao = serializers.CharField(source='instituicao.instituicao.razao_social', read_only=True)
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
+    str_fase = serializers.CharField(source='phase.descricao', read_only=True)
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
     class Meta:
         model = Fluxo_Gestao_Ambiental
         fields = ['id', 'uuid', 'code', 'str_detalhamento', 'str_beneficiario', 'prioridade', 'created_at', 'data_vencimento', 'list_responsaveis', 
-            'str_instituicao']
+            'str_instituicao', 'str_fase']
 
 
 class serializerFase(serializers.ModelSerializer):

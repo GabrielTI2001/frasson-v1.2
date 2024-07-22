@@ -73,16 +73,23 @@ class ListBenfeitorias(serializers.ModelSerializer):
 
 class DetailBenfeitorias(serializers.ModelSerializer):
     pictures = serializers.SerializerMethodField(required=False, read_only=True)
-    str_farm = serializers.CharField(source='farm.nome_imovel', read_only=True)
+    str_farm = serializers.CharField(source='farm.nome', read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
     str_type = serializers.CharField(source='type.description', read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name not in ['pictures', 'str_farm', 'str_type']:
-                field.required = True
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name not in ['pictures', 'str_farm', 'str_type']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
     def get_pictures(self, obj):
         fotos = Pictures_Benfeitorias.objects.filter(benfeitoria=obj)
         return [{'id':foto.id, 'url':"/media/"+foto.file.name} for foto in fotos]
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     class Meta:
         model = Benfeitorias_Fazendas
         fields = '__all__'
@@ -100,7 +107,7 @@ class serPictureBenfeitoria(serializers.ModelSerializer):
 class ListAnalisesSolo(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
-    localizacao = serializers.CharField(source='fazenda.nome_imovel', read_only=True)
+    localizacao = serializers.CharField(source='fazenda.nome', read_only=True)
     def get_status(self, obj):
         status = {
             'text': 'Aguardando Resultado' if obj.calcio_cmolc_dm3 is None else 'Concluída',
@@ -114,51 +121,26 @@ class ListAnalisesSolo(serializers.ModelSerializer):
 class detailAnalisesSolo(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
-    localizacao = serializers.CharField(source='fazenda.nome_imovel', read_only=True)
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name in ['fazenda', 'cliente', 'identificacao_amostra', 'profundidade', 'responsavel', 'laboratorio_analise']:
-                field.required = True
+    localizacao = serializers.CharField(source='fazenda.nome', read_only=True)
+    creation = serializers.SerializerMethodField(read_only=True)
+    def get_creation(self, obj):
+        return {'created_at':obj.created_at, 'created_by':f"{obj.created_by.first_name} {obj.created_by.last_name}"}
     def get_status(self, obj):
         status = {
             'text': 'Aguardando Resultado' if obj.calcio_cmolc_dm3 is None else 'Concluída',
             'color': 'warning' if obj.calcio_cmolc_dm3 is None else 'success'
         }
         return status
-    def validate_file(self, value):
-        if 'file' in self.initial_data:
-            file = self.initial_data.get('file')
-            file_name = file.name.lower()
-            if not file_name.endswith('.pdf'):
-                raise serializers.ValidationError("Arquivo deve ser em formato PDF!")     
-            return file
-        else:
-            return None
     class Meta:
         model = Analise_Solo
         fields = '__all__'
-
-class ListAnalisesSolo(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
-    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
-    localizacao = serializers.CharField(source='fazenda.nome_imovel', read_only=True)
-    def get_status(self, obj):
-        status = {
-            'text': 'Aguardando Resultado' if obj.calcio_cmolc_dm3 is None else 'Concluída',
-            'color': 'warning' if obj.calcio_cmolc_dm3 is None else 'success'
-        }
-        return status
-    class Meta:
-        model = Analise_Solo
-        fields = ['id', 'uuid', 'data_coleta', 'str_cliente', 'localizacao', 'status']
 
 class resultsAnalisesSolo(serializers.ModelSerializer):
     other_info = serializers.SerializerMethodField(read_only=True)
     results = serializers.SerializerMethodField(read_only=True)
     creation = serializers.SerializerMethodField(read_only=True)
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
-    localizacao = serializers.CharField(source='fazenda.nome_imovel', read_only=True)
+    localizacao = serializers.CharField(source='fazenda.nome', read_only=True)
     token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
     def get_results(self, obj):
         data = {
@@ -231,10 +213,27 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
         return {'created_at':obj.created_at, 'created_by':f"{obj.created_by.first_name} {obj.created_by.last_name}"}
     def get_token_apimaps(self, obj):
         return TOKEN_GOOGLE_MAPS_API
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['fazenda', 'cliente', 'identificacao_amostra', 'profundidade', 'responsavel', 'laboratorio_analise']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
+    def validate_file(self, value):
+        if 'file' in self.initial_data:
+            file = self.initial_data.get('file')
+            file_name = file.name.lower()
+            if not file_name.endswith('.pdf'):
+                raise serializers.ValidationError("Arquivo deve ser em formato PDF!")     
+            return file
+        else:
+            return None
     class Meta:
         model = Analise_Solo
-        fields = ['id', 'uuid', 'latitude_gd', 'longitude_gd', 'data_coleta', 'str_cliente', 'localizacao', 'identificacao_amostra',
-        'responsavel', 'laboratorio_analise', 'numero_controle', 'profundidade', 'creation', 'token_apimaps', 'results', 'other_info']
+        fields = '__all__'
 
 class ListFeedbacks(serializers.ModelSerializer):
     str_category = serializers.CharField(source='category.description', read_only=True)
@@ -342,9 +341,13 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
             return None
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name in ['razao_social', 'municipio', 'cpf_cnpj', 'logradouro', 'cep_logradouro']:
-                field.required = True
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['razao_social', 'municipio', 'cpf_cnpj', 'logradouro', 'cep_logradouro']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
     class Meta:
         model = Cadastro_Pessoal
         fields = '__all__'

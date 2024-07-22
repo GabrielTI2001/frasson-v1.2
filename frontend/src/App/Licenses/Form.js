@@ -4,7 +4,6 @@ import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
-import { fetchInstituicoesRazaoSocial, fetchPessoal, fetchDetalhamentoServicos, FetchImoveisRurais } from '../Pipefy/Data';
 import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
 import { SelectSearchOptions, sendData } from '../../helpers/Data';
@@ -15,18 +14,17 @@ const FormLicenca = ({ hasLabel, data, type, submit}) => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({created_by: user.id, dias_renovacao:90});
   const [message, setMessage] = useState()
-  const token = localStorage.getItem("token")
   const [defaultoptions, setDefaultOptions] = useState()
 
   const handledata = async (form) =>{
-    const {response, dados} = await sendData({type:type, url:'licenses/index', keyfield:type === 'edit' ? data.uuid : null, dadosform:form})
-    if(response.status === 400){
+    const {resposta, dados} = await sendData({type:type, url:'licenses/index', keyfield:type === 'edit' ? data.uuid : null, dadosform:form})
+    if(resposta.status === 400){
       setMessage({...dados})
     }
-    else if (response.status === 401){
+    else if (resposta.status === 401){
       navigate("/auth/login");
     }
-    else if (response.status === 201 || response.status === 200){
+    else if (resposta.status === 201 || resposta.status === 200){
       if (type === 'edit'){
         toast.success("Registro Atualizado com Sucesso!")
         submit(dados)

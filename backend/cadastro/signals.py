@@ -23,9 +23,9 @@ def remover_arquivo_antigo(sender, instance, **kwargs):
     if instance.pk:  # Verifica se é uma atualização
         try:
             registro_anterior = Pictures_Benfeitorias.objects.get(pk=instance.pk)
-            arquivo_antigo = registro_anterior.file 
+            arquivo_antigo = registro_anterior.file
             novo_arquivo = instance.file
-            if arquivo_antigo != novo_arquivo:
+            if arquivo_antigo and arquivo_antigo != novo_arquivo:
                 if os.path.isfile(arquivo_antigo.path):
                     os.remove(arquivo_antigo.path) 
         except Pictures_Benfeitorias.DoesNotExist:
@@ -39,7 +39,7 @@ def remover_arquivo_antigo(sender, instance, **kwargs):
             arquivo_antigo = registro_anterior.file 
             novo_arquivo = instance.file
             if arquivo_antigo != novo_arquivo:
-                if os.path.isfile(arquivo_antigo.path):
+                if arquivo_antigo and os.path.isfile(arquivo_antigo.path):
                     os.remove(arquivo_antigo.path) 
         except Analise_Solo.DoesNotExist:
             pass 

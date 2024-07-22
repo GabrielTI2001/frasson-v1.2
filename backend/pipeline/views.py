@@ -65,6 +65,11 @@ class FluxoAmbientalView(viewsets.ModelViewSet):
     serializer_class = serializerFluxoAmbiental
     permission_classes = [permissions.AllowAny]
     lookup_field = 'code'
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listFluxoAmbiental
+        else:
+            return self.serializer_class
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()

@@ -23,6 +23,7 @@ import { SkeletBig } from '../../../components/Custom/Skelet';
 import {Anexos} from '../Anexos';
 import PVTEC from '../PVTEC/PVTEC';
 import NavGai from './Nav';
+import Cobrancas from '../Cobrancas/Index';
 
 const options = {
   month: "short",
@@ -137,21 +138,22 @@ const KanbanModal = ({show, movercard}) => {
                   <h4 className="mb-1 fs-1 fw-bold">{card.info_detalhamento.detalhamento_servico}</h4>
                 )}
               </div>
-              <Dropdown className='mb-2'>
+              <Dropdown className='mb-2 px-3'>
                 <Dropdown.Toggle as={Nav}
-                  className='dropdown-caret-none p-0 ms-3 cursor-pointer w-50'
+                  className='dropdown-caret-none p-0 ms-0 row gx-0' style={{width:'100% !important'}}
                 >
-                  <div onClick={() => handleEdit('others')} className='d-flex'>
-                    <GroupMember users={card.list_responsaveis} className='cursor-pointer' onClick={() => handleEdit('others')}/>
-                    <div className='mb-1 mx-2 cursor-pointer'>
+                    <Col className='cursor-pointer d-flex align-items-center' onClick={() => handleEdit('others')} xl='auto' sm='auto' xs='auto'>
+                      <GroupMember users={card.list_responsaveis} className='cursor-pointer col-auto px-0 d-inline-block' onClick={() => handleEdit('others')}/>
                       <span 
-                        className={`rounded-circle p-1 px-2 me-1 ${calcdif(card.data_vencimento) > 0 ?'bg-success-subtle':'bg-danger-subtle'}`}
+                        className={`rounded-circle p-1 px-2 me-1 mb-1 ${calcdif(card.data_vencimento) > 0 ?'bg-success-subtle':'bg-danger-subtle'}`}
                       >
                         <FontAwesomeIcon icon={faCalendar} className={`text-${calcdif(card.data_vencimento) > 0 ?'success':'danger'}`}/>
                       </span>
-                      <SubtleBadge bg={calcdif(card.data_vencimento) > 0 ? 'secondary' : 'danger'} className='me-1 fw-normal fs--2'>
+                      <SubtleBadge bg={calcdif(card.data_vencimento) > 0 ? 'secondary' : 'danger'} className='me-1 fw-normal fs--2 mb-1'>
                         Venc {new Date(card.data_vencimento).toLocaleDateString('pt-BR', options)}
                       </SubtleBadge> 
+                    </Col>
+                    <Col xl='auto' sm='auto' xs='auto'>
                       {calcdif(card.data_vencimento) > 0 
                         ? <span style={{fontSize:'0.7rem'}}>em {parseInt(calcdif(card.data_vencimento))} dias</span>
                         : <span style={{fontSize:'0.7rem'}}>{parseInt(calcdif(card.data_vencimento)) * -1} dias atrás</span>
@@ -159,8 +161,7 @@ const KanbanModal = ({show, movercard}) => {
                       <SubtleBadge bg={`${card.prioridade === 'Alta' ? 'danger' : card.prioridade === 'Média' ? 'warning' : 'success'}`} 
                         className='ms-2 fw-normal text-body fs--2'>{card.prioridade}
                       </SubtleBadge>
-                    </div>
-                  </div>
+                    </Col>
                 </Dropdown.Toggle>
                 <Dropdown.Menu className='text-body px-3'  style={{ width: '400px' }}>
                   <EditFormOthers 
@@ -264,6 +265,11 @@ const KanbanModal = ({show, movercard}) => {
                     <Tab.Pane eventKey="pvtec">
                       {activeTab === 'pvtec' && 
                         <PVTEC card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
+                      }
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="cobrancas">
+                      {activeTab === 'cobrancas' && 
+                        <Cobrancas card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
                       }
                     </Tab.Pane>
                   </Tab.Content>

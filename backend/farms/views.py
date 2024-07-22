@@ -81,13 +81,10 @@ class FarmsView(viewsets.ModelViewSet):
         all_term = self.request.query_params.get('all', None)
         if search_term:
             queryset = queryset.filter(
-                Q(nome__icontains=search_term) | Q(proprietarios__razao_social__icontains=search_term)
+                Q(nome__icontains=search_term)
             )
         elif all_term:
             queryset = queryset.order_by('-created_at')
-        else:
-            if self.action == 'list':
-                queryset = queryset.order_by('-created_at')[:10]
         return queryset
     def get_serializer_class(self):
         if self.action == 'list':
@@ -145,9 +142,11 @@ class CARView(viewsets.ModelViewSet):
         search_term = self.request.query_params.get('search', None)   
         imovel_term = self.request.query_params.get('imovel', None)
         if search_term:
-            queryset = queryset.filter(Q(imovel__nome_imovel__icontains=search_term))
+            cars = Imoveis_Rurais.objects.filter(nome__icontains=search_term).values_list('car_id')
+            queryset = queryset.filter(Q(id__in=cars))
         if imovel_term:
-            queryset = queryset.filter(Q(imovel__id=imovel_term))
+            cars = Imoveis_Rurais.objects.filter(id=imovel_term).values_list('car_id')
+            queryset = queryset.filter(Q(id__in=cars))
         return queryset
     def get_serializer_class(self):
         if self.action == 'list':

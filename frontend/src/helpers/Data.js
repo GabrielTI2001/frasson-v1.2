@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 export const HandleSearch = async (search, urlapi, setResults, adicional='') => {
     const token = localStorage.getItem("token")
     const params = search === '' ? '' : `${adicional === '' ? '?' :''}&search=${search}`
@@ -74,37 +76,37 @@ export const GetRecord = async (uuid, url) => {
   }
 }
 
-export const SelectSearchOptions = async (inputValue, link, field, field2, join=false, params) => {
-    const token = localStorage.getItem("token")
-    try {
-      const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/?search=${inputValue}${params ? '&'+params : ''}`;
-      const response = await fetch(apiUrl,{
-        headers:{
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        }
-      });
-  
-      const dataapi = await response.json();
-      if (response.status === 200){
-        const options = dataapi.map(b =>({
-            value: b.id,
-            label: `${b[field]}${field2 ? (!join ? ' - ' : ' ')+b[field2] : ''}`
-        }))
-        return options
+export const SelectSearchOptions = async (inputValue, link, field, field2, join=false, params, navigate) => {
+  const token = localStorage.getItem("token")
+  try {
+    const apiUrl = `${process.env.REACT_APP_API_URL}/${link}/?search=${inputValue}${params ? '&'+params : ''}`;
+    const response = await fetch(apiUrl,{
+      headers:{
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
       }
-      else if (response.status === 401){
-        localStorage.setItem("login", JSON.stringify(false));
-        localStorage.setItem('token', "");
-        return [];
-      }
-      else{
-        return [];
-      }
-    } catch (error) {
-      console.error('Erro ao carregar dados:', error);
+    });
+
+    const dataapi = await response.json();
+    if (response.status === 200){
+      const options = dataapi.map(b =>({
+          value: b.id,
+          label: `${b[field]}${field2 ? (!join ? ' - ' : ' ')+b[field2] : ''}`
+      }))
+      return options
+    }
+    else if (response.status === 401){
+      localStorage.setItem("login", JSON.stringify(false));
+      localStorage.setItem('token', "");
+      navigate('/auth/login');
+    }
+    else{
       return [];
     }
+  } catch (error) {
+    console.error('Erro ao carregar dados:', error);
+    return [];
+  }
 };
 
 export const SelectOptions = async (link, field, field2, pkfield, params) => {
@@ -159,9 +161,9 @@ export const sendData = async ({type, url, keyfield, dadosform, is_json=true}) =
         localStorage.setItem('token', "");
       }
       const data = await response.json();
-      return {response:response, dados:data || null}
+      return {resposta:response, dados:data || null}
   } catch (error) {
       console.error('Erro:', error);
-      return {response:error, dados:null}
+      return {resposta:error.response, dados:null}
   }
 };

@@ -19,7 +19,7 @@ const IndexCadGerais = () =>{
         const dadosmaquinas = await GetRecord('', 'register/machinery');
         const dadospessoas = await GetRecord('', 'register/pessoal');
         const cartorios = await GetRecord('', 'register/cartorios');
-        if (!dadosbenfeitoria || !dadosanalise || !dadosbenfeitoria){
+        if (!dadosbenfeitoria || !dadosanalise || !dadosbenfeitoria || !cartorios){
           navigate("/auth/login")
         }
         else{

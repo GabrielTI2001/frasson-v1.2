@@ -281,13 +281,8 @@ class Detalhamento_ServicosView(viewsets.ModelViewSet):
         if produto:
             query &= Q(produto__acronym=produto)
         if contrato_gai:
-            subquery1 = Contratos_Ambiental_Pagamentos.objects.filter(servico_id=OuterRef('id'), contrato_id=contrato_gai
-                ).values('servico_id').annotate(total=Count('id')).values('total')[:1]
             servicos_contrato = Contratos_Ambiental.objects.get(pk=contrato_gai).servicos.all()
-            queryset = queryset.annotate(
-                total_etapas=Coalesce(Subquery(subquery1, output_field=IntegerField()), 0)
-            )
-            query &= (Q(id__in=[s.id for s in servicos_contrato]) & Q(total_etapas__lt=3))
+            query &= (Q(id__in=[s.id for s in servicos_contrato]))
         queryset = queryset.filter(query)
         return queryset
 

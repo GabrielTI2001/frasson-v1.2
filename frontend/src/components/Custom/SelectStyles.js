@@ -84,3 +84,15 @@ export const customStylesDark = {
 };
 
 export default customStyles
+
+export const customStyle = (theme, isInvalid) => {
+  const baseStyles = theme === 'light' ? customStyles : customStylesDark;
+  return {
+    ...baseStyles,
+    control: (provided, state) => ({
+      ...baseStyles.control(provided, state),
+      borderColor: isInvalid ? 'red !important' : state.isFocused ? '#86b7fe' : provided.borderColor
+    }),
+    // Adicione outros estilos conforme necessário
+  };
+};

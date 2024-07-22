@@ -3,7 +3,7 @@ import React, { useContext, useState } from 'react';
 import { Card, Dropdown} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 // import SoftBadge from 'components/common/SoftBadge';
-import { Draggable } from 'react-beautiful-dnd';
+import { Draggable } from '@hello-pangea/dnd';
 import AppContext, { PipeContext } from '../../../context/Context';
 // import api from 'data/kanban2';
 import { library } from '@fortawesome/fontawesome-svg-core';

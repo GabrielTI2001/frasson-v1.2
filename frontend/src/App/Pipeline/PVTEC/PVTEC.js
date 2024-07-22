@@ -14,9 +14,8 @@ import { Anexos } from './Anexos';
 import EditForm from './EditForm';
 import {CardTitle} from '../CardInfo';
 
-const PVTEC = ({card, updatedactivity}) => {
+const PVTEC = ({card, updatedactivity, isgc}) => {
   const user = JSON.parse(localStorage.getItem('user'))
-  const [users, setUsers] = useState([]);
   const [pvtecs, setPvtecs] = useState();
   const {config: {theme, isRTL}} = useAppContext();
   const token = localStorage.getItem("token")
@@ -81,10 +80,6 @@ const PVTEC = ({card, updatedactivity}) => {
       if (!pvtecs){
         HandleSearch('', 'pipeline/pvtec',(data) => {setPvtecs(data)}, `?fluxogai=${card.id}`)
       }
-      HandleSearch('', 'users/users',
-        (data) => {setUsers(data.map(r => ({'id':r.id, 'display':r.first_name+' '+r.last_name})))}, 
-        `?pipe=${card.pipe_code}`
-      )
     }
     getusers()
   },[])

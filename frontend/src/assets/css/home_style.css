@@ -153,7 +153,7 @@ textarea:focus, input:focus{
   .dropdown-menu-notification {
     min-width: 100% !important;
     max-width: 100% !important;
-}
+  }
 }
 
 .tooltip{
@@ -196,7 +196,7 @@ textarea:focus, input:focus{
 .modal-editar:hover{
   opacity: 0.7;
 }
-.div-hover-children:hover .modal-editar{
+.hover-children:hover .modal-editar{
   opacity: 0.7;
 }
 .card-link-success-light {
@@ -235,9 +235,6 @@ textarea:focus, input:focus{
     max-height: 38vh;
   }
 }
-.modal-delete .modal-backdrop.show{
-  opacity: 0.3 !important;
-}
 
 .expandable-card {
   transition: all 1s ease-in-out !important;
@@ -270,4 +267,10 @@ textarea:focus, input:focus{
   bottom: 0;
   padding: 10px;
   z-index: 500;
+}
+button.gm-ui-hover-effect{
+  height: 20px !important;
+  width: 25px !important;
+  margin-right: 5px !important;
+  margin-top: 2px !important;
 }

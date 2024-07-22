@@ -16,7 +16,7 @@ const ExpandableCard = ({ data, attr1, attr2, className, url, children, footer, 
       setLoading(true);
       setTimeout(() => {
         setLoading(false);
-      }, 800);
+      }, 500);
     }
     setIsExpanded(!isExpanded);
   };

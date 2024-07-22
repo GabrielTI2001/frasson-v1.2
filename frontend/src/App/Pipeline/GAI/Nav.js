@@ -16,7 +16,7 @@ const NavGai = ({card}) =>{
             </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="anexos">
+            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2 custom-tab link-primary" eventKey="anexos">
                 <FontAwesomeIcon icon={faPaperclip} className="me-1"/>Anexos
             </Nav.Link>
         </Nav.Item>
@@ -31,7 +31,7 @@ const NavGai = ({card}) =>{
             </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="cobrancas">
+            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary mb-2" eventKey="cobrancas">
                 <FontAwesomeIcon icon={faMoneyBill} className="me-1"/>Cobranças
             </Nav.Link>
         </Nav.Item>
@@ -46,7 +46,7 @@ const NavGai = ({card}) =>{
             </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="template">
+            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary mb-2" eventKey="template">
                 <FontAwesomeIcon icon={faFilter} className="me-1"/>Template
             </Nav.Link>
         </Nav.Item>

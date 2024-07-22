@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, Image, Row } from 'react-bootstrap';
 import FalconLightBoxGallery from '../../components/common/FalconLightBoxGallery';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPencil } from '@fortawesome/free-solid-svg-icons';
+import { faPencil, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 
 //A prop images deve receber um objeto com id e url da imagem
 const PicturesGallery = ({ images, showactions, action }) => {
@@ -23,11 +23,11 @@ const PicturesGallery = ({ images, showactions, action }) => {
                 onClick={() => setImgIndex(index)}
               />
               {showactions &&
-              <div className='row justify-content-center'>
-                <FontAwesomeIcon icon={faTrash} style={{maxWidth: '12px', cursor: 'pointer', marginTop:'0px'}} onClick={() => action('delete', img.id)} 
-                className='px-1 py-0 mx-1 fa-2x'/>
+              <div className='row justify-content-center hover-children'>
+                <FontAwesomeIcon icon={faTrashAlt} style={{maxWidth: '12px', cursor: 'pointer', marginTop:'1px'}} onClick={() => action('delete', img.id)} 
+                className='px-1 py-0 mx-1 fa-2x modal-editar'/>
                 <label className='cursor-pointer px-1 mb-0 w-auto h-auto' htmlFor={img.id}>
-                  <FontAwesomeIcon icon={faPencil} style={{maxWidth: '15px'}} className='fa-2x' />
+                  <FontAwesomeIcon icon={faPencil} style={{maxWidth: '15px'}} className='fa-2x modal-editar' />
                 </label>
                 <input type="hidden" name="id" value={img.id} />
                 <input type="file" name="file" className="d-none" id={img.id} onChange={mudaarquivo}></input>

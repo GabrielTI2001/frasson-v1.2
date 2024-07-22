@@ -6,14 +6,14 @@ import Flex from './Flex';
 import classNames from 'classnames';
 
 const Avatar = ({
-  size,
-  rounded,
+  size='xl',
+  rounded='circle',
   src,
   name,
-  emoji,
+  emoji='😊',
   className,
   mediaClass,
-  isExact,
+  isExact=false,
   icon
 }) => {
   const classNames = ['avatar', `avatar-${size}`, className].join(' ');

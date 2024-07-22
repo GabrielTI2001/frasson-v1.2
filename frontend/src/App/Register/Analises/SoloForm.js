@@ -9,6 +9,7 @@ import ModalGMS from '../../../components/Custom/ModalGMS';
 import { useAppContext } from '../../../Main';
 import { faCircleQuestion, faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { SelectSearchOptions } from '../../../helpers/Data';
 
 const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -129,7 +130,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
-            <AsyncSelect loadOptions={FetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'farms/farms', 'nome', 'matricula') } name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.fazenda : null) : null }
               onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -145,7 +146,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={4}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Cliente*</Form.Label>}
-            <AsyncSelect loadOptions={fetchPessoal} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj') } name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.cliente : null) : null }
               onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -629,7 +630,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.areia_percentual : ''}</label>
         </Form.Group>
 
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
+        <Form.Group className={`mb-0 fixed-footer pb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
           <Button
             className="w-40"
             type="submit"

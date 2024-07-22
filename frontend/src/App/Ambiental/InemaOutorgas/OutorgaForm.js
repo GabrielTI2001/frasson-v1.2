@@ -19,25 +19,22 @@ const OutorgaForm = ({ hasLabel, type, submit, addpoint}) => {
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [defaultoptions, setDefaultOptions] = useState()
   const [captacao, setCaptacao] = useState([])
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/outorgas/${type === 'edit' ? uuid+'/' : ''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    const {response, dados} = await sendData({type:type, url:'environmental/inema/outorgas', keyfield: type === 'edit' ? uuid : null, 
+    const {resposta, dados} = await sendData({type:type, url:'environmental/inema/outorgas', keyfield: type === 'edit' ? uuid : null, 
       dadosform:dadosform})
-    if(response.status === 400){
+    if(resposta.status === 400){
       setMessage({...dados})
     }
-    else if (response.status === 401){
+    else if (resposta.status === 401){
       localStorage.setItem("login", JSON.stringify(false));
       localStorage.setItem('token', "");
       navigate("/auth/login");
     }
-    else if (response.status === 201 || response.status === 200){
+    else if (resposta.status === 201 || resposta.status === 200){
       if (type === 'edit'){
         ambientalDispatch({type:'SET_DATA', payload:{
           outorga: {coordenadas:ambientalState.outorga.coordenadas,...formData}

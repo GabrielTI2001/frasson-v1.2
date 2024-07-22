@@ -1,13 +1,14 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Table, Form, Placeholder, Modal, CloseButton} from 'react-bootstrap';
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AsyncSelect from 'react-select/async';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from "../../../Main";
 import { fetchPessoal, fetchInstituicoesRazaoSocial } from "../../Pipefy/Data";
 import { SelectSearchOptions } from "../../../helpers/Data";
 import RegimeForm from "./Form";
+import ModalRecord from "./Modal";
 
 const InitData = {
     'urlapilist':'farms/regime', 
@@ -18,9 +19,11 @@ const IndexRegimes = () => {
     const [searchResults, setSearchResults] = useState();
     const [formData, setFormData] = useState({loaded:false});
     const [showmodal, setShowModal] = useState({show:false})
+    const [modal, setModal] = useState({show:false})
     const user = JSON.parse(localStorage.getItem("user"))
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate();
+    const {uuid} = useParams()
 
     const submit = (type, data, id) => {
         if (type == 'add'){
@@ -65,16 +68,21 @@ const IndexRegimes = () => {
     }
    
     useEffect(()=>{
-        const getdata = async () =>{
-            Search(InitData.urlapilist)
-        }
         if ((user.permissions && user.permissions.indexOf("view_regimes_exploracao") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!searchResults){
-            getdata()
-        }
     },[])
+    useEffect(() => {
+        if (uuid){
+            setModal({show:true})
+        }
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                Search(InitData.urlapilist)
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -159,6 +167,7 @@ const IndexRegimes = () => {
             </Placeholder>    
         </div>   
         }
+        <ModalRecord show={modal.show} reducer={() => {}}/>
         <Modal
             size="xl"
             show={showmodal.show}

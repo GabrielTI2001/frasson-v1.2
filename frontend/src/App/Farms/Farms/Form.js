@@ -11,13 +11,12 @@ const FarmForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({
-    created_by: user.id
+    created_by: user.id, localizacao_reserva:'AM'
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [defaultoptions, setDefaultOptions] = useState();
-  const [categorias, setCategorias] = useState([]);
 
   const handleApi = async (dadosform) => {
     const link = `${process.env.REACT_APP_API_URL}/farms/farms/${type === 'edit' ? data.uuid+'/':''}`

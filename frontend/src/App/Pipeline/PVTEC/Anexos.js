@@ -107,7 +107,7 @@ export const Anexos = ({ pvtec }) => {
       <div className='mt-0 pe-2'>
         <strong className='d-block'>Anexos de Solicitação ({anexos && anexos.length})</strong>
         {anexos ? (anexos.length > 0 ? anexos.map(a =>
-          <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer div-hover-children'
+          <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer hover-children'
             key={a.id}
           >
             <Link target='__blank' to={a.file}
@@ -148,7 +148,7 @@ export const Anexos = ({ pvtec }) => {
         }
         <strong className='d-block'>Anexos de Resposta ({anexosResposta && anexosResposta.length})</strong>
         {anexosResposta ? (anexosResposta.length > 0 ? anexosResposta.map(a =>
-          <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer div-hover-children'
+          <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer hover-children'
             key={a.id}
           >
             <Link target='__blank' to={a.file}

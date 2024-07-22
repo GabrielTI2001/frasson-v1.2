@@ -7,6 +7,11 @@ import { FetchImoveisRurais } from '../../Pipefy/Data';
 import { fetchTipoBenfeitoria} from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
+import { SelectSearchOptions } from '../../../helpers/Data';
+import { useDropzone } from 'react-dropzone';
+import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import Flex from '../../../components/common/Flex';
 
 const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -116,7 +121,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={5}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
-            <AsyncSelect loadOptions={FetchImoveisRurais} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'farms/farms', 'nome', 'matricula') } name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.farm : null) : null }
               onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -147,7 +152,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Data Construção</Form.Label>}
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Data Construção*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data Construção' : ''}
             value={formData.data_construcao || ''}
@@ -206,5 +211,38 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
     </>
   );
 };
+
+export const ImgForm = ({submit}) =>{
+  const [newimg, setNewImg] = useState({})
+  const [isDragActive, setIsDragActive] = useState();
+  const { getRootProps: getRootProps, getInputProps: getInputProps } = useDropzone({
+    multiple: true,
+    onDrop: (acceptedFiles) => {
+      setNewImg({file: acceptedFiles });
+    },
+    onDragEnter: () => setIsDragActive(true),
+    onDragLeave: () => setIsDragActive(false),
+    onDropAccepted: () => setIsDragActive(false),
+    onDropRejected: () => setIsDragActive(false),
+  });
+
+  return (<>
+    <h3 className="fs-0 fw-bold">Adicionar Fotos</h3>
+    <Form onSubmit={(e) => {submit(e, newimg); setNewImg({})}}>
+        <div {...getRootProps({className: `dropzone-area py-2 container container-fluid ${isDragActive ? 'dropzone-active' : ''}`})}>
+          <input {...getInputProps()} />
+            <Flex justifyContent="center" alignItems="center">
+              <span className='text-midle'><FontAwesomeIcon icon={faCloudArrowUp} className='mt-1 fs-2 text-warning' /></span>
+              <p className="fs-9 mb-0 text-700 ms-2">
+                {!newimg.file ? 'Arraste os arquivos aqui' : newimg.file.length+' Arquivo(s) Selecionado(s)'}
+              </p>
+            </Flex>
+        </div>
+        <Form.Group className='mt-2'>
+            <Button type="submit">Enviar</Button>
+        </Form.Group>
+    </Form>
+  </>)
+}
 
 export default BenfeitoriaForm;

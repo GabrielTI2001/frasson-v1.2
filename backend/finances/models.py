@@ -82,6 +82,7 @@ class Contratos_Credito(models.Model):
     percentual = models.DecimalField(max_digits=15, decimal_places=2, null=True)
     data_assinatura = models.DateField(null=True, verbose_name='Data Assinatura')
     data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
     pdf = models.FileField(upload_to='finances/contratos', null=True)
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -209,8 +210,7 @@ class Lancamentos_Automaticos_Pagamentos(models.Model):
     
 class Pagamentos(models.Model):
     STATUS_CHOICES = (
-        ("R", "Receita"),
-        ("D", "Despesa")
+        ("AD", "Aguardando Distribuição"), ("AG", "Agendado"), ("PG", "Pago")
     )
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
@@ -233,14 +233,14 @@ class Pagamentos(models.Model):
 
 class Cobrancas(models.Model):
     STATUS_CHOICES = (
-        ("R", "Receita"),
-        ("D", "Despesa")
+        ("AD", "Aguardando Distribuição"), ("NT", "Notificação"), ("FT", "Faturamento"), ("AG", "Agendado"), ("PG", "Pago")
     )
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
     cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
     etapa_ambiental = models.ForeignKey(Contratos_Ambiental_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Etapa da Cobrança GAI')
     etapa_credito = models.ForeignKey(Contratos_Credito_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Etapa da Cobrança GC')
+    detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhamento')
     valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Contratado')
     percentual_contratado = models.DecimalField(max_digits=5, decimal_places=2, null=True, verbose_name='Percentual Contratado')
     saldo_devedor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Saldo Devedor')

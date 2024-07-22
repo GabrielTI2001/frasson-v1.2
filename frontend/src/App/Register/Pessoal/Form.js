@@ -11,7 +11,7 @@ const PessoaForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({
-    created_by: user.id
+    created_by: user.id, natureza:'PF'
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();

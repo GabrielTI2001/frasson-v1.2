@@ -50,9 +50,13 @@ class detailRegimes(serializers.ModelSerializer):
         return value
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name in ['regime', 'data_inicio', 'instituicao', 'imovel', 'quem_explora', 'atividades', 'area']:
-                field.required = True
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['regime', 'data_inicio', 'instituicao', 'imovel', 'quem_explora', 'atividades', 'area']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
             
     class Meta:
         model = Regimes_Exploracao
@@ -93,10 +97,14 @@ class detailFarms(serializers.ModelSerializer):
         return True if parcelas > 0 else False
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name in ['nome', 'matricula', 'municipio', 'proprietarios']:
-                field.required = True
-            else:
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['nome', 'matricula', 'municipio', 'proprietarios']:
+                    field.required = True
+                else:
+                    field.required = False
+        else:
+            for field_name, field in self.fields.items():
                 field.required = False
     def get_token_apimaps(self, obj):
         return TOKEN_GOOGLE_MAPS_API

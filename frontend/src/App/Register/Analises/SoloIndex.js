@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { columnsAnalisesSolo} from "../Data";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
@@ -10,8 +10,7 @@ import { Spinner, Row, Col } from "react-bootstrap";
 import { HandleSearch } from "../../../helpers/Data";
 import AnaliseSoloForm from "./SoloForm";
 import { Modal, CloseButton } from "react-bootstrap";
-import { RetrieveRecord } from "../../../helpers/Data";
-import ModalDelete from "../../../components/Custom/ModalDelete";
+import ModalRecord from "./Modal";
 
 const InitData = {
     'columns':columnsAnalisesSolo, 'urlapilist':'register/analysis-soil', 
@@ -24,67 +23,54 @@ const IndexAnaliseSolo = () => {
     const [analise, setAnalise] = useState();
     const [modaldelete, setModalDelete] = useState({show:false, link:''})
     const [showmodal, setShowModal] = useState({show:false, type:''})
+    const [modal, setModal] = useState({show:false})
     const navigate = useNavigate();
+    const {uuid} = useParams()
 
-    const onClick = (data, type) =>{
-        if (type === 'view'){
-            const url = `${InitData.urlview}${data.uuid}`
-            navigate(url)
-        }
-        if (type === 'edit'){
-            const edit = async () => {
-                const status = await RetrieveRecord(data.uuid, InitData.urlapilist, setter)
-                if (status === 401){
-                    navigate("/auth/login")
-                }
-                setShowModal({show:true, type:'edit'})
-            }
-            edit()
-        }
-        if (type === 'delete'){
-            setModalDelete({show:true, link:`${process.env.REACT_APP_API_URL}/register/analysis-soil/${data.uuid}/`})
-        }
+    const onClick = (id, uuid) =>{
+        const url = `${InitData.urlview}${uuid}`
+        navigate(url)
     }
-
     const setter = (data) =>{
         setAnalise(data)
     }
-
     const submit = (type, data) =>{
         if (type === 'add'){
             setSearchResults([...searchResults, data])
+            setShowModal({...showmodal, show:false})
         }
         if (type === 'edit'){
-            setSearchResults([...searchResults.map( analise =>
-                analise.id === data.id
-                ? data
-                : analise
-              )])
+            setSearchResults()
         }
         if (type === 'delete'){
-            setSearchResults([...searchResults.filter( analise => analise.uuid !== data)])
+            setSearchResults([...searchResults.filter(analise => analise.uuid !== data)])
         }
-        
-        setShowModal({...showmodal, show:false})
     }
-
-    useEffect(()=>{
-        const getdata = async () =>{
-            const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
-        }
-        if ((user.permissions && user.permissions.indexOf("view_analise_solo") === -1) && !user.is_superuser){
-            navigate("/error/403")
-        }
-        if (!searchResults){
-            getdata()
-        }
-    },[searchResults])
-
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
         if (status === 401) navigate("/auth/login");
     };
+
+    useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_analise_solo") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
+    },[])
+    useEffect(() => {
+        const search = async () => {
+            const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
+            if (status === 401) navigate("/auth/login");
+        }
+        if (uuid){
+            setModal({show:true})
+        }
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -122,8 +108,6 @@ const IndexAnaliseSolo = () => {
                     bordered: true,
                     striped: false,
                     className: 'fs-xs mb-0 overflow-hidden',
-                    showactions: 'true',
-                    showview: 'true',
                     index_status: 3
                 }}
                 Click={onClick}
@@ -138,33 +122,26 @@ const IndexAnaliseSolo = () => {
                 />
             </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+        <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
             size="xl"
             show={showmodal.show}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-2"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    
-                    {showmodal.type === 'add' 
-                        ? 'Adicionar Análise de Solo'
-                        : 'Editar Análise de Solo'
-                    }  
+                    Adicionar Análise de Solo
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center sectionform">
-                    {showmodal.type === 'add' 
-                        ? <AnaliseSoloForm hasLabel type='add' submit={submit}/>
-                        : <AnaliseSoloForm hasLabel type='edit' submit={submit} data={analise}/>
-                    }  
+                        <AnaliseSoloForm hasLabel type='add' submit={submit}/>
                     </Row>
             </Modal.Body>
         </Modal>
-        <ModalDelete show={modaldelete.show} link={modaldelete.link} close={() => setModalDelete({show: false, link:''})} update={submit}/>
         </>
     );
   };
