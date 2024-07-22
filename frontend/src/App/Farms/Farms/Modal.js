@@ -165,8 +165,8 @@ const ModalRecord = ({show, reducer}) => {
               <div className="rounded-top-lg pt-1 pb-0 mb-2">
                 <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Mapas</span>
               </div>
-              <NavModal2 record={record} />
-              <Tab.Container id="left-tabs-example" defaultActiveKey="matricula" onSelect={handleTabSelect}>
+              <Tab.Container id="right-tabs-example" defaultActiveKey="matricula" onSelect={handleTabSelect}>
+                <NavModal2 record={record} />
                 <Tab.Pane eventKey="matricula">
                     <Coordenadas record={record}/>
                 </Tab.Pane>
