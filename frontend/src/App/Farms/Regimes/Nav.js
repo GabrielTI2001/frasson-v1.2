@@ -1,9 +1,6 @@
-import { faDownload, faInfoCircle, faMapLocation, faMapLocationDot } from "@fortawesome/free-solid-svg-icons"
+import { faGlobeAmericas, faInfoCircle } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { useEffect, useState } from "react"
-import { Col, Nav, Placeholder, Row } from "react-bootstrap"
-import { HandleSearch } from "../../../helpers/Data"
-import PolygonMap from "../../../components/map/PolygonMap"
+import { Col, Nav, Row } from "react-bootstrap"
 import { Link } from "react-router-dom"
 
 const NavModal = ({record}) =>{
@@ -86,7 +83,12 @@ export const Fazenda = ({record}) =>{
                     <span className='d-block text-info fs--1 mb-1'>
                         {record.farm_data.modulos_fiscais ? Number(record.farm_data.modulos_fiscais).toLocaleString('pt-BR',{minimumFractionDigits:4}): '-'}
                     </span>
-                </Col>   
+                </Col>  
+                <div>
+                    <Link to={`${process.env.REACT_APP_API_URL}/farms/kml/${record.farm_data.uuid}`} className='btn btn-secondary py-0 px-2 me-2 fs--1'>
+                        <FontAwesomeIcon icon={faGlobeAmericas} className='me-1'/>KML
+                    </Link>
+                </div> 
             </Row>
         </>  
     )

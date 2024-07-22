@@ -23,7 +23,7 @@ const EditFormModal = ({
   useEffect(() => {
     if (show) {
       if (field.type === 'select2'){
-        const option = field.ismulti ? record[field.list].map(d => ({value:d.value, label:[field.string]})) 
+        const option = field.ismulti ? record[field.list].map(d => ({value:d.value || d.id, label:d[field.string] || d.label})) 
         : {value: record[field.name], label: field.string ? record[field.string] : record[field.data] && record[field.data][field.attr_data]}
         setdefaultSelected({...defaultselected, [field.name]:option})
       }
@@ -45,7 +45,7 @@ const EditFormModal = ({
           {field.type === 'select2' ? ( defaultselected && <>
             <Form.Label className='mb-0 fw-bold fs--1'>{field.label.replace('*', '')}</Form.Label>
             <AsyncSelect ref={inputRef} defaultValue={defaultselected[field.name]} 
-              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select" ismulti={field.ismulti}
+              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select" isMulti={field.ismulti}
               loadOptions={(value) => SelectSearchOptions(value, field.url, field.attr1, field.attr2, false, null, navigate)} 
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({

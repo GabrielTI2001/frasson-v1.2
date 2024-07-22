@@ -34,7 +34,6 @@ import Exchange from '../App/Services/Currency/Exchange';
 import IndexAppFarms from '../App/Farms/Index';
 import IndexFarms from '../App/Farms/Farms/Index';
 import IndexRegimes from '../App/Farms/Regimes/Index';
-import ViewRegime from '../App/Farms/Regimes/View';
 import MapaCAR from '../App/Farms/Farms/Mapa';
 //Finances
 import DREConsolidado from '../App/Finances/DREActual';

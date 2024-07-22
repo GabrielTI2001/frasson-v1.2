@@ -2,8 +2,6 @@ from rest_framework import serializers
 from farms.models import Imoveis_Rurais, Regimes_Exploracao, Cadastro_Ambiental_Rural, Certificacao_Sigef_Parcelas
 from farms.models import Regimes_Exploracao_Coordenadas
 from farms.models import Cadastro_Ambiental_Rural_Coordenadas, Certificacao_Sigef_Parcelas_Vertices, Imoveis_Rurais_Coordenadas_Matricula
-from backend.frassonUtilities import Frasson
-import locale, requests, json
 from datetime import datetime
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 
@@ -29,7 +27,7 @@ class detailRegimes(serializers.ModelSerializer):
         return coordenadas
     def get_farm_data(self, obj):
         if obj.imovel:
-            return {'nome':obj.imovel.nome, 'matricula':obj.imovel.matricula, 'area_total': obj.imovel.area_total, 
+            return {'uuid':obj.imovel.uuid, 'nome':obj.imovel.nome, 'matricula':obj.imovel.matricula, 'area_total': obj.imovel.area_total, 
                 'area_explorada': obj.imovel.area_explorada, 'area_rl':obj.imovel.area_reserva, 'area_app':obj.imovel.area_app,
                 'proprietarios': ', '.join([p.razao_social for p in obj.imovel.proprietarios.all()]), 'area_veg_nat':obj.imovel.area_veg_nat,
                 'codigo_imovel': obj.imovel.codigo_imovel, 'codigo_car': obj.imovel.codigo_car, 'modulos_fiscais': obj.imovel.modulos_fiscais
@@ -99,7 +97,7 @@ class detailFarms(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if not self.instance:
             for field_name, field in self.fields.items():
-                if field_name in ['nome', 'matricula', 'municipio', 'proprietarios']:
+                if field_name in ['nome', 'matricula', 'municipio', 'proprietarios', 'endereco']:
                     field.required = True
                 else:
                     field.required = False

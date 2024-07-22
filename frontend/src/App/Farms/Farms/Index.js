@@ -144,7 +144,7 @@ const IndexFarms = () => {
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {showmodal.data ? 'Editar' : 'Adicionar' } Regime de Exploração
+                    {showmodal.data ? 'Editar' : 'Adicionar' } Imóvel Rural
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>

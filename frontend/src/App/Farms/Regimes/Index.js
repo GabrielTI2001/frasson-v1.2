@@ -25,11 +25,19 @@ const IndexRegimes = () => {
     const navigate = useNavigate();
     const {uuid} = useParams()
 
-    const submit = (type, data, id) => {
+    const submit = (type, data) => {
         if (type == 'add'){
             setSearchResults([...searchResults, data])
+            setShowModal({show:false})
         }
-        setShowModal({show:false})
+        else if (type === 'edit'){
+            setFormData({...formData, loaded:false})
+            setSearchResults()
+        }
+        else if (type === 'delete'){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
+        }
+        
     }
 
     const Search = async (urlapi, cliente, instituicao) => {
@@ -78,7 +86,7 @@ const IndexRegimes = () => {
         }
         else{
             setModal({show:false})
-            if (!searchResults){
+            if (!searchResults && !formData.loaded){
                 Search(InitData.urlapilist)
             }
         }
@@ -167,7 +175,7 @@ const IndexRegimes = () => {
             </Placeholder>    
         </div>   
         }
-        <ModalRecord show={modal.show} reducer={() => {}}/>
+        <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
             size="xl"
             show={showmodal.show}

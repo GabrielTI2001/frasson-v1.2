@@ -14,6 +14,9 @@ import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import { Car, Coordenadas, NavModal2, Sigef } from './Nav.js';
 import EditForm from './EditForm.js'
 import NavModal from './Nav.js';
+import { fieldsFarm } from '../Data.js';
+import { faGlobeAmericas } from '@fortawesome/free-solid-svg-icons';
+import EditFormModal from '../../../components/Custom/EditForm.js';
 
 const options = {
   month: "short",
@@ -71,7 +74,7 @@ const ModalRecord = ({show, reducer}) => {
         reducer('edit', {...response.data, info_status:
           {color:response.data.status === 'EA' ? 'warning' : 'success', text:response.data.status_display}
         })
-        toast.success("PVTEC Atualizada com Sucesso!")
+        toast.success("Imóvel Rural Atualizado com Sucesso!")
         setRecord(response.data)
       })
       .catch((erro) => {
@@ -126,277 +129,37 @@ const ModalRecord = ({show, reducer}) => {
                         {new Date(record.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
                         {' às '+new Date(record.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
                       </div>
-                      {!showForm.nome ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Nome da Fazenda' field='nome' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.nome}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['nome']} fieldkey='nome' setShow={setShowForm} data={record.nome}
-                        />
-                      }
-                      {!showForm.matricula ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Matrícula' field='matricula' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.matricula}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['matricula']} fieldkey='matricula' setShow={setShowForm} data={record.matricula}
-                        />
-                      }
-                      {!showForm.municipio ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Município Localização' field='municipio' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.municipio_localizacao || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['municipio']} fieldkey='municipio' setShow={setShowForm} 
-                          data={{value:record.municipio, label:record.municipio_localizacao}}
-                        />
-                      }
-                      {!showForm.area_total ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Área Total (ha)' field='area_total' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.area_total ? Number(record.area_total).toLocaleString('pt-BR', {minimumFractionDigits:2}) : '-'}
+                      {fieldsFarm.map(f => 
+                        !showForm[f.name] ?
+                          <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
+                            <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
+                            {f.type === 'select' ?
+                              <div className="fs--1 row-10">{record[f.string]}</div>
+                            : f.type === 'select2' ? f.ismulti ? 
+                                <div className="fs--1 row-10">{record[f.list].map(l => l[f.string]).join(', ')}</div>
+                              : 
+                              f.string ?
+                                <div className="fs--1 row-10">{record[f.string] || '-'}</div>
+                              :
+                                <div className="fs--1 row-10">{record[f.data] && record[f.data][f.attr_data]}</div>
+                            : f.type === 'file' && f.name === 'kml' ? 
+                              <div>
+                                <Link to={`${process.env.REACT_APP_API_URL}/farms/kml/regime/${record.uuid}`} className='btn btn-secondary py-0 px-2 me-2 fs--1'>
+                                    <FontAwesomeIcon icon={faGlobeAmericas} className='me-1'/>KML
+                                </Link>
+                              </div>
+                            : f.type === 'date' ? 
+                              <div className="fs--1 row-10">{record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
+                            : 
+                              <div className="fs--1 row-10">{record[f.name] || '-'}</div>}
                           </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['area_total']} fieldkey='area_total' setShow={setShowForm} data={record.area_total}
-                        />
-                      }
-                      {!showForm.proprietarios ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Proprietários' field='proprietarios' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.str_proprietarios.map(p => p.razao_social).join(', ')}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['proprietarios']} fieldkey='proprietarios' setShow={setShowForm} data={record.str_proprietarios}
-                        />
-                      }
-                      {!showForm.livro_registro ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Livro Registro' field='livro_registro' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.livro_registro || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['livro_registro']} fieldkey='livro_registro' setShow={setShowForm} data={record.livro_registro}
-                        />
-                      }
-                      {!showForm.numero_registro ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Número Registro' field='numero_registro' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.numero_registro || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['numero_registro']} fieldkey='numero_registro' setShow={setShowForm} data={record.numero_registro}
-                        />
-                      }
-                      {!showForm.cns ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='CNS' field='cns' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.cns || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['cns']} fieldkey='cns' setShow={setShowForm} data={record.cns}
-                        />
-                      }
-                      {!showForm.data_registro ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Data Registro' field='data_registro' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.data_registro ? new Date(record.data_registro).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['data_registro']} fieldkey='data_registro' setShow={setShowForm} data={record.data_registro}
-                        />
-                      }
-                      {!showForm.cep ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='CEP' field='cep' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.cep || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['cep']} fieldkey='cep' setShow={setShowForm} data={record.cep}
-                        />
-                      }
-                      {!showForm.endereco ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Endereço' field='endereco' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.endereco || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['endereco']} fieldkey='endereco' setShow={setShowForm} data={record.endereco}
-                        />
-                      }
-                      {!showForm.titulo_posse ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Título Posse' field='titulo_posse' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.titulo_posse || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['titulo_posse']} fieldkey='titulo_posse' setShow={setShowForm} data={record.titulo_posse}
-                        />
-                      }
-                      {!showForm.area_veg_nat ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Área Veg. Nativa (ha)' field='area_veg_nat' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.area_veg_nat ? Number(record.area_veg_nat).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['area_veg_nat']} fieldkey='area_veg_nat' setShow={setShowForm} data={record.area_veg_nat}
-                        />
-                      }
-                      {!showForm.area_app ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Área APP (ha)' field='area_app' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.area_app ? Number(record.area_app).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['area_app']} fieldkey='area_app' setShow={setShowForm} data={record.area_app}
-                        />
-                      }
-                      {!showForm.area_reserva ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Área RL (ha)' field='area_reserva' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.area_reserva ? Number(record.area_reserva).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['area_reserva']} fieldkey='area_reserva' setShow={setShowForm} data={record.area_reserva}
-                        />
-                      }
-                      {!showForm.area_explorada ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Área Explorada (ha)' field='area_explorada' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.area_explorada ? Number(record.area_explorada).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['area_explorada']} fieldkey='area_explorada' setShow={setShowForm} data={record.area_explorada}
-                        />
-                      }
-                      {!showForm.modulos_fiscais ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Módulos Fiscais' field='modulos_fiscais' click={handleEdit}/>
-                          <div className="fs--1 row-10">
-                            {record.modulos_fiscais ? Number(record.modulos_fiscais).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2}) : '-'}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['modulos_fiscais']} fieldkey='modulos_fiscais' setShow={setShowForm} data={record.modulos_fiscais}
-                        />
-                      }
-                      {!showForm.localizacao_reserva ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Localização Reserva' field='localizacao_reserva' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.localizacao_reserva || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['localizacao_reserva']} fieldkey='localizacao_reserva' setShow={setShowForm} data={record.localizacao_reserva}
-                        />
-                      }
-                      {!showForm.codigo_car ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='N° CAR' field='codigo_car' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.codigo_car || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['codigo_car']} fieldkey='codigo_car' setShow={setShowForm} data={record.codigo_car}
-                        />
-                      }
-                      {!showForm.codigo_imovel ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Código Imóvel' field='codigo_imovel' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.codigo_imovel || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['codigo_imovel']} fieldkey='codigo_imovel' setShow={setShowForm} data={record.codigo_imovel}
-                        />
-                      }
-                      {!showForm.numero_nirf ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='N° NIRF' field='numero_nirf' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.numero_nirf || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['numero_nirf']} fieldkey='numero_nirf' setShow={setShowForm} data={record.numero_nirf}
-                        />
-                      }
-                      {!showForm.cartorio_registro ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Cartório' field='cartorio_registro' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.str_cartorio || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['cartorio_registro']} fieldkey='cartorio_registro' setShow={setShowForm} 
-                          data={{value:record.cartorio_registro, label:record.str_cartorio}}
-                        />
-                      }
-                      {!showForm.roteiro_acesso ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Roteiro Acesso' field='roteiro_acesso' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.roteiro_acesso || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['roteiro_acesso']} fieldkey='roteiro_acesso' setShow={setShowForm} data={record.roteiro_acesso}
-                        />
-                      }
+                          :
+                          <EditFormModal key={f.name}
+                            onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
+                            show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
+                            record={record} field={f}
+                          />
+                      )}
                     </Tab.Pane>
                   </Tab.Content>
                 </div>
