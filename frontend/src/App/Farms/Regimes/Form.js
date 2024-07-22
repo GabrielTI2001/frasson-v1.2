@@ -26,17 +26,11 @@ const RegimeForm = ({ hasLabel, type, submit, data}) => {
       navigate("/auth/login");
     }
     else if (resposta.status === 201 || resposta.status === 200){
-      if (type === 'edit'){
-        submit('edit', dados, dados.id)
-        toast.success("Registro Atualizado com Sucesso!")
-      }
-      else{
-        submit('add', {matricula_imovel:dados.farm_data.matricula, uuid:dados.uuid, nome_imovel:dados.farm_data.nome,
-          regime:dados.regime, atividade_display:dados.str_atividade, area:dados.area, data_inicio:dados.data_inicio, 
-          data_termino:dados.data_termino
-        })
-        toast.success("Registro Efetuado com Sucesso!")
-      }
+      submit('add', {matricula_imovel:dados.farm_data.matricula, uuid:dados.uuid, nome_imovel:dados.farm_data.nome,
+        str_regime:dados.str_regime, atividade_display:dados.str_atividade, area:dados.area, data_inicio:dados.data_inicio, 
+        data_termino:dados.data_termino
+      })
+      toast.success("Registro Efetuado com Sucesso!")
     }
   };
 

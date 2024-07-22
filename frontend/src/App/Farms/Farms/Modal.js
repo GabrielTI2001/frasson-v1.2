@@ -1,28 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { CloseButton, Col, Dropdown, Modal, Nav, Row, Tab } from 'react-bootstrap';
-import ModalMediaContent from '../../Pipeline/ModalMediaContent.js';
 import api from '../../../context/data.js';
 import { GetRecord } from '../../../helpers/Data.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import SubtleBadge from '../../../components/common/SubtleBadge.js';
 import { useAppContext } from '../../../Main.js';
 import CardInfo, {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import { Car, Coordenadas, NavModal2, Sigef } from './Nav.js';
-import EditForm from './EditForm.js'
 import NavModal from './Nav.js';
 import { fieldsFarm } from '../Data.js';
 import { faGlobeAmericas } from '@fortawesome/free-solid-svg-icons';
 import EditFormModal from '../../../components/Custom/EditForm.js';
-
-const options = {
-  month: "short",
-  day: "numeric",
-  timeZone: 'UTC'
-};
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});

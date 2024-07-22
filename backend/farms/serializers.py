@@ -7,11 +7,12 @@ from backend.settings import TOKEN_GOOGLE_MAPS_API
 
 class ListRegimes(serializers.ModelSerializer):
     atividade_display = serializers.CharField(source='get_atividades_display', read_only=True)
+    str_regime = serializers.CharField(source='get_regime_display', read_only=True)
     matricula_imovel = serializers.CharField(source='imovel.matricula', read_only=True)
     nome_imovel = serializers.CharField(source='imovel.nome', read_only=True)
     class Meta:
         model = Regimes_Exploracao
-        fields = ['id', 'uuid', 'imovel', 'matricula_imovel', 'nome_imovel', 'regime', 'data_inicio', 'data_termino',
+        fields = ['id', 'uuid', 'imovel', 'matricula_imovel', 'nome_imovel', 'str_regime', 'data_inicio', 'data_termino',
                   'area', 'atividade_display']
 
 class detailRegimes(serializers.ModelSerializer):

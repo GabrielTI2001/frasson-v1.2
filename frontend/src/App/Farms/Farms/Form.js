@@ -41,16 +41,10 @@ const FarmForm = ({ hasLabel, type, submit, data}) => {
         navigate("/auth/login");
       }
       else if (response.status === 201 || response.status === 200){
-        if (type === 'edit'){
-          submit('edit', data, data.id)
-          toast.success("Registro Atualizado com Sucesso!")
-        }
-        else{
-          submit('add', {matricula:data.matricula, uuid:data.uuid, municipio_localizacao:data.municipio_localizacao, nome:data.nome,
-            str_proprietarios:data.str_proprietarios.map(p => p.razao_social).join(', '), area_total:data.area_total
-          })
-          toast.success("Registro Efetuado com Sucesso!")
-        }
+        submit('add', {matricula:data.matricula, uuid:data.uuid, municipio_localizacao:data.municipio_localizacao, nome:data.nome,
+          str_proprietarios:data.str_proprietarios.map(p => p.razao_social).join(', '), area_total:data.area_total
+        })
+        toast.success("Registro Efetuado com Sucesso!")
       }
     } catch (error) {
         console.error('Erro:', error);

@@ -150,7 +150,7 @@ const IndexRegimes = () => {
             className={`${theme === 'light' ? 'hover-table-light': 'hover-table-dark'}`}>
                 <td className="text-center">{regime.matricula_imovel}</td>
                 <td className="text-center">{regime.nome_imovel}</td>
-                <td className="text-center">{regime.regime}</td>
+                <td className="text-center">{regime.str_regime}</td>
                 <td className="text-center">{regime.atividade_display}</td>
                 <td className="text-center">
                     {regime.data_inicio ? new Date(regime.data_inicio).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}

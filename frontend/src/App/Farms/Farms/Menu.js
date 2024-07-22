@@ -2,13 +2,10 @@ import React, { useContext, useState } from 'react';
 import { Dropdown} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AppContext from '../../../context/Context';
-import { library } from '@fortawesome/fontawesome-svg-core';
-import { faEllipsisH, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import ModalDeleteCard from '../../../components/Custom/ModalDeleteCard';
 
-// Adicione os ícones à biblioteca
-library.add(faEllipsisH);
 export const calcdif = (data) => {
   const dif = (new Date(data) - new Date())/(24 * 60 * 60 * 1000)
   return dif
