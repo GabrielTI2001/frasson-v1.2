@@ -7,7 +7,7 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import logoutImg from '../../assets/img/icons/spot-illustrations/45.png';
 import { useEffect } from 'react';
 
-const LogoutContent = ({ layout, titleTag: TitleTag }) => {
+const LogoutContent = ({ layout='simple', titleTag: TitleTag }) => {
   const token = localStorage.getItem("token")
   const navigate = useNavigate();
   const [iniciado, setIniciado] = useState(false)
@@ -74,11 +74,6 @@ const LogoutContent = ({ layout, titleTag: TitleTag }) => {
 LogoutContent.propTypes = {
   layout: PropTypes.string,
   titleTag: PropTypes.string
-};
-
-LogoutContent.defaultProps = {
-  layout: 'simple',
-  titleTag: 'h4'
 };
 
 export default LogoutContent;

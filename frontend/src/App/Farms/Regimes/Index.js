@@ -5,7 +5,6 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import AsyncSelect from 'react-select/async';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from "../../../Main";
-import { fetchPessoal, fetchInstituicoesRazaoSocial } from "../../Pipefy/Data";
 import { SelectSearchOptions } from "../../../helpers/Data";
 import RegimeForm from "./Form";
 import ModalRecord from "./Modal";

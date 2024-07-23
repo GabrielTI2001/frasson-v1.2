@@ -5,7 +5,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {Spinner} from 'react-bootstrap';
 
-const LoginForm = ({ hasLabel, layout }) => {
+const LoginForm = ({ hasLabel=false, layout='simple'}) => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -122,11 +122,6 @@ const LoginForm = ({ hasLabel, layout }) => {
 LoginForm.propTypes = {
   layout: PropTypes.string,
   hasLabel: PropTypes.bool
-};
-
-LoginForm.defaultProps = {
-  layout: 'simple',
-  hasLabel: false
 };
 
 export default LoginForm;

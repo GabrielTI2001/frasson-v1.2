@@ -3,7 +3,6 @@ import { useParams, useNavigate} from "react-router-dom";
 import { RetrieveRecord } from '../../helpers/Data';
 import { Link } from 'react-router-dom';
 import { Row, Modal, CloseButton, Placeholder, Button, Form, Col } from 'react-bootstrap';
-import KMLMap from '../../components/map/KMLMap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFilePdf, faEarthAmericas , faHashtag, faClipboard, faBuildingColumns, faSackDollar, faCalendar, faPercent, 
 faLocationDot, faCircleDollarToSlot, faFileLines, faCircleCheck, faPenToSquare,
@@ -277,7 +276,7 @@ const ViewCredit = () => {
                         </Link>
                     </div></>
                 }
-            </>
+                </>
             }
         </Col>
     </Row>

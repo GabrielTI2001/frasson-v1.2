@@ -23,6 +23,9 @@ class detailRegimes(serializers.ModelSerializer):
     token_apimaps = serializers.SerializerMethodField(read_only=True)
     farm_data = serializers.SerializerMethodField(read_only=True)
     coordenadas = serializers.SerializerMethodField(read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_coordenadas(self, obj):
         coordenadas = [{'lat':float(c.latitude), 'lng':float(c.longitude), 'id':c.id} for c in Regimes_Exploracao_Coordenadas.objects.filter(regime=obj)]
         return coordenadas
@@ -76,12 +79,14 @@ class detailFarms(serializers.ModelSerializer):
     str_proprietarios = serializers.SerializerMethodField(read_only=True)
     str_localizacao_reserva = serializers.CharField(source='get_localizacao_reserva_display', read_only=True)
     str_cartorio = serializers.CharField(source='cartorio_registro.razao_social', read_only=True)
-    # kml = serializers.SerializerMethodField(read_only=True)
     municipio_localizacao = serializers.SerializerMethodField(read_only=True)
     coordenadas_matricula = serializers.SerializerMethodField(read_only=True)
     coordenadas_car = serializers.SerializerMethodField(read_only=True)
     parcelas_sigef = serializers.SerializerMethodField(read_only=True)
     token_apimaps = serializers.SerializerMethodField(read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_str_proprietarios(self, obj):
         return [{'id':p.id, 'razao_social':p.razao_social} for p in obj.proprietarios.all()]
     def get_municipio_localizacao(self, obj):

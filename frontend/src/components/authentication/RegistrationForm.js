@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Row, Col, Spinner } from 'react-bootstrap';
+
 const RegistrationForm = ({ hasLabel }) => {
-  // State
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',

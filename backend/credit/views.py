@@ -137,12 +137,14 @@ class OperacoesCedulasView(viewsets.ModelViewSet):
                     return Response({'error': 'O arquivo precisa ser em formato PDF!'}, status=400)
                 filesize = i.size
                 if filesize > 8 * 1024 * 1024:  # 8 MB
-                    return Response({'error': 'O tamanho máximo da imagem é 8 MB!'}, status=400)
+                    return Response({'error': 'O tamanho máximo é 8 MB!'}, status=400)
                 imgs_validas += 1
             if imgs_validas == len(images):
                 for i in images:
-                    reg = Operacoes_Contratadas_Cedulas.objects.create(operacao_id=request.data.get('operacao'), upload_by=request.user, file=i)
-                    response_data.append({'id':reg.id, 'url':'/media/'+reg.file.name})
+                    reg = Operacoes_Contratadas_Cedulas.objects.create(operacao_id=request.data.get('operacao'), 
+                        upload_by_id=request.data.get('upload_by'), file=i
+                    )
+                    response_data.append({'id':reg.id, 'url':'/media/'+reg.file.name, 'name':'Cédula '+str(reg.id)})
                 headers = self.get_success_headers(serializer.data)
                 return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

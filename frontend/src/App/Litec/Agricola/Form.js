@@ -266,19 +266,20 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           />
           <label className='text-danger'>{message ? message.descricao : ''}</label>
         </Form.Group>
-
-        <Form.Group className={`mb-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='12' xs='auto' sm='auto'> 
-          <Button className="w-40" type="submit">
-            {type === 'edit' ? "Atualizar Produção" : "Cadastrar Produção"}
-          </Button>
-        </Form.Group>       
-        {type === 'edit' &&
-          <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' xs='auto' sm='auto'>
-            <Button className="w-40 btn-danger" onClick={() => setModal({show:true, id:data.id})}>
-              <FontAwesomeIcon icon={faTrash} className="me-2"></FontAwesomeIcon>Excluir
+        <Row>
+          <Form.Group className={`mb-1 pe-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' xs='auto' sm='auto'> 
+            <Button className="w-40 py-1" type="submit">
+              {type === 'edit' ? "Atualizar Produção" : "Cadastrar Produção"}
             </Button>
-          </Form.Group> 
-        } 
+          </Form.Group>       
+          {type === 'edit' &&
+            <Form.Group className={`mb-0 ps-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' xs='auto' sm='auto'>
+              <Button className="w-40 btn-danger py-1" onClick={() => setModal({show:true, id:data.id})}>
+                <FontAwesomeIcon icon={faTrash} className="me-2"></FontAwesomeIcon>Excluir
+              </Button>
+            </Form.Group> 
+          } 
+        </Row>
       </Form>
       {type ===  'edit' &&
         <ModalDelete show={modal.show} link={`${process.env.REACT_APP_API_URL}/litec/agricola/${data.id}/`} close={() => setModal({show:false})} 

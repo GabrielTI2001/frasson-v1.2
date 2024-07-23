@@ -6,7 +6,7 @@ import {customStyle} from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
 import { SelectSearchOptions } from '../../helpers/Data';
 
-const RenderFields = ({ fields, formData, changefield, changefile, message, hasLabel, defaultoptions, type}) => {
+const RenderFields = ({ fields, formData, changefield, changefile, message, hasLabel, defaultoptions, type, changefilemulti}) => {
   const {config: {theme}} = useAppContext();
   const navigate = useNavigate();
   return (
@@ -34,7 +34,8 @@ const RenderFields = ({ fields, formData, changefield, changefile, message, hasL
                 <Form.Control
                     isInvalid={message && message[f.name]}
                     name={f.name}
-                    onChange={changefile}
+                    onChange={f.ismulti ? changefilemulti : changefile}
+                    multiple={f.ismulti}
                     type="file"
                 />
             :

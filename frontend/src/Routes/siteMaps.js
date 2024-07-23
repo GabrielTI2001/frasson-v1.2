@@ -175,13 +175,6 @@ export const operacionalRoutes = {
           to: '/pipeline/518984721',
           exact: true,
           active: true
-        },
-        {
-          name: 'PVTEC',
-          icon2: 'CalendarCheck',
-          to: '/pipeline/518984721',
-          exact: true,
-          active: true
         }
       ]
     },

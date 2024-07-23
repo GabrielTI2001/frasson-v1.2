@@ -3,7 +3,6 @@ from .models import Processos_Andamento, Acompanhamento_Processos, Status_Acompa
 from pipeline.models import Fluxo_Gestao_Ambiental
 from datetime import datetime, date, timedelta
 import requests, json, locale
-from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL
 from users.models import Profile
 
 class detailFollowup(serializers.ModelSerializer):
@@ -20,7 +19,7 @@ class detailFollowup(serializers.ModelSerializer):
         inema = {
             'id': processo_inema.id,
             'requerimento': processo_inema.requerimento,
-            'data_requerimento': datetime.strptime(str(processo_inema.data_requerimento), '%Y-%m-%d').strftime("%d/%m/%Y"),
+            'data_requerimento': datetime.strptime(str(processo_inema.data_requerimento), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.data_requerimento != None else '-',
             'data_enquadramento': datetime.strptime(str(processo_inema.data_enquadramento), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.data_enquadramento != None else '-',
             'data_validacao': datetime.strptime(str(processo_inema.data_validacao), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.data_validacao != None else '-',
             'valor_boleto': locale.format_string('%.0f', processo_inema.valor_boleto, True) if processo_inema.valor_boleto != None else '-',
@@ -48,11 +47,11 @@ class detailFollowup(serializers.ModelSerializer):
         processo_pipefy = Fluxo_Gestao_Ambiental.objects.get(pk=obj.processo_id)
         pipefy = {
             'id': processo_pipefy.id,
-            'beneficiario': ', '.join([beneficiario.razao_social for beneficiario in processo_pipefy.beneficiario.all()]),
+            'beneficiario': processo_pipefy.beneficiario.razao_social,
             'detalhamento': processo_pipefy.detalhamento.detalhamento_servico,
             'instituicao': processo_pipefy.instituicao.instituicao.razao_social,
-            'current_phase': processo_pipefy.phase_name,
-            'url': processo_pipefy.card_url,
+            'current_phase': processo_pipefy.phase.descricao,
+            'code': processo_pipefy.code,
             'created_at': processo_pipefy.created_at.strftime("%d/%m/%Y %H:%M") or '-'
         }
         return pipefy

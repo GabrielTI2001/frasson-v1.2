@@ -71,7 +71,10 @@ const ViewFollowup = () => {
         <Col className='d-flex flex-column'>
             <Row xs={1} xl={1} className='gy-1'>
                 <h6 style={{fontSize: '12px'}} className='fw-bold mb-0'>Informações do Processo</h6>
-                <h6 style={{fontSize: '12px'}} className='text-600 mb-0'>Processo aberto em: {card.pipefy.created_at}</h6>
+                <h6 style={{fontSize: '12px'}} className='text-600 mb-0'>
+                    Processo aberto em: {new Date(card.pipefy.created_at).toLocaleDateString('pt-br', {timeZone:'UTC'})}
+                    {' '+new Date(card.pipefy.created_at).toLocaleTimeString('pt-br', {minute:'numeric', hour:'numeric'})}
+                </h6>
                 <hr className='my-1 ms-3' style={{width:'95%'}}></hr>
                 <Col className='mt-0'>
                     <strong className='me-1'>Processo:</strong>
@@ -213,7 +216,7 @@ const ViewFollowup = () => {
             <Row className="flex-center sectionform">
             {modalform.type == 'status' 
                 ? <FormAcomp hasLabel data={card} submit={submit}/> 
-                : <FormProcesso data={card} type='edit' submit={submit2} />
+                : <FormProcesso data={card && card.inema} type='edit' submit={submit2} />
             }
             </Row>
         </Modal.Body>

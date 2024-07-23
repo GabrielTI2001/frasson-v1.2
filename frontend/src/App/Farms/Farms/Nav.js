@@ -49,9 +49,9 @@ export const Coordenadas = ({record}) =>{
     return (
         record ?
         <>
-            <div className='d-flex justify-content-between'>
-                <strong className='mb-1'>KML da Matrícula {record.matricula}</strong>   
-                <Link className='btn btn-secondary fs--2 py-0 px-3 pt-1' 
+            <div className='d-flex justify-content-between align-items-center'>
+                <strong className='fs--1'>KML da Matrícula {record.matricula}</strong>   
+                <Link className='btn btn-secondary fs--2 py-0 px-3' style={{lineHeight:'2'}}
                     to={`${process.env.REACT_APP_API_URL}/farms/kml/${record.uuid}`}
                 >
                     <FontAwesomeIcon icon={faDownload} className='me-1' /><span>KML</span>

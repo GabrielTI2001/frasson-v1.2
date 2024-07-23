@@ -38,9 +38,7 @@ const EditProdPecuaria = ({id, gleba, submit}) => {
     <>
 
         { producao ? (
-            <Row className="mb-2">
-                <FormProdPecuaria hasLabel type='edit' data={producao} submit={submitform} gleba={gleba.id}/>
-            </Row>
+            <div><FormProdPecuaria hasLabel type='edit' data={producao} submit={submitform} gleba={gleba.id}/></div>  
         ) : (
         <div>
             <Placeholder animation="glow">

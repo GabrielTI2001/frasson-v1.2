@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import envelope from 'assets/img/icons/spot-illustrations/16.png';
 
-const ConfirmMailContent = ({ email, layout, titleTag: TitleTag }) => (
+const ConfirmMailContent = ({ email, layout='simple', titleTag: TitleTag }) => (
   <>
     <img
       className="d-block mx-auto mb-4"
@@ -40,7 +40,5 @@ ConfirmMailContent.propTypes = {
   layout: PropTypes.string,
   titleTag: PropTypes.string
 };
-
-ConfirmMailContent.defaultProps = { layout: 'simple', titleTag: 'h4' };
 
 export default ConfirmMailContent;

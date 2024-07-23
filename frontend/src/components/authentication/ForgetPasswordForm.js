@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { toast } from 'react-toastify';
 import { Button, Form } from 'react-bootstrap';
 
-const ForgetPasswordForm = () => {
+const ForgetPasswordForm = ({layout='simple'}) => {
   // State
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -66,7 +66,5 @@ const ForgetPasswordForm = () => {
 ForgetPasswordForm.propTypes = {
   layout: PropTypes.string
 };
-
-ForgetPasswordForm.defaultProps = { layout: 'simple' };
 
 export default ForgetPasswordForm;

@@ -47,7 +47,7 @@ class detailOperacoes(serializers.ModelSerializer):
         if Cadastro_Alongamentos.objects.filter(operacao_id=obj.id).exists():
             operacao['along'] = True
             operacao['alongamento_total'] = locale.currency(Cadastro_Alongamentos.objects.get(operacao_id=obj.id).valor_total, grouping=True)
-            operacao['alongamento_id'] = Cadastro_Alongamentos.objects.get(operacao_id=obj.id).uuid
+            operacao['alongamento_id'] = Cadastro_Alongamentos.objects.get(operacao_id=obj.id).id
         else:
             operacao['along'] = False
         return operacao
@@ -58,10 +58,22 @@ class detailOperacoes(serializers.ModelSerializer):
         return [{'id':doc.id, 'url':"/media/"+doc.file.name, 'name':'Cédula '+str(doc.id)} for doc in cedulas]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name in ['beneficiario', 'instituicao', 'imoveis_beneficiados', 'item_financiado', 'valor_operacao', 'data_vencimento',
-                'data_emissao_cedula']:
-                field.required = True
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['beneficiario', 'instituicao', 'imoveis_beneficiados', 'item_financiado', 'valor_operacao', 'data_vencimento',
+                    'data_emissao_cedula']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
+                field.allow_empty = True
+    def update(self, instance, validated_data):
+        list_data = validated_data.pop('imoveis_beneficiados', [])
+        instance = super().update(instance, validated_data)
+        if list_data:
+            ids = [r.id for r in list_data]
+            instance.imoveis_beneficiados.set(ids)
+        return instance
     class Meta:
         model = Operacoes_Contratadas
         fields = '__all__'

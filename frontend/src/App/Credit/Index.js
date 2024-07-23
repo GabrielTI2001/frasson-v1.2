@@ -1,12 +1,13 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Table, Form, Button, Placeholder, Modal, CloseButton} from 'react-bootstrap';
-import { Link, useNavigate} from "react-router-dom";
+import { Link, useNavigate, useParams} from "react-router-dom";
 import { useAppContext } from "../../Main";
 import { fetchCreditData } from "./Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import OperacoesForm from "./Form";
+import ModalRecord from "./Modal";
 
 const InitData = {
     'urlapilist':'credit/operacoes-contratadas', 
@@ -28,6 +29,8 @@ const IndexCredit = ({mes, ano}) => {
     const user = JSON.parse(localStorage.getItem("user"))
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate();
+    const {uuid} = useParams()
+    const [modal, setModal] = useState({show:false})
 
     const Search = async (urlapi) => {
         const token = localStorage.getItem("token")
@@ -80,8 +83,16 @@ const IndexCredit = ({mes, ano}) => {
     const submit = (type, data, id) => {
         if (type == 'add'){
             setSearchResults([...searchResults, data])
+            setShowModal({show:false})
         }
-        setShowModal({show:false})
+        else if (type === 'edit' && searchResults){
+            setSearchResults([...searchResults.map(reg =>(
+                reg.id === data.id ? data : reg
+            ))])
+        }
+        else if (type === 'delete'){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
+        }
     }
 
     const handleFieldChange = e => {
@@ -95,7 +106,7 @@ const IndexCredit = ({mes, ano}) => {
     const submitExcel = async e => {
         e.preventDefault()
         try {
-            const response = await fetch(`${process.env.REACT_APP_API_URL}/analytics/credit/convert-to-xls`, {
+            const response = await fetch(`${process.env.REACT_APP_API_URL}/credit/convert-to-xls`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -116,6 +127,12 @@ const IndexCredit = ({mes, ano}) => {
     };
    
     useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_operacoes_contratadas") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
+    },[])
+
+    useEffect(() => {
         const getdata = async () =>{
             Search(InitData.urlapilist)
         }
@@ -123,23 +140,26 @@ const IndexCredit = ({mes, ano}) => {
             const data = await fetchCreditData()
             setMetaData(data)
         }
-        if ((user.permissions && user.permissions.indexOf("view_operacoes_contratadas") === -1) && !user.is_superuser){
-            navigate("/error/403")
+        if (uuid){
+            setModal({show:true})
         }
-        if (!metadata){
-            getmetadata()
-        }
-        if (searchResults) {
-            setDataexcel({html_content:document.querySelector("table").outerHTML})
-            if (searchResults.length > 0){
-                const soma = searchResults.reduce((total, objeto) => total + Number(objeto.valor_operacao), 0);
-                setSomadosValores(soma);
+        else{
+            setModal({show:false})
+            if (!metadata){
+                getmetadata()
             }
-        } else {
-            getdata()
-            setSomadosValores(0);
+            if (searchResults) {
+                setDataexcel({html_content:document.querySelector("table").outerHTML})
+                if (searchResults.length > 0){
+                    const soma = searchResults.reduce((total, objeto) => total + Number(objeto.valor_operacao), 0);
+                    setSomadosValores(soma);
+                }
+            } else {
+                getdata()
+                setSomadosValores(0);
+            }
         }
-    },[searchResults])
+    },[uuid, searchResults])
 
     return (
         <>
@@ -254,6 +274,7 @@ const IndexCredit = ({mes, ano}) => {
             </Placeholder>    
         </div>   
         }
+        <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
             size="xl"
             show={showmodal.show}

@@ -39,14 +39,8 @@ const GlebaForm = ({ hasLabel, type, submit, data}) => {
           navigate("/auth/login");
         }
         else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            submit('edit', {...data, list_propriedades: data.list_propriedades.map(l => l.label).join(", ")})
-            toast.success("Registro Atualizado com Sucesso!")
-          }
-          else{
             submit('add', {...data, list_propriedades: data.list_propriedades.map(l => l.label).join(", ")})
             toast.success("Registro Efetuado com Sucesso!")
-          }
         }
     } catch (error) {
         console.error('Erro:', error);

@@ -20,12 +20,12 @@ const InitData = {
 const IndexProdPecuaria= ({gleba}) => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
-    const {id} = useParams()
+    const {uuid} = useParams()
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState({show:false})
 
     const onClick = async (pk, uuid) =>{
-        const gleba = await GetRecord(id, 'glebas/coordenadas');
+        const gleba = await GetRecord(uuid, 'glebas/coordenadas');
         setShowModal({show:true, data:{gleba:gleba, id:pk}})
     }
 
@@ -50,7 +50,7 @@ const IndexProdPecuaria= ({gleba}) => {
             navigate("/error/403")
         }
         const getdata = async () =>{
-            const status = await HandleSearch('', InitData.urlapilist, setSearchResults, `?gleba=${id}`)
+            const status = await HandleSearch('', InitData.urlapilist, setSearchResults, `?gleba=${uuid}`)
             if (status === 401) navigate("/auth/login");
         }
         if (!searchResults){
@@ -68,7 +68,7 @@ const IndexProdPecuaria= ({gleba}) => {
             pagination
             perPage={15}
         >
-            <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
+            <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3 mt-1" xs={2} xl={12} sm={8}>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
                     <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
                         style={{padding: '2px 5px'}} onClick={() =>{setShowModal({show:true})}}
@@ -97,25 +97,23 @@ const IndexProdPecuaria= ({gleba}) => {
             </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
-            size="xl"
+            size="lg"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName={showmodal.data ? 'mt-1 ps-0' : 'mt-7'}
             aria-labelledby="example-modal-sizes-title-lg"
+            centered scrollable
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Produção Pecuária
+                    {!showmodal.data && 'Adicionar'} Produção Pecuária
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
-                    <Row className="flex-center sectionform">  
+                <Modal.Body className="px-3 py-2">
                     {!showmodal.data 
                         ? <FormProdPecuaria hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit} gleba={gleba.id}/>
                         : <EditProdPecuaria gleba={gleba} id={showmodal.data.id} submit={submit} />
                     }
-                    </Row>
             </Modal.Body>
         </Modal>
         </>

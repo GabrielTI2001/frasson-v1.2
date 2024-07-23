@@ -48,7 +48,6 @@ import ReportCobrancas from '../App/Finances/Reports/Cobrancas';
 //Glebas
 import IndexGlebas from '../App/Glebas/Index';
 import MapaGlebas from '../App/Glebas/Mapa';
-import ViewGleba from '../App/Glebas/View';
 //Inbox
 import Notifications from '../App/Inbox/Index';
 //Irrigation
@@ -106,7 +105,7 @@ import InsertPoints from '../App/Services/Tools/InsertPoints';
 import KMLPolygon from '../App/Services/Tools/KMLPolygon';
 import ServicesMaps from '../App/Services/Maps';
 import WebSocketComponent from '../App/Pipeline/Websocket';
-import ViewCredit from '../App/Credit/View';
+// import ViewCredit from '../App/Credit/View';
 import IndexContratosAmbiental from '../App/Finances/ContratosAmbiental/Index';
 import IndexPVTEC from '../App/Comercial/PVTEC/Index';
 
@@ -190,7 +189,7 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/credit">
           <Route path="" element={<IndexCredit />}/>
-          <Route path=":uuid" element={<ViewCredit />}/>
+          <Route path=":uuid" element={<IndexCredit />}/>
         </Route>
         <Route path="/comercial">
           <Route path="pvtec" element={<IndexPVTEC />}/>
@@ -237,7 +236,7 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/glebas">
           <Route path="" element={<IndexGlebas />}/>
-          <Route path=":id" element={<ViewGleba />}/>
+          <Route path=":uuid" element={<IndexGlebas />}/>
           <Route path="map" element={<MapaGlebas />}/>
         </Route>
         <Route path="/home" element={<Home />} />

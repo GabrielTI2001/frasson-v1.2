@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Spinner} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../components/common/advance-table/AdvanceTableSearchBox';
@@ -10,10 +10,10 @@ import { Link } from "react-router-dom";
 import { columnsGleba} from "./Data";
 import { HandleSearch, RetrieveRecord } from "../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
-import ModalDelete from "../../components/Custom/ModalDelete";
 import GlebaForm from "./Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
+import ModalRecord from "./Modal";
 
 const InitData = {
     'columns':columnsGleba, 'urlapilist':'glebas/index', 
@@ -25,22 +25,12 @@ const IndexGlebas = () => {
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState({show:false})
-    const [modalDelete, setModalDelete] = useState({show:false, link:''})
+    const [modal, setModal] = useState({show:false, link:''})
+    const {uuid} = useParams()
 
-    const onClick = (data, type) =>{
-        if ((user.permissions && user.permissions.indexOf("view_glebas_areas") === -1) && !user.is_superuser){
-           navigate("/error/403")
-        }
-        if (type === 'view'){
-            const url = `${InitData.urlview}${data.uuid}`
-            navigate(url)
-        }
-        else if (type === 'edit'){
-            RetrieveRecord(data.uuid, 'glebas/index', (data)=>{setShowModal({show:true, data:data})})
-        }
-        else if (type === 'delete'){
-            setModalDelete({show:true, link: `${process.env.REACT_APP_API_URL}/glebas/index/${data.uuid}/`})
-        }
+    const onClick = (id, uuid) =>{
+        const url = `${InitData.urlview}${uuid}`
+        navigate(url)
     }
 
     const submit = (type, data, id) => {
@@ -49,24 +39,35 @@ const IndexGlebas = () => {
             setSearchResults([...searchResults, data])
         }
         if (type === 'edit'){
-            setShowModal({showmodal:false})
-            setSearchResults(searchResults.map(s => s.id === data.id ? data : s))
+            if (searchResults){
+                setSearchResults(searchResults.map(s => s.id === data.id ? data : s))
+            }
         }
         if (type === 'delete'){
-            setModalDelete({show:false})
             setSearchResults(searchResults.filter(s => s.uuid !== data))
         }
     }
 
     useEffect(()=>{
-        const getdata = async () =>{
+        if ((user.permissions && user.permissions.indexOf("view_cadastro_glebas") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
+    },[])
+    useEffect(() => {
+        const search = async () => {
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
             if (status === 401) navigate("/auth/login");
         }
-        if (!searchResults){
-            getdata()
+        if (uuid){
+            setModal({show:true})
         }
-    },[])
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
@@ -116,9 +117,7 @@ const IndexGlebas = () => {
                 tableProps={{
                     bordered: true,
                     striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden',
-                    showactions: 'true',
-                    showview: 'true'
+                    className: 'fs-xs mb-0 overflow-hidden'
                 }}
                 Click={onClick}
             />
@@ -132,6 +131,7 @@ const IndexGlebas = () => {
                 />
             </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+        <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
             size="xl"
             show={showmodal.show}
@@ -151,7 +151,6 @@ const IndexGlebas = () => {
                     </Row>
             </Modal.Body>
         </Modal>
-        <ModalDelete show={modalDelete.show} link={modalDelete.link} close={() => setModalDelete({show: false, link:''})} update={submit}/>
         </>
     );
   };

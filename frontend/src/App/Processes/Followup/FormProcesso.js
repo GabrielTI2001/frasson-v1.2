@@ -12,7 +12,7 @@ const FormProcesso = ({type, data, submit}) => {
     const [formData, setformData] = useState({user:user.id});
     
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/processes/followup/${type == 'edit' ? data.processo : ''}/`
+        const link = `${process.env.REACT_APP_API_URL}/processes/followup/${type == 'edit' ? data.id : ''}/`
         const method = type == 'edit' ? 'PUT' : 'POST';
         try {
             const response = await fetch(link, {
