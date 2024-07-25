@@ -126,7 +126,7 @@ const IndexBenfeitorias = () => {
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <ModalBenfeitoria show={modal.show} reducer={submit}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal}
             onHide={() => setShowModal(false)}
             dialogClassName="mt-7"
@@ -138,7 +138,7 @@ const IndexBenfeitorias = () => {
                 </Modal.Title>
                 <CloseButton onClick={() => setShowModal(false)}/>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="pb-0">
                 <Row className="flex-center sectionform">
                     <BenfeitoriaForm hasLabel type='add' submit={submit}/>
                 </Row>

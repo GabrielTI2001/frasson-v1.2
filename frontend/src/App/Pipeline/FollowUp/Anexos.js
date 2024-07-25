@@ -43,7 +43,7 @@ export const Anexos = ({ pvtec }) => {
           formDataToSend.append(key, data[key]);
         }
       }
-      api.post('pipeline/card-anexos/', formDataToSend, { headers: { Authorization: `bearer ${token}` },
+      api.post('pipeline/card-anexos/', formDataToSend, { headers: { Authorization: `Bearer ${token}` },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setProgress(percentCompleted);

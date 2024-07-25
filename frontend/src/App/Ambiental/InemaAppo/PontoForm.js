@@ -10,7 +10,7 @@ import AsyncSelect from 'react-select/async';
 import { useAppContext } from '../../../Main';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 
-const PontoForm = ({ hasLabel, type, data}) => {
+const PontoForm = ({ hasLabel, type, data, update}) => {
   const channel = new BroadcastChannel('meu_canal');
   const {config: {theme}} = useAppContext();
   const {ambientalState:{appo}, ambientalDispatch} = useContext(AmbientalContext)
@@ -58,6 +58,7 @@ const PontoForm = ({ hasLabel, type, data}) => {
             ambientalDispatch({type:'TOGGLE_MODAL'})
           }
         }
+        update()
     } catch (error) {
         console.error('Erro:', error);
     }

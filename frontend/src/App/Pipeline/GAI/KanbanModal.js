@@ -86,7 +86,7 @@ const KanbanModal = ({show, movercard}) => {
 
   const handleSubmit = (formData) =>{
     if (formData){
-      api.put(`pipeline/fluxos/gestao-ambiental/${code}/`, formData, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`pipeline/fluxos/gestao-ambiental/${code}/`, formData, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         kanbanDispatch({
           type: 'UPDATE_TASK_CARD',

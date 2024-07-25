@@ -55,7 +55,7 @@ const PVTEC = ({card, updatedactivity, isgc}) => {
           formDataToSend.append(key, formData[key]);
         }
       }
-      api.put(`pipeline/pvtec/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`pipeline/pvtec/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         toast.success("PVTEC Atualizada com Sucesso!")
         setPvtecs(pvtecs.map(p => p.uuid === uuid ? response.data : p))

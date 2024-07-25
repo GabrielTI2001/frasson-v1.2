@@ -1,24 +1,18 @@
 import React, { useEffect, useState, useContext } from 'react';
-import PropTypes from 'prop-types';
-import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col, Row} from 'react-bootstrap';
-import { fetchEmpresa, fetchMunicipio} from '../Data';
-import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
+import { fieldsASV } from '../Data';
 import { AmbientalContext } from '../../../context/Context';
 import { useAppContext } from '../../../Main';
-import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import RenderFields from '../../../components/Custom/RenderFields';
 
-const ASVForm = ({ hasLabel, type, addarea}) => {
+const ASVForm = ({ hasLabel, type, addarea, reducer}) => {
   const {config: {theme}} = useAppContext();
-  // const user = JSON.parse(localStorage.getItem('user'))
+  const user = JSON.parse(localStorage.getItem('user'))
   const {ambientalState, ambientalDispatch} = useContext(AmbientalContext)
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({created_by:user.id});
   const [message, setMessage] = useState()
-  const channel = new BroadcastChannel('meu_canal');
   const navigate = useNavigate();
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
@@ -52,12 +46,12 @@ const ASVForm = ({ hasLabel, type, addarea}) => {
             ambientalDispatch({type:'SET_DATA', payload:{
               asv: {coordenadas:ambientalState.asv.areas, ...data}
             }})
-            channel.postMessage({ tipo: 'atualizar_asv', asv_id:ambientalState.asv.id, reg:data});
             toast.success("Registro Atualizado com Sucesso!")
           }
           else{
             toast.success("Registro Efetuado com Sucesso!")
-            navigate(`/ambiental/inema/asv/edit/${data.uuid}`);
+            navigate(`/ambiental/inema/asv/${data.uuid}`);
+            reducer('add', data)
           }
         }
     } catch (error) {
@@ -116,192 +110,9 @@ const ASVForm = ({ hasLabel, type, addarea}) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row'>
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Portaria*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Portaria*' : ''}
-            value={formData.portaria || ''}
-            name="portaria"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.portaria : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-            {hasLabel && <Form.Label className='fw-bold mb-1'>Nº Processo INEMA*</Form.Label>}
-            <Form.Control
-              placeholder={!hasLabel ? 'Nº Processo INEMA' : ''}
-              value={formData.processo || ''}
-              name="processo"
-              onChange={handleFieldChange}
-              type="text"
-            />
-            <label className='text-danger'>{message ? message.processo : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Requerente*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Nome Requerente' : ''}
-            value={formData.requerente || ''}
-            name="requerente"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.requerente : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Área Total (ha)*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Área' : ''}
-            value={formData.area_total || ''}
-            name="area_total"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.area_total : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Data Formação</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'Data Publicação' : ''}
-                value={formData.data_formacao || ''}
-                name="data_formacao"
-                onChange={handleFieldChange}
-                type="date"
-              />
-              <label className='text-danger'>{message ? message.data_formacao : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Data Publicação*</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'Data Publicação' : ''}
-                value={formData.data_publicacao || ''}
-                name="data_publicacao"
-                onChange={handleFieldChange}
-                type="date"
-              />
-              <label className='text-danger'>{message ? message.data_publicacao : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-              {hasLabel && <Form.Label className='fw-bold mb-1'>Data Vencimento</Form.Label>}
-              <Form.Control
-                placeholder={!hasLabel ? 'Data Vencimento' : ''}
-                value={formData.data_vencimento|| ''}
-                name="data_vencimento"
-                onChange={handleFieldChange}
-                type="date"
-              />
-              <label className='text-danger'>{message ? message.data_vencimento : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ Requerente*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'CPF/CNPJ Requerente' : ''}
-            value={formData.cpf_cnpj || ''}
-            name="cpf_cnpj"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
-        </Form.Group>
-
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Localidade*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Localidade' : ''}
-            value={formData.localidade || ''}
-            name="localidade"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.localidade : ''}</label>
-        </Form.Group>
-
-        {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-                {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
-                <AsyncSelect loadOptions={fetchMunicipio} name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-                  defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio : null) : null }
-                  onChange={(selected) => {
-                  setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    municipio: selected.value
-                    }));
-                  }}>
-                </AsyncSelect>
-                <label className='text-danger'>{message ? message.municipio : ''}</label>
-            </Form.Group>        
-        )}
-
-        {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-                {hasLabel && <Form.Label className='fw-bold mb-1'>Empresa Consultoria</Form.Label>}
-                <AsyncSelect loadOptions={fetchEmpresa} name='empresa' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-                  defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.empresa : null) : null }
-                  onChange={(selected) => {
-                  setFormData((prevFormData) => ({
-                    ...prevFormData,
-                    empresa: selected.value
-                    }));
-                  }}>
-                </AsyncSelect>
-                <label className='text-danger'>{message ? message.empresa : ''}</label>
-            </Form.Group>        
-        )}
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Nome do Técnico</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Nome do Técnico' : ''}
-            value={formData.tecnico || ''}
-            name="tecnico"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.tecnico : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Rendimento Lenhoso (m<sup>3</sup>)</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Rendimento' : ''}
-            value={formData.rendimento || ''}
-            name="rendimento"
-            onChange={handleFieldChange}
-            type="number"
-          />
-          <label className='text-danger'>{message ? message.rendimento : ''}</label>
-        </Form.Group>
-
-        {ambientalState && ambientalState.asv.file &&
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo PDF</Form.Label>}<br></br>
-          <div className='mt-2'>     
-            <Link to={`${ambientalState.asv.file}`} target="__blank" className="px-0 fw-bold text-danger">
-                <FontAwesomeIcon icon={faFilePdf} className="me-2"></FontAwesomeIcon>Visualizar PDF
-            </Link>
-          </div>
-        </Form.Group>} 
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Substituir ou inserir arquivo PDF</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Arquivo PDF' : ''}
-            name="file"
-            onChange={handleFileChange}
-            type="file"
-          />
-          <label className='text-danger'>{message ? message.file : ''}</label>
-        </Form.Group>
+        <RenderFields fields={fieldsASV} formData={formData} changefield={handleFieldChange}  changefile={handleFileChange}
+          defaultoptions={defaultoptions} hasLabel={hasLabel} message={message} type={type}
+        />
         <Row> 
           <Form.Group className={`mb-0 col-auto ${type === 'edit' ? 'text-start' : 'text-end'}`}>
             <Button

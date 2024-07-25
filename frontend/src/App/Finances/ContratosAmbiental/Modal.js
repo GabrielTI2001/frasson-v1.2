@@ -98,7 +98,7 @@ const ModalContract = ({show, reducer}) => {
       }
     }
     if (formData){
-      api.put(`finances/contratos-ambiental/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`finances/contratos-ambiental/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         reducer('edit', {...response.data, info_status:
           {color:response.data.status === 'EA' ? 'warning' : 'success', text:response.data.status_display}
@@ -116,6 +116,11 @@ const ModalContract = ({show, reducer}) => {
         if (erro.response.status === 400){
           toast.error(erro.response.data.non_fields_errors, {autoClose:4000})
           setMessage(erro.response.data)
+        }
+        if (erro.response.status === 401){
+          localStorage.setItem("login", JSON.stringify(false));
+          localStorage.setItem('token', "");
+          navigate("/auth/login")
         }
         console.error('erro: '+erro);
       })

@@ -26,15 +26,12 @@ const GoogleMap = ({
 }) => {
 
   const mapMarker = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: token_api
   });
-
   const {
     config: { isDark }
   } = useAppContext();
-
   const [mapStyles, setMapStyles] = useState(mapStyle);
   const [mapOptions, setMapOptions] = useState({
     mapTypeControl: true,
@@ -48,9 +45,7 @@ const GoogleMap = ({
   });
 
   const [activeMarker, setActiveMarker] = useState(null);
-
   const [infoPonto, setInfoPonto] = useState()
-
   const token = localStorage.getItem("token")
   const navigate = useNavigate();
 

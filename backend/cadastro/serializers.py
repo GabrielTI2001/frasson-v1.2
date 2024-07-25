@@ -118,23 +118,6 @@ class ListAnalisesSolo(serializers.ModelSerializer):
         model = Analise_Solo
         fields = ['id', 'uuid', 'data_coleta', 'str_cliente', 'localizacao', 'status']
 
-class detailAnalisesSolo(serializers.ModelSerializer):
-    status = serializers.SerializerMethodField()
-    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
-    localizacao = serializers.CharField(source='fazenda.nome', read_only=True)
-    creation = serializers.SerializerMethodField(read_only=True)
-    def get_creation(self, obj):
-        return {'created_at':obj.created_at, 'created_by':f"{obj.created_by.first_name} {obj.created_by.last_name}"}
-    def get_status(self, obj):
-        status = {
-            'text': 'Aguardando Resultado' if obj.calcio_cmolc_dm3 is None else 'Concluída',
-            'color': 'warning' if obj.calcio_cmolc_dm3 is None else 'success'
-        }
-        return status
-    class Meta:
-        model = Analise_Solo
-        fields = '__all__'
-
 class resultsAnalisesSolo(serializers.ModelSerializer):
     other_info = serializers.SerializerMethodField(read_only=True)
     results = serializers.SerializerMethodField(read_only=True)
@@ -142,13 +125,20 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     localizacao = serializers.CharField(source='fazenda.nome', read_only=True)
     token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
+    status = serializers.SerializerMethodField(read_only=True)
+    def get_status(self, obj):
+        status = {
+            'text': 'Aguardando Resultado' if obj.calcio_cmolc_dm3 is None else 'Concluída',
+            'color': 'warning' if obj.calcio_cmolc_dm3 is None else 'success'
+        }
+        return status
     def get_results(self, obj):
         data = {
-            'calcio': Frasson.avaliar_nivel_nutriente_solo('calcio', obj.calcio_cmolc_dm3),
-            'sodio': locale.format_string('%.2f', obj.sodio, True) if obj.sodio else '-',
-            'magnesio': Frasson.avaliar_nivel_nutriente_solo('magnesio', obj.magnesio_cmolc_dm3),
-            'aluminio_cmolc_dm3': locale.format_string('%.2f', obj.aluminio_cmolc_dm3, True) if obj.aluminio_cmolc_dm3 else '-',
-            'potassio': Frasson.avaliar_nivel_nutriente_solo('potassio', obj.potassio_cmolc_dm3),
+            'calcio_cmolc_dm3': Frasson.avaliar_nivel_nutriente_solo('calcio', obj.calcio_cmolc_dm3),
+            'sodio': obj.sodio,
+            'magnesio_cmolc_dm3': Frasson.avaliar_nivel_nutriente_solo('magnesio', obj.magnesio_cmolc_dm3),
+            'aluminio_cmolc_dm3': obj.aluminio_cmolc_dm3,
+            'potassio_cmolc_dm3': Frasson.avaliar_nivel_nutriente_solo('potassio', obj.potassio_cmolc_dm3),
             'fosforo': Frasson.avaliar_nivel_nutriente_solo('fosforo', obj.fosforo),
             'fosforo_rem': Frasson.avaliar_nivel_nutriente_solo('fosforo_rem', obj.fosforo_rem),
             'enxofre': Frasson.avaliar_nivel_nutriente_solo('enxofre', obj.enxofre),
@@ -157,13 +147,13 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
             'ferro': Frasson.avaliar_nivel_nutriente_solo('ferro', obj.ferro),
             'manganes': Frasson.avaliar_nivel_nutriente_solo('manganes', obj.manganes),
             'boro': Frasson.avaliar_nivel_nutriente_solo('boro', obj.boro),
-            'h_mais_al': locale.format_string('%.2f', obj.h_mais_al, True) if obj.h_mais_al else '-',
-            'mat_org': Frasson.avaliar_nivel_nutriente_solo('materia_organica', obj.mat_org_dag_dm3),
+            'h_mais_al': obj.h_mais_al,
+            'mat_org_dag_dm3': Frasson.avaliar_nivel_nutriente_solo('materia_organica', obj.mat_org_dag_dm3),
             'ph_cacl2': Frasson.avaliar_nivel_nutriente_solo('pH_CaCl', obj.ph_cacl2),
             'ph_h2O': Frasson.avaliar_nivel_nutriente_solo('pH_H2O', obj.ph_h2O),
-            'argila_percentual': locale.format_string('%.2f', obj.argila_percentual, True) if obj.argila_percentual else '-',
-            'silte_percentual': locale.format_string('%.2f', obj.silte_percentual, True) if obj.silte_percentual else '-',
-            'areia_percentual': locale.format_string('%.2f', obj.areia_percentual, True) if obj.areia_percentual else '-',
+            'argila_percentual': obj.argila_percentual,
+            'silte_percentual': obj.silte_percentual,
+            'areia_percentual': obj.areia_percentual
         }
         return data
     def get_other_info(self, obj):
@@ -309,7 +299,11 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
     grupo_info = serializers.CharField(source='grupo.nome_grupo', required=False, read_only=True)
     contas_bancarias = serializers.SerializerMethodField(read_only=True)
     str_natureza = serializers.CharField(source='get_natureza_display', read_only=True)
+    str_categoria = serializers.CharField(source='categoria.categoria', read_only=True)
     str_municipio = serializers.SerializerMethodField(read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_str_municipio(self, obj):
         return obj.municipio.nome_municipio + ' - ' + obj.municipio.sigla_uf
     def get_contas_bancarias(self, obj):
@@ -343,7 +337,7 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if not self.instance:
             for field_name, field in self.fields.items():
-                if field_name in ['razao_social', 'municipio', 'cpf_cnpj', 'logradouro', 'cep_logradouro']:
+                if field_name in ['razao_social', 'municipio', 'cpf_cnpj', 'logradouro', 'cep_logradouro', 'categoria']:
                     field.required = True
         else:
             for field_name, field in self.fields.items():

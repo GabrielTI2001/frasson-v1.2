@@ -45,7 +45,7 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
         formDataToSend.append(key, filteredData[key]);
       }
     }
-    api.post('pipeline/card-anexos/', formDataToSend, {headers: {Authorization: `bearer ${token}`}, 
+    api.post('pipeline/card-anexos/', formDataToSend, {headers: {Authorization: `Bearer ${token}`}, 
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         setProgress(percentCompleted);
@@ -64,6 +64,11 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
       console.log(error)
       setFormData({...formData, file:null})
       if (error.response.status === 400) {toast.error(error.response.data.file[0])}
+      if (error.response.status === 401){
+        localStorage.setItem("login", JSON.stringify(false));
+        localStorage.setItem('token', "");
+        navigate("/auth/login")
+      }
       else{toast.error("Ocorreu Um Erro!")}
       setaccFiles()
     })

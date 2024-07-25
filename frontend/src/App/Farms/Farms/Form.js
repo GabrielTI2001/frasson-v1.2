@@ -1,11 +1,8 @@
 import React, { useEffect, useState} from 'react';
-import AsyncSelect from 'react-select/async';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
-import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
+import { Button, Form, Spinner } from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
-import { SelectSearchOptions } from '../../../helpers/Data';
 import RenderFields from '../../../components/Custom/RenderFields';
 import { fieldsFarm } from '../Data';
 
@@ -19,6 +16,7 @@ const FarmForm = ({ hasLabel, type, submit, data}) => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [defaultoptions, setDefaultOptions] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
     const link = `${process.env.REACT_APP_API_URL}/farms/farms/${type === 'edit' ? data.uuid+'/':''}`
@@ -49,9 +47,11 @@ const FarmForm = ({ hasLabel, type, submit, data}) => {
     } catch (error) {
         console.error('Erro:', error);
     }
+    setIsLoading(false)
   };
 
   const handleSubmit = async e => {
+    setIsLoading(true)
     setMessage(null)
     e.preventDefault();
     const formDataToSend = new FormData();
@@ -115,14 +115,19 @@ const FarmForm = ({ hasLabel, type, submit, data}) => {
         <RenderFields fields={fieldsFarm} formData={formData} changefile={handleFileChange} changefield={handleFieldChange} 
           defaultoptions={defaultoptions} hasLabel={hasLabel} message={message} type={type}
         />
-        <Form.Group className={`mb-0 text-end`}>
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
           <Button
-            className="w-40"
-            type="submit"
-            >
-              {type === 'edit' ? "Atualizar Imóvel Rural" : "Cadastrar Imóvel Rural"}
+            className="w-50"
+            type="submit" disabled={isLoading}
+          >
+              {isLoading ? 
+                <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/>
+              : 
+                'Cadastrar Imóvel Rural'
+              }
+              
           </Button>
-        </Form.Group>    
+        </Form.Group>      
       </Form>
     </>
   );

@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Card, Button, Spinner } from 'react-bootstrap';
 import { Link } from "react-router-dom";
-import { faAngleDown, faAnglesDown, faAnglesUp, faArrowDown, faArrowUp, faArrowUpRightFromSquare, faCircleXmark, faClose, faPencil, faTrash, faTrashCan, faX, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faAnglesDown, faAnglesUp, faArrowUpRightFromSquare, faTrashCan, faX} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAppContext } from '../../Main';
-import { SkeletBig } from './Skelet';
 
 const ExpandableCard = ({ data, attr1, attr2, className, url, children, footer, clickdelete, title, auto, close}) => {
   const {config: {theme}} = useAppContext();

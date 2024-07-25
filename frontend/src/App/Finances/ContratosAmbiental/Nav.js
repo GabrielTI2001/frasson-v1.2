@@ -1,4 +1,4 @@
-import { faComment, faFilter, faInfo, faInfoCircle, faMoneyBill, faPaperclip } from "@fortawesome/free-solid-svg-icons"
+import { faFilter, faInfoCircle, faMoneyBill, faPaperclip } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Nav } from "react-bootstrap"
 

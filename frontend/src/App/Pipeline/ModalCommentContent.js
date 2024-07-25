@@ -46,7 +46,7 @@ const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc}) => {
     e.preventDefault(); 
     const filteredData = Object.entries(formData).filter(([key, value]) => value !== null).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
     if (formData.text !== '' && formData.text !== null){
-      api.post('pipeline/card-comments/', filteredData, {headers: {Authorization: `bearer ${token}`}})
+      api.post('pipeline/card-comments/', filteredData, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         setFormData({...formData, text:''})
         setComentarios([response.data, ...comentarios])

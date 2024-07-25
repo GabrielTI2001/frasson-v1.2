@@ -60,7 +60,6 @@ const EditForm = ({
                 setFormData({ ...formData, atividade: target.value })
               }
               defaultValue={data || ''}
-              value={formData.atividade}
             >
               <option value={undefined}>----</option>
               <option value='AC'>Ação com Cliente</option>
@@ -86,7 +85,6 @@ const EditForm = ({
                 setFormData({ ...formData, status: target.value })
               }
               defaultValue={data || ''}
-              value={formData.status}
             >
               <option value='EA'>Em Andamento</option>
               <option value='OK'>Concluído</option>
@@ -95,7 +93,6 @@ const EditForm = ({
           {fieldkey === 'orientacoes' &&( defaultselected && <>
             <Form.Label className='mb-0 fw-bold fs--1'>Orientações</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''} as='textarea' rows={5}
-              value={formData.orientacoes}
               onChange={({target}) => {
                 setFormData(({...formData, orientacoes: target.value}));
               }

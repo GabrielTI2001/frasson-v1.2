@@ -4,8 +4,7 @@ import api from '../../../context/data.js';
 import { GetRecord } from '../../../helpers/Data.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAppContext } from '../../../Main.js';
-import CardInfo, {CardTitle} from '../../Pipeline/CardInfo.js';
+import {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
@@ -21,7 +20,6 @@ const ModalRecord = ({show, reducer}) => {
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [record, setRecord] = useState();
-  const {config: {theme}} = useAppContext();
   const [activeTab, setActiveTab] = useState('main');
 
   const handleClose = () => {
@@ -60,7 +58,7 @@ const ModalRecord = ({show, reducer}) => {
 
   const handleSubmit = (formData) =>{
     if (formData){
-      api.put(`farms/farms/${uuid}/`, formData, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`farms/farms/${uuid}/`, formData, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         reducer('edit', {...response.data, info_status:
           {color:response.data.status === 'EA' ? 'warning' : 'success', text:response.data.status_display}
@@ -125,7 +123,7 @@ const ModalRecord = ({show, reducer}) => {
                           <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
                             <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
                             {f.type === 'select' ?
-                              <div className="fs--1 row-10">{record[f.string]}</div>
+                              <div className="fs--1 row-10">{record[f.string] || '-'}</div>
                             : f.type === 'select2' ? f.ismulti ? 
                                 <div className="fs--1 row-10">{record[f.list].map(l => l[f.string]).join(', ')}</div>
                               : 
@@ -133,12 +131,7 @@ const ModalRecord = ({show, reducer}) => {
                                 <div className="fs--1 row-10">{record[f.string] || '-'}</div>
                               :
                                 <div className="fs--1 row-10">{record[f.data] && record[f.data][f.attr_data]}</div>
-                            : f.type === 'file' && f.name === 'kml' ? 
-                              <div>
-                                <Link to={`${process.env.REACT_APP_API_URL}/farms/kml/regime/${record.uuid}`} className='btn btn-secondary py-0 px-2 me-2 fs--1'>
-                                    <FontAwesomeIcon icon={faGlobeAmericas} className='me-1'/>KML
-                                </Link>
-                              </div>
+                            : f.type === 'file' && f.name === 'kml' ? <div></div>
                             : f.type === 'date' ? 
                               <div className="fs--1 row-10">{record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
                             : 

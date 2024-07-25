@@ -7,7 +7,6 @@ import {
   useJsApiLoader
 } from '@react-google-maps/api';
 import { useAppContext } from '../../Main';
-import { useNavigate } from 'react-router-dom';
 
 const KMLMap = ({
   mapStyle,
@@ -18,8 +17,6 @@ const KMLMap = ({
   token_api,
   urls
 }) => {
-
-  const mapMarker = 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
 
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: token_api
@@ -40,12 +37,6 @@ const KMLMap = ({
     center: initialCenter,
     styles: googleMapStyles[mapStyles]
   });
-
-  const [path, setPath] = useState([
-    { lat: 52.52549080781086, lng: 13.398118538856465 },
-    { lat: 52.48578559055679, lng: 13.36653284549709 },
-    { lat: 52.48871246221608, lng: 13.44618372440334 }
-  ]);
 
   useEffect(() => {
     if (darkStyle && isDark) setMapStyles(darkStyle);

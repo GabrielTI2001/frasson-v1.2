@@ -20,8 +20,6 @@ const InitData = {
 const IndexAnaliseSolo = () => {
     const user = JSON.parse(localStorage.getItem("user"))
     const [searchResults, setSearchResults] = useState();
-    const [analise, setAnalise] = useState();
-    const [modaldelete, setModalDelete] = useState({show:false, link:''})
     const [showmodal, setShowModal] = useState({show:false, type:''})
     const [modal, setModal] = useState({show:false})
     const navigate = useNavigate();
@@ -30,9 +28,6 @@ const IndexAnaliseSolo = () => {
     const onClick = (id, uuid) =>{
         const url = `${InitData.urlview}${uuid}`
         navigate(url)
-    }
-    const setter = (data) =>{
-        setAnalise(data)
     }
     const submit = (type, data) =>{
         if (type === 'add'){
@@ -124,7 +119,7 @@ const IndexAnaliseSolo = () => {
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal(false)}
             scrollable
@@ -136,7 +131,7 @@ const IndexAnaliseSolo = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         <AnaliseSoloForm hasLabel type='add' submit={submit}/>
                     </Row>

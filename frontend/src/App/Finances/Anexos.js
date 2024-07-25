@@ -16,7 +16,7 @@ export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
   const [formData, setFormData] = useState({contrato_ambiental:isgai ? record.id : null, 
     contrato_credito:isgc ? record.id : null, uploaded_by:user.id});
   const [accFiles, setaccFiles] = useState();
-  const {config: {theme, isRTL}} = useAppContext();
+  const {config: {theme}} = useAppContext();
   const [anexos, setAnexos] = useState();
   const token = localStorage.getItem("token")
   const [modaldel, setModaldel] = useState({show:false})
@@ -45,7 +45,7 @@ export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
         formDataToSend.append(key, filteredData[key]);
       }
     }
-    api.post('finances/anexos/', formDataToSend, {headers: {Authorization: `bearer ${token}`}, 
+    api.post('finances/anexos/', formDataToSend, {headers: {Authorization: `Bearer ${token}`}, 
       onUploadProgress: (progressEvent) => {
         const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
         setProgress(percentCompleted);
@@ -63,6 +63,11 @@ export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
       setIsUploading(false)
       setFormData({...formData, file:null})
       if (error.response.status === 400) {toast.error(error.response.data.file[0])}
+      if (error.response.status === 401){
+        localStorage.setItem("login", JSON.stringify(false));
+        localStorage.setItem('token', "");
+        navigate("/auth/login")
+      }
       else{toast.error("Ocorreu Um Erro!")}
       setaccFiles()
     })

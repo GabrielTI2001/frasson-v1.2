@@ -6,8 +6,7 @@ import { Link } from "react-router-dom";
 import { Placeholder } from "react-bootstrap";
 import PolygonMap from "../../../components/map/PolygonMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
-import {MapInfoDetailASV} from "./MapInfo";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { MapInfoDetailCAR } from "./MapInfo";
 
 const MapaCAR = () => {

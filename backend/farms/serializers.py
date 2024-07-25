@@ -103,7 +103,7 @@ class detailFarms(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if not self.instance:
             for field_name, field in self.fields.items():
-                if field_name in ['nome', 'matricula', 'municipio', 'proprietarios', 'endereco']:
+                if field_name in ['nome', 'matricula', 'municipio', 'proprietarios', 'endereco', 'codigo_car', 'area_total']:
                     field.required = True
                 else:
                     field.required = False

@@ -27,7 +27,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
   const [isDragActive, setIsDragActive] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { getRootProps: getRootProps, getInputProps: getInputProps } = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     multiple: true,
     onDrop: (acceptedFiles) => {
       setFormData({ ...formData, file: acceptedFiles });
@@ -226,19 +226,14 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
-          <Button
-            className="w-50"
-            type="submit"
-            >
-              {isLoading ? 
-                <Spinner size='sm' className='p-0'/>
-              : 
-                'Cadastrar Contrato'
-              }
-              
+          <Button className="w-50" type="submit" disabled={isLoading}>
+            {isLoading ? 
+              <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/>
+            : 
+              'Cadastrar Contrato'
+            }
           </Button>
-        </Form.Group>    
-      
+        </Form.Group>     
       </Form>
     </>
   );

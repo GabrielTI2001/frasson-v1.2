@@ -26,7 +26,7 @@ const AddAnotherFase = ({
   const {config: {theme}} = useAppContext();
 
   const submitform = () => {
-    api.post('/pipeline/fases/', {...formData, pipe:kanbanState.pipe.id}, {headers: {Authorization: `bearer ${token}`}})
+    api.post('/pipeline/fases/', {...formData, pipe:kanbanState.pipe.id}, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
       handleSubmit(response.data)
     })

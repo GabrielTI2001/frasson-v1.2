@@ -1,12 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react';
-import PropTypes from 'prop-types';
+import React, { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col} from 'react-bootstrap';
-import { fetchCaptacao, fetchFinalidade, fetchProprietario, fetchTipoEquipamento} from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
+import { SelectSearchOptions } from '../../../helpers/Data';
 
 const MachineryForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -20,8 +19,8 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [defaultoptions, setDefaultOptions] = useState()
-  const [estadocons, setEstadoCons] = useState([{label:'Novo'}, {label:'Seminovo'}, {label:'Antigo'}])
-  const [situacao, setSituacao] = useState([{label:'Quitado'}, {label:'Financiado'}])
+  const estadocons = useState([{label:'Novo'}, {label:'Seminovo'}, {label:'Antigo'}])
+  const situacao = useState([{label:'Quitado'}, {label:'Financiado'}])
 
   const handleApi = async (dadosform) => {
     const link = `${process.env.REACT_APP_API_URL}/register/machinery/${type === 'edit' ? uuid+'/':''}`
@@ -105,7 +104,9 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Proprietário da Máquina*</Form.Label>}
-            <AsyncSelect loadOptions={fetchProprietario} name='proprietario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect 
+              loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj', false, null, null, navigate)} 
+              name='proprietario' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.proprietario : null) : null }
               onChange={(selected) => {
               setFormData((prevFormData) => ({
@@ -120,7 +121,9 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Máquina*</Form.Label>}
-            <AsyncSelect loadOptions={fetchTipoEquipamento} name='tipo' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+            <AsyncSelect 
+              loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj', false, null, null, navigate)} 
+              name='tipo' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.tipo : null) : null }
               onChange={(selected) => {
               setFormData((prevFormData) => ({

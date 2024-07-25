@@ -3,7 +3,6 @@ import { Card, Row, Col, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTractor, faPersonDigging, faFlask, faPerson, faContactBook} from "@fortawesome/free-solid-svg-icons";
-import { fetchBenfeitorias, FetchAnaliseSolo } from "./Data";
 import { useAppContext } from "../../Main";
 import { GetRecord } from "../../helpers/Data";
 
@@ -14,8 +13,8 @@ const IndexCadGerais = () =>{
     const navigate = useNavigate()
     useEffect(()=>{
       const buscadados = async () =>{
-        const dadosbenfeitoria = await fetchBenfeitorias();
-        const dadosanalise = await FetchAnaliseSolo();
+        const dadosbenfeitoria = await GetRecord('', 'register/farm-assets');
+        const dadosanalise = await GetRecord('', 'register/analysis-soil');
         const dadosmaquinas = await GetRecord('', 'register/machinery');
         const dadospessoas = await GetRecord('', 'register/pessoal');
         const cartorios = await GetRecord('', 'register/cartorios');

@@ -118,7 +118,7 @@ const IndexPessoal = () => {
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <ModalPessoal show={modal.show} reducer={submit}/>
         <Modal
-            size="lg"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
             aria-labelledby="example-modal-sizes-title-lg"
@@ -131,7 +131,7 @@ const IndexPessoal = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         <PessoaForm type='add' hasLabel submit={submit}/>
                     </Row>

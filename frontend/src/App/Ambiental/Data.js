@@ -1,4 +1,3 @@
-
 export const fetchFinalidade = async (inputValue) => {
     try {
       const apiUrl = `${process.env.REACT_APP_API_URL}/environmental/inema/finalidade?search=${inputValue}`;
@@ -28,34 +27,6 @@ export const fetchMunicipio = async (inputValue) => {
       console.error('Erro ao carregar dados:', error);
     }
   };
-
-export const fetchCaptacao = async () => {
-  try {
-    const apiUrl = `${process.env.REACT_APP_API_URL}/environmental/inema/captacao`;
-    const response = await fetch(apiUrl,{
-      headers:{
-          'Content-Type': 'application/json'
-      }
-      }
-    );
-    const dataapi = await response.json();
-    if (response.status === 200){
-      const options = dataapi.length > 0 ? dataapi.map(b =>({
-          value: b.id,
-          label: b.description
-      })) : []
-      return {dados: options, status: response.status}
-    }
-    else if (response.status === 401){
-      localStorage.setItem("login", JSON.stringify(false));
-      localStorage.setItem('token', "");
-      return [];
-    }
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error);
-    return [];
-  }
-};
 
 export const fetchAquifero = async () => {
     try {
@@ -277,3 +248,59 @@ export const columnsASV = [
     headerProps: { className: 'text-900 p-3' }
   },
 ];
+
+export const fieldsOutorga = [
+  {name:'numero_portaria', label:'N° Portaria*', xl:3, sm:6, type:'text'},
+  {name:'data_publicacao', label:'Data Publicação*', xl:3, sm:6, type:'date'},
+  {name:'data_validade', label:'Data Vencimento*', xl:3, sm:6, type:'date'},
+  {name:'processo_frasson', label:'Conduzido Frasson?*', xl:3, sm:6, type:'select', string:'processo_frasson', boolean:true},
+  {name:'numero_processo', label:'N° Processo INEMA*', xl:4, sm:6, type:'text'},
+  {name:'nome_requerente', label:'Nome Requerente*', xl:4, sm:6, type:'text'},
+  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', xl:3, sm:6, type:'text'},
+  {name:'captacao', label:'Tipo Captação*', xl:3, sm:6, type:'select', string:'str_tipo_captacao'},
+  {name:'nome_propriedade', label:'Localidade*', xl:5, sm:6, type:'text'},
+  {name:'municipio', label:'Município Localização*', xl:4, sm:6, type:'select2', url:'register/municipios', attr1:'nome_municipio', 
+    attr2:'sigla_uf', string:'nome_municipio', params:'uf=BA'
+  },
+  {name:'finalidade', label:'Finalidade Outorga*', xl:4, sm:6, type:'select2', url:'environmental/inema/finalidade', attr1:'description', 
+    string:'str_finalidade'
+  },
+  {name:'area_ha', label:'Área Outorgada (ha)', xl:3, sm:6, type:'number'}, 
+  {name:'bacia_hidro', label:'Bacia Hidrográfica*', xl:5, sm:6, type:'text'},
+]
+
+export const fieldsAPPO = [
+  {name:'nome_requerente', label:'Nome Requerente*', xl:4, sm:6, type:'text'},
+  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', xl:4, sm:6, type:'text'},
+  {name:'numero_processo', label:'N° Processo INEMA*', xl:4, sm:6, type:'text'},
+  {name:'municipio', label:'Município Localização*', xl:4, sm:6, type:'select2', url:'register/municipios', attr1:'nome_municipio', 
+    attr2:'sigla_uf', string:'nome_municipio', params:'uf=BA'
+  },
+  {name:'nome_fazenda', label:'Localidade*', xl:4, sm:6, type:'text'},
+  {name:'aquifero', label:'Tipo Aquífero*', xl:4, sm:6, type:'select', string:'str_tipo_aquifero'},
+  {name:'data_documento', label:'Data Publicação*', xl:3, sm:6, type:'date'},
+  {name:'data_vencimento', label:'Data Vencimento*', xl:3, sm:6, type:'date'},
+  {name:'processo_frasson', label:'Conduzido Frasson?*', xl:3, sm:6, type:'select', string:'processo_frasson', boolean:true},
+  {name:'file', label:'Arquivo PDF', xl:3, sm:6, type:'file'}
+]
+
+export const fieldsASV = [
+  {name:'portaria', label:'Portaria*', xl:4, sm:6, type:'text'},
+  {name:'processo', label:'N° Processo INEMA*', xl:4, sm:6, type:'text'},
+  {name:'requerente', label:'Nome Requerente*', xl:4, sm:6, type:'text'},
+  {name:'area_total', label:'Área Total (ha)*', xl:3, sm:6, type:'number'}, 
+  {name:'data_formacao', label:'Data Formação', xl:3, sm:6, type:'date'},
+  {name:'data_publicacao', label:'Data Publicação*', xl:3, sm:6, type:'date'},
+  {name:'data_vencimento', label:'Data Vencimento*', xl:3, sm:6, type:'date'},
+  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', xl:4, sm:6, type:'text'},
+  {name:'localidade', label:'Localidade*', xl:5, sm:6, type:'text'},
+  {name:'municipio', label:'Município*', xl:4, sm:6, type:'select2', url:'register/municipios', attr1:'nome_municipio', 
+    attr2:'sigla_uf', string:'str_municipio', params:'uf=BA'
+  },
+  {name:'empresa', label:'Empresa Consultoria*', xl:4, sm:6, type:'select2', url:'environmental/inema/empresas', attr1:'razao_social', 
+    string:'str_empresa'
+  },
+  {name:'tecnico', label:'Nome do Técnico', xl:4, sm:6, type:'text'},
+  {name:'rendimento', label:'Rendimento Lenhoso', medida:'m', potencia:'3', xl:3, sm:6, type:'number'},
+  {name:'file', label:'Arquivo PDF', xl:3, sm:6, type:'file'}
+]

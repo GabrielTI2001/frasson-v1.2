@@ -25,7 +25,6 @@ const EditForm = ({
 
   useEffect(() => {
     if (show) {
-      let sel;
       switch(fieldkey){
         case 'servicos':
           const servs = data.map(b => ({value: b.value, label: b.label}));
@@ -60,8 +59,8 @@ const EditForm = ({
 
           {fieldkey === 'detalhes' &&( defaultselected && <>
             <Form.Label className='mb-0 fw-bold fs--1'>Detalhes da Negociação</Form.Label>
-            <Form.Control ref={inputRef} defaultValue={data || ''} as='textarea' rows={5}
-              value={formData.detalhes}
+            <Form.Control ref={inputRef} defaultValue={data || ''} 
+              as='textarea' rows={5}
               onChange={({target}) => {
                 setFormData(({...formData, detalhes: target.value}));
               }
@@ -109,7 +108,6 @@ const EditForm = ({
             <Form.Control ref={inputRef} defaultValue={data || ''}
               type='date'
               className='mb-1 fs--1 py-0 w-50'
-              value={formData.data_assinatura}
               onChange={({target}) => {
                   setFormData(({...formData, data_assinatura: target.value}));
                 }

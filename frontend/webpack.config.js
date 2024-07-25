@@ -3,6 +3,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WebpackRTLPlugin = require('@automattic/webpack-rtl-plugin');
 const FixStyleOnlyEntriesPlugin = require('webpack-fix-style-only-entries');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -53,5 +54,9 @@ module.exports = {
   resolve: {
     node: { fs: 'empty' },
     fallback: {"fs": false}
+  },
+  mode: 'production',
+  optimization: {
+    minimizer: [new TerserPlugin({ /* opções adicionais aqui */ })],
   },
 };

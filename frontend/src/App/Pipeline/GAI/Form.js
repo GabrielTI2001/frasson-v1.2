@@ -25,7 +25,7 @@ const ProductForm = ({
   const submit = async () => {
     const isEmpty = !Object.keys(formData).length;
     if (!isEmpty) {
-      api.post('pipeline/fluxos/gestao-ambiental/', formData, {headers: {Authorization: `bearer ${token}`}})
+      api.post('pipeline/fluxos/gestao-ambiental/', formData, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         kanbanDispatch({
           type: 'ADD_TASK_CARD',

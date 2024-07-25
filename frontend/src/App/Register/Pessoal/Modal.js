@@ -2,28 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { CloseButton, Col, Modal, Row, Tab } from 'react-bootstrap';
 import ModalMediaContent from '../../Pipeline/ModalMediaContent.js';
 import api from '../../../context/data.js';
-import { GetRecord } from '../../../helpers/Data.js';
+import { GetRecord, SelectOptions } from '../../../helpers/Data.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
-import EditForm from './EditForm.js';
 import Avatar from '../../../components/common/Avatar.js';
 import NavModal from './Nav.js'
 import ListContas from './ListContas.js';
 import ListProcessos from './ListProcessos.js';
 import ListOperacoes from './ListOperacoes.js';
+import { fieldsPessoal } from '../Data.js';
+import EditFormModal from '../../../components/Custom/EditForm.js';
 
 const ModalPessoal = ({show, reducer}) => {
-  const [showForm, setShowForm] = useState({'card':false,'data':false,'beneficiario':false, 
-    'detalhamento': false, 'instituicao': false, 'others':false});
+  const [showForm, setShowForm] = useState({});
   const navigate = useNavigate()
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [record, setRecord] = useState();
   const [message, setMessage] = useState();
   const [activeTab, setActiveTab] = useState('main');
+  const [categorias, setCategorias] = useState([]);
 
   const handleClose = () => {
     navigate('/register/pessoal')
@@ -40,6 +41,8 @@ const ModalPessoal = ({show, reducer}) => {
   useEffect(() =>{
     const getData = async () =>{
       const reg = await GetRecord(uuid, 'register/pessoal')
+      const cat = await SelectOptions('register/categorias-cadastro', 'categoria')
+      setCategorias(cat)
       if (!reg){
         handleClose()
         navigate("/auth/login")
@@ -75,7 +78,7 @@ const ModalPessoal = ({show, reducer}) => {
       }
     }
     if (formData){
-      api.put(`register/pessoal/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`register/pessoal/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         reducer('edit', response.data)
         toast.success("Cadastro Atualizado com Sucesso!")
@@ -87,6 +90,11 @@ const ModalPessoal = ({show, reducer}) => {
         if (erro.response.status === 400){
           toast.error(erro.response.data.non_fields_errors, {autoClose:4000})
           setMessage(erro.response.data)
+        }
+        if (erro.response.status === 401){
+          localStorage.setItem("login", JSON.stringify(false));
+          localStorage.setItem('token', "");
+          navigate("/auth/login")
         }
         console.error('erro: '+erro);
       })
@@ -128,89 +136,39 @@ const ModalPessoal = ({show, reducer}) => {
                       </div>
 
                       <Avatar src={`${process.env.REACT_APP_API_URL}/media/avatars/clients/default-avatar.jpg`} size={'3xl'}/>
-                      {!showForm.cpf_cnpj ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='CPF/CNPJ' field='cpf_cnpj' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.cpf_cnpj}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['cpf_cnpj']} fieldkey='cpf_cnpj' setShow={setShowForm} data={record.cpf_cnpj}
-                        />
-                      }
-                      {!showForm.numero_rg ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='RG' field='numero_rg' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.numero_rg || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['numero_rg']} fieldkey='numero_rg' setShow={setShowForm} data={record.numero_rg}
-                        />
-                      }
-
-                      {!showForm.logradouro ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Logradouro' field='logradouro' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.logradouro || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['logradouro']} fieldkey='logradouro' setShow={setShowForm} data={record.logradouro}
-                        />
-                      }
-                      {!showForm.municipio ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Município' field='municipio' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.str_municipio || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['municipio']} fieldkey='municipio' setShow={setShowForm} 
-                          data={{value: record.municipio, label:record.str_municipio}}
-                        />
-                      }
-                      {!showForm.cep_logradouro ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='CEP' field='cep_logradouro' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.cep_logradouro || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['cep_logradouro']} fieldkey='cep_logradouro' setShow={setShowForm} data={record.cep_logradouro}
-                        />
-                      }
-                      {!showForm.data_nascimento ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Data Nascimento' field='data_nascimento' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.data_nascimento ? 
-                            `${new Date(record.data_nascimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} (${calcIdade(record.data_nascimento)} anos)` 
-                            : '-'}
-                          </div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['data_nascimento']} fieldkey='data_nascimento' setShow={setShowForm} data={record.data_nascimento}
-                        />
-                      }
-                      {!showForm.grupo ?
-                        <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                          <CardTitle title='Grupo' field='grupo' click={handleEdit}/>
-                          <div className="fs--1 row-10">{record.grupo_info || '-'}</div>
-                        </div>
-                        :
-                        <EditForm 
-                          onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
-                          show={showForm['grupo']} fieldkey='grupo' setShow={setShowForm} 
-                          data={{value:record.grupo, label:record.grupo_info}}
-                        />
-                      }
+                      {fieldsPessoal.map(f => 
+                          !showForm[f.name] ?
+                            <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
+                              <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
+                              {f.type === 'select' ? (
+                                f.boolean 
+                                  ? <div className="fs--1 row-10">{record[f.name] === true ? 'Sim' : 'Não'}</div>
+                                  : <div className="fs--1 row-10">{record[f.string] || '-'}</div>
+                                )
+                              : f.type === 'select2' ? f.ismulti ? 
+                                  <div className="fs--1 row-10">{f.list.map(l => l[f.string]).join(', ')}</div>
+                                : 
+                                f.string ?
+                                  <div className="fs--1 row-10">{record[f.string] || '-'}</div>
+                                :
+                                  <div className="fs--1 row-10">{record[f.data] && record[f.data][f.attr_data] || '-'}</div>
+                              : f.type === 'date' ? 
+                                <div className="fs--1 row-10">
+                                  {record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'})+
+                                    ` (${calcIdade(record[f.name])} anos)` : '-'
+                                  }
+                                </div>
+                              : f.type === 'file' ? <div className="fs--1 row-10"></div>
+                              : 
+                                <div className="fs--1 row-10">{record[f.name] || '-'}</div>}
+                            </div>
+                            :
+                            <EditFormModal key={f.name}
+                              onSubmit={(formData) => handleSubmit(formData, record.uuid)} 
+                              show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
+                              record={record} field={f} options={{categoria:categorias}}
+                            />
+                        )}
 
                     </Tab.Pane>
                     <Tab.Pane eventKey="processos">

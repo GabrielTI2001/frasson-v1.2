@@ -90,7 +90,7 @@ const PVTECModal = ({show, reducer}) => {
       }
     }
     if (formData){
-      api.put(`pipeline/pvtec/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`pipeline/pvtec/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         reducer()
         toast.success("PVTEC Atualizada com Sucesso!")

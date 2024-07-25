@@ -56,7 +56,7 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
           formDataToSend.append(key, formData[key]);
         }
       }
-      api.put(`finances/revenues/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`finances/revenues/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         toast.success("Cobrança Atualizada com Sucesso!")
         setCobrancas(cobrancas.map(p => p.uuid === uuid ? response.data : p))

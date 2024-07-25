@@ -50,33 +50,34 @@ export const fieldsRegime = [
 ]
 
 export const fieldsFarm = [
-  {name:'localizacao_reserva', label:'Localização da Reserva Legal*', xl:4, sm:6, type:'select', string:'str_localizacao_reserva', options:{
-    'AM':'Mesma Matrícula', 'AE':'Área Externa', 'AP':'Área Externa Parcial',
-  }}, 
-  {name:'nome', label:'Nome*', xl:4, sm:6, type:'text'}, 
-  {name:'matricula', label:'Matrícula*', xl:4, sm:6, type:'text'},
-  {name:'municipio', label:'Município*', xl:4, sm:6, type:'select2', url:'register/municipios', attr1:'nome_municipio', attr2:'sigla_uf',
-    string:'municipio_localizacao'
-  },
-  {name:'cartorio_registro', label:'Cartório Registro', xl:4, sm:6, type:'select2', url:'register/cartorios', attr1:'razao_social',
-    string:'str_cartorio'
-  },
-  {name:'proprietarios', label:'Proprietário(s)*', xl:4, sm:6, type:'select2', ismulti:true, url:'register/pessoal', attr1:'razao_social',
+  {name:'nome', label:'Nome*', type:'text'}, 
+  {name:'matricula', label:'Matrícula*', type:'text'},
+  {name:'proprietarios', label:'Proprietário(s)*', type:'select2', ismulti:true, url:'register/pessoal', attr1:'razao_social',
     attr2:'cpf_cnpj', list:'str_proprietarios', string:'razao_social'
   },
-  {name:'livro_registro', label:'Livro Registro', xl:4, sm:6, type:'text'}, 
-  {name:'numero_registro', label:'Número Registro', xl:4, sm:6, type:'text'},
-  {name:'cns', label:'CNS', xl:4, sm:6, type:'text'},  {name:'data_registro', label:'Data Registro', xl:3, sm:6, type:'date'},
-  {name:'cep', label:'CEP', xl:3, sm:6, type:'text'}, {name:'endereco', label:'Endereço*', xl:6, sm:6, type:'text'},
-  {name:'titulo_posse', label:'Título de Posse', xl:4, sm:6, type:'text'}, {name:'numero_nirf', label:'Número NIRF', xl:4, sm:6, type:'text'},
-  {name:'codigo_imovel', label:'Código Imóvel', xl:4, sm:6, type:'text'}, 
-  {name:'codigo_car', label:'Código CAR', xl:4, sm:6, type:'text'}, 
-  {name:'area_total', label:'Área Total (ha)', xl:3, sm:6, type:'number'}, 
-  {name:'area_explorada', label:'Área Explorada (ha)', xl:3, sm:6, type:'number'}, 
-  {name:'modulos_fiscais', label:'Módulos Fiscais)', xl:3, sm:6, type:'number'}, 
-  {name:'area_reserva', label:'Área Reserva (ha)', xl:3, sm:6, type:'number'},
-  {name:'area_app', label:'Área APP (ha)', xl:3, sm:6, type:'number'}, 
-  {name:'area_veg_nat', label:'Área Veg. Nativa (ha)', xl:3, sm:6, type:'number'},
-  {name:'roteiro_acesso', label:'Roteiro de Acesso', xl:12, sm:12, type:'textarea', rows:3},
-  {name:'kml', label:'KML*', xl:3, sm:6, type:'file'},
+  {name:'municipio', label:'Município*', type:'select2', url:'register/municipios', attr1:'nome_municipio', attr2:'sigla_uf',
+    string:'municipio_localizacao'
+  },
+  {name:'cep', label:'CEP', type:'text'}, {name:'endereco', label:'Endereço*', type:'text'},
+  {name:'cartorio_registro', label:'Cartório Registro', type:'select2', url:'register/cartorios', attr1:'razao_social',
+    string:'str_cartorio'
+  },
+  {name:'livro_registro', label:'Livro Registro', type:'text'}, 
+  {name:'numero_registro', label:'Número Registro', type:'text'},
+  {name:'cns', label:'CNS', xl:4, sm:6, type:'text'}, 
+  {name:'data_registro', label:'Data Registro', type:'date'},
+  {name:'titulo_posse', label:'Título de Posse', type:'text'}, {name:'numero_nirf', label:'Número NIRF', type:'text'},
+  {name:'codigo_imovel', label:'Código Imóvel', type:'text'}, 
+  {name:'codigo_car', label:'Código CAR', type:'text'}, 
+  {name:'area_total', label:'Área Total (ha)*', type:'number'}, 
+  {name:'area_explorada', label:'Área Explorada (ha)', type:'number'}, 
+  {name:'modulos_fiscais', label:'Módulos Fiscais)', type:'number'}, 
+  {name:'area_reserva', label:'Área Reserva (ha)', type:'number'},
+  {name:'localizacao_reserva', label:'Localização da Reserva Legal', type:'select', string:'str_localizacao_reserva', options:{
+    'AM':'Mesma Matrícula', 'AE':'Área Externa', 'AP':'Área Externa Parcial',
+  }}, 
+  {name:'area_app', label:'Área APP (ha)', type:'number'}, 
+  {name:'area_veg_nat', label:'Área Veg. Nativa (ha)', type:'number'},
+  {name:'roteiro_acesso', label:'Roteiro de Acesso', type:'textarea', rows:3},
+  {name:'kml', label:'KML*', type:'file'},
 ]

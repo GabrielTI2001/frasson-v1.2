@@ -4,15 +4,13 @@ import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col, Row} from 'react-bootstrap';
-import { fetchAquifero, fetchMunicipio} from './../Data';
-import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
+import { fetchAquifero, fieldsAPPO} from './../Data';
 import { AmbientalContext } from '../../../context/Context';
 import { useAppContext } from '../../../Main';
-import { Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
+import RenderFields from '../../../components/Custom/RenderFields';
+import { sendData } from '../../../helpers/Data';
 
-const APPOForm = ({ hasLabel, type, addpoint}) => {
+const APPOForm = ({ hasLabel, type, addpoint, submit}) => {
   const {config: {theme}} = useAppContext();
   const user = JSON.parse(localStorage.getItem('user'))
   const {ambientalState, ambientalDispatch} = useContext(AmbientalContext)
@@ -20,51 +18,36 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
     created_by: user.id, processo_frasson: false
   });
   const [message, setMessage] = useState()
-  const channel = new BroadcastChannel('meu_canal');
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [defaultoptions, setDefaultOptions] = useState()
   const [aquifero, setAquifero] = useState([])
 
   const handleApi = async (dadosform) => {
-    const link =`${process.env.REACT_APP_API_URL}/environmental/inema/appos/${type === 'edit' ? uuid+'/' : ''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
+    const {resposta, dados} = await sendData({type:type, url:'environmental/inema/appos', keyfield: type === 'edit' ? uuid : null, 
+      dadosform:dadosform, is_json:false})
 
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: dadosform
-        });
-        const data = await response.json();
-
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
-          navigate(`/auth/login?next=${next}`);
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            ambientalDispatch({type:'SET_DATA', payload:{
-              appo: {coordenadas:ambientalState.appo.coordenadas, ...data}
-            }})
-            channel.postMessage({ tipo: 'atualizar_appo', appo_id:ambientalState.appo.id, reg:data});
-            toast.success("Registro Atualizado com Sucesso!")
-          }
-          else{
-            toast.success("Registro Efetuado com Sucesso!")
-            navigate(`/ambiental/inema/appos/edit/${data.uuid}`);
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    if(resposta.status === 400){
+      setMessage({...dados})
+    }
+    else if (resposta.status === 401){
+      localStorage.setItem("login", JSON.stringify(false));
+      localStorage.setItem('token', "");
+      const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
+      navigate(`/auth/login?next=${next}`);
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        ambientalDispatch({type:'SET_DATA', payload:{
+          appo: {coordenadas:ambientalState.appo.coordenadas, ...dados}
+        }})
+        toast.success("Registro Atualizado com Sucesso!")
+      }
+      else{
+        toast.success("Registro Efetuado com Sucesso!")
+        submit('add', dados)
+        navigate(`/ambiental/inema/appos/${dados.uuid}`);
+      }
     }
   };
 
@@ -85,7 +68,7 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
     });
   };
 
-  const handleImageChange = (e) => {
+  const handlePDFChange = (e) => {
     setFormData({...formData, [e.target.name]:e.target.files[0]})
   };
 
@@ -108,7 +91,6 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
       const data = await fetchAquifero();
       if (data.status === 401){
         const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
-        toast.error("Sua Sessão Expirou")
         navigate(`/auth/login?next=${next}`);
       }
       setAquifero(data.dados)
@@ -131,147 +113,11 @@ const APPOForm = ({ hasLabel, type, addpoint}) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row'>
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Nome Requerente*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Nome Requerente' : ''}
-            value={formData.nome_requerente || ''}
-            name="nome_requerente"
-            onChange={handleFieldChange}
-            type="text"
+        {aquifero && 
+          <RenderFields fields={fieldsAPPO} formData={formData} changefield={handleFieldChange}  changefile={handlePDFChange}
+            defaultoptions={defaultoptions} hasLabel={hasLabel} message={message} type={type} options={{aquifero:aquifero}}
           />
-          <label className='text-danger'>{message ? message.nome_requerente : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>CPF/CNPJ Requerente*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'CPF/CNPJ Requerente' : ''}
-            value={formData.cpf_cnpj || ''}
-            name="cpf_cnpj"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.cpf_cnpj : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Nº Processo INEMA*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Nº Processo INEMA' : ''}
-            value={formData.numero_processo || ''}
-            name="numero_processo"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.numero_processo : ''}</label>
-        </Form.Group>
-
-        {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-            {hasLabel && <Form.Label className='fw-bold mb-1'>Município Localização*</Form.Label>}
-            <AsyncSelect loadOptions={fetchMunicipio} name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.municipio : null) : null }
-              onChange={(selected) => {
-              setFormData((prevFormData) => ({
-                ...prevFormData,
-                municipio: selected.value
-                }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.municipio : ''}</label>
-          </Form.Group>        
-        )}
-
-        <Form.Group className="mb-2" as={Col} lg={4} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Localidade*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Localidade' : ''}
-            value={formData.nome_fazenda || ''}
-            name="nome_fazenda"
-            onChange={handleFieldChange}
-            type="text"
-          />
-          <label className='text-danger'>{message ? message.nome_fazenda : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={4}sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Aquífero*</Form.Label>}
-          <Form.Select
-            placeholder={!hasLabel ? 'Tipo Aquífero' : ''}
-            value={formData.aquifero || ''}
-            name="aquifero"
-            onChange={handleFieldChange}
-            type="select"
-          >
-            <option value={undefined}>----</option>
-            {aquifero &&( aquifero.map( c =>(
-              <option key={c.value} value={c.value}>{c.label}</option>
-            )))}
-          </Form.Select>
-          <label className='text-danger'>{message ? message.aquifero : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Data Publicação*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Data Publicação' : ''}
-            value={formData.data_documento || ''}
-            name="data_documento"
-            onChange={handleFieldChange}
-            type="date"
-          />
-          <label className='text-danger'>{message ? message.data_documento : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Data Vencimento*</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Data Vencimento' : ''}
-            value={formData.data_vencimento|| ''}
-            name="data_vencimento"
-            onChange={handleFieldChange}
-            type="date"
-          />
-          <label className='text-danger'>{message ? message.data_vencimento : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Conduzido Frasson?*</Form.Label>}
-          <Form.Select
-            placeholder={!hasLabel ? 'Conduzido Frasson?' : ''}
-            value={formData.processo_frasson || ''}
-            name="processo_frasson"
-            onChange={handleFieldChange}
-            type="select"
-          >
-            <option value={false}>Não</option>
-            <option value={true}>Sim</option>
-          </Form.Select>
-          <label className='text-danger'>{message ? message.processo_frasson : ''}</label>
-        </Form.Group>
-        {ambientalState && ambientalState.appo.file &&
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo PDF</Form.Label>}<br></br>
-          <div className='mt-2'>     
-            <Link to={`${ambientalState.appo.file}`} target="__blank" className="px-0 fw-bold text-danger">
-                <FontAwesomeIcon icon={faFilePdf} className="me-2"></FontAwesomeIcon>Visualizar PDF
-            </Link>
-          </div>
-        </Form.Group>} 
-
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Substituir ou inserir arquivo PDF</Form.Label>}
-          <Form.Control
-            placeholder={!hasLabel ? 'Arquivo PDF' : ''}
-            name="file"
-            onChange={handleImageChange}
-            type="file"
-          />
-          <label className='text-danger'>{message ? message.file : ''}</label>
-        </Form.Group>
-     
+        }
         <Row>
           <Form.Group className={`mb-2 pe-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' sm='auto' xs={12}>
             <Button

@@ -57,7 +57,7 @@ const indexAcompGAI = ({card, updatedactivity}) => {
           formDataToSend.append(key, formData[key]);
         }
       }
-      api.put(`pipeline/pvtec/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`pipeline/pvtec/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         toast.success("PVTEC Atualizada com Sucesso!")
         setUpdatesAcomp(updatesacomp.map(p => p.uuid === uuid ? response.data : p))

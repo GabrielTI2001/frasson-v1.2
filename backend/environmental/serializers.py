@@ -9,20 +9,16 @@ from pykml import parser
 
 def parse_element_kml(element):
     coordinates = []
-
     for child in element.getchildren():
-
         if hasattr(child, 'Polygon'):
             #get only first child of tag polygon
             coords = str(child[0].Polygon.outerBoundaryIs.LinearRing.coordinates).strip().split()
             for coord in coords:
                 coordinates.append({'lat': float(coord.split(",")[1]), 'lng': float(coord.split(",")[0])})
             break
-
         else:
             # Recursively handle complex elements like Placemark or Folder
             coordinates.extend(parse_element_kml(child))
-
     return coordinates
 
 class serializerOutorga(serializers.ModelSerializer):
@@ -48,42 +44,30 @@ class serializerOutorga(serializers.ModelSerializer):
         
     class Meta:
         model = Outorgas_INEMA
-        fields = ['uuid', 'nome_requerente', 'cpf_cnpj', 'str_tipo_captacao',  'numero_processo', 'numero_portaria', 
+        fields = ['id', 'uuid', 'nome_requerente', 'cpf_cnpj', 'str_tipo_captacao',  'numero_processo', 'numero_portaria', 
                   'data_publicacao', 'qtd_pontos', 'status']
 
 class detailOutorga(serializers.ModelSerializer):
     str_tipo_captacao = serializers.CharField(source='captacao.description', required=False, read_only=True)
     str_finalidade = serializers.CharField(source='finalidade.description', required=False, read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
     qtd_pontos = serializers.SerializerMethodField(read_only=True, required=False)
-    info_user = serializers.SerializerMethodField(read_only=True, required=False)
     token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
     renovacao = serializers.SerializerMethodField(read_only=True, required=False)
-
+    status = serializers.SerializerMethodField(required=False, read_only=True)
     nome_municipio = serializers.SerializerMethodField()
-
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_nome_municipio(self, obj):
         return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}"
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             if field_name not in ['str_tipo_captacao', 'str_finalidade', 'qtd_pontos', 'info_user', 'token_apimaps', 'renovacao', 'area_ha']:
                 field.required = True
-
     def get_qtd_pontos(self, obj):
         qtd = Outorgas_INEMA_Coordenadas.objects.filter(processo=obj).count()   
         return qtd
-    
-    def get_info_user(self, obj):
-        if obj.created_by:
-            return {
-                'id': obj.created_by.id,
-                'first_name': obj.created_by.first_name,
-                'last_name': obj.created_by.last_name,
-            }
-        else:
-            return None
-        
     def get_renovacao(self, obj):
         dias_renovacao = Prazos_Renovacao.objects.get(pk = 1).dias_para_renov
         if obj.data_validade:
@@ -94,10 +78,19 @@ class detailOutorga(serializers.ModelSerializer):
             }
         else:
             return None
-        
     def get_token_apimaps(self, obj):
         return TOKEN_GOOGLE_MAPS_API
-    
+    def get_status(self, obj):
+        if obj.data_validade:
+            return {
+                'color': 'danger' if obj.data_validade < date.today() else 'success', 
+                'text': 'Vencido' if obj.data_validade < date.today() else 'Vigente'
+            }
+        else:           
+            return {
+                'color': 'dark', 
+                'text': 'Indefinido'
+            }
     def validate_data_validade(self, value):
         data_publi = self.initial_data.get('data_publicacao')
         data_publi  = datetime.strptime(data_publi, "%Y-%m-%d").date()
@@ -230,11 +223,32 @@ class listAPPO(serializers.ModelSerializer):
 class detailAPPO(serializers.ModelSerializer):
     str_tipo_aquifero = serializers.CharField(source='aquifero.description', required=False, read_only=True)
     qtd_pontos = serializers.SerializerMethodField(read_only=True, required=False)
-    info_user = serializers.SerializerMethodField(read_only=True, required=False)
     token_apimaps = serializers.SerializerMethodField(read_only=True, required=False)
     renovacao = serializers.SerializerMethodField(read_only=True, required=False)
     nome_municipio = serializers.SerializerMethodField()
     file = serializers.FileField(required=False)
+    status = serializers.SerializerMethodField(required=False, read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True, required=False)
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
+    def get_status(self, obj):
+        if obj.data_vencimento:
+            return {
+                'color': 'danger' if obj.data_vencimento <= date.today() else 'success', 
+                'text': 'Vencida' if obj.data_vencimento <= date.today() else 'Vigente'
+            }
+        else:
+            return None
+    def get_renovacao(self, obj):
+        dias_renovacao = Prazos_Renovacao.objects.get(pk = 1).dias_para_renov
+        if obj.data_vencimento:
+            data_ppv = obj.data_vencimento - timedelta(days=dias_renovacao)
+            return {
+                'dias': dias_renovacao,
+                'data': data_ppv,
+            }
+        else:
+            return None
 
     def get_nome_municipio(self, obj):
         return f"{obj.municipio.nome_municipio} - {obj.municipio.sigla_uf}"
@@ -249,27 +263,6 @@ class detailAPPO(serializers.ModelSerializer):
         qtd = APPO_INEMA_Coordenadas.objects.filter(processo=obj).count()   
         return qtd
     
-    def get_info_user(self, obj):
-        if obj.created_by:
-            return {
-                'id': obj.created_by.id,
-                'first_name': obj.created_by.first_name,
-                'last_name': obj.created_by.last_name,
-            }
-        else:
-            return None
-        
-    def get_renovacao(self, obj):
-        dias_renovacao = Prazos_Renovacao.objects.get(pk = 1).dias_para_renov
-        if obj.data_vencimento:
-            data_ppv = obj.data_vencimento - timedelta(days=dias_renovacao)
-            return {
-                'dias': dias_renovacao,
-                'data': data_ppv,
-            }
-        else:
-            return None
-        
     def get_token_apimaps(self, obj):
         return TOKEN_GOOGLE_MAPS_API
     

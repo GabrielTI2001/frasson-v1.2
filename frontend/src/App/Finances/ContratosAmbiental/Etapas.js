@@ -1,4 +1,3 @@
-import { Table } from "react-bootstrap"
 import { useAppContext } from "../../../Main";
 import ExpandableCard from "../../../components/Custom/ExpandableCard";
 import CardInfo, {CardTitle} from '../../Pipeline/CardInfo';

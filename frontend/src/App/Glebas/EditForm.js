@@ -58,7 +58,6 @@ const EditForm = ({
             <Form.Label className='mb-0 fw-bold fs--1'>Gleba</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''}
               className='mb-1 fs--1 py-0 px-2 w-50'
-              value={formData.gleba}
               onChange={({target}) => {
                 setFormData({...formData, gleba: target.value});
               }
@@ -67,7 +66,6 @@ const EditForm = ({
           {fieldkey === 'descricao' &&( defaultselected && <>
             <Form.Label className='mb-0 fw-bold fs--1'>Descrição</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''} as='textarea' rows={3}
-              value={formData.descricao}
               onChange={({target}) => {
                 setFormData({...formData, descricao: target.value});
               }

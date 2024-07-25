@@ -68,7 +68,7 @@ const ModalRecord = ({show, reducer}) => {
       }
     }
     if (formData){
-      api.put(`glebas/index/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`glebas/index/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         reducer('edit', {...response.data, list_propriedades: response.data.list_propriedades.map(l => l.label).join(", ")})
         toast.success("Gleba Atualizada com Sucesso!")

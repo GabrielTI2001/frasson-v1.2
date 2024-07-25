@@ -135,7 +135,7 @@ const IndexFarms = () => {
         }
         <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
             centered
@@ -148,7 +148,7 @@ const IndexFarms = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         {showmodal.data
                            ? null

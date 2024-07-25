@@ -2,12 +2,10 @@ import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
-import { FetchImoveisRurais } from '../../Pipefy/Data';
-import { fetchTipoBenfeitoria} from '../Data';
+import { Button, Form, Col, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { SelectOptions, SelectSearchOptions } from '../../../helpers/Data';
 import { useDropzone } from 'react-dropzone';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -26,6 +24,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
   const {uuid} = useParams()
   const [defaultoptions, setDefaultOptions] = useState()
   const [tipos, setTipos] = useState()
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
     const link = `${process.env.REACT_APP_API_URL}/register/farm-assets/${type === 'edit' ? uuid+'/':''}`
@@ -93,7 +92,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
   useEffect(()=>{
     const loadFormData = async () => {
       if(!tipos){
-        const types = await fetchTipoBenfeitoria();
+        const types = await SelectOptions('register/types-farm-assets', 'description');
         setTipos(types)
       }
       if(data){
@@ -117,9 +116,9 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
 
   return (
     <>
-      <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
+      <Form onSubmit={handleSubmit} className='row row-cols-1' encType='multipart/form-data'>
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={5}>
+          <Form.Group className="mb-2" as={Col}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Fazenda*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'farms/farms', 'nome', 'matricula') } name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.farm : null) : null }
@@ -134,7 +133,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={4}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo de Benfeitoria*</Form.Label>}
           <Form.Select
             placeholder={!hasLabel ? 'Tipo de Benfeitoria' : ''}
@@ -151,7 +150,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.type : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data Construção*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data Construção' : ''}
@@ -163,7 +162,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.data_construcao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Tamanho (m<sup>2</sup>)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Tamanho' : ''}
@@ -175,7 +174,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.tamanho : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Estimado (R$)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Valor Estimado' : ''}
@@ -187,7 +186,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.valor_estimado : ''}</label>
         </Form.Group>
 
-        {type === 'add' && <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        {type === 'add' && <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fotos*</Form.Label>}
           <Form.Control
             name="file"
@@ -198,15 +197,11 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.file : ''}</label>
         </Form.Group>}
         
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-            >
-              {type === 'edit' ? "Atualizar Benfeitoria"
-              : "Cadastrar Benfeitoria"}
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Button className="w-50" type="submit" disabled={isLoading}>
+              {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Cadastrar Benfeitoria'}
           </Button>
-        </Form.Group>           
+        </Form.Group>            
       </Form>
     </>
   );

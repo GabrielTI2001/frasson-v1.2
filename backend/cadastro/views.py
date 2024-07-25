@@ -178,7 +178,7 @@ class PicturesBenfeitoriasView(viewsets.ModelViewSet):
 
 class AnalisesSoloView(viewsets.ModelViewSet):
     queryset = Analise_Solo.objects.all()
-    serializer_class = detailAnalisesSolo
+    serializer_class = resultsAnalisesSolo
     # permission_classes = (IsAuthenticated,)
     lookup_field = 'uuid'
     def get_queryset(self):
@@ -198,11 +198,6 @@ class AnalisesSoloView(viewsets.ModelViewSet):
             return ListAnalisesSolo
         else:
             return self.serializer_class
-class ResultAnalisesSoloView(viewsets.ModelViewSet):
-    queryset = Analise_Solo.objects.all()
-    serializer_class = resultsAnalisesSolo
-    # permission_classes = (IsAuthenticated,)
-    lookup_field = 'uuid'
 
 class CategoryFeedbackView(viewsets.ModelViewSet):
     queryset = Feedbacks_Category.objects.all()

@@ -162,7 +162,7 @@ const KanbanContainer = () => {
             updatedDestItems: movedItems.updatedDestItems
           }
         });
-        api.put(`pipeline/fluxos/gestao-ambiental/${idcard}/`, {'phase':destColumn.id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
+        api.put(`pipeline/fluxos/gestao-ambiental/${idcard}/`, {'phase':destColumn.id, 'user':user.id}, {headers: {Authorization: `Bearer ${token}`}})
         .then((response) => {
           socket.send(JSON.stringify({message:{type:"movecardproduto", data:result, code:response.data.code, clientId:kanbanState.clientId}}));
           toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
@@ -170,6 +170,11 @@ const KanbanContainer = () => {
         .catch((erro) => {
           if (erro.response.status === 400){
             toast.error(erro.response.data.phase[0])
+          }
+          if (erro.response.status === 401){
+            localStorage.setItem("login", JSON.stringify(false));
+            localStorage.setItem('token', "");
+            navigate("/auth/login")
           }
           kanbanDispatch({
             type: 'REVERT_DRAG',

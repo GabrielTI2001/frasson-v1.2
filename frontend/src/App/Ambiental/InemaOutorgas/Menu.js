@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Dropdown} from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import AppContext from '../../../context/Context';
@@ -20,7 +20,7 @@ export const DropMenu = ({ record, reducer }) => {
   } = useContext(AppContext);
 
   const handledelete = (type, uuid) =>{
-    navigate(`/register/analysis/soil`)
+    navigate(`/ambiental/inema/outorgas`)
     reducer(type, uuid)
   }
 
@@ -38,11 +38,12 @@ export const DropMenu = ({ record, reducer }) => {
         <FontAwesomeIcon icon={faEllipsisV} transform="shrink-2" className='fs-2'/>
       </Dropdown.Toggle>
       <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
-        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/register/analysis-soil/${record.uuid}/`})}}>
-          Excluir Análise
+        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/environmental/inema/outorgas/${record.uuid}/`})}}>
+          Excluir Outorga
         </Dropdown.Item>
       </Dropdown.Menu>
       <ModalDeleteCard name='registro' show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
     </Dropdown>
   );
 };
+

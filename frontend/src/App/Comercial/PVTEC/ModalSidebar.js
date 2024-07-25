@@ -1,27 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Nav } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link, useNavigate } from 'react-router-dom';
-import { faArrowLeft, faArrowRight, faCheck, faGear } from '@fortawesome/free-solid-svg-icons'
-import ModalDelete from '../../../components/Custom/ModalDelete';
+import { useNavigate } from 'react-router-dom';
+import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import api from '../../../context/data';
 import { toast } from 'react-toastify';
-import { GetRecord } from '../../../helpers/Data';
 
 const ModalSidebar = ({card, reducer}) => {
   const token = localStorage.getItem("token")
   const user = JSON.parse(localStorage.getItem("user"))
   const navigate = useNavigate()
 
-  const handleClose = () => {
-    navigate(`/pvtec/${card.uuid}`)
-  };
-
   const handleConcluir = (id) => {
     const formDataToSend = new FormData();
     formDataToSend.append('status', 'OK')
     formDataToSend.append('user', user.id)
-    api.put(`pipeline/pvtec/${card.uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+    api.put(`pipeline/pvtec/${card.uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
       reducer(response.data)
       toast.success(`PVTEC concluída com sucesso`)
@@ -29,6 +23,11 @@ const ModalSidebar = ({card, reducer}) => {
     .catch((erro) => {
       if (erro.response.status === 400){
         toast.error(erro.response.data.phase[0])
+      }
+      if (erro.response.status === 401){
+        localStorage.setItem("login", JSON.stringify(false));
+        localStorage.setItem('token', "");
+        navigate("/auth/login")
       }
       console.error('erro: '+erro);
     })

@@ -86,11 +86,9 @@ const IndexCredit = ({mes, ano}) => {
             setShowModal({show:false})
         }
         else if (type === 'edit' && searchResults){
-            setSearchResults([...searchResults.map(reg =>(
-                reg.id === data.id ? data : reg
-            ))])
+            setSearchResults([...searchResults.map(reg =>(parseInt(reg.id) === parseInt(data.id) ? data : reg))])
         }
-        else if (type === 'delete'){
+        else if (type === 'delete' && searchResults){
             setSearchResults(searchResults.filter(r => r.uuid !== data))
         }
     }

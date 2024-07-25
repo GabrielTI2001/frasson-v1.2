@@ -49,6 +49,33 @@ export const RetrieveRecord = async (uuid, url, setter) => {
     }
 }
 
+export const GetRecords = async (url, params) => {
+  const token = localStorage.getItem("token")
+  try{
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/${url}?${params || '' }`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    });
+    if (response.status === 200){
+        const data = await response.json();
+        return data;
+    }
+    else if (response.status === 401){
+        localStorage.setItem("login", JSON.stringify(false));
+        localStorage.setItem('token', "");
+        return null;
+    }
+    else{
+        return {};
+    }
+  } catch (error){
+    console.error("Erro: ",error)
+  }
+}
+
 export const GetRecord = async (uuid, url) => {
   const token = localStorage.getItem("token")
   try{

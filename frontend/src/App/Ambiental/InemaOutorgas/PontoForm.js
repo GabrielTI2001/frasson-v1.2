@@ -6,7 +6,7 @@ import { Button, Form, Row, Col} from 'react-bootstrap';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { AmbientalContext } from '../../../context/Context';
 
-const PontoForm = ({ hasLabel, type, data}) => {
+const PontoForm = ({ hasLabel, type, data, update}) => {
   const channel = new BroadcastChannel('meu_canal');
 
   const {ambientalState:{outorga}, ambientalDispatch} = useContext(AmbientalContext)
@@ -46,13 +46,13 @@ const PontoForm = ({ hasLabel, type, data}) => {
           if (type === 'edit'){
             toast.success("Registro Atualizado com Sucesso!")
             ambientalDispatch({type:'UPDATE_PONTO', payload:{id:data.id, updatedPonto:data}})
-            ambientalDispatch({type:'TOGGLE_MODAL'})
+            update()
           }
           else{
             toast.success("Registro Adicionado com Sucesso!")
             channel.postMessage({ tipo: 'adicionar_coordenada', reg:data, outorga_id:outorga.id});
             ambientalDispatch({type:'ADD_PONTO',payload:{novoponto:data}})
-            ambientalDispatch({type:'TOGGLE_MODAL'})
+            update()
           }
         }
     } catch (error) {

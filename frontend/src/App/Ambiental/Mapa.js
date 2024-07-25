@@ -8,14 +8,12 @@ import GoogleMap from "../../components/map/GoogleMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetail} from "./MapInfo";
-import { Card } from "react-bootstrap";
 
-const initData = {'appo': {title:'Processos APPO', textpoint: 'Poços '}, 
-    'outorga': {title:'Processos Outorga', textpoint: 'pontos de outorga '}
+const initData = {'appo': {title:'Processos APPO', textpoint: 'Poço(s) '}, 
+    'outorga': {title:'Processos Outorga', textpoint: 'ponto(s) de outorga '}
 }
 
 const MapaPontos = ({type}) => {
-    const channel = new BroadcastChannel('meu_canal');
     const [processos, setProcessos] = useState()
     const [coordenadas, setCoordenadas] = useState()
     const [search, setSearch] = useState('')
@@ -23,19 +21,7 @@ const MapaPontos = ({type}) => {
     const [tokenmaps, setTokenMaps] = useState()
     const navigate = useNavigate();
     const link = `${process.env.REACT_APP_API_URL}/environmental/inema/${type}/coordenadas-detail/` 
-    const params = type === 'appo' ? '?infoappo=sim' : '?infooutorga=sim'
-
-    channel.onmessage = function(event) {
-        if (coordenadas){
-            if(event.data.tipo === 'adicionar_coordenada'){
-                setCoordenadas([...coordenadas, {...event.data.reg}])
-            }
-            if(event.data.tipo === 'remover_coordenada'){
-                setCoordenadas(coordenadas.filter(ponto => ponto.id !== event.data.id))
-            }
-        }
-
-    };
+    const params = type === 'appo' ? '/?infoappo=sim' : '/?infooutorga=sim'
 
     const handleChange = (event) => {
         const { value } = event.target;

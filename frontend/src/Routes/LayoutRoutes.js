@@ -75,14 +75,10 @@ import IndexCartorios from '../App/Register/Cartorios/Index';
 import IndexFollowup from '../App/Processes/Followup/Index';
 import ViewFollowup from '../App/Processes/Followup/View';
 //Ambiental
-import View from "../App/Ambiental/InemaOutorgas/View";
-import Edit from "../App/Ambiental/InemaOutorgas/Edit";
 import MapaPontos from "../App/Ambiental/Mapa";
 import NotFound from "../Layouts/NotFound";
 import IndexAPPO from '../App/Ambiental/InemaAppo/Index';
 import IndexOutorgas from '../App/Ambiental/InemaOutorgas/Index';
-import { View as ViewAppo } from "../App/Ambiental/InemaAppo/View";
-import { Edit as EditAppo } from "../App/Ambiental/InemaAppo/Edit";
 import IndexASV from '../App/Ambiental/InemaASV/Index';
 import ViewASV from '../App/Ambiental/InemaASV/View';
 import EditASV from '../App/Ambiental/InemaASV/Edit';
@@ -165,16 +161,14 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/ambiental/inema">
           <Route path="outorgas" element={<IndexOutorgas />}/>
-          <Route path="outorgas/:uuid" element={<View />} />
-          <Route path="outorgas/edit/:uuid" element={<Edit />} />
+          <Route path="outorgas/:uuid" element={<IndexOutorgas />} />
           <Route path="outorga/map" element={<MapaPontos key='outorga' type='outorga' />} />
           <Route path="appos" element={<IndexAPPO/>}/>
-          <Route path="appos/:uuid" element={<ViewAppo />} />
-          <Route path="appos/edit/:uuid" element={<EditAppo />} />
+          <Route path="appos/:uuid" element={<IndexAPPO />} />
           <Route path="appo/map" element={<MapaPontos key='appo' type='appo' />} />
           <Route path="asv" element={<IndexASV/>}/>
-          <Route path="asv/:uuid" element={<ViewASV/>}/>
-          <Route path="asv/edit/:uuid" element={<EditASV />} />
+          <Route path="asv/:uuid" element={<IndexASV/>}/>
+          {/* <Route path="asv/edit/:uuid" element={<EditASV />} /> */}
           <Route path="asv/map" element={<MapaAreasASV />} />
           <Route path="requerimentos" element={<IndexRequerimentos />} />
           <Route path="requerimentos/appo" element={<MapaPontosRequerimento key='appo' type='appo' />} />

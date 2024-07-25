@@ -5,7 +5,7 @@ import Background from './Background';
 import { Container } from 'react-bootstrap';
 
 const Section = ({
-  fluid,
+  fluid=false,
   bg,
   image,
   overlay,
@@ -43,10 +43,6 @@ Section.propTypes = {
   bgClassName: PropTypes.string,
   className: PropTypes.string,
   children: PropTypes.node
-};
-
-Section.defaultProps = {
-  fluid: false
 };
 
 export default Section;

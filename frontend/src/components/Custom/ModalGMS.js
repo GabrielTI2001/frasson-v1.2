@@ -2,13 +2,17 @@ import React, { useState } from 'react';
 import { Modal, CloseButton } from "react-bootstrap";
 import { Button, Form, Row, Col} from 'react-bootstrap';
 import { convertGMStoGD } from '../../helpers/utils';
+import { toast } from 'react-toastify';
 
 const ModalGMS = ({show, type, formData, changeform, changemodal, fields=['latitude_gd', 'longitude_gd']}) =>{
     const [gmsform, setGMSform] = useState({})
 
     const submit = () =>{
         const valor = convertGMStoGD(gmsform.graus, gmsform.minutos, gmsform.segundos)
-        if (type === 'latitude'){
+        if (!valor){
+          toast.error('Valores inválidos')
+        }
+        else if (type === 'latitude'){
             changeform({...formData, [fields[0]]:valor})
         }
         else{

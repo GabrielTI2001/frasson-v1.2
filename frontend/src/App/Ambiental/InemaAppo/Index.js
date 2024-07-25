@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Placeholder} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
@@ -13,13 +13,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { columnsAPPO } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
+import ModalRecord from "./Modal";
 
 const IndexAPPO = () => {
     const [searchResults, setSearchResults] = useState();
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
+    const {uuid} = useParams()
+    const [modal, setModal] = useState({show:false})
 
     const onClick = (id, uuid) =>{
         const url = `/ambiental/inema/appos/${uuid}`
@@ -32,18 +34,41 @@ const IndexAPPO = () => {
         HandleSearch(value, 'environmental/inema/appos', setter)
     };
 
+    const reducer = (type, data) =>{
+        if (type == 'add'){
+            setSearchResults([...searchResults, data])
+            setShowModal(false)
+        }
+        else if (type === 'edit' && searchResults){
+            setSearchResults([...searchResults.map(reg =>
+                parseInt(reg.id) === parseInt(data.id) ? data : reg
+            )])
+        }
+        else if (type === 'delete' && searchResults){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
+        }
+    }
+
     useEffect(()=>{
         if ((user.permissions && user.permissions.indexOf("view_processos_appo") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        const Search = async () => {
+    },[])
+    useEffect(() => {
+        const search = async () => {
             const status = await HandleSearch('', 'environmental/inema/appos', setter) 
             if (status === 401) navigate("/auth/login");
         }
-        if (!searchResults){
-            Search()
+        if (uuid){
+            setModal({show:true})
         }
-    },[])
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -109,6 +134,7 @@ const IndexAPPO = () => {
             </Placeholder>    
         </div>   
         }
+        <ModalRecord show={modal.show} reducer={reducer} />
         <Modal
             size="xl"
             show={showmodal}
@@ -124,7 +150,7 @@ const IndexAPPO = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center sectionform">
-                        <APPOForm hasLabel type='add' />
+                        <APPOForm hasLabel type='add' submit={reducer}/>
                     </Row>
             </Modal.Body>
         </Modal>

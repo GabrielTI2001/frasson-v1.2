@@ -25,7 +25,7 @@ const IndexRegimes = () => {
     const {uuid} = useParams()
 
     const submit = (type, data) => {
-        if (type == 'add'){
+        if (type === 'add'){
             setSearchResults([...searchResults, data])
             setShowModal({show:false})
         }
@@ -33,7 +33,7 @@ const IndexRegimes = () => {
             setFormData({...formData, loaded:false})
             setSearchResults()
         }
-        else if (type === 'delete'){
+        else if (type === 'delete' && searchResults){
             setSearchResults(searchResults.filter(r => r.uuid !== data))
         }
         
@@ -176,7 +176,7 @@ const IndexRegimes = () => {
         }
         <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
             centered
@@ -189,7 +189,7 @@ const IndexRegimes = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         {showmodal.data
                            ? null

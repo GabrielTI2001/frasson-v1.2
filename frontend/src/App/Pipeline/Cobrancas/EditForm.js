@@ -58,7 +58,6 @@ const EditForm = ({
                 setFormData({ ...formData, status: target.value })
               }
               defaultValue={data || ''}
-              value={formData.status}
             >
               <option value='EA'>Em Aberto</option>
               <option value='P'>Pago</option>
@@ -67,7 +66,6 @@ const EditForm = ({
           {fieldkey === 'orientacoes' &&( defaultselected && <>
             <Form.Label className='mb-0 fw-bold fs--1'>Orientações</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''} as='textarea' rows={5}
-              value={formData.orientacoes}
               onChange={({target}) => {
                 setFormData(({...formData, orientacoes: target.value}));
               }

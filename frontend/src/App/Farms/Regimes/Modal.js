@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { CloseButton, Col, Dropdown, Modal, Nav, Row, Tab } from 'react-bootstrap';
-import ModalMediaContent from '../../Pipeline/ModalMediaContent.js';
 import api from '../../../context/data.js';
 import { GetRecord } from '../../../helpers/Data.js';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import SubtleBadge from '../../../components/common/SubtleBadge.js';
 import { useAppContext } from '../../../Main.js';
-import CardInfo, {CardTitle} from '../../Pipeline/CardInfo.js';
+import {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
@@ -62,7 +60,7 @@ const ModalRecord = ({show, reducer}) => {
 
   const handleSubmit = (formData) =>{
     if (formData){
-      api.put(`farms/regime/${uuid}/`, formData, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`farms/regime/${uuid}/`, formData, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         reducer('edit', {...response.data, info_status:
           {color:response.data.status === 'EA' ? 'warning' : 'success', text:response.data.status_display}

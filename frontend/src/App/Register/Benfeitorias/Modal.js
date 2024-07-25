@@ -130,7 +130,7 @@ const ModalBenfeitoria = ({show, reducer}) => {
       }
     }
     if (formData){
-      api.put(`register/farm-assets/${uuid}/`, formDataToSend, {headers: {Authorization: `bearer ${token}`}})
+      api.put(`register/farm-assets/${uuid}/`, formDataToSend, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         reducer('edit', response.data)
         toast.success("Cadastro Atualizado com Sucesso!")
@@ -142,6 +142,11 @@ const ModalBenfeitoria = ({show, reducer}) => {
         if (erro.response.status === 400){
           toast.error(erro.response.data.non_fields_errors, {autoClose:4000})
           setMessage(erro.response.data)
+        }
+        if (erro.response.status === 401){
+          localStorage.setItem("login", JSON.stringify(false));
+          localStorage.setItem('token', "");
+          navigate("/auth/login")
         }
         console.error('erro: '+erro);
       })

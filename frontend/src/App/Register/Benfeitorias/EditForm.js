@@ -75,7 +75,7 @@ const EditForm = ({
           {fieldkey === 'type' && tipos &&(<>
             <Form.Label className='fw-bold mb-1'>Tipo de Benfeitoria*</Form.Label>
             <Form.Select
-              value={formData.type} defaultValue={data || ''}
+              defaultValue={data || ''}
               className='mb-1 fs--1 py-0 w-100'
               onChange={({target}) => {
                 setFormData(({...formData, type: target.value}));
@@ -93,7 +93,6 @@ const EditForm = ({
             <Form.Control ref={inputRef} defaultValue={data || ''}
               type='date'
               className='mb-1 fs--1 py-0 px-2 w-50'
-              value={formData.data_construcao}
               onChange={({target}) => {
                   setFormData(({...formData, data_construcao: target.value}));
                 }
@@ -103,7 +102,7 @@ const EditForm = ({
           {fieldkey === 'tamanho' &&(<>
             <Form.Label className='mb-0 fw-bold fs--1'>Tamanho</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''} type='number'
-              value={formData.tamanho} className='mb-1 fs--1 py-0 w-50'
+              className='mb-1 fs--1 py-0 w-50'
               onChange={({target}) => {
                 setFormData(({...formData, tamanho: target.value}));
               }
@@ -113,7 +112,7 @@ const EditForm = ({
           {fieldkey === 'valor_estimado' &&(<>
             <Form.Label className='mb-0 fw-bold fs--1'>Valor Estimado</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''} type='number'
-              value={formData.valor_estimado} className='mb-1 fs--1 py-0 w-50'
+              className='mb-1 fs--1 py-0 w-50'
               onChange={({target}) => {
                 setFormData(({...formData, valor_estimado: target.value}));
               }

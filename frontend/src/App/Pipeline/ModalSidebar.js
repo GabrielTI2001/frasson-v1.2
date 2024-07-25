@@ -29,7 +29,7 @@ const ModalSidebar = ({card, pipe, move}) => {
 
   const handleMove = (id) => {
     const result = {destination: {droppableId: id, index: 0}, source: {index: 0, droppableId: card.phase}, code:card.code}
-    api.put(`pipeline/fluxos/gestao-ambiental/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `bearer ${token}`}})
+    api.put(`pipeline/fluxos/gestao-ambiental/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
         move("movecardproduto", result, response.data.code)
         toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
@@ -43,6 +43,11 @@ const ModalSidebar = ({card, pipe, move}) => {
     .catch((erro) => {
       if (erro.status === 400){
         toast.error(erro.response.data.phase[0])
+      }
+      if (erro.response.status === 401){
+        localStorage.setItem("login", JSON.stringify(false));
+        localStorage.setItem('token', "");
+        navigate("/auth/login")
       }
       console.error('erro: '+erro);
     })

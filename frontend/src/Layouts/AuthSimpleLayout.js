@@ -3,8 +3,6 @@ import { Card, Col, Row } from 'react-bootstrap';
 import Logo from '../components/common/Logo';
 import Section from '../components/common/Section';
 import { Outlet } from 'react-router-dom';
-import { ToastContainer } from "react-bootstrap";
-import { CloseButton } from '../components/common/Toast';
 import { useAppContext } from '../Main';
 
 const AuthSimpleLayout = () => {

@@ -1,21 +1,25 @@
 import classNames from 'classnames';
 import AsyncSelect from 'react-select/async';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, Row } from 'react-bootstrap';
+import { Button, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { useAppContext } from '../../Main';
 import customStyles, {customStylesDark} from './SelectStyles';
 import { SelectSearchOptions } from '../../helpers/Data';
 import { useNavigate } from 'react-router-dom';
+import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import ModalGMS from './ModalGMS';
 
 const EditFormModal = ({
   onSubmit: handleSubmit,
   show,
   setShow,
-  record, field
+  record, field, options
 }) => {
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({user:user.id});
   const [defaultselected, setdefaultSelected] = useState();
+  const [showModal, setShowModal] = useState({show:false, type:''})
   const inputRef = useRef(null);
   const {config: {theme}} = useAppContext();
   const navigate = useNavigate()
@@ -26,6 +30,9 @@ const EditFormModal = ({
         const option = field.ismulti ? record[field.list].map(d => ({value:d.value || d.id, label:d[field.string] || d.label})) 
         : {value: record[field.name], label: field.string ? record[field.string] : record[field.data] && record[field.data][field.attr_data]}
         setdefaultSelected({...defaultselected, [field.name]:option})
+      }
+      if (field.iscoordenada){
+        setFormData({...formData, [field.name]:record[field.name]})
       }
     }
   }, [show]); 
@@ -42,11 +49,23 @@ const EditFormModal = ({
             return handleSubmit(formData);
           }}
         >
+          {field.label_html 
+            ? <Form.Label className='mb-0 fw-bold fs--1'>{field.label_html}</Form.Label>
+            : <Form.Label className='mb-0 fw-bold fs--1'>{field.label} {field.medida && <>({field.medida}<sup>{field.potencia}</sup>)</>}</Form.Label>
+          }
+          {field.tooltip && 
+            <OverlayTrigger overlay={
+                <Tooltip id="overlay-trigger-example">
+                    {field.tooltip}
+                </Tooltip>
+                }>
+                <FontAwesomeIcon className='ms-2 text-primary' icon={faCircleQuestion}/>
+            </OverlayTrigger>
+          }
           {field.type === 'select2' ? ( defaultselected && <>
-            <Form.Label className='mb-0 fw-bold fs--1'>{field.label.replace('*', '')}</Form.Label>
             <AsyncSelect ref={inputRef} defaultValue={defaultselected[field.name]} 
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select" isMulti={field.ismulti}
-              loadOptions={(value) => SelectSearchOptions(value, field.url, field.attr1, field.attr2, false, null, navigate)} 
+              loadOptions={(value) => SelectSearchOptions(value, field.url, field.attr1, field.attr2, false, field.params, navigate)} 
               onChange={(selected ) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,
@@ -57,20 +76,27 @@ const EditFormModal = ({
           </>)
           : field.type === 'select' ?
           (<>
-            <Form.Label className='mb-0 fw-bold fs--1'>{field.label.replace('*', '')}</Form.Label>
             <Form.Select ref={inputRef} defaultValue={record[field.name] || ''}
-              value={formData[field.name]} className='mb-1 fs--1 py-0 w-50'
+              className='mb-1 fs--1 py-0 w-75'
               onChange={({target}) => {
                 setFormData(({...formData, [field.name]: target.value}));
               }
             }>
-              {Object.keys(field.options).map(key => 
+              {field.options ? Object.keys(field.options).map(key => 
                   <option value={key} key={key}>{field.options[key]}</option>
-              )}
+              )
+              : field.boolean ? <>
+                  <option value={false}>Não</option>
+                  <option value={true}>Sim</option></>
+              : <>
+                  {options && options[field.name].map(o => 
+                      <option value={o.value} key={o.value}>{o.label}</option>
+                  )}
+                </>
+              }
             </Form.Select>
           </>)
           : field.type === 'file' ? <>
-            <Form.Label className='mb-0 fw-bold fs--1'>{field.label.replace('*', '')}</Form.Label>
             <Form.Control
                 name={field.name}
                 className='mb-2'
@@ -80,14 +106,23 @@ const EditFormModal = ({
             </>
           : 
           <>
-            <Form.Label className='mb-0 fw-bold fs--1'>{field.label.replace('*', '')}</Form.Label>
-            <Form.Control ref={inputRef} defaultValue={record[field.name] || ''} type={field.type}
-              value={formData[field.name]} className={`mb-1 fs--1 py-0 w-${field.xl === 3 ? '50' : '100'}`} 
-              as={field.type === 'textarea' ? 'textarea' : 'input'}
-              onChange={({target}) => {
-                setFormData(({...formData, [field.name]: target.value}));
-              }
-            }/>
+            {field.iscoordenada ? 
+              <div className='d-flex justify-content-between'>
+                <Form.Control
+                  ref={inputRef} value={formData[field.name] || ''} name={field.name}
+                  onChange={({target}) => setFormData(({...formData, [field.name]: target.value}))}
+                  className={`mb-1 fs--1 py-0 me-2`} type='number'
+                />
+                <Button className='py-0' onClick={() => {setShowModal({show:true, type:field.cat})}}>GMS</Button>
+              </div>
+            :
+              <Form.Control
+                ref={inputRef} defaultValue={record[field.name] || ''} type={field.type}
+                className={`mb-1 fs--1 py-0 w-${field.xl === 3 ? '50' : '100'}`} 
+                as={field.type === 'textarea' ? 'textarea' : 'input'}
+                onChange={({target}) => setFormData(({...formData, [field.name]: target.value}))}
+              />
+            }
           </>
           }
 
@@ -117,6 +152,7 @@ const EditFormModal = ({
         </Form>
       </div>   
     )}
+    <ModalGMS show={showModal.show} type={showModal.type} changemodal={setShowModal} formData={formData} changeform={setFormData}/>
     </>
   );
 };

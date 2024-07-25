@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Placeholder} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
@@ -13,14 +13,16 @@ import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
+import ModalRecord from "./Modal";
 
 const IndexASV = () => {
     const [searchResults, setSearchResults] = useState();
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
     const [isloading, setIsLoading] = useState(false)
+    const {uuid} = useParams()
+    const [modal, setModal] = useState({show:false})
 
     const onClick = (id, uuid) =>{
         const url = `/ambiental/inema/asv/${uuid}`
@@ -30,6 +32,21 @@ const IndexASV = () => {
     const setter = (data) =>{
         setSearchResults(data)
         setIsLoading(false)
+    }
+
+    const reducer = (type, data) =>{
+        if (type == 'add'){
+            setSearchResults([...searchResults, data])
+            setShowModal(false)
+        }
+        else if (type === 'edit' && searchResults){
+            setSearchResults([...searchResults.map(reg =>
+                reg.uuid === data.uuid ? data : reg
+            )])
+        }
+        else if (type === 'delete' && searchResults){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
+        }
     }
 
     const handleChange = async (value) => {
@@ -43,10 +60,19 @@ const IndexASV = () => {
         if ((user.permissions && user.permissions.indexOf("view_processos_asv") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!searchResults){
-            handleChange('')
-        }
     },[])
+
+    useEffect(() => {
+        if (uuid){
+            setModal({show:true})
+        }
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                handleChange('')
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -120,6 +146,7 @@ const IndexASV = () => {
             </Placeholder>    
         </div>   
         }
+        <ModalRecord show={modal.show} reducer={reducer}/>
         <Modal
             size="xl"
             show={showmodal}
@@ -135,7 +162,7 @@ const IndexASV = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center sectionform">
-                       <ASVForm hasLabel type='add' />
+                       <ASVForm hasLabel type='add' reducer={reducer}/>
                     </Row>
             </Modal.Body>
         </Modal>

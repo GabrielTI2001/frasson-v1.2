@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Placeholder} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
@@ -13,6 +13,7 @@ import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
+import ModalRecord from "./Modal";
 
 const IndexOutorgas = () => {
     const [searchResults, setSearchResults] = useState();
@@ -20,6 +21,8 @@ const IndexOutorgas = () => {
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
     const [isloading, setIsLoading] = useState(false)
+    const {uuid} = useParams()
+    const [modal, setModal] = useState({show:false})
 
     const onClick = (id, uuid) =>{
         const url = `/ambiental/inema/outorgas/${uuid}`
@@ -33,19 +36,42 @@ const IndexOutorgas = () => {
         setIsLoading(true)
         HandleSearch(value, 'licenses/index', setter)
     };
+    const reducer = (type, data) =>{
+        if (type == 'add'){
+            setSearchResults([...searchResults, data])
+            setShowModal(false)
+            navigate(`/ambiental/inema/outorgas/${data.uuid}`);
+        }
+        else if (type === 'edit' && searchResults){
+            setSearchResults([...searchResults.map(reg =>
+                parseInt(reg.id) === parseInt(data.id) ? data : reg
+            )])
+        }
+        else if (type === 'delete' && searchResults){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
+        }
+    }
 
     useEffect(()=>{
         if ((user.permissions && user.permissions.indexOf("view_processos_outorga") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        const Search = async () => {
-            const status = await HandleSearch('', 'environmental/inema/outorgas', setter) 
+    },[])
+    useEffect(() => {
+        const search = async () => {
+            const status = await HandleSearch('', 'environmental/inema/outorgas', setSearchResults)
             if (status === 401) navigate("/auth/login");
         }
-        if (!searchResults){
-            Search()
+        if (uuid){
+            setModal({show:true})
         }
-    },[])
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -122,6 +148,7 @@ const IndexOutorgas = () => {
             </Placeholder>    
         </div>   
         }
+        <ModalRecord show={modal.show} reducer={reducer}/>
         <Modal
             size="xl"
             show={showmodal}
@@ -137,7 +164,7 @@ const IndexOutorgas = () => {
                 </Modal.Header>
                 <Modal.Body>
                     <Row className="flex-center sectionform">
-                       <OutorgaForm hasLabel type='add'></OutorgaForm>
+                       <OutorgaForm hasLabel type='add' submit={reducer}></OutorgaForm>
                     </Row>
             </Modal.Body>
         </Modal>
