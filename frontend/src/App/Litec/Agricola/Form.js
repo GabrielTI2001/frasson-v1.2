@@ -9,6 +9,7 @@ import { SelectSearchOptions } from '../../../helpers/Data';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const meses = [{'name': 'JAN'}, {'name': 'FEV'}, {'name': 'MAR'}, {'name': 'ABR'}, {'name': 'MAI'}, {'name': 'JUN'}, {'name': 'JUL'}, 
   {'name': 'AGO'}, {'name': 'SET'}, {'name': 'OUT'}, {'name': 'NOV'}, {'name': 'DEZ'}
@@ -69,7 +70,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         }
         else if (response.status === 201 || response.status === 200){
           if (type === 'edit'){

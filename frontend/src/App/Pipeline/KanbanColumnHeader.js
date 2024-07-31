@@ -49,7 +49,6 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       size="md"
       show={modalform.show}
       onHide={() => setModalForm({show:false})}
-      centered
       aria-labelledby="example-modal-sizes-title-lg"
       scrollable
     >

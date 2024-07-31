@@ -14,6 +14,7 @@ import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { columnsAPPO } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexAPPO = () => {
     const [searchResults, setSearchResults] = useState();
@@ -36,7 +37,7 @@ const IndexAPPO = () => {
 
     const reducer = (type, data) =>{
         if (type == 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal(false)
         }
         else if (type === 'edit' && searchResults){
@@ -57,7 +58,7 @@ const IndexAPPO = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', 'environmental/inema/appos', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})
@@ -136,10 +137,10 @@ const IndexAPPO = () => {
         }
         <ModalRecord show={modal.show} reducer={reducer} />
         <Modal
-            size="xl"
+            size="md"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -148,7 +149,7 @@ const IndexAPPO = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         <APPOForm hasLabel type='add' submit={reducer}/>
                     </Row>

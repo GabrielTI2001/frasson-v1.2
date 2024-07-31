@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import OperacoesForm from "./Form";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const InitData = {
     'urlapilist':'credit/operacoes-contratadas', 
@@ -55,7 +56,7 @@ const IndexCredit = ({mes, ano}) => {
             if (response.status === 401) {
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             } else if (response.status === 200) {
                 setSearchResults(data)
                 setFormData({...formData, loaded:true})
@@ -82,7 +83,7 @@ const IndexCredit = ({mes, ano}) => {
 
     const submit = (type, data, id) => {
         if (type == 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal({show:false})
         }
         else if (type === 'edit' && searchResults){
@@ -274,7 +275,7 @@ const IndexCredit = ({mes, ano}) => {
         }
         <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
             aria-labelledby="example-modal-sizes-title-lg"
@@ -286,7 +287,7 @@ const IndexCredit = ({mes, ano}) => {
             </Modal.Title>
                 <CloseButton onClick={() => setShowModal({show:false})}/>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="pb-0">
                 <OperacoesForm type='add' hasLabel submit={submit}/>
             </Modal.Body>
         </Modal>

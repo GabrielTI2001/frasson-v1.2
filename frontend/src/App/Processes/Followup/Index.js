@@ -6,15 +6,12 @@ import AdvanceTable from '../../../components/common/advance-table/AdvanceTable'
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
-import { Link } from "react-router-dom";
 import { columnsFollowup } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
-import { Modal, CloseButton } from "react-bootstrap";
 
 const IndexFollowup = () => {
     const [searchResults, setSearchResults] = useState();
     const user = JSON.parse(localStorage.getItem("user"))
-    const token = localStorage.getItem("token")
     const navigate = useNavigate();
 
     const onClick = (id, uuid) =>{

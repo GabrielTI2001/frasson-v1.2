@@ -1,12 +1,13 @@
 import React, { useEffect, useState} from 'react';
 import { useNavigate, Link} from 'react-router-dom';
-import { Button, Form, Col, Row, Table, Spinner, Placeholder} from 'react-bootstrap';
+import { Form, Col, Row } from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
 import GoogleMap from '../../../components/map/GoogleMap';
 import MapInfo from './MapInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExcel, faVectorSquare, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const InsertPoints = () => {
   const {config: {theme}} = useAppContext();
@@ -48,7 +49,7 @@ const InsertPoints = () => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         }
     } catch (error) {
         console.error('Erro:', error);
@@ -58,7 +59,7 @@ const InsertPoints = () => {
 
   
   function isMarkerAlreadyExists(lat, lng) {
-    const s = coordenadas.filter(c => c.lat == lat && c.lng == lng)
+    const s = coordenadas.filter(c => c.lat === lat && c.lng === lng)
     return s.length > 0 ? true : false; // No marker with the same coordinates found
   }
 

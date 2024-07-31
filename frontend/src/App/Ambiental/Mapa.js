@@ -8,6 +8,7 @@ import GoogleMap from "../../components/map/GoogleMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetail} from "./MapInfo";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const initData = {'appo': {title:'Processos APPO', textpoint: 'Poço(s) '}, 
     'outorga': {title:'Processos Outorga', textpoint: 'ponto(s) de outorga '}
@@ -46,7 +47,7 @@ const MapaPontos = ({type}) => {
             if (response.status === 401){
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate)
             }
             else if (response.status === 200){
                 const data = await response.json();
@@ -74,7 +75,7 @@ const MapaPontos = ({type}) => {
             if (response.status === 401){
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate)
             }
             else if (response.status === 200){
                 const data = await response.json();

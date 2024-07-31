@@ -10,6 +10,7 @@ import { HandleSearch } from '../../helpers/Data';
 import { toast } from 'react-toastify';
 import api from '../../context/data';
 import ModalDelete from '../../components/Custom/ModalDelete';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
   const user = JSON.parse(localStorage.getItem('user'))
@@ -66,7 +67,7 @@ export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
       if (error.response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{toast.error("Ocorreu Um Erro!")}
       setaccFiles()
@@ -101,7 +102,7 @@ export const Anexos = ({record, updatedactivity, isgai, isgc}) => {
         const param2 = ''
         const status = await HandleSearch('', 'finances/anexos',(data) => {setAnexos(data)}, `?${param}=${record.id}&${param2}`)
         if (status === 401){
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
       }
     }

@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTractor, faPersonDigging, faFlask, faPerson, faContactBook} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../Main";
 import { GetRecord } from "../../helpers/Data";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const IndexCadGerais = () =>{
     const {config: { theme}} = useAppContext();
@@ -13,17 +14,13 @@ const IndexCadGerais = () =>{
     const navigate = useNavigate()
     useEffect(()=>{
       const buscadados = async () =>{
-        const dadosbenfeitoria = await GetRecord('', 'register/farm-assets');
-        const dadosanalise = await GetRecord('', 'register/analysis-soil');
-        const dadosmaquinas = await GetRecord('', 'register/machinery');
-        const dadospessoas = await GetRecord('', 'register/pessoal');
-        const cartorios = await GetRecord('', 'register/cartorios');
-        if (!dadosbenfeitoria || !dadosanalise || !dadosbenfeitoria || !cartorios){
-          navigate("/auth/login")
+        const dados = await GetRecord('', 'register/cadastros');
+        if (!dados){
+          RedirectToLogin(navigate)
         }
         else{
-          setCountRegs({'benfeitoria':dadosbenfeitoria.length, 'analisesolo':dadosanalise.length, 'maquinas':dadosmaquinas.length,
-            'pessoal':dadospessoas.length, 'cartorios':cartorios.length
+          setCountRegs({'benfeitoria':dados.benfeitorias, 'analisesolo':dados.analises_solo, 'maquinas':dados.maquinas,
+            'pessoal':dados.pessoal, 'cartorios':dados.cartorios
           })
         }
       }

@@ -11,6 +11,7 @@ import { columnsPessoal } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import PessoaForm from "./Form";
 import ModalPessoal from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexPessoal = () => {
     const [searchResults, setSearchResults] = useState();
@@ -35,7 +36,7 @@ const IndexPessoal = () => {
     };
     const submit = (type, data) => {
         if (type === 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal({show:false})
         }
         if (type === 'edit'){
@@ -54,7 +55,7 @@ const IndexPessoal = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', 'register/pessoal', setter)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})
@@ -123,7 +124,6 @@ const IndexPessoal = () => {
             onHide={() => setShowModal({show:false})}
             aria-labelledby="example-modal-sizes-title-lg"
             scrollable
-            centered
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>

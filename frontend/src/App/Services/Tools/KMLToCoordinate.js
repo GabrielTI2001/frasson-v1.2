@@ -6,6 +6,7 @@ import GoogleMap from '../../../components/map/GoogleMap';
 import MapInfo from './MapInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const KMLToCoordinate = () => {
   const {config: {theme}} = useAppContext();
@@ -36,7 +37,7 @@ const KMLToCoordinate = () => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         }
         else if (response.status === 201 || response.status === 200){
           setDados({...data})
@@ -119,9 +120,9 @@ const KMLToCoordinate = () => {
         </Form.Group>    
       </Form>
       <div className="mb-2 d-flex justify-content-start mt-1">
-        <form action={`${process.env.REACT_APP_API_URL}/services/tools/convert/kmlToxlsx`} method="POST" class="col-auto me-2">
+        <form action={`${process.env.REACT_APP_API_URL}/services/tools/convert/kmlToxlsx`} method="POST" className="col-auto me-2">
             <input type="hidden" id="html_content" name="html_content" value="" />
-            <button type="submit" class="badge btn btn-sm btn-success shadow-none fs-xs fw-normal"
+            <button type="submit" className="badge btn btn-sm btn-success shadow-none fs-xs fw-normal"
               disabled={dados.coordinates.length === 0}
             >
               <FontAwesomeIcon icon={faFileExcel} className='me-1'/>Download Excel
@@ -129,7 +130,7 @@ const KMLToCoordinate = () => {
         </form>
         <form action={`${process.env.REACT_APP_API_URL}/services/tools/convert/toxlsbnb`} method="POST">
             <input type="hidden" id="html_content2" name="html_content" value="" />
-            <button type="submit" class="badge btn btn-sm btn-success shadow-none fs-xs fw-normal"
+            <button type="submit" className="badge btn btn-sm btn-success shadow-none fs-xs fw-normal"
               disabled={dados.coordinates.length === 0}
             >
               <FontAwesomeIcon icon={faFileExcel} className='me-1'/>Download Formato BNB

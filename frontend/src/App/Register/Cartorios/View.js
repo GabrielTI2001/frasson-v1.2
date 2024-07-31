@@ -11,6 +11,7 @@ import ListProcessos from "./ListProcessos";
 import ListOperacoes from "./ListOperacoes";
 import ListContas from "./ListContas";
 import { RetrieveRecord } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const ViewPessoal = () => {
     const {uuid} = useParams()
@@ -30,7 +31,7 @@ const ViewPessoal = () => {
         const getData = async () => {
             const status = RetrieveRecord(uuid, 'register/pessoal', (data) => {setPessoa(data); data.data_nascimento && calcIdade(data.data_nascimento)})
             if (status === 401){
-                navigate("/auth/login");
+                RedirectToLogin(navigate);
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_cadastro_pessoal") === -1) && !user.is_superuser){

@@ -165,6 +165,15 @@ class detailReembolsos(serializers.ModelSerializer):
             return {'text': 'Cobrado', 'color': 'success'}
         else:
             return {'text': 'Em Aberto', 'color': 'warning'}
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['cliente', 'data', 'valor']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
     class Meta:
         model = Reembolso_Cliente
         fields = '__all__'
@@ -230,8 +239,6 @@ class detailContratoAmbiental(serializers.ModelSerializer):
                 'servico_str': e.servico.detalhamento_servico,
                 'percentual': e.percentual,
                 'etapa': e.get_etapa_display() if e.etapa else '-',
-                # 'aberta': 'Sim' if etapa_cobranca == e.get_etapa_display() else 'Não',
-                # 'color': 'success' if etapa_cobranca == e.get_etapa_display() else 'danger',
                 'status': 'Pago' if fase == 'PG' else 'Sem Cobrança Aberta' if fase == None else 'Cobrança Aberta',
                 'color_status': 'success' if fase == 'PG' else 'warning' if fase == None else 'primary'
             })    

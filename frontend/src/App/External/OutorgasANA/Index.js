@@ -4,14 +4,13 @@ import {Row, Col, Spinner} from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
-import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsOutorga } from "../Data";
-import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexOutorgasANA = () => {
     const [searchResults, setSearchResults] = useState();
@@ -28,10 +27,6 @@ const IndexOutorgasANA = () => {
         setSearchResults(data.outorgas)
         setIsLoading(false)
     }
-    const handleChange = async (value) => {
-        setIsLoading(true)
-        HandleSearch(value, 'external/ana/outorgas', setter)
-    };
 
     useEffect(()=>{
         if ((user.permissions && user.permissions.indexOf("ver_outorgas_ana") === -1) && !user.is_superuser){
@@ -39,7 +34,7 @@ const IndexOutorgasANA = () => {
         }
         const Search = async () => {
             const status = await HandleSearch('', 'external/ana/outorgas', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             Search()

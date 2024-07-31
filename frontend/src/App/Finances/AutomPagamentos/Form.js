@@ -2,11 +2,12 @@ import React, { useEffect, useState} from 'react';
 import AsyncSelect from 'react-select/async';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
+import { Button, Form, Col, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { SelectSearchOptions, sendData } from '../../../helpers/Data';
 import { RetrieveRecord } from '../../../helpers/Data';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -17,48 +18,35 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
   const [message, setMessage] = useState()
   const [record, setRecord] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
   const uuid = data ? data.uuid : '';
   const [defaultoptions, setDefaultOptions] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/finances/automation/payments/${type === 'edit' ? uuid+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-      const response = await fetch(link, {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(dadosform)
-      });
-      const data = await response.json();
-      if(response.status === 400){
-        setMessage({...data})
-      }
-      else if (response.status === 401){
-        localStorage.setItem("login", JSON.stringify(false));
-        localStorage.setItem('token', "");
-        navigate("/auth/login");
-      }
-      else if (response.status === 201 || response.status === 200){
-        if (type === 'edit'){
-          submit('edit', data)
-          toast.success("Registro Atualizado com Sucesso!")
-        }
-        else{
-          submit('add', data)
-          toast.success("Registro Efetuado com Sucesso!")
-        }
-      }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'finances/automation/payments', keyfield:type === 'edit' ? uuid : null, 
+      dadosform:dadosform})
+    if(resposta.status === 400){
+      setMessage(dados)
     }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate);
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        submit('edit', dados)
+        toast.success("Registro Atualizado com Sucesso!")
+      }
+      else{
+        submit('add', dados)
+        toast.success("Registro Efetuado com Sucesso!")
+      }
+    }
+    setIsLoading(false)
   };
 
   const handleSubmit = async e => {
     setMessage(null)
+    setIsLoading(true)
     e.preventDefault();
     await handleApi(formData);
   };
@@ -88,7 +76,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
         }
       }
       else{
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
     }
 
@@ -107,7 +95,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Beneficiário*</Form.Label>}
             <AsyncSelect 
               name='beneficiario' 
@@ -125,7 +113,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Descrição*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Descrição' : ''}
@@ -138,7 +126,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Categoria Pagamento*</Form.Label>}
             <AsyncSelect 
               name='categoria_pagamento' 
@@ -156,7 +144,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Pagamento*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Valor' : ''}
@@ -168,7 +156,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.valor_pagamento : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Dia Vencimento*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Dia Vencimento' : ''}
@@ -180,7 +168,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.dia_vencimento : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={8} sm={12}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Detalhamento</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Detalhamento' : ''}
@@ -191,15 +179,12 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.detalhamento : ''}</label>
         </Form.Group>
-
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-            >
-              {type === 'edit' ? "Atualizar" : "Cadastrar"}
-          </Button>
-        </Form.Group>    
+        
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Button className="w-50" type="submit" disabled={isLoading} >
+            {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : type === 'edit' ? 'Atualizar' : 'Cadastrar'}
+          </Button> 
+        </Form.Group>   
       </Form>
     </>
   );

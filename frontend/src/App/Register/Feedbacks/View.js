@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import EditFeedback from "./Edit";
 import { RetrieveRecord } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 
 const ViewFeedback = ({feedback, submit}) =>{
@@ -39,7 +40,7 @@ const ViewFeedback = ({feedback, submit}) =>{
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 toast.success("Resposta Registrada!")
@@ -78,7 +79,7 @@ const ViewFeedback = ({feedback, submit}) =>{
         const getdata = async () =>{
             const status = await RetrieveRecord(feedback.id, 'register/feedbacks', (data) => setDataFeedback(data))
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if (!datafeedback){

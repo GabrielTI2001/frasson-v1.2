@@ -6,6 +6,7 @@ import { Button, Form, Col } from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import { GetRecord, SelectSearchOptions } from '../../../helpers/Data';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const CartorioForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -37,7 +38,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
       else if (response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        navigate("/auth/login");
+        RedirectToLogin(navigate);
       }
       else if (response.status === 201 || response.status === 200){
         if (type === 'edit'){
@@ -103,9 +104,9 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
 
   return (
     <>
-      <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
+      <Form onSubmit={handleSubmit} className='row row-cols-1' encType='multipart/form-data'>
 
-        <Form.Group className="mb-2" as={Col} xl={4}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Nome ou Razão Social*</Form.Label>}
           <Form.Control
             value={formData.razao_social || ''}
@@ -116,7 +117,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.razao_social : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={4}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>CNPJ*</Form.Label>}
           <Form.Control
             value={formData.cnpj || ''}
@@ -128,7 +129,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {defaultoptions && 
-          <Form.Group className="mb-2" as={Col} xl={4}>
+          <Form.Group className="mb-2" as={Col}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Município*</Form.Label>}
             <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, 'register/municipios', 'nome_municipio', 'sigla_uf')} 
               name='municipio' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
@@ -144,7 +145,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group> 
         }
 
-        <Form.Group className="mb-2" as={Col} xl={4}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>CEP Logradouro*</Form.Label>}
           <Form.Control
             value={formData.cep_logradouro || ''}
@@ -155,7 +156,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.cep_logradouro : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Logradouro*</Form.Label>}
           <Form.Control
             value={formData.logradouro || ''}
@@ -166,7 +167,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.logradouro : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Contato 01</Form.Label>}
           <Form.Control
             value={formData.contato1 || ''}
@@ -177,7 +178,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.contato1 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Contato 02</Form.Label>}
           <Form.Control
             value={formData.contato2 || ''}
@@ -188,7 +189,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.contato2 : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Atendente</Form.Label>}
           <Form.Control
             value={formData.atendente || ''}
@@ -199,7 +200,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.atendente : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Email</Form.Label>}
           <Form.Control
             value={formData.email || ''}
@@ -210,7 +211,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.email : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Observações</Form.Label>}
           <Form.Control
             as='textarea'
@@ -222,7 +223,7 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.observacoes : ''}</label>
         </Form.Group>
 
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
           <Button
             className="w-40"
             type="submit"

@@ -4,6 +4,7 @@ import { useAppContext } from "../../../Main";
 import {Table} from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import CardInfo from '../../Pipeline/CardInfo';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const ListOperacoes = ({record}) => {
     const {config: {theme}} = useAppContext();
@@ -23,7 +24,7 @@ const ListOperacoes = ({record}) => {
                 });
                 if (response.status === 401){
                     localStorage.setItem("login", JSON.stringify(false));
-                    navigate("/auth/login");
+                    RedirectToLogin(navigate);
                 }
                 else if (response.status === 200){
                     const data = await response.json();
@@ -46,9 +47,10 @@ const ListOperacoes = ({record}) => {
             operacoes.map(o => 
                 <div className="rounded-top-lg pt-1 pb-0 mb-2" key={o.id}>
                     <CardInfo 
-                        data={o} title2='Data: ' 
+                        data={o}
                         title={Number(o.valor_operacao).toLocaleString('pt-br', {style:'currency', currency:'BRL'})} 
                         attr2='data_emissao_cedula'
+                        title2={new Date(o.data_emissao_cedula).toLocaleDateString('pt-br', {timeZone:'UTC'})}
                     />
                 </div>
             ) 

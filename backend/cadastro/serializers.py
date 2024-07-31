@@ -7,10 +7,8 @@ from .models import Detalhamento_Servicos, Cadastro_Pessoal, Produtos_Frasson, C
 from .models import Instituicoes_Parceiras, Contas_Bancarias_Clientes, Instituicoes_Razao_Social, Grupos_Clientes
 from finances.models import Contratos_Ambiental
 from datetime import datetime
-import requests, json, locale, re, os
-from backend.settings import TOKEN_PIPEFY_API, URL_PIFEFY_API, MEDIA_URL, TOKEN_GOOGLE_MAPS_API
-from users.models import Profile
-from django.db.models import Q, Sum
+import locale, os
+from backend.settings import TOKEN_GOOGLE_MAPS_API
 
 import locale
 from backend.settings import TOKEN_GOOGLE_MAPS_API

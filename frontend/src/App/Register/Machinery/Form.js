@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
+import { Button, Form, Col, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import { SelectSearchOptions } from '../../../helpers/Data';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const MachineryForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -14,13 +15,13 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
     created_by: user.id
   });
   const [message, setMessage] = useState()
-  const channel = new BroadcastChannel('meu_canal');
   const navigate = useNavigate();
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [defaultoptions, setDefaultOptions] = useState()
   const estadocons = useState([{label:'Novo'}, {label:'Seminovo'}, {label:'Antigo'}])
   const situacao = useState([{label:'Quitado'}, {label:'Financiado'}])
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
     const link = `${process.env.REACT_APP_API_URL}/register/machinery/${type === 'edit' ? uuid+'/':''}`
@@ -41,12 +42,11 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         }
         else if (response.status === 201 || response.status === 200){
           if (type === 'edit'){
             submit('edit', ...formData)
-            channel.postMessage({ tipo: 'atualizar_machinery', reg:data});
             toast.success("Registro Atualizado com Sucesso!")
           }
           else{
@@ -56,9 +56,11 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
     } catch (error) {
         console.error('Erro:', error);
     }
+    setIsLoading(false)
   };
 
   const handleSubmit = e => {
+    setIsLoading(true)
     if (formData.data_validade === ''){
       setFormData({...formData, data_validade:undefined})
     }
@@ -100,9 +102,9 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
 
   return (
     <>
-      <Form onSubmit={handleSubmit} className='row'>
+      <Form onSubmit={handleSubmit} className='row row-cols-1'>
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
+          <Form.Group className="mb-2" as={Col}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Proprietário da Máquina*</Form.Label>}
             <AsyncSelect 
               loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj', false, null, null, navigate)} 
@@ -119,7 +121,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
+          <Form.Group className="mb-2" as={Col}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Máquina*</Form.Label>}
             <AsyncSelect 
               loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj', false, null, null, navigate)} 
@@ -136,7 +138,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} sm={6} xl={2} lg={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Quantidade*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Quantidade' : ''}
@@ -148,7 +150,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.quantidade : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} sm={6} xl={2} lg={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Ano Fabricação</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Ano Fabricação' : ''}
@@ -160,7 +162,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.ano_fabricacao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} sm={12} lg={6} xl={4}>
+        <Form.Group className="mb-2" as={Col} >
           {hasLabel && <Form.Label className='fw-bold mb-1'>Fabricante</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Fabricante' : ''}
@@ -172,7 +174,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.fabricante : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Modelo</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Modelo' : ''}
@@ -184,7 +186,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.modelo : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Série/Chassi</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Série/Chassi' : ''}
@@ -196,7 +198,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.serie_chassi : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={2} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor Total*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Valor' : ''}
@@ -208,7 +210,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.valor_total : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Situação*</Form.Label>}
           <Form.Select
             placeholder={!hasLabel ? 'Situação' : ''}
@@ -219,13 +221,13 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           >
             <option value={undefined}>----</option>
             {situacao &&( situacao.map( c =>(
-              <option key={c.label} value={c.label}>{c.label}</option>
+              <option key={c.value} value={c.value}>{c.label}</option>
             )))}
           </Form.Select>
           <label className='text-danger'>{message ? message.situacao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Cor</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Cor' : ''}
@@ -237,7 +239,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.cor : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Potência ou Capacidade</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Potência ou Capacidade' : ''}
@@ -249,7 +251,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.potencia_capacidade : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col} >
           {hasLabel && <Form.Label className='fw-bold mb-1'>Estado Conservação*</Form.Label>}
           <Form.Select
             placeholder={!hasLabel ? 'Estado Conservação' : ''}
@@ -260,13 +262,13 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           >
             <option value={undefined}>----</option>
             {estadocons &&( estadocons.map( c =>(
-              <option key={c.label} value={c.label}>{c.label}</option>
+              <option key={c.label} value={c.value}>{c.label}</option>
             )))}
           </Form.Select>
           <label className='text-danger'>{message ? message.estado_conservacao : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={4} lg={6}>
+        <Form.Group className="mb-2" as={Col}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Imóvel Rural*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Imóvel Rural' : ''}
@@ -278,7 +280,7 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.propriedade : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} lg={6} sm={6}>
+        <Form.Group className="mb-2" as={Col} >
           {hasLabel && <Form.Label className='fw-bold mb-1'>Percentual Participação</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Potência ou Capacidade' : ''}
@@ -298,7 +300,12 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
               {type === 'edit' ? "Atualizar Máquina"
               : "Cadastrar Máquina"}
           </Button>
-        </Form.Group>           
+        </Form.Group>       
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Button className="w-50" type="submit" disabled={isLoading} >
+            {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Cadastrar Imóvel Rural'}
+          </Button>
+        </Form.Group>       
       </Form>
     </>
   );

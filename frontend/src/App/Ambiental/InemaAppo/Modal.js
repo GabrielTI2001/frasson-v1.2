@@ -16,6 +16,7 @@ import { faFilePdf } from '@fortawesome/free-solid-svg-icons';
 import NavModal, { CoordenadasMap, NavModal2, TablePoints } from './Nav.js';
 import { ambientalReducer } from '../../../reducers/ambientalReducer.js';
 import { AmbientalContext } from '../../../context/Context.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const dif = (data_ren) => {
   const dif = parseInt((new Date(data_ren) - new Date())/(1000 * 60 * 60 * 24))
@@ -50,7 +51,7 @@ const ModalRecord = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'environmental/inema/appos')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
@@ -163,25 +164,25 @@ const ModalRecord = ({show, reducer}) => {
                         </div>
 
                         <div className='fs--1 mb-2 mt-1'>
-                          <strong className='fw-bold me-2'>Status APPO:</strong>
+                          <strong className='fw-bold me-2 d-block'>Status APPO</strong>
                           {new Date(record.data_vencimento) < new Date()
                               ?<SubtleBadge bg='danger'>Vencida</SubtleBadge>
                               :<SubtleBadge bg='success'>Vigente</SubtleBadge>
                           }
                         </div>
                         <div className='fs--1 mb-2'>
-                          <strong className='fw-bold me-2'>Data REAPPO:</strong>
+                          <strong className='fw-bold me-2 d-block'>Data REAPPO:</strong>
                           {new Date(record.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}
                         </div>
                         <div className='fs--1 mb-2'>
-                          <strong className='fw-bold me-2'>Status REAPPO:</strong>
+                          <strong className='fw-bold me-2 d-block'>Status REAPPO:</strong>
                           {new Date(record.renovacao.data) < new Date()
                               ?<SubtleBadge bg='danger'>Vencida</SubtleBadge>
                               :<SubtleBadge bg='success'>Vigente</SubtleBadge>
                           }
                         </div>
                         <div className='fs--1 mb-1'>
-                          <strong className='fw-bold me-2'>Dias restantes REAPPO:</strong>{dif(record.renovacao.data)}
+                          <strong className='fw-bold me-2 d-block'>Dias restantes REAPPO:</strong>{dif(record.renovacao.data)}
                         </div>
 
                         {aquifero && fieldsAPPO.map(f => 
@@ -193,9 +194,7 @@ const ModalRecord = ({show, reducer}) => {
                                   ? <div className="fs--1 row-10">{record[f.name] === true ? 'Sim' : 'Não'}</div>
                                   : <div className="fs--1 row-10">{record[f.string]}</div>
                                 )
-                              : f.type === 'select2' ? f.ismulti ? 
-                                  <div className="fs--1 row-10">{f.list.map(l => l[f.string]).join(', ')}</div>
-                                : 
+                              : f.type === 'select2' ? 
                                 f.string ?
                                   <div className="fs--1 row-10">{record[f.string]}</div>
                                 :
@@ -218,9 +217,6 @@ const ModalRecord = ({show, reducer}) => {
                               record={record} field={f} options={{aquifero:aquifero}}
                             />
                         )}
-                      </Tab.Pane>
-                      <Tab.Pane eventKey="farm">
-        
                       </Tab.Pane>
                     </Tab.Content>
                   </div>

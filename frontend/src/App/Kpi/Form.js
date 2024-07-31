@@ -1,54 +1,44 @@
 import React, { useEffect, useState} from 'react';
 import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Row, Col} from 'react-bootstrap';
-import { RetrieveRecord, SelectOptions } from '../../helpers/Data';
+import { Button, Form, Row, Col, Spinner} from 'react-bootstrap';
+import { RetrieveRecord, SelectOptions, sendData } from '../../helpers/Data';
+import { useAppContext } from '../../Main';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
   const [formData, setFormData] = useState({});
+  const {config: {theme}} = useAppContext();
   const [users, setUsers] = useState();
   const [message, setMessage] = useState();
   const [indicators, setIndicators] = useState();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
+  const [isLoading, setIsLoading] = useState(false);
   
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/kpi/metas/${type === 'edit' ? data ? data.uuid : pk+'/' : ''}` 
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(dadosform)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          navigate("/auth/login");
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            toast.success("Registro Atualizado com Sucesso!")
-            submit('edit', data)
-          }
-          else{
-            toast.success("Registro Adicionado com Sucesso!")
-            submit('add', data)
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'kpi/metas', keyfield:type === 'edit' ? data.id : null, 
+      dadosform:dadosform})
+    if(resposta.status === 400){
+      setMessage(dados)
     }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate);
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        toast.success("Registro Atualizado com Sucesso!")
+        submit('edit', dados)
+      }
+      else{
+        toast.success("Registro Adicionado com Sucesso!")
+        submit('add', dados)
+      }
+    }
+    setIsLoading(false)
   };
 
   const handleSubmit = e => {
+    setIsLoading(true)
     setMessage(null)
     e.preventDefault();
     handleApi(formData);
@@ -72,9 +62,9 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
     }
     const loadUsers = async () => {
       const options = await SelectOptions('users/users', 'first_name')
-      Array.isArray(options) ? setUsers(options) : navigate("/auth/login")
+      Array.isArray(options) ? setUsers(options) : RedirectToLogin(navigate)
       const options2 = await SelectOptions('kpi/indicators', 'description', null, 'uuid')
-      Array.isArray(options2) ? setIndicators(options2) : navigate("/auth/login")
+      Array.isArray(options2) ? setIndicators(options2) : RedirectToLogin(navigate)
     }
     if (type === 'edit'){
       if(!formData.year){   
@@ -88,7 +78,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row'>
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Indicador*</Form.Label>}
           <Form.Select
             value={formData.indicator || ''}
@@ -104,7 +94,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
           <label className='text-danger'>{message && (message.indicator)}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Ano*</Form.Label>}
           <Form.Control
             value={formData.year || ''}
@@ -115,7 +105,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
           <label className='text-danger'>{message && (message.year)}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Responsável*</Form.Label>}
           <Form.Select
             value={formData.assignee || ''}
@@ -132,7 +122,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
         </Form.Group>
 
         <Row className='px-0 mx-auto'>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Janeiro*</Form.Label>}
               <Form.Control
                 value={formData.target_january || ''}
@@ -142,7 +132,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_january)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Janeiro*</Form.Label>}
               <Form.Control
                 value={formData.actual_january || ''}
@@ -153,7 +143,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_january)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Fevereiro*</Form.Label>}
               <Form.Control
                 value={formData.target_february || ''}
@@ -163,7 +153,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_february)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Fevereiro*</Form.Label>}
               <Form.Control
                 value={formData.actual_february || ''}
@@ -174,7 +164,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_february)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Março*</Form.Label>}
               <Form.Control
                 value={formData.target_march || ''}
@@ -184,7 +174,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_march)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Março*</Form.Label>}
               <Form.Control
                 value={formData.actual_march || ''}
@@ -195,7 +185,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_march)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Abril*</Form.Label>}
               <Form.Control
                 value={formData.target_april || ''}
@@ -205,7 +195,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_april)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Abril*</Form.Label>}
               <Form.Control
                 value={formData.actual_april || ''}
@@ -216,7 +206,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_april)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Maio*</Form.Label>}
               <Form.Control
                 value={formData.target_may || ''}
@@ -226,7 +216,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_may)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Maio*</Form.Label>}
               <Form.Control
                 value={formData.actual_may || ''}
@@ -237,7 +227,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_may)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Junho*</Form.Label>}
               <Form.Control
                 value={formData.target_june || ''}
@@ -247,7 +237,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_june)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Junho*</Form.Label>}
               <Form.Control
                 value={formData.actual_june || ''}
@@ -258,7 +248,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_june)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Julho*</Form.Label>}
               <Form.Control
                 value={formData.target_july || ''}
@@ -268,7 +258,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_july)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Julho*</Form.Label>}
               <Form.Control
                 value={formData.actual_july || ''}
@@ -279,7 +269,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_july)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Agosto*</Form.Label>}
               <Form.Control
                 value={formData.target_august || ''}
@@ -289,7 +279,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_august)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Agosto*</Form.Label>}
               <Form.Control
                 value={formData.actual_august || ''}
@@ -300,7 +290,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_august)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Setembro*</Form.Label>}
               <Form.Control
                 value={formData.target_september || ''}
@@ -310,7 +300,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_september)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Setembro*</Form.Label>}
               <Form.Control
                 value={formData.actual_september || ''}
@@ -321,7 +311,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_september)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Outubro*</Form.Label>}
               <Form.Control
                 value={formData.target_october || ''}
@@ -331,7 +321,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_october)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Outubro*</Form.Label>}
               <Form.Control
                 value={formData.actual_october || ''}
@@ -342,7 +332,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_october)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Novembro*</Form.Label>}
               <Form.Control
                 value={formData.target_november || ''}
@@ -352,7 +342,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_november)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Novembro*</Form.Label>}
               <Form.Control
                 value={formData.actual_november || ''}
@@ -363,7 +353,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
             <label className='text-danger'>{message && (message.actual_november)}</label>
           </Form.Group>
 
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Meta Dezembro*</Form.Label>}
               <Form.Control
                 value={formData.target_december || ''}
@@ -373,7 +363,7 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
               />
             <label className='text-danger'>{message && (message.target_december)}</label>
           </Form.Group>
-          <Form.Group className="mb-2" as={Col} xl={2} lg={3} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Realizado Dezembro*</Form.Label>}
               <Form.Control
                 value={formData.actual_december || ''}
@@ -385,16 +375,14 @@ const IndicatorForm = ({ hasLabel=true, type, data, submit, pk}) => {
           </Form.Group>
 
         </Row>
-        <label className='text-danger'>{message && (message.non_field_errors)}</label>
-        <Form.Group className="mb-0 text-end">
-          <Button
-            className="w-40"
-            type="submit"
-          >
-              {type === 'edit' ? "Atualizar Indicador"
-              : "Cadastrar Indicador"}
-          </Button>
-        </Form.Group>           
+        <label className='text-danger'>{message && (message.non_field_errors)}</label>  
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Button className="w-50" type="submit" disabled={isLoading} >
+            {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/>
+              : type === 'edit' ? 'Atualizar' : 'Cadastrar'+' Indicador'
+            }
+          </Button> 
+        </Form.Group>         
       </Form>
     </>
   );

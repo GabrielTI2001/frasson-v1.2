@@ -17,6 +17,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile } from '@fortawesome/free-solid-svg-icons';
 import { fieldsAnaliseSolo } from '../Data.js';
 import EditFormModal from '../../../components/Custom/EditForm.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -41,7 +42,7 @@ const ModalRecord = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'register/analysis-soil')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
@@ -93,7 +94,7 @@ const ModalRecord = ({show, reducer}) => {
         if (erro.response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
         console.error('erro: '+erro);
       })
@@ -151,7 +152,10 @@ const ModalRecord = ({show, reducer}) => {
                                   </Link>
                                 </div>
                               : 
-                                <div className="fs--1 row-10">{record[f.name] || '-'}</div>
+                                <div className="fs--1 row-10">{record[f.name] ? f.is_number 
+                                  ? Number(record[f.name]).toLocaleString('pt-BR', {minimumFractionDigits:2}) 
+                                  : record[f.name] : '-'}
+                                </div>
                             }
                           </div>
                         :

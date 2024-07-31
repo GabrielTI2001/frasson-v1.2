@@ -9,6 +9,7 @@ import api from '../../context/data';
 import { toast } from 'react-toastify';
 import ConfigMoverCard from './ConfigMover';
 import { GetRecord } from '../../helpers/Data';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
 
@@ -47,7 +48,7 @@ const ModalSidebar = ({card, pipe, move}) => {
       if (erro.response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       console.error('erro: '+erro);
     })
@@ -73,7 +74,7 @@ const ModalSidebar = ({card, pipe, move}) => {
     const getfase = async () => {
       const fase = await GetRecord(card.phase, 'pipeline/fases')
       if (fase === null){
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         setActionMenu([...fase.list_destinos.map(f => ({ title: f.descricao, id:f.id, click:() => handleMove(f.id)}))])

@@ -4,6 +4,7 @@ import {Row, Col, Spinner, Table, Form} from 'react-bootstrap';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const phases = {
     317532037: 'Aguardando Distribuição', 
@@ -39,7 +40,7 @@ const CobrancasPhase = ({idphase, produto}) => {
         const getdata = async () =>{
             const params = idphase ? `?phase=${idphase || ''}` : `?produto=${produtos[produto].id}`
             const status = await HandleSearch('', 'finances/revenues', setter, params)
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
         }
         if ((user.permissions && user.permissions.indexOf("view_cobrancas_pipefy") === -1) && !user.is_superuser){
             navigate("/error/403")

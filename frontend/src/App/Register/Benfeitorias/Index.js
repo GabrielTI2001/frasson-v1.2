@@ -14,6 +14,7 @@ import BenfeitoriaForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import ModalBenfeitoria from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'columns':columnsBenfeitorias, 'urlapilist':'register/farm-assets', 
@@ -52,7 +53,7 @@ const IndexBenfeitorias = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})
@@ -67,10 +68,10 @@ const IndexBenfeitorias = () => {
 
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-        if (status === 401) navigate("/auth/login");
+        if (status === 401) RedirectToLogin(navigate);
         const getdata = async () =>{
             const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         getdata()
     };

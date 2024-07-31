@@ -6,6 +6,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { faChartColumn, faArrowTrendDown, faArrowTrendUp, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../../Main";
 import { LineChart } from "../../../components/Custom/Charts";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const Commodities = () =>{
     const {config: {theme}} = useAppContext();
@@ -40,7 +41,7 @@ const Commodities = () =>{
             if (response.status === 401) {
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate);
             } else if (response.status === 200) {
                 setSearchResults(data.list)
                 setStatistics({'media':data.media, 'desvio_padrao':data.desvio_padrao, 'min':data.minimo, 'max':data.maximo})
@@ -85,7 +86,7 @@ const Commodities = () =>{
             if (response.status === 401) {
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate);
             } else if (response.status === 200 && response2.status === 200) {
                 setLocations(data1)
                 setProdutos(data2)

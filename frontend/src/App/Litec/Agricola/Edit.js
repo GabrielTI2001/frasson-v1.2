@@ -6,6 +6,7 @@ import { Placeholder } from "react-bootstrap";
 import { RetrieveRecord } from "../../../helpers/Data";
 import PolygonMap from "../../../components/map/PolygonMap";
 import FormProdAgricola from "./Form";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const EditProdAgricola = ({id, gleba, submit}) => {
     const [producao, setProducao] = useState()
@@ -24,7 +25,7 @@ const EditProdAgricola = ({id, gleba, submit}) => {
     useEffect(() =>{
         const getData = async () => {
             const status = await RetrieveRecord(id, 'litec/agricola', setter)
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
         }
         if ((user.permissions && user.permissions.indexOf("view_glebas_areas") === -1) && !user.is_superuser){
             navigate("/error/403")

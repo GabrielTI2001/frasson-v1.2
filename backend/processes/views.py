@@ -164,12 +164,9 @@ class FollowupView(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         # Obtendo o ID do processo a partir das kwargs
         id = kwargs.get('pk')
-
-        # Tentando obter o objeto Fluxo_Gestao_Ambiental
         processo_pipefy = get_object_or_404(Fluxo_Gestao_Ambiental, pk=id)
-        
-        # Construindo o dicionário pipefy
-        pipefy = {
+
+        pipeline = {
             'id': processo_pipefy.id,
             'beneficiario': processo_pipefy.beneficiario.razao_social,
             'detalhamento': processo_pipefy.detalhamento.detalhamento_servico,
@@ -178,7 +175,6 @@ class FollowupView(viewsets.ModelViewSet):
             'created_at': processo_pipefy.created_at or '-'
         }
 
-        # Tentando obter o objeto Processos_Andamento
         processo_inema = Processos_Andamento.objects.filter(processo_id=id).first()
         if processo_inema:
             proxima_consulta = Acompanhamento_Processos.objects.filter(processo=processo_inema.id).order_by('-data', '-created_at').first()
@@ -186,11 +182,6 @@ class FollowupView(viewsets.ModelViewSet):
         else:
             proxima_consulta = None
             acompanhamentos_database = []
-
-        data_formacao = processo_inema.data_formacao or None if processo_inema else None
-        dias_formado = date.today() - data_formacao if processo_inema and data_formacao else '-'
-        num_dias_formado = dias_formado.days if data_formacao is not None else '-'
-        data_formacao_str = f"{datetime.strptime(str(data_formacao), '%Y-%m-%d').strftime('%d/%m/%Y')} (há {num_dias_formado}{' dias' if num_dias_formado > 1 else ' dia'})" if data_formacao is not None else '-'
 
         if processo_inema != None:
             inema = {
@@ -217,13 +208,13 @@ class FollowupView(viewsets.ModelViewSet):
                 'updated_at': acomp.updated_at,
                 'data': acomp.data.strftime("%d/%m/%Y") if acomp.data else '-',
                 'file': acomp.file.name if acomp.file else None,
-                'user': acomp.user.first_name,
-                'user_avatar': Profile.objects.get(user_id=acomp.user.id).avatar.name,
+                'user_name': acomp.user.first_name,
+                'user_avatar': 'media/'+Profile.objects.get(user_id=acomp.user.id).avatar.name,
                 'description': acomp.detalhamento
             })
         
         response_data = {
-            'pipefy': pipefy, 
+            'pipeline': pipeline, 
             'inema': inema, 
             'acompanhamentos': acompanhamentos
         }

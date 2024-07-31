@@ -7,6 +7,7 @@ import { Placeholder } from "react-bootstrap";
 import PolygonMap from "../../components/map/PolygonMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const MapaGlebas = () => {
     const [glebas, setGlebas] = useState()
@@ -35,7 +36,7 @@ const MapaGlebas = () => {
             if (response.status === 401){
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate);
             }
             else if (response.status === 200){
                 const data = await response.json();

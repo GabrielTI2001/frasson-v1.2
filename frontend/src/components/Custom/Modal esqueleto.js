@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import NavPVTEC from './Nav.js';
+import { RedirectToLogin } from '../../Routes/PrivateRoute.js';
 
 const options = {
   month: "short",
@@ -46,7 +47,7 @@ const Modal = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'pipeline/pvtec')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){

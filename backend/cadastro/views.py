@@ -28,6 +28,21 @@ def home(request):
     }
     return JsonResponse(context)
 
+def cadastros(request):
+    cartorios = Cartorios_Registro.objects.all().count()
+    benfeitorias = Benfeitorias_Fazendas.objects.all().count()
+    analises_solo = Analise_Solo.objects.all().count()
+    pessoal = Cadastro_Pessoal.objects.all().count()
+    maquinas = Maquinas_Equipamentos.objects.all().count()
+    context = {
+        'pessoal': pessoal,
+        'cartorios': cartorios,
+        'benfeitorias': benfeitorias,
+        'analises_solo': analises_solo,
+        'maquinas': maquinas,
+    }
+    return JsonResponse(context)
+
 class CategoriaCadView(viewsets.ModelViewSet):
     queryset = Categoria_Cadastro.objects.all()
     serializer_class = listCategoriaCadastro

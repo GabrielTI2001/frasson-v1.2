@@ -3,22 +3,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useContext, useState } from "react"
 import { Button, CloseButton, Col, Modal, Nav, Placeholder, Row } from "react-bootstrap"
 import AdvanceTableWrapper from "../../../components/common/advance-table/AdvanceTableWrapper"
-import { columnsPontoOutorga } from "../Data"
+import { columnsPontoASV } from "../Data"
 import AdvanceTable from "../../../components/common/advance-table/AdvanceTable"
 import AdvanceTableFooter from "../../../components/common/advance-table/AdvanceTableFooter"
-import GoogleMap from "../../../components/map/GoogleMap"
-import MapInfo from "../MapInfo"
 import ModalDelete from "../../../components/Custom/ModalDelete"
 import { AmbientalContext } from "../../../context/Context"
 import { Link } from "react-router-dom"
 import AreaForm from "./AreaForm"
+import PolygonMap from "../../../components/map/PolygonMap"
+import { MapInfoDetailASV } from "./MapInfo"
 
 const NavModal = ({record}) =>{
     return (
     <Nav variant="pills" className="flex-row fs--2">
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2 link-primary" eventKey="main">
-                <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>Outorga
+                <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>ASV
             </Nav.Link>
         </Nav.Item>
     </Nav>
@@ -36,7 +36,7 @@ export const NavModal2 = ({record}) =>{
         </Nav.Item>
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab mb-2 link-primary" eventKey="points">
-                <FontAwesomeIcon icon={faMapLocationDot} className="me-1"/>Pontos
+                <FontAwesomeIcon icon={faMapLocationDot} className="me-1"/>Áreas
             </Nav.Link>
         </Nav.Item>
     </Nav>
@@ -44,38 +44,39 @@ export const NavModal2 = ({record}) =>{
 }
 
 export const CoordenadasMap = ({}) =>{
-    const {ambientalState:{outorga}, ambientalDispatch} = useContext(AmbientalContext)
+    const {ambientalState:{asv}, ambientalDispatch} = useContext(AmbientalContext)
+    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas-detail/`;
     return (
-        outorga && outorga.coordenadas && outorga.coordenadas.length > 0 ?
+        asv && asv.areas && asv.areas.length > 0 ?
         <>
-            <div>
-                <span className="p-0 me-2">{outorga.coordenadas.length} Pontos(s)</span>
-                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/kml/${outorga.id}`} 
-                    className="btn btn-info py-0 px-2 ms-0 fs--1"
+            <div className='align-items-center justify-content-between p-2 py-1 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
+                <span className="p-0 me-2 fw-bold">{asv.areas.length} Área(s)</span>
+                <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/asv/kml/${asv.id}`}
+                    className="ms-0 fs-0"
                 >
-                    <FontAwesomeIcon icon={faDownload} className="me-2" />KML
+                    <FontAwesomeIcon icon={faDownload} />
                 </Link>
             </div>
-            <GoogleMap
-              initialCenter={{
-                  lat: Number(outorga.coordenadas[0].latitude_gd),
-                  lng: Number(outorga.coordenadas[0].longitude_gd)
-              }}
-              mapStyle="Default"
-              className="rounded-soft mt-2 google-maps container-map"
-              token_api={outorga.token_apimaps}
-              mapTypeId='satellite'
-              coordenadas={outorga.coordenadas}
-              infounlink
-          >
-            <MapInfo/>
-          </GoogleMap>
-        </>  : <div className="msg-lg" style={{fontSize:'18px'}}>Nenhum Ponto Cadastrado</div> 
+            <PolygonMap
+                initialCenter={{
+                    lat: asv.areas.length > 0 && asv.areas[0].kml.length > 0 ? Number(asv.areas[0].kml[0]['lat']) : -13.7910,
+                    lng: asv.areas.length > 0 && asv.areas[0].kml.length > 0 ? Number(asv.areas[0].kml[0]['lng']) : -45.6814
+                }}
+                mapStyle="Default"
+                className="rounded-soft google-maps container-map"
+                token_api={asv.token_apimaps}
+                mapTypeId='satellite'
+                polygons={asv.areas.map(a => ({...a, path:a.kml}))}
+                link={link}
+            >
+                <MapInfoDetailASV />
+            </PolygonMap>
+        </>  : <div className="msg-lg" style={{fontSize:'18px'}}>Nenhuma Área Cadastrada</div> 
     )
   }
 
 export const TablePoints = ({}) =>{
-    const {ambientalState:{outorga}, ambientalDispatch} = useContext(AmbientalContext)
+    const {ambientalState:{asv}, ambientalDispatch} = useContext(AmbientalContext)
     const [modal, setModal] = useState({show:false})
     
     const onClickPoint = (dados, type) =>{
@@ -93,19 +94,19 @@ export const TablePoints = ({}) =>{
         setModal({show:false})
     }
     const posdelete = () =>{
-        ambientalDispatch({type:'REMOVE_PONTO',payload:{id:modal.data}})
+        ambientalDispatch({type:'REMOVE_PONTO_ASV',payload:{id:modal.data}})
     }
   
     return (
-        outorga &&
+        asv &&
         <>
             <div className="mb-2">
-                <Button onClick={() => onClickPoint(null, 'add')} className='btn-success py-0'>Adicionar Ponto</Button>
+                <Button onClick={() => onClickPoint(null, 'add')} className='btn-success py-0'>Adicionar Área</Button>
             </div>
-            {outorga.coordenadas ? (outorga.coordenadas.length > 0 ?
+            {asv.areas ? (asv.areas.length > 0 ?
                 <AdvanceTableWrapper
-                    columns={columnsPontoOutorga}
-                    data={outorga.coordenadas}
+                    columns={columnsPontoASV}
+                    data={asv.areas}
                     sortable
                     pagination
                     perPage={15}
@@ -124,7 +125,7 @@ export const TablePoints = ({}) =>{
                     />
                     <div className="mt-3">
                         <AdvanceTableFooter
-                            rowCount={outorga.coordenadas.length}
+                            rowCount={asv.areas.length}
                             table
                             rowInfo
                             navButtons
@@ -132,7 +133,7 @@ export const TablePoints = ({}) =>{
                         />
                     </div>
                 </AdvanceTableWrapper> 
-                : <div className="text-danger msg-lg" style={{fontSize:'18px'}}>Nenhum Ponto Cadastrado! Necessário Adicionar</div>)
+                : <div className="text-danger msg-lg" style={{fontSize:'18px'}}>Nenhuma Área Cadastrada! Necessário Adicionar</div>)
             :             
                 <div>
                     <Placeholder animation="glow">
@@ -144,7 +145,7 @@ export const TablePoints = ({}) =>{
             }
 
             <Modal
-                size="lg"
+                size="md"
                 show={modal.show && (modal.type === 'edit' || modal.type === 'add')}
                 onHide={() => {setModal({show:false})}}
                 dialogClassName="mt-7"
@@ -152,7 +153,7 @@ export const TablePoints = ({}) =>{
             >
                 <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {modal.type === 'edit' ? "Editar " : "Adicionar "}Ponto
+                    {modal.type === 'edit' ? "Editar " : "Adicionar "}Área
                 </Modal.Title>
                     <CloseButton onClick={() => {setModal({show:false})}}/>
                 </Modal.Header>
@@ -163,7 +164,7 @@ export const TablePoints = ({}) =>{
                 </Modal.Body>
             </Modal>
             <ModalDelete show={modal.show && modal.type === 'delete'} close={() => {setModal({show:false})}} 
-                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/${modal.data}/`}
+                update={posdelete} link={`${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas-detail/${modal.data}/`}
             />
         </>  
     )

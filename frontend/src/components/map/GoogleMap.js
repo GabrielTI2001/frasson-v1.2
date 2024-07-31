@@ -9,6 +9,7 @@ import {
 } from '@react-google-maps/api';
 import { useAppContext } from '../../Main';
 import { useNavigate } from 'react-router-dom';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const GoogleMap = ({
   mapStyle,
@@ -74,7 +75,7 @@ const GoogleMap = ({
           if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
           }
           else if (response.status === 200){
               const data = await response.json();

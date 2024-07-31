@@ -10,6 +10,7 @@ import { columnsAlongamento } from "./Data";
 import { HandleSearch } from "../../helpers/Data";
 import ModalDelete from "../../components/Custom/ModalDelete";
 import Edit from "./Edit";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const IndexAlongamentos = () => {
     const [searchResults, setSearchResults] = useState();
@@ -78,7 +79,7 @@ const IndexAlongamentos = () => {
         const getdata = async () =>{
             const status = await HandleSearch('', 'alongamentos/index', setter) 
             if (status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_operacoes_credito") === -1) && !user.is_superuser){
@@ -148,7 +149,6 @@ const IndexAlongamentos = () => {
             show={modalform.show}
             onHide={() => setModalForm({show:false})}
             aria-labelledby="example-modal-sizes-title-lg"
-            centered
             scrollable
         >
             <Modal.Header>

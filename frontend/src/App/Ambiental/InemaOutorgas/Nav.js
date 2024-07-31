@@ -18,7 +18,7 @@ const NavModal = ({record}) =>{
     <Nav variant="pills" className="flex-row fs--2">
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2 link-primary" eventKey="main">
-                <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>Outorga
+                <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>Portaria
             </Nav.Link>
         </Nav.Item>
     </Nav>
@@ -48,12 +48,12 @@ export const CoordenadasMap = ({}) =>{
     return (
         outorga && outorga.coordenadas && outorga.coordenadas.length > 0 ?
         <>
-            <div>
-                <span className="p-0 me-2">{outorga.coordenadas.length} Pontos(s)</span>
+            <div className='align-items-center justify-content-between p-2 py-1 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
+                <span className="p-0 me-2 fw-bold">{outorga.coordenadas.length} Pontos(s)</span>
                 <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/outorga/kml/${outorga.id}`} 
-                    className="btn btn-info py-0 px-2 ms-0 fs--1"
+                    className="ms-0 fs-0"
                 >
-                    <FontAwesomeIcon icon={faDownload} className="me-2" />KML
+                    <FontAwesomeIcon icon={faDownload} />
                 </Link>
             </div>
             <GoogleMap
@@ -62,7 +62,7 @@ export const CoordenadasMap = ({}) =>{
                   lng: Number(outorga.coordenadas[0].longitude_gd)
               }}
               mapStyle="Default"
-              className="rounded-soft mt-2 google-maps container-map"
+              className="rounded-soft mt-0 google-maps container-map"
               token_api={outorga.token_apimaps}
               mapTypeId='satellite'
               coordenadas={outorga.coordenadas}

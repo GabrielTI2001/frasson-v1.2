@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Spinner} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../components/common/advance-table/AdvanceTableSearchBox';
@@ -10,6 +10,8 @@ import { columnsLicenca } from "./Data";
 import { HandleSearch } from "../../helpers/Data";
 import FormLicenca from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
+import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const IndexLicenses = () => {
     const [searchResults, setSearchResults] = useState();
@@ -17,15 +19,23 @@ const IndexLicenses = () => {
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
     const [isloading, setIsLoading] = useState(false)
+    const [modal, setModal] = useState({show:false, link:''})
+    const {uuid} = useParams()
 
     const onClick = (id, uuid) =>{
         const url = `/licenses/${uuid}`
         navigate(url)
     }
     const submit = (type, data) => {
-        if (type == 'add'){
+        if (type === 'add'){
             setShowModal(false)
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
+        }
+        else if (type === 'edit' && searchResults){
+            setSearchResults([...searchResults.map(reg =>reg.uuid === data.uuid ? data : reg)])
+        }
+        else if (type === 'delete' && searchResults){
+            setSearchResults(searchResults.filter(r => r.uuid !== data))
         }
     }
     const setter = (data) => {
@@ -38,17 +48,26 @@ const IndexLicenses = () => {
     };
 
     useEffect(()=>{
-        const Search = async () => {
-            const status = await HandleSearch('', 'licenses/index', setter) 
-            if (status === 401) navigate("/auth/login");
-        }
         if ((user.permissions && user.permissions.indexOf("view_cadastro_licencas") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        if (!searchResults){
-            Search()
-        }
     },[])
+    useEffect(() => {
+        const Search = async () => {
+            const status = await HandleSearch('', 'licenses/index', setter) 
+            if (status === 401) RedirectToLogin(navigate);
+        }
+        if (uuid){
+            setModal({show:true})
+        }
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                Search()
+            }
+        }
+    },[uuid])
+
 
     return (
         <>
@@ -92,19 +111,20 @@ const IndexLicenses = () => {
 
         <div className="mt-3">
             <AdvanceTableFooter
-            rowCount={searchResults.length}
-            table
-            rowInfo
-            navButtons
-            rowsPerPageSelection
+                rowCount={searchResults.length}
+                table
+                rowInfo
+                navButtons
+                rowsPerPageSelection
             />
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+        <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -113,7 +133,7 @@ const IndexLicenses = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         <FormLicenca hasLabel type='add' submit={submit}/>
                     </Row>

@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexASV = () => {
     const [searchResults, setSearchResults] = useState();
@@ -36,7 +37,7 @@ const IndexASV = () => {
 
     const reducer = (type, data) =>{
         if (type == 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal(false)
         }
         else if (type === 'edit' && searchResults){
@@ -52,7 +53,7 @@ const IndexASV = () => {
     const handleChange = async (value) => {
         setIsLoading(true)
         const status = await HandleSearch(value, 'environmental/inema/asvs', setter)
-        if (status === 401){ navigate("/auth/login")}
+        if (status === 401){ RedirectToLogin(navigate)}
     };
 
 
@@ -106,13 +107,13 @@ const IndexASV = () => {
                 </Col>
             </Row>
         {isloading ?   
-        <div>
-            <Placeholder animation="glow">
-                <Placeholder xs={7} /> <Placeholder xs={4} /> 
-                <Placeholder xs={4} />
-                <Placeholder xs={6} /> <Placeholder xs={8} />
-            </Placeholder>    
-        </div>   
+            <div>
+                <Placeholder animation="glow">
+                    <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                    <Placeholder xs={4} />
+                    <Placeholder xs={6} /> <Placeholder xs={8} />
+                </Placeholder>    
+            </div>   
         :
             <AdvanceTable
                 table
@@ -148,10 +149,10 @@ const IndexASV = () => {
         }
         <ModalRecord show={modal.show} reducer={reducer}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -160,7 +161,7 @@ const IndexASV = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                        <ASVForm hasLabel type='add' reducer={reducer}/>
                     </Row>

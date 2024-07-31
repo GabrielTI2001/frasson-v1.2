@@ -10,6 +10,7 @@ import { useDropzone } from 'react-dropzone';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Flex from '../../../components/common/Flex';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -44,7 +45,7 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         }
         else if (response.status === 201 || response.status === 200){
           if (type === 'edit'){

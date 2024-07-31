@@ -10,3 +10,8 @@ const PrivateRoute = () => {
 };
 
 export default PrivateRoute;
+
+export const RedirectToLogin = (navigate) =>{
+  const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
+  navigate(`/auth/login?next=${next}`);
+}

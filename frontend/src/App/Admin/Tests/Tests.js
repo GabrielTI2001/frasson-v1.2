@@ -4,6 +4,7 @@ import {Row, Col, Table, Placeholder} from 'react-bootstrap';
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'title': 'Assessments'
@@ -18,7 +19,7 @@ const TestsIndex = () => {
     useEffect(()=>{
         const getdata = async () =>{
             const status = await HandleSearch('', 'administrator/tests', (data) => setData(data.pipes))
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
         }
         if ((user.permissions && user.permissions.indexOf("ver_administrator") === -1) && !user.is_superuser){
             navigate("/error/403")

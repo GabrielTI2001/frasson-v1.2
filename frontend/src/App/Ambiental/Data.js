@@ -235,7 +235,7 @@ export const columnsASV = [
   },
   {
     accessor: 'str_empresa',
-    Header: 'Empresa Consultora',
+    Header: 'Empresa Consultoria',
     headerProps: { className: 'text-900 p-1' }
   },
   {
@@ -250,57 +250,57 @@ export const columnsASV = [
 ];
 
 export const fieldsOutorga = [
-  {name:'numero_portaria', label:'N° Portaria*', xl:3, sm:6, type:'text'},
-  {name:'data_publicacao', label:'Data Publicação*', xl:3, sm:6, type:'date'},
-  {name:'data_validade', label:'Data Vencimento*', xl:3, sm:6, type:'date'},
-  {name:'processo_frasson', label:'Conduzido Frasson?*', xl:3, sm:6, type:'select', string:'processo_frasson', boolean:true},
-  {name:'numero_processo', label:'N° Processo INEMA*', xl:4, sm:6, type:'text'},
-  {name:'nome_requerente', label:'Nome Requerente*', xl:4, sm:6, type:'text'},
-  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', xl:3, sm:6, type:'text'},
-  {name:'captacao', label:'Tipo Captação*', xl:3, sm:6, type:'select', string:'str_tipo_captacao'},
-  {name:'nome_propriedade', label:'Localidade*', xl:5, sm:6, type:'text'},
-  {name:'municipio', label:'Município Localização*', xl:4, sm:6, type:'select2', url:'register/municipios', attr1:'nome_municipio', 
+  {name:'numero_portaria', label:'N° Portaria*', type:'text'},
+  {name:'nome_requerente', label:'Requerente*', type:'text'},
+  {name:'cpf_cnpj', label:'CPF/CNPJ*', type:'text'},
+  {name:'data_publicacao', label:'Data Publicação*', type:'date'},
+  {name:'data_validade', label:'Data Vencimento*', type:'date'},
+  {name:'numero_processo', label:'N° Processo*', type:'text'},
+  {name:'captacao', label:'Tipo Captação*', type:'select', string:'str_tipo_captacao'},
+  {name:'nome_propriedade', label:'Localidade*', type:'text'},
+  {name:'municipio', label:'Município*', type:'select2', url:'register/municipios', attr1:'nome_municipio', 
     attr2:'sigla_uf', string:'nome_municipio', params:'uf=BA'
   },
-  {name:'finalidade', label:'Finalidade Outorga*', xl:4, sm:6, type:'select2', url:'environmental/inema/finalidade', attr1:'description', 
+  {name:'finalidade', label:'Finalidade*', type:'select2', url:'environmental/inema/finalidade', attr1:'description', 
     string:'str_finalidade'
-  },
-  {name:'area_ha', label:'Área Outorgada (ha)', xl:3, sm:6, type:'number'}, 
-  {name:'bacia_hidro', label:'Bacia Hidrográfica*', xl:5, sm:6, type:'text'},
+  }, 
+  {name:'bacia_hidro', label:'Bacia Hidrográfica*', type:'text'},
+  {name:'area_ha', label:'Área Outorgada (ha)', type:'text'},
+  {name:'processo_frasson', label:'Conduzido Frasson?*', type:'select', string:'processo_frasson', boolean:true},
 ]
 
 export const fieldsAPPO = [
-  {name:'nome_requerente', label:'Nome Requerente*', xl:4, sm:6, type:'text'},
-  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', xl:4, sm:6, type:'text'},
-  {name:'numero_processo', label:'N° Processo INEMA*', xl:4, sm:6, type:'text'},
-  {name:'municipio', label:'Município Localização*', xl:4, sm:6, type:'select2', url:'register/municipios', attr1:'nome_municipio', 
+  {name:'nome_requerente', label:'Nome Requerente*', type:'text'},
+  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', type:'text'},
+  {name:'numero_processo', label:'N° Processo INEMA*', type:'text'},
+  {name:'municipio', label:'Município Localização*', type:'select2', url:'register/municipios', attr1:'nome_municipio', 
     attr2:'sigla_uf', string:'nome_municipio', params:'uf=BA'
   },
-  {name:'nome_fazenda', label:'Localidade*', xl:4, sm:6, type:'text'},
-  {name:'aquifero', label:'Tipo Aquífero*', xl:4, sm:6, type:'select', string:'str_tipo_aquifero'},
-  {name:'data_documento', label:'Data Publicação*', xl:3, sm:6, type:'date'},
-  {name:'data_vencimento', label:'Data Vencimento*', xl:3, sm:6, type:'date'},
-  {name:'processo_frasson', label:'Conduzido Frasson?*', xl:3, sm:6, type:'select', string:'processo_frasson', boolean:true},
-  {name:'file', label:'Arquivo PDF', xl:3, sm:6, type:'file'}
+  {name:'nome_fazenda', label:'Localidade*', type:'text'},
+  {name:'aquifero', label:'Tipo Aquífero*', type:'select', string:'str_tipo_aquifero'},
+  {name:'data_documento', label:'Data Publicação*', type:'date'},
+  {name:'data_vencimento', label:'Data Vencimento*', type:'date'},
+  {name:'processo_frasson', label:'Conduzido Frasson?*', type:'select', string:'processo_frasson', boolean:true},
+  {name:'file', label:'Arquivo PDF', type:'file'}
 ]
 
 export const fieldsASV = [
-  {name:'portaria', label:'Portaria*', xl:4, sm:6, type:'text'},
-  {name:'processo', label:'N° Processo INEMA*', xl:4, sm:6, type:'text'},
-  {name:'requerente', label:'Nome Requerente*', xl:4, sm:6, type:'text'},
-  {name:'area_total', label:'Área Total (ha)*', xl:3, sm:6, type:'number'}, 
-  {name:'data_formacao', label:'Data Formação', xl:3, sm:6, type:'date'},
-  {name:'data_publicacao', label:'Data Publicação*', xl:3, sm:6, type:'date'},
-  {name:'data_vencimento', label:'Data Vencimento*', xl:3, sm:6, type:'date'},
-  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', xl:4, sm:6, type:'text'},
-  {name:'localidade', label:'Localidade*', xl:5, sm:6, type:'text'},
-  {name:'municipio', label:'Município*', xl:4, sm:6, type:'select2', url:'register/municipios', attr1:'nome_municipio', 
-    attr2:'sigla_uf', string:'str_municipio', params:'uf=BA'
+  {name:'portaria', label:'Portaria*', type:'text'},
+  {name:'processo', label:'N° Processo INEMA*', type:'text'},
+  {name:'requerente', label:'Nome Requerente*', type:'text'},
+  {name:'area_total', label:'Área Total (ha)*', type:'text'}, 
+  {name:'data_formacao', label:'Data Formação', type:'date'},
+  {name:'data_publicacao', label:'Data Publicação*', type:'date'},
+  {name:'data_vencimento', label:'Data Vencimento*', type:'date'},
+  {name:'cpf_cnpj', label:'CPF/CNPJ Requerente*', type:'text'},
+  {name:'localidade', label:'Localidade*', type:'text'},
+  {name:'municipio', label:'Município*', type:'select2', url:'register/municipios', attr1:'nome_municipio', 
+    attr2:'sigla_uf', string:'nome_municipio', params:'uf=BA'
   },
-  {name:'empresa', label:'Empresa Consultoria*', xl:4, sm:6, type:'select2', url:'environmental/inema/empresas', attr1:'razao_social', 
+  {name:'empresa', label:'Empresa Consultoria*', type:'select2', url:'environmental/inema/empresas', attr1:'razao_social', 
     string:'str_empresa'
   },
-  {name:'tecnico', label:'Nome do Técnico', xl:4, sm:6, type:'text'},
-  {name:'rendimento', label:'Rendimento Lenhoso', medida:'m', potencia:'3', xl:3, sm:6, type:'number'},
-  {name:'file', label:'Arquivo PDF', xl:3, sm:6, type:'file'}
+  {name:'tecnico', label:'Nome do Técnico', type:'text'},
+  {name:'rendimento', label:'Rendimento Lenhoso', medida:'m', potencia:'3', type:'text'},
+  {name:'file', label:'Arquivo PDF', type:'file'}
 ]

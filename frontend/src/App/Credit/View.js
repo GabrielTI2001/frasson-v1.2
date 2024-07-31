@@ -15,6 +15,7 @@ import OperacoesForm from './Form';
 import ModalDelete from '../../components/Custom/ModalDelete';
 import { ApiCedula } from './Data';
 import { toast } from 'react-toastify';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const ViewCredit = () => {
     const {uuid} = useParams()
@@ -87,7 +88,7 @@ const ViewCredit = () => {
         const getdata = async () =>{
             const status = await RetrieveRecord(uuid, 'credit/operacoes-contratadas', setter)
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_operacoes_contratadas") === -1) && !user.is_superuser){

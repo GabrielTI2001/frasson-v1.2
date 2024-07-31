@@ -8,10 +8,9 @@ import PolygonMap from "../../../components/map/PolygonMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetailASV} from "./MapInfo";
-import { Card } from "react-bootstrap";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const MapaAreasASV = () => {
-    const channel = new BroadcastChannel('meu_canal');
     const [processos, setProcessos] = useState()
     const [coordenadas, setCoordenadas] = useState()
     const [search, setSearch] = useState('')
@@ -41,7 +40,7 @@ const MapaAreasASV = () => {
             if (response.status === 401){
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate)
             }
             else if (response.status === 200){
                 const data = await response.json();
@@ -69,7 +68,7 @@ const MapaAreasASV = () => {
             if (response.status === 401){
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate)
             }
             else if (response.status === 200){
                 const data = await response.json();
@@ -141,13 +140,13 @@ const MapaAreasASV = () => {
             <Col lg={'auto'} xxl={'auto'} className="me-0 pe-0">
                 <Link to={``} 
                  className="btn btn-info py-0 px-2 ms-0">
-                    <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>
+                    <FontAwesomeIcon icon={faDownload}/> KML
                 </Link>
              </Col>        
           }
             <Col className="fw-bold">
                 {coordenadas && Number(coordenadas.reduce((total, objeto) => total + objeto.area_total, 0)).toLocaleString('pt-BR')} ha
-            em {processos && (processos.length)} portarias de ASV</Col>
+            em {processos && (processos.length)} portaria(s) de ASV</Col>
         </div>
         {coordenadas && tokenmaps ? ( coordenadas.length > 0 && (
         <PolygonMap

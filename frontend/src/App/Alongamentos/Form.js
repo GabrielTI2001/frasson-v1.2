@@ -7,6 +7,7 @@ import { Button, Form, Col} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
 import { GetRecord, SelectSearchOptions } from '../../helpers/Data';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const FormAlongamento = ({ hasLabel, data, type, submit, operacao}) => {
   const {config: {theme}} = useAppContext();
@@ -40,7 +41,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit, operacao}) => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate)
         }
         else if (response.status === 201 || response.status === 200){
           if (type === 'edit'){
@@ -91,23 +92,14 @@ const FormAlongamento = ({ hasLabel, data, type, submit, operacao}) => {
     const buscar = async () =>{
       const data_agencias = await GetRecord('', 'register/instituicoes');
       if (!data_agencias){
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       setAgencias(data_agencias)
       const dado_produtos = await GetRecord('', 'alongamentos/produtos-agricolas');
-      if (!dado_produtos){
-        navigate("/auth/login")
-      }
       setProdutos(dado_produtos)
       const armazenagem = await GetRecord('', 'alongamentos/tipo-armazenagem');
-      if (!armazenagem){
-        navigate("/auth/login")
-      }
       setTipoarmazenagens(armazenagem)
       const dados_c = await GetRecord('', 'alongamentos/tipo-classificacao');
-      if (!dados_c){
-        navigate("/auth/login")
-      }
       setTipoclassificacoes(dados_c)
     }
     buscar()

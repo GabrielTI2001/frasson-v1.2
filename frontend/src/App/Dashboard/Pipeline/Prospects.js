@@ -54,7 +54,7 @@ const DashProspects = () =>{
             <CardProduto title='Proposta de valor GC (% médio)' icon={faPercent} data={data} atribute='media_proposta_valor'/>
         </Row>
         <Row xs={1} sm={3} xl={3} className="gx-4 gy-2 d-flex"> 
-            {data.produtos && !data.produtos.null &&
+            {data.produtos &&
                 <Col>
                     <Card as={Col} className="p-3">
                         <PieChart 
@@ -68,7 +68,7 @@ const DashProspects = () =>{
                     </Card>
                 </Col>
             }
-            {data.classificacao && !data.classificacao.null &&
+            {data.classificacao && 
                 <Col>
                     <Card as={Col} className="p-3">
                         <PieChart 
@@ -82,7 +82,7 @@ const DashProspects = () =>{
                     </Card>
                 </Col>
             }
-            {data.fases && data.fases.length > 0 &&
+            {data && data.fases &&
                 <Col>
                     <Card as={Col} className="p-3">
                         <BarChart

@@ -11,6 +11,7 @@ import { GetRecord, HandleSearch } from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import FormProdAgricola from "./Form";
 import EditProdAgricola from "./Edit";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'columns':columnsAgricola, 'urlapilist':'litec/agricola', 
@@ -32,7 +33,7 @@ const IndexProdAgricola = ({gleba}) => {
     const submit = (type, data) => {
         if (type === 'add'){
             setShowModal({showmodal:false})
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
         }
         if (type === 'edit'){
             setShowModal({showmodal:false})
@@ -50,7 +51,7 @@ const IndexProdAgricola = ({gleba}) => {
         }
         const getdata = async () =>{
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults, `?gleba=${uuid}`)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             getdata()

@@ -2,6 +2,7 @@ import React, { useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Button, Form, Col, Table, Row, Placeholder} from 'react-bootstrap';
 import { useAppContext } from "../../Main";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const ConsultaCNPJ = () =>{
     const {config: {theme}} = useAppContext();
@@ -27,7 +28,7 @@ const ConsultaCNPJ = () =>{
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 setFormData({...data, atividade_principal:`${data.atividade_principal_codigo || ''} ${data.atividade_principal_texto || ''}`})

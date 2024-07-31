@@ -11,7 +11,7 @@ const NavModal = ({record}) =>{
     <Nav variant="pills" className="flex-row fs--2">
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2 link-primary" eventKey="main">
-                <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>Fazenda
+                <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>Imóvel Rural
             </Nav.Link>
         </Nav.Item>
     </Nav>
@@ -49,13 +49,17 @@ export const Coordenadas = ({record}) =>{
     return (
         record ?
         <>
-            <div className='d-flex justify-content-between align-items-center'>
-                <strong className='fs--1'>KML da Matrícula {record.matricula}</strong>   
-                <Link className='btn btn-secondary fs--2 py-0 px-3' style={{lineHeight:'2'}}
+            <div className='align-items-center justify-content-between p-2 py-1 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
+            {record.coordenadas_matricula.length > 0 ? <>
+                <strong className='fs--1'>KML da Matrícula {record.matricula}</strong>  
+                <Link className='fs-0'
                     to={`${process.env.REACT_APP_API_URL}/farms/kml/${record.uuid}`}
                 >
-                    <FontAwesomeIcon icon={faDownload} className='me-1' /><span>KML</span>
+                    <FontAwesomeIcon icon={faDownload} />
                 </Link>
+                </>
+                : <strong className="fs--1">Sem KML</strong>
+            }
             </div>
             <PolygonMap
                 initialCenter={{
@@ -63,7 +67,7 @@ export const Coordenadas = ({record}) =>{
                     lng: record.coordenadas_matricula.length > 0 ? Number(record.coordenadas_matricula[0]['lng']) : -45.6814
                 }}
                 mapStyle="Default"
-                className="rounded-soft mt-2 google-maps-l container-map"
+                className="rounded-soft google-maps-l container-map"
                 token_api={record.token_apimaps}
                 mapTypeId='satellite'
                 polygons={[{path:record.coordenadas_matricula}]}

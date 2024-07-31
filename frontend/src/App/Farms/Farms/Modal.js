@@ -13,6 +13,7 @@ import NavModal from './Nav.js';
 import { fieldsFarm } from '../Data.js';
 import { faGlobeAmericas } from '@fortawesome/free-solid-svg-icons';
 import EditFormModal from '../../../components/Custom/EditForm.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -36,7 +37,7 @@ const ModalRecord = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'farms/farms')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
@@ -60,9 +61,7 @@ const ModalRecord = ({show, reducer}) => {
     if (formData){
       api.put(`farms/farms/${uuid}/`, formData, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
-        reducer('edit', {...response.data, info_status:
-          {color:response.data.status === 'EA' ? 'warning' : 'success', text:response.data.status_display}
-        })
+        reducer('edit', {...response.data})
         toast.success("Imóvel Rural Atualizado com Sucesso!")
         setRecord(response.data)
       })
@@ -113,7 +112,7 @@ const ModalRecord = ({show, reducer}) => {
                 <div className='ms-3 mt-3'>
                   <Tab.Content>
                     <Tab.Pane eventKey="main">
-                      <h5 className="mb-0 fs-0 fw-bold">Informações da Fazenda</h5>
+                      <h5 className="mb-0 fs-0 fw-bold">Informações do Imóvel Rural</h5>
                       <div className='text-secondary fs--2 mb-2'>Criado por {record.str_created_by} em {' '}
                         {new Date(record.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
                         {' às '+new Date(record.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
@@ -135,7 +134,11 @@ const ModalRecord = ({show, reducer}) => {
                             : f.type === 'date' ? 
                               <div className="fs--1 row-10">{record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
                             : 
-                              <div className="fs--1 row-10">{record[f.name] || '-'}</div>}
+                              <div className="fs--1 row-10">{record[f.name] ? f.is_number 
+                                ? Number(record[f.name]).toLocaleString('pt-BR', {minimumFractionDigits:2}) 
+                                : record[f.name] : '-'}
+                              </div>
+                            }
                           </div>
                           :
                           <EditFormModal key={f.name}
@@ -144,6 +147,22 @@ const ModalRecord = ({show, reducer}) => {
                             record={record} field={f}
                           />
                       )}
+                      <div>
+                        <div className="mb-2">
+                            <div className="fw-bold fs--1">Sincronização CAR</div>
+                            {record.registro_car 
+                              ? <span className="badge bg-success fw-normal">Concluída</span>
+                              : <span className="badge bg-danger fw-normal">Pendente</span>
+                            }
+                        </div>
+                        <div className="mb-2">
+                            <div className="fw-bold fs--1">Sincronização SIGEF</div>
+                            {record.registro_sigef 
+                              ? <span className="badge bg-success fw-normal">Concluída</span>
+                              : <span className="badge bg-danger fw-normal">Pendente</span>
+                            }
+                        </div>
+                    </div>
                     </Tab.Pane>
                   </Tab.Content>
                 </div>

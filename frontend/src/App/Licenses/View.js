@@ -10,6 +10,7 @@ import ModalDelete from "../../components/Custom/ModalDelete";
 import Info from "../../components/Custom/Info";
 import { RetrieveRecord } from "../../helpers/Data";
 import FormLicenca from "./Form";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const ViewLicenca = () => {
     const {uuid} = useParams()
@@ -32,7 +33,7 @@ const ViewLicenca = () => {
     useEffect(() =>{
         const getData = async () => {
             const status = await RetrieveRecord(uuid, 'licenses/index', setter)
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
         }
         if ((user.permissions && user.permissions.indexOf("view_cadastro_licencas") === -1) && !user.is_superuser){
             navigate("/error/403")

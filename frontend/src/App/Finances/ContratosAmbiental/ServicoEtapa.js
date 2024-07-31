@@ -1,9 +1,22 @@
 import React,{useEffect, useState} from 'react';
-import { useNavigate } from "react-router-dom";
-import { Button, Col, Row} from 'react-bootstrap';
+import { Col, Row} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
 import CurrencyInput from 'react-currency-input-field';
+
+const formatToCurrency = (number) => {
+    return new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(number);
+};
+
+const parseCurrency = (currencyString) => {
+    if (typeof(currencyString) === 'number'){
+        return currencyString;
+    }
+    else{
+        return parseFloat(currencyString.replace('R$', '').replace(/\./g, '').replace(',', '.'));
+    }
+
+};
 
 const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
     const { config: { theme } } = useAppContext();
@@ -36,7 +49,7 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
     };
 
     const calcPercent = (v, etapa, s) => {
-        const valor = formData[`valor_${s}`] ? (Number(formData[`valor_${s}`].replace(',','.'))/ 100) * Number(v) : 0;
+        const valor = formData[`valor_${s}`] ? (parseCurrency(formData[`valor_${s}`])/ 100) * Number(v) : 0;
         insertData({ valor: valor !== '' && Number(valor), percentual: v ? Number(v) : '' }, etapa, s);
         setformData({
             ...formData,
@@ -50,7 +63,7 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
         } else {
             const newValue = e.target.values.value;
             const fieldName = e.target.name;
-            if (formData[fieldName] !== Number(newValue)) {
+            if (Number(formData[fieldName]) !== Number(newValue)) {
                 setformData(prevFormData => ({
                     ...prevFormData,
                     [fieldName]: newValue, [`valor_assinatura_${s}`]: '', [`percentual_assinatura_${s}`]: '',
@@ -80,7 +93,6 @@ const ServicoEtapa = ({ change, data, servicos, etapas_current }) => {
                 const etapaKey = etapa.etapa.split(' ')[0].toLowerCase();
                 initialFormData[`percentual_${etapaKey}_${etapa.servico}`] = etapa.percentual;
                 initialFormData[`valor_${etapaKey}_${etapa.servico}`] = etapa.valor;
-
                 const servicoData = initialListData.find(item => item.servico === etapa.servico);
                 if (servicoData) {
                     const etapaLabel = etapa.etapa.split(' ')[0];

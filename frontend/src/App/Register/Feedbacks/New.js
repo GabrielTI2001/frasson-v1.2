@@ -4,6 +4,7 @@ import { Button, Form, Col} from 'react-bootstrap';
 import { SelectOptions } from "../../../helpers/Data";
 import { toast } from 'react-toastify';
 import { ProfileContext } from "../../../context/Context";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const NewFeedback = () =>{
     const user = JSON.parse(localStorage.getItem('user'))
@@ -35,7 +36,7 @@ const NewFeedback = () =>{
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 toast.success("Registro Efetuado com Sucesso!")
@@ -57,8 +58,8 @@ const NewFeedback = () =>{
     };
     useEffect(()=>{
         const loadFormData = async () => {
-            const options = await SelectOptions('/register/feedbacks-category', 'description')
-            Array.isArray(options) ? setCategorias(options) : navigate("/auth/login")
+            const options = await SelectOptions('register/feedbacks-category', 'description')
+            Array.isArray(options) ? setCategorias(options) : RedirectToLogin(navigate)
         }
         loadFormData()
     },[])

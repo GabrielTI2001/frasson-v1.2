@@ -4,6 +4,8 @@ from farms.models import Regimes_Exploracao_Coordenadas
 from farms.models import Cadastro_Ambiental_Rural_Coordenadas, Certificacao_Sigef_Parcelas_Vertices, Imoveis_Rurais_Coordenadas_Matricula
 from datetime import datetime
 from backend.settings import TOKEN_GOOGLE_MAPS_API
+from backend.frassonUtilities import Frasson
+import re
 
 class ListRegimes(serializers.ModelSerializer):
     atividade_display = serializers.CharField(source='get_atividades_display', read_only=True)
@@ -112,6 +114,15 @@ class detailFarms(serializers.ModelSerializer):
                 field.required = False
     def get_token_apimaps(self, obj):
         return TOKEN_GOOGLE_MAPS_API
+    def validate_cep(self, value):
+        if not Frasson.valida_cep(value):
+            raise serializers.ValidationError("CEP Inválido!")
+        return value
+    def validate_codigo_car(self, value):
+        pattern = re.compile(r'(^[A-Z]{2}\-[0-9]{7}-[0-9A-Z]{32}$)')
+        if not pattern.match(value):
+            raise serializers.ValidationError("CAR Inválido!")
+        return value
     class Meta:
         model = Imoveis_Rurais
         fields = '__all__'

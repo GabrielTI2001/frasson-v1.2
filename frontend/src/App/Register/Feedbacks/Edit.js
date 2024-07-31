@@ -2,6 +2,7 @@ import React, { useState, useEffect} from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Col} from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const EditFeedback = ({data, submit}) =>{
     const [formData, setFormData] = useState();
@@ -28,7 +29,7 @@ const EditFeedback = ({data, submit}) =>{
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 toast.success("Registro Atualizado com Sucesso!")

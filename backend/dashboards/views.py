@@ -114,7 +114,7 @@ def dashboard_operacoes_contratadas(request):
 
     #cria o objeto com os valores médios das taxas por bancos
     for taxa in bancos_taxas_db:
-        taxas[taxa['instituicao__instituicao__abreviatura']] = round(float(taxa['taxa_juros__avg']), 2)
+        taxas[taxa['instituicao__instituicao__abreviatura']] = round(float(taxa['taxa_juros__avg'] or 0), 2)
 
     total_meta_ano = sum(metas.values())
     total_realizado_ano = sum(realizado_ano.values())

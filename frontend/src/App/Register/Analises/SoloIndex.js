@@ -11,6 +11,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import AnaliseSoloForm from "./SoloForm";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'columns':columnsAnalisesSolo, 'urlapilist':'register/analysis-soil', 
@@ -31,7 +32,7 @@ const IndexAnaliseSolo = () => {
     }
     const submit = (type, data) =>{
         if (type === 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal({...showmodal, show:false})
         }
         if (type === 'edit'){
@@ -43,7 +44,7 @@ const IndexAnaliseSolo = () => {
     }
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-        if (status === 401) navigate("/auth/login");
+        if (status === 401) RedirectToLogin(navigate);
     };
 
     useEffect(()=>{
@@ -54,7 +55,7 @@ const IndexAnaliseSolo = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})

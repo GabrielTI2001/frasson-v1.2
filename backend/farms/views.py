@@ -31,21 +31,19 @@ class RegimesView(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         kml = request.FILES.get('kml')
         if serializer.is_valid():
+            regime = serializer.save()
             if kml:
                 ext = os.path.splitext(kml.name)[1]
                 valid_extensions = ['.kml']
                 if not ext.lower() in valid_extensions:
                     return Response({'kml': 'O arquivo precisa ser em formato KML!'}, status=400)
-                regime = serializer.save()
                 kml.seek(0) 
                 root = parser.parse(kml).getroot()
                 coordinates_gd = parse_element_kml(root)
                 for latlong in coordinates_gd:
                     Regimes_Exploracao_Coordenadas.objects.create(regime_id=regime.id, latitude=latlong['lat'], longitude=latlong['lng'])
-                headers = self.get_success_headers(serializer.data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-            else:
-                return Response({'kml': 'Submeta um Arquivo!'}, status=400)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
@@ -95,21 +93,19 @@ class FarmsView(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         kml = request.FILES.get('kml')
         if serializer.is_valid():
+            farm = serializer.save()
             if kml:
                 ext = os.path.splitext(kml.name)[1]
                 valid_extensions = ['.kml']
                 if not ext.lower() in valid_extensions:
                     return Response({'kml': 'O arquivo precisa ser em formato KML!'}, status=400)
-                farm = serializer.save()
                 kml.seek(0) 
                 root = parser.parse(kml).getroot()
                 coordinates_gd = parse_element_kml(root)
                 for latlong in coordinates_gd:
                     Imoveis_Rurais_Coordenadas_Matricula.objects.create(imovel_id=farm.id, latitude_gd=latlong['lat'], longitude_gd=latlong['lng'])
-                headers = self.get_success_headers(serializer.data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-            else:
-                return Response({'kml': 'Submeta um Arquivo!'}, status=400)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)

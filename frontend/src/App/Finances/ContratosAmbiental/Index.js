@@ -11,6 +11,7 @@ import { columnsContratos } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import ContratoForm from "./FormContrato";
 import ModalContract from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexContratosAmbiental = () => {
     const [searchResults, setSearchResults] = useState();
@@ -52,7 +53,7 @@ const IndexContratosAmbiental = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', 'finances/contratos-ambiental', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})
@@ -121,7 +122,7 @@ const IndexContratosAmbiental = () => {
             size="md"
             show={modalform.show}
             onHide={() => setModalform({show:false})}
-            centered scrollable
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>

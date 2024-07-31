@@ -9,6 +9,7 @@ import { faTrash, faPencil, faBolt } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 import { useAppContext } from '../../../Main';
 import FormEtapa from './Form';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 // import FormAcomp from './FormAcomp';
 // import FormProcesso from './FormProcesso';
 
@@ -40,7 +41,7 @@ const ViewContrato = () => {
         const getdata = async () =>{
             const status = await RetrieveRecord(id, 'pipefy/contratos-servicos', setter)
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_contratos_servicos") === -1) && !user.is_superuser){

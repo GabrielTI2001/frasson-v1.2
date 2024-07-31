@@ -8,6 +8,7 @@ import { faTrash, faReply } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 import { HandleSearch } from '../../../helpers/Data';
 import ViewFeedback from './View';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const IndexFeedbacks = () => {
     const navigate = useNavigate()
@@ -40,7 +41,7 @@ const IndexFeedbacks = () => {
         const getdata = async () =>{
             const status = await HandleSearch('', 'register/feedbacks', setter)
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("ver_feedbacks_users") === -1) && !user.is_superuser){

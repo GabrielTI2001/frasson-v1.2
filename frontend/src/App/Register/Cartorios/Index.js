@@ -11,6 +11,7 @@ import { columnsCartorio } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import CartorioForm from "./Form";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexCartorios = () => {
     const [searchResults, setSearchResults] = useState();
@@ -42,7 +43,7 @@ const IndexCartorios = () => {
     };
     const submit = (type, data, id) => {
         if (type === 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
         }
         if (type === 'edit'){
             setSearchResults(searchResults.map(r => r.id === parseInt(id) ? data : r))
@@ -57,7 +58,7 @@ const IndexCartorios = () => {
     useEffect(()=>{
         const Search = async () => {
             const status = await HandleSearch('', 'register/cartorios', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if ((user.permissions && user.permissions.indexOf("view_cartorios_registro") === -1) && !user.is_superuser){
             navigate("/error/403")
@@ -118,10 +119,10 @@ const IndexCartorios = () => {
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -130,7 +131,7 @@ const IndexCartorios = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         {showmodal.data
                            ? <CartorioForm type='edit' hasLabel data={showmodal.data} submit={submit}/>

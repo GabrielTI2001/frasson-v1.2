@@ -11,6 +11,7 @@ import { columnsMachinery} from "../Data";
 import MachineryForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'columns':columnsMachinery, 'urlapilist':'register/machinery', 
@@ -41,7 +42,7 @@ const IndexMachinery = () => {
         }
         const Search = async () => {
             const status = await HandleSearch('', InitData.urlapilist, setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             Search()
@@ -100,10 +101,10 @@ const IndexMachinery = () => {
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         </Row>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
         <Modal.Header>
@@ -112,7 +113,7 @@ const IndexMachinery = () => {
         </Modal.Title>
             <CloseButton onClick={() => setShowModal(false)}/>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="pb-0">
             <Row className="flex-center sectionform">
                 <MachineryForm type='add' hasLabel/>
             </Row>

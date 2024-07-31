@@ -7,14 +7,13 @@ from datetime import date, timedelta
 from backend.settings import TOKEN_GOOGLE_MAPS_API
 
 class listPivots(serializers.ModelSerializer):
-    str_proprietario = serializers.CharField(source='proprietario.razao_social', read_only=True)
     str_fabricante = serializers.CharField(source='fabricante_pivot.nome_fabricante', read_only=True)
     str_municipio = serializers.SerializerMethodField(read_only=True)
     def get_str_municipio(self, obj):
         return f"{obj.municipio_localizacao.nome_municipio} - {obj.municipio_localizacao.sigla_uf}"
     class Meta:
         model = Cadastro_Pivots
-        fields = ['id', 'uuid', 'str_proprietario', 'propriedade_localizacao', 'identificacao_pivot', 'area_circular_ha', 
+        fields = ['id', 'uuid', 'razao_social_proprietario', 'propriedade_localizacao', 'identificacao_pivot', 'area_circular_ha', 
                   'lamina_bruta_21_h', 'str_fabricante', 'str_municipio', 'long_center_gd', 'lat_center_gd']
 
 
@@ -24,7 +23,6 @@ class pointPivots(serializers.ModelSerializer):
         fields = ['id', 'long_center_gd', 'lat_center_gd', 'raio_irrigado_m']
         
 class detailPivots(serializers.ModelSerializer):
-    str_proprietario = serializers.CharField(source='proprietario.razao_social', read_only=True)
     str_fabricante = serializers.CharField(source='fabricante_pivot.nome_fabricante', read_only=True)
     str_fabricante_bomba = serializers.CharField(source='fabricante_bomba.nome_fabricante', read_only=True)
     str_municipio = serializers.SerializerMethodField(read_only=True)
@@ -50,8 +48,8 @@ class detailPivots(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
-            if field_name in ['proprietario', 'propriedade_localizacao', 'municipio_localizacao', 'identificacao_pivot', 'fabricante_pivot', 
-            'area_circular_ha', 'lamina_bruta_21_h', 'lat_center_gd', 'long_center_gd', 'fabricante_bomba', 'pot_motor_cv']:
+            if field_name in ['razao_social_proprietario', 'cpf_cnpj_proprietario', 'propriedade_localizacao', 'municipio_localizacao', 
+                'fabricante_pivot', 'area_circular_ha', 'lamina_bruta_21_h', 'lat_center_gd', 'long_center_gd']:
                 field.required = True
     class Meta:
         model = Cadastro_Pivots

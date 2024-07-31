@@ -11,6 +11,7 @@ import { useDropzone } from 'react-dropzone';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import Flex from '../../../components/common/Flex';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const FormCobranca = ({type, data, submit, card}) => {
     const {config: {theme}} = useAppContext();
@@ -41,7 +42,7 @@ const FormCobranca = ({type, data, submit, card}) => {
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 type === 'edit' ? submit('edit', data) : submit('add', data)

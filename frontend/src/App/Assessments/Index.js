@@ -12,6 +12,7 @@ import AdvanceTableWrapper from "../../components/common/advance-table/AdvanceTa
 import ModalDelete from "../../components/Custom/ModalDelete";
 import FormAvaliacao from "./FormAva";
 import FormQuestion from "./Form";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const InitData = {
     'title': 'Assessments'
@@ -51,7 +52,7 @@ const IndexAssessments = () => {
         if (type === 'edit'){
             const record = await GetRecord(uuid, 'assessments/data')
             if (!record){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
             setShowModal({show:true, data:record, type:'avaliacao'})
         }
@@ -63,7 +64,7 @@ const IndexAssessments = () => {
         if (type === 'edit'){
             const record = await GetRecord(data.uuid, 'assessments/questions')
             if (!record){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
             setShowModal({show:true, data:record, type:'question'})
         }
@@ -102,9 +103,8 @@ const IndexAssessments = () => {
     useEffect(()=>{
         const getdata = async () =>{
             const status = await HandleSearch('', 'assessments/index', (data) => setAvaliacoes(data.avaliacoes))
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
             const status2 = await HandleSearch('', 'assessments/questions', (data) => setPerguntas(data))
-            if (status2 === 401) navigate("/auth/login")
         }
         if ((user.permissions && user.permissions.indexOf("add_avaliacao_colaboradores") === -1) && !user.is_superuser){
             navigate("/error/403")
@@ -205,10 +205,10 @@ const IndexAssessments = () => {
         </div>   
         }
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-10"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -217,7 +217,7 @@ const IndexAssessments = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         {showmodal.type === 'question'
                         ? showmodal.data 

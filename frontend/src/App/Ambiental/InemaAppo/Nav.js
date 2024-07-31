@@ -48,28 +48,28 @@ export const CoordenadasMap = ({}) =>{
     return (
         appo && appo.coordenadas && appo.coordenadas.length > 0 ?
         <>
-          <div>
-            <span className="p-0 me-2">{appo.coordenadas.length} Poço(s)</span>
+        <div className='align-items-center justify-content-between p-2 py-1 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
+            <span className="p-0 me-2 fw-bold">{appo.coordenadas.length} Poço(s)</span>
             <Link to={`${process.env.REACT_APP_API_URL}/environmental/inema/appo/kml/${appo.id}`} 
-                className="btn btn-info py-0 px-2 ms-0 fs--1"
+                className="ms-0 fs-0"
             >
-                <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>KML
+              <FontAwesomeIcon icon={faDownload} />
             </Link>
-          </div>
-          <GoogleMap
-              initialCenter={{
-                  lat: Number(appo.coordenadas[0].latitude_gd),
-                  lng: Number(appo.coordenadas[0].longitude_gd)
-              }}
-              mapStyle="Default"
-              className="rounded-soft mt-2 google-maps container-map"
-              token_api={appo.token_apimaps}
-              mapTypeId='satellite'
-              coordenadas={appo.coordenadas}
-              infounlink
-          >
-            <MapInfo type='appo'/>
-          </GoogleMap>
+        </div>
+        <GoogleMap
+            initialCenter={{
+                lat: Number(appo.coordenadas[0].latitude_gd),
+                lng: Number(appo.coordenadas[0].longitude_gd)
+            }}
+            mapStyle="Default"
+            className="rounded-soft mt-0 google-maps container-map"
+            token_api={appo.token_apimaps}
+            mapTypeId='satellite'
+            coordenadas={appo.coordenadas}
+            infounlink
+        >
+        <MapInfo type='appo'/>
+        </GoogleMap>
         </>  : <div className="msg-lg" style={{fontSize:'18px'}}>Nenhum Poço Cadastrado</div> 
     )
   }

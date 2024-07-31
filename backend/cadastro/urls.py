@@ -25,5 +25,6 @@ router.register(r'instituicoes-razaosocial', views.Instituicoes_RazaosocialView)
 
 urlpatterns = [
     path('landing/', views.home, name='home.page'),
+    path('cadastros/', views.cadastros, name='cad.page'),
 ]
 urlpatterns += router.urls

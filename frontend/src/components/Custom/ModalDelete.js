@@ -2,6 +2,7 @@ import { Modal, Button} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from 'react-toastify';
 import SweetAlert2 from 'react-sweetalert2'; //Não retirar
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 //Use sempre barra depois do link
 const ModalDelete = ({show, close, link, update, transparent}) => {
@@ -20,7 +21,7 @@ const ModalDelete = ({show, close, link, update, transparent}) => {
       if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
       }
       else if (response.status === 204){
           update('delete', link.split("/")[link.split("/").length - 2])

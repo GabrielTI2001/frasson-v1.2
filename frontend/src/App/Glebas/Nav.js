@@ -43,14 +43,17 @@ export const NavModal2 = ({record}) =>{
 
 export const Coordenadas = ({record}) =>{
     return (<>
-        {record && 
-            <Col lg={'auto'} xxl={'auto'} className="text-end">
-                <Link to={`${process.env.REACT_APP_API_URL}/glebas/kml/download/${record.id}`} 
-                className="btn btn-primary py-0 ms-0 text-light fs--1">
-                    <FontAwesomeIcon icon={faDownload} className="me-2"></FontAwesomeIcon>KML
+        <div className='align-items-center justify-content-between p-2 py-1 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
+            {record.coordenadas.length > 0 ? <>  
+                <Link className='fs-0'
+                    to={`${process.env.REACT_APP_API_URL}/farms/kml/regime/${record.uuid}`}
+                >
+                    <FontAwesomeIcon icon={faDownload} />
                 </Link>
-            </Col>
-        }      
+                </>
+                : <strong className="fs--1">Sem KML</strong>
+            }
+        </div>
         {record && record.coordenadas ? 
             <PolygonMap
                 initialCenter={{
@@ -58,7 +61,7 @@ export const Coordenadas = ({record}) =>{
                     lng: record.coordenadas.length > 0 ? Number(record.coordenadas[0]['lng']) : -45.6814
                 }}
                 mapStyle="Default"
-                className="rounded-soft mt-2 google-maps container-map"
+                className="rounded-soft google-maps container-map"
                 token_api={record.token_apimaps}
                 mapTypeId='satellite'
                 polygons={[{path:record.coordenadas.map(c=> ({lat:c.lat, lng:c.lng}))}]}

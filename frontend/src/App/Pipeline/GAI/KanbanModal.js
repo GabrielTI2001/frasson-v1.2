@@ -9,7 +9,7 @@ import api from '../../../context/data';
 import ModalSidebar from '../ModalSidebar';
 import EditForm from './EditForm';
 import { GetRecord, HandleSearch } from '../../../helpers/Data';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { useAppContext } from '../../../Main';
@@ -17,13 +17,14 @@ import CardInfo, {CardTitle} from '../CardInfo';
 import { TaskDropMenu } from './TaskCard';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { calcdif } from './TaskCard';
-import { faCalendar, faComment, faFilter, faMoneyBill, faPaperclip } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import EditFormOthers from './EditFormOthers';
 import { SkeletBig } from '../../../components/Custom/Skelet';
 import {Anexos} from '../Anexos';
 import PVTEC from '../PVTEC/PVTEC';
 import NavGai from './Nav';
 import Cobrancas from '../Cobrancas/Index';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const options = {
   month: "short",
@@ -61,7 +62,7 @@ const KanbanModal = ({show, movercard}) => {
       const card = await GetRecord(code, 'pipeline/fluxos/gestao-ambiental')
       if (!card){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(card).length === 0){
@@ -92,7 +93,7 @@ const KanbanModal = ({show, movercard}) => {
           type: 'UPDATE_TASK_CARD',
           payload: {
             updatedCard: {id: response.data.id, card:response.data.card, str_detalhamento:response.data.info_detalhamento.detalhamento_servico,
-              str_beneficiario:response.data.list_beneficiario.razao_social, created_at: response.data.created_at, code: response.data.code,
+              str_beneficiario:response.data.list_beneficiario[0].razao_social, created_at: response.data.created_at, code: response.data.code,
               prioridade:response.data.prioridade, list_responsaveis: response.data.list_responsaveis, data_vencimento: response.data.data_vencimento,
               str_instituicao:response.data.info_instituicao.razao_social
             },

@@ -6,6 +6,7 @@ import "@fortawesome/fontawesome-svg-core/styles.css";
 import { faCaretDown, faCaretUp} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../../Main";
 import { LineChart } from "../../../components/Custom/Charts";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const Exchange = () =>{
     const {config: {theme}} = useAppContext();
@@ -33,7 +34,7 @@ const Exchange = () =>{
             if (response.status === 401) {
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate);
             } else if (response.status === 200) {
                 setSearchResults(data)
             }

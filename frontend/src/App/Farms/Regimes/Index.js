@@ -8,6 +8,7 @@ import { useAppContext } from "../../../Main";
 import { SelectSearchOptions } from "../../../helpers/Data";
 import RegimeForm from "./Form";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'urlapilist':'farms/regime', 
@@ -26,12 +27,12 @@ const IndexRegimes = () => {
 
     const submit = (type, data) => {
         if (type === 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal({show:false})
         }
-        else if (type === 'edit'){
+        else if (type === 'edit' && searchResults){
             setFormData({...formData, loaded:false})
-            setSearchResults()
+            setSearchResults([...searchResults.map(reg => reg.uuid === data.uuid ? data : reg)])
         }
         else if (type === 'delete' && searchResults){
             setSearchResults(searchResults.filter(r => r.uuid !== data))
@@ -55,7 +56,7 @@ const IndexRegimes = () => {
             if (response.status === 401) {
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             } else if (response.status === 200) {
                 setSearchResults(data)
                 setFormData({...formData, loaded:true})
@@ -179,13 +180,12 @@ const IndexRegimes = () => {
             size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            centered
             scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {showmodal.data ? 'Editar' : 'Adicionar' } Imóvel Rural
+                    {showmodal.data ? 'Editar' : 'Adicionar' } Regime de Exploração
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>

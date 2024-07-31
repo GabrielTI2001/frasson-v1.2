@@ -15,6 +15,7 @@ import ListProcessos from './ListProcessos.js';
 import ListOperacoes from './ListOperacoes.js';
 import { fieldsPessoal } from '../Data.js';
 import EditFormModal from '../../../components/Custom/EditForm.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const ModalPessoal = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -45,7 +46,7 @@ const ModalPessoal = ({show, reducer}) => {
       setCategorias(cat)
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
@@ -94,7 +95,7 @@ const ModalPessoal = ({show, reducer}) => {
         if (erro.response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
         console.error('erro: '+erro);
       })
@@ -146,12 +147,12 @@ const ModalPessoal = ({show, reducer}) => {
                                   : <div className="fs--1 row-10">{record[f.string] || '-'}</div>
                                 )
                               : f.type === 'select2' ? f.ismulti ? 
-                                  <div className="fs--1 row-10">{f.list.map(l => l[f.string]).join(', ')}</div>
+                                  <div className="fs--1 row-10">{record[f.list].map(l => l[f.string]).join(', ')}</div>
                                 : 
                                 f.string ?
                                   <div className="fs--1 row-10">{record[f.string] || '-'}</div>
                                 :
-                                  <div className="fs--1 row-10">{record[f.data] && record[f.data][f.attr_data] || '-'}</div>
+                                  <div className="fs--1 row-10">{record[f.data] && (record[f.data][f.attr_data] || '-')}</div>
                               : f.type === 'date' ? 
                                 <div className="fs--1 row-10">
                                   {record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'})+

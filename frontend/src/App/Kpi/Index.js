@@ -4,6 +4,7 @@ import {Row, Col, Spinner, Table} from 'react-bootstrap';
 import { useNavigate } from "react-router-dom";
 import { HandleSearch } from "../../helpers/Data";
 import { useAppContext } from "../../Main";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const IndexMyIndicators = () => {
     const [searchResults, setSearchResults] = useState();
@@ -22,7 +23,7 @@ const IndexMyIndicators = () => {
     useEffect(()=>{
         const Search = async () => {
             const status = await HandleSearch('', 'kpi/metas', setter, `?user=${user.id}`) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             Search()

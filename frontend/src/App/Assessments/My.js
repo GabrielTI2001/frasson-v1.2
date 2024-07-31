@@ -2,6 +2,7 @@ import React, { useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Table, Row, Placeholder} from 'react-bootstrap';
 import { useAppContext } from "../../Main";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const MyAssessments = () =>{
     const {config: {theme}} = useAppContext();
@@ -25,7 +26,7 @@ const MyAssessments = () =>{
             if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate)
             }
             else if (response.status === 201 || response.status === 200){
                 setDados(data.avaliacoes)

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button, Col,} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const FormMonitoramento = ({data, submit}) => {
     const navigate = useNavigate()
@@ -30,7 +31,7 @@ const FormMonitoramento = ({data, submit}) => {
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 submit('add', {...data, data_vencimento: new Date(data.data_vencimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})})

@@ -9,6 +9,7 @@ import AdvanceTableWrapper from '../../../components/common/advance-table/Advanc
 import { Link } from "react-router-dom";
 import { columnsContratos } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexContratos = () => {
     const [searchResults, setSearchResults] = useState();
@@ -30,7 +31,7 @@ const IndexContratos = () => {
     useEffect(()=>{
         const Search = async () => {
             const status = await HandleSearch('', 'pipefy/contratos-servicos', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if ((user.permissions && user.permissions.indexOf("view_contratos_servicos") === -1) && !user.is_superuser){
             navigate("/error/403")

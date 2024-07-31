@@ -13,10 +13,11 @@ import NavModal, { Alongamentos } from './Nav.js'
 import ModalDelete from '../../components/Custom/ModalDelete.js';
 import PolygonMap from '../../components/map/PolygonMap.js';
 import { fieldsOperacoes } from './Data.js';
-import { faGlobeAmericas } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faGlobeAmericas } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import EditFormModal from '../../components/Custom/EditForm.js';
 import { Cedulas } from './Cedulas.js';
+import { RedirectToLogin } from '../../Routes/PrivateRoute.js';
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -42,12 +43,12 @@ const ModalRecord = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'credit/operacoes-contratadas')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
           handleClose()
-          navigate("/error/404")
+          RedirectToLogin(navigate)
         }
         setRecord(reg)
         if(!cedulas){
@@ -97,7 +98,7 @@ const ModalRecord = ({show, reducer}) => {
         if (erro.response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
         console.error('erro: '+erro);
       })
@@ -151,17 +152,15 @@ const ModalRecord = ({show, reducer}) => {
                               :
                                 <div className="fs--1 row-10">{record[f.data] && record[f.data][f.attr_data]}</div>
                             : f.type === 'file' && f.name === 'kml' ? 
-                              <div>
-                                <Link to={`${process.env.REACT_APP_API_URL}/credit/kml/operacoes/${record.uuid}`} 
-                                  className='btn btn-secondary py-0 px-2 me-2 fs--1'
-                                >
-                                    <FontAwesomeIcon icon={faGlobeAmericas} className='me-1'/>KML
-                                </Link>
-                              </div>
+                              <div></div>
                             : f.type === 'date' ? 
                               <div className="fs--1 row-10">{record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
                             : 
-                              <div className="fs--1 row-10">{record[f.name] || '-'}</div>}
+                              <div className="fs--1 row-10">{record[f.name] ? f.is_number 
+                                ? Number(record[f.name]).toLocaleString('pt-BR', {minimumFractionDigits:2}) 
+                                : record[f.name] : '-'}
+                              </div>
+                            }
                           </div>
                           :
                           <EditFormModal key={f.name}
@@ -193,13 +192,24 @@ const ModalRecord = ({show, reducer}) => {
               <div className="rounded-top-lg pt-1 pb-0 mb-2">
                 <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Glebas Beneficiadas</span>
               </div>
+              <div className='align-items-center justify-content-between p-2 py-1 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
+                {record.coordenadas.length > 0 ? <>  
+                  <Link className='fs-0'
+                      to={`${process.env.REACT_APP_API_URL}/credit/kml/operacoes/${record.uuid}`}
+                  >
+                      <FontAwesomeIcon icon={faDownload} />
+                  </Link>
+                  </>
+                  : <strong className="fs--1">Sem KML</strong>
+                }
+              </div>
               <PolygonMap
                 initialCenter={{
                     lat: record.coordenadas.length > 0 ? Number(record.coordenadas[0]['lat']) : -13.7910,
                     lng: record.coordenadas.length > 0 ? Number(record.coordenadas[0]['lng']) : -45.6814
                 }}
                 mapStyle="Default"
-                className="rounded-soft mt-2 google-maps-l container-map"
+                className="rounded-soft google-maps-l container-map"
                 token_api={record.token_apimaps}
                 mapTypeId='satellite'
                 polygons={[{path:record.coordenadas}]}

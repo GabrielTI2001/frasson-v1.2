@@ -9,10 +9,7 @@ import AppContext, { PipeContext } from '../../../context/Context';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEllipsisH, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import SubtleBadge from '../../../components/common/SubtleBadge';
-import { useNavigate, useParams } from 'react-router-dom';
-import ModalDelete from '../../../components/Custom/ModalDelete';
-import api from '../../../context/data';
-import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 import ModalDeleteCard from '../../../components/Custom/ModalDeleteCard';
 import GroupMember from '../GroupMember';
 
@@ -34,8 +31,6 @@ export const TaskDropMenu = ({ card, click }) => {
   const { kanbanDispatch } = useContext(PipeContext);
   const [modaldel, setModaldel] = useState({show:false})
   const navigate = useNavigate()
-  const token = localStorage.getItem("token")
-  const {pipe, code} = useParams()
 
   const {
     config: { isRTL }
@@ -80,7 +75,6 @@ const TaskCard = ({
 }) => {
   const { kanbanDispatch} = useContext(PipeContext);
   const navigate = useNavigate()
-  const {pipe, code} = useParams()
   const handleModalOpen = () => {
     navigate(`/pipeline/518984721/processo/${task.code}`)
     kanbanDispatch({ type: 'OPEN_KANBAN_MODAL', payload: {card: task} });
@@ -112,7 +106,7 @@ const TaskCard = ({
                 </SubtleBadge>
               }
               <div className='mb-1'>
-                <h4 className='fw-bold fs--1'>{task && task.str_detalhamento || '-'}</h4>
+                <h4 className='fw-bold fs--1'>{task && (task.str_detalhamento || '-')}</h4>
               </div>
               <div className='mb-1'>
                 <label className='mb-0 text-uppercase fs--2'>Processo</label><br></br>

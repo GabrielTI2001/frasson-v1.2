@@ -7,6 +7,7 @@ import { fetchMunicipio } from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import GoogleMap from '../../../components/map/GoogleMap';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -43,21 +44,22 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate)
         }
         else if (response.status === 201 || response.status === 200){
+          
           if (handlepdf){
             const { coordinates, ...rest} = data;
-            setFormData({...formData, ...rest})
+            setFormData({...formData, ...rest, coordenadas:coordinates})
             setCoordenadas(coordinates)
-            setDefaultOptions({municipio:{value:data.municipio, label:data.str_municipio}})
           }
           else{
+            const { coordenadas, ...rest} = data;
             if (type === 'edit'){
               toast.success("Registro Atualizado com Sucesso!")
             }
             else{
-              submit('add', data)
+              submit('add', data, coordenadas)
               toast.success("Registro Efetuado com Sucesso!")
             }
           }
@@ -72,7 +74,12 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
     e.preventDefault();
     const formDataToSend = new FormData();
     for (const key in formData) {
-      formDataToSend.append(key, formData[key]);
+      if (key === 'coordenadas') {
+        formDataToSend.append(key, JSON.stringify(formData[key]));
+      }
+      else{
+        formDataToSend.append(key, formData[key]);
+      }
     }
     await handleApi(formDataToSend);
   };
@@ -124,18 +131,17 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
     else{
       if(!defaultoptions){
         loadFormData()
-        setDefaultOptions({municipio:{}})
       }
     }
     if (!tokenmaps){
       getTokenMaps()
     }
-
+    setDefaultOptions({})
   },[])
 
   return (
     <>
-      <Form onSubmit={handlePDFsubmit} className='row' encType='multipart/form-data'>
+      <Form onSubmit={handlePDFsubmit} className='row gx-3' encType='multipart/form-data'>
         {type === 'add' && <Form.Group className="mb-0" as={Col} lg={5}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo PDF do Requerimento*</Form.Label>}
           <Form.Control
@@ -213,7 +219,6 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
               {hasLabel && <Form.Label className='fw-bold mb-1'>Município localização*</Form.Label>}
               <AsyncSelect loadOptions={fetchMunicipio} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                 defaultValue={defaultoptions.municipio || ''}
-                value={defaultoptions.municipio || ''}
                 onChange={(selected) => {
                 setFormData((prevFormData) => ({
                   ...prevFormData,

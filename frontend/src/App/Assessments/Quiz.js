@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Form, Row, Col, Button } from "react-bootstrap";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const Quiz = () =>{
     const [message, setMessage] = useState()
@@ -26,7 +27,7 @@ const Quiz = () =>{
             if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate)
             }
             else if (response.status === 201 || response.status === 200){
               setDados(data.questions)
@@ -69,7 +70,7 @@ const Quiz = () =>{
             if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate)
             }
             else if (response.status === 201 || response.status === 200){
               setDados(data.questions)

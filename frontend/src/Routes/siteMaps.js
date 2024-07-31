@@ -163,7 +163,14 @@ export const operacionalRoutes = {
       active: true,
       children: [
         {
-          name: 'Produtos',
+          name: 'Produtos GAI',
+          icon: faCartShopping,
+          to: '/pipeline/518984721',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Produtos GC',
           icon: faCartShopping,
           to: '/pipeline/518984721',
           exact: true,

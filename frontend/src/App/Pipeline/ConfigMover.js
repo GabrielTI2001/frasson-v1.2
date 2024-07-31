@@ -7,6 +7,7 @@ import customStyles, { customStylesDark } from '../../components/Custom/SelectSt
 import { useAppContext } from '../../Main';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { HandleSearch } from '../../helpers/Data';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const ConfigMoverCard = ({type, data, submit, card}) => {
     const {config: {theme}} = useAppContext();
@@ -35,7 +36,7 @@ const ConfigMoverCard = ({type, data, submit, card}) => {
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 type === 'edit' ? submit('edit', data.list_destinos) : submit('add', data)
@@ -70,7 +71,7 @@ const ConfigMoverCard = ({type, data, submit, card}) => {
       const getdata = async () =>{
         const status = HandleSearch('', 'pipeline/fases', (data) => setFases(data), `?pipe=${card.pipe_code}`)
         if(status === 401){
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
       }
       if (!fases){getdata()}

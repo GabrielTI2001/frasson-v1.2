@@ -10,6 +10,7 @@ import { useDropzone } from 'react-dropzone';
 import api from '../../../context/data';
 import { toast } from 'react-toastify';
 import Flex from '../../../components/common/Flex';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 export const Anexos = ({ pvtec }) => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -94,7 +95,7 @@ export const Anexos = ({ pvtec }) => {
       if (!anexos) {
         const status = await HandleSearch('', 'pipeline/card-anexos', (data) => { setAnexos(data); }, `?pvtec=${pvtec.id}`);
         if (status === 401) {
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         }
         HandleSearch('', 'pipeline/card-anexos', (data) => { setAnexosResposta(data); }, `?pvtec=${pvtec.id}&isresponse=1`);
       }

@@ -14,6 +14,7 @@ import NavModal from './Nav.js';
 import EditForm from './EditForm.js';
 import IndexProdAgricola from '../Litec/Agricola/Index.js';
 import IndexProdPecuaria from '../Litec/Pecuaria/Index.js';
+import { RedirectToLogin } from '../../Routes/PrivateRoute.js';
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -38,7 +39,7 @@ const ModalRecord = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'glebas/index')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){

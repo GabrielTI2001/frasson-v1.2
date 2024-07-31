@@ -5,6 +5,7 @@ import { useAppContext } from "../../Main";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faInbox, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const Notifications = () => {
     const user = JSON.parse(localStorage.getItem("user"))
@@ -18,7 +19,7 @@ const Notifications = () => {
         const fetchdata = async () => {
             const status = await HandleSearch('', 'inbox', (data) => setMessages(data), `?destinatario=${user.id}&notread=1`)
             if (status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         fetchdata()
@@ -27,19 +28,19 @@ const Notifications = () => {
         if (key === 'arquivadas'){
             const status = await HandleSearch('', 'inbox', (data) => setArquivadas(data), `?destinatario=${user.id}&archived=1`)
             if (status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if (key === 'inbox'){
             const status = await HandleSearch('', 'inbox', (data) => setMessages(data), `?destinatario=${user.id}&notread=1`)           
             if (status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if (key === 'lixeira'){
             const status = await HandleSearch('', 'inbox', (data) => setExcluidas(data), `?destinatario=${user.id}&deleted=1`)
             if (status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
     }

@@ -18,6 +18,7 @@ import { Anexos } from '../../Pipeline/Anexos.js';
 import ModalActivityContent from '../../Pipeline/ModalActivityContent.js';
 import ModalCommentContent from '../../Pipeline/ModalCommentContent.js';
 import ModalSidebar from './ModalSidebar.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const options = {
   month: "short",
@@ -50,7 +51,7 @@ const PVTECModal = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'pipeline/pvtec')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){

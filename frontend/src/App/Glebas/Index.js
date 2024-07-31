@@ -14,6 +14,7 @@ import GlebaForm from "./Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const InitData = {
     'columns':columnsGleba, 'urlapilist':'glebas/index', 
@@ -36,7 +37,7 @@ const IndexGlebas = () => {
     const submit = (type, data, id) => {
         if (type === 'add'){
             setShowModal({showmodal:false})
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
         }
         if (type === 'edit'){
             if (searchResults){
@@ -56,7 +57,7 @@ const IndexGlebas = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})
@@ -71,10 +72,10 @@ const IndexGlebas = () => {
 
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-        if (status === 401) navigate("/auth/login");
+        if (status === 401) RedirectToLogin(navigate);
         const getdata = async () =>{
             const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         getdata()
     };
@@ -133,10 +134,10 @@ const IndexGlebas = () => {
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <ModalRecord show={modal.show} reducer={submit}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -145,7 +146,7 @@ const IndexGlebas = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         <GlebaForm hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit}/>
                     </Row>

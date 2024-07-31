@@ -113,7 +113,7 @@ class Requerimentos_APPO_Coordenadas(models.Model):
     numero_poco = models.IntegerField(null=True, verbose_name='Número Poço')
     latitude_gd = models.DecimalField(max_digits=10, decimal_places=8, verbose_name='Latitude GD')
     longitude_gd = models.DecimalField(max_digits=10, decimal_places=8, verbose_name='Longitude GD')
-    vazao_m3_dia = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Expect. Vazão (m3/dia)')
+    vazao_m3_dia = models.DecimalField(null=True, max_digits=10, decimal_places=2, verbose_name='Expect. Vazão (m3/dia)')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:

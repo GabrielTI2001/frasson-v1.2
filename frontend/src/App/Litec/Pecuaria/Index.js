@@ -11,6 +11,7 @@ import { HandleSearch, GetRecord} from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import FormProdPecuaria from "./Form";
 import EditProdPecuaria from "./Edit";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'columns':columnsPecuaria, 'urlapilist':'litec/pecuaria', 
@@ -32,7 +33,7 @@ const IndexProdPecuaria= ({gleba}) => {
     const submit = (type, data) => {
         if (type === 'add'){
             setShowModal({showmodal:false})
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
         }
         if (type === 'edit'){
             setShowModal({showmodal:false})
@@ -51,7 +52,7 @@ const IndexProdPecuaria= ({gleba}) => {
         }
         const getdata = async () =>{
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults, `?gleba=${uuid}`)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             getdata()

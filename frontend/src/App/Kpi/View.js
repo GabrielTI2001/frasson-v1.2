@@ -6,6 +6,7 @@ import { RetrieveRecord } from "../../helpers/Data";
 import { useAppContext } from "../../Main";
 import { ColumnLineChart } from "../../components/Custom/Charts";
 import IndicatorForm from "./Form";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
@@ -61,7 +62,7 @@ const ViewIndicator = () => {
     useEffect(()=>{
         const Search = async () => {
             const status = await RetrieveRecord(uuid, 'kpi/metas', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!register){
             Search()

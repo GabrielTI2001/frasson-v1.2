@@ -8,6 +8,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen } from '@fortawesome/free-solid-svg-icons';
 import { CalendarFill, Kanban, Tools, PencilSquare, PeopleFill, Building } from 'react-bootstrap-icons';
 import { PersonFill, ClockHistory } from 'react-bootstrap-icons';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const ViewCardProduto = () => {
     const {id} = useParams()
@@ -27,7 +28,7 @@ const ViewCardProduto = () => {
         const getdata = async () =>{
             const status = await RetrieveRecord(id, 'pipefy/fluxos/gestao-ambiental', setter)
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_cards_produtos") === -1) && !user.is_superuser){

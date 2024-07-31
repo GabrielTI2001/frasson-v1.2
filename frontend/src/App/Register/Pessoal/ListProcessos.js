@@ -4,6 +4,7 @@ import { useAppContext } from "../../../Main";
 import {Table} from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import CardInfo from '../../Pipeline/CardInfo';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const ListProcessos = ({record}) => {
     const {config: {theme}} = useAppContext();
@@ -23,7 +24,7 @@ const ListProcessos = ({record}) => {
                 });
                 if (response.status === 401){
                     localStorage.setItem("login", JSON.stringify(false));
-                    navigate("/auth/login");
+                    RedirectToLogin(navigate);
                 }
                 else if (response.status === 200){
                     const data = await response.json();

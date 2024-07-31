@@ -7,13 +7,14 @@ import { toast } from 'react-toastify';
 import SubtleBadge from '../../../components/common/SubtleBadge.js';
 import { useAppContext } from '../../../Main.js';
 import {CardTitle} from '../../Pipeline/CardInfo.js';
-import { DropMenu } from './Menu.js';
+import { calcdif, DropMenu } from './Menu.js';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import { fieldsOutorga } from '../Data.js';
 import EditFormModal from '../../../components/Custom/EditForm.js';
 import NavModal, { CoordenadasMap, NavModal2, TablePoints } from './Nav.js';
 import { ambientalReducer } from '../../../reducers/ambientalReducer.js';
 import { AmbientalContext } from '../../../context/Context.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const dif = (data_ren) => {
   const dif = parseInt((new Date(data_ren) - new Date())/(1000 * 60 * 60 * 24))
@@ -49,12 +50,12 @@ const ModalRecord = ({show, reducer}) => {
       const coordenadas = await GetRecords('environmental/inema/outorga/coordenadas-detail', `processo=${reg.id}`)
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
           handleClose()
-          navigate("/error/404")
+          RedirectToLogin(navigate)
         }
       }
       ambientalDispatch({type:'SET_DATA', payload:{
@@ -65,7 +66,7 @@ const ModalRecord = ({show, reducer}) => {
     const buscar = async () =>{
       const data = await SelectOptions('environmental/inema/captacao', 'description');
       if (data === 401){
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         setCaptacao(data)
@@ -121,7 +122,7 @@ const ModalRecord = ({show, reducer}) => {
             <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={5}>
               {record ? <>
                 <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-2">
-                  <h4 className="mb-1 fs-1 fw-bold">Portaria {record.numero_portaria}</h4>
+                  <h4 className="mb-1 fs-1 fw-bold">Portaria {record.numero_portaria} - {record.nome_requerente}</h4>
                 </div>
                 <Dropdown className='mb-2'>
                   <Dropdown.Toggle as={Nav}
@@ -141,32 +142,10 @@ const ModalRecord = ({show, reducer}) => {
                   <div className='ms-3 mt-3'>
                     <Tab.Content>
                       <Tab.Pane eventKey="main">
-                        <h5 className="mb-0 fs-0 fw-bold">Informações da Outorga</h5>
+                        <h5 className="mb-0 fs-0 fw-bold">Informações da Portaria</h5>
                         <div className='text-secondary fs--2 mb-2'>Criado por {record.str_created_by} em {' '}
                           {new Date(record.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
                           {' às '+new Date(record.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
-                        </div>
-
-                        <div className='fs--1 mb-2 mt-1'>
-                          <strong className='fw-bold me-2'>Status Portaria:</strong>
-                          {new Date(record.data_validade) < new Date()
-                              ?<SubtleBadge bg='danger'>Vencida</SubtleBadge>
-                              :<SubtleBadge bg='success'>Vigente</SubtleBadge>
-                          }
-                        </div>
-                        <div className='fs--1 mb-2'>
-                          <strong className='fw-bold me-2'>Data RENOUT:</strong>
-                          {new Date(record.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}
-                        </div>
-                        <div className='fs--1 mb-2'>
-                          <strong className='fw-bold me-2'>Status RENOUT:</strong>
-                          {new Date(record.renovacao.data) < new Date()
-                              ?<SubtleBadge bg='danger'>Vencida</SubtleBadge>
-                              :<SubtleBadge bg='success'>Vigente</SubtleBadge>
-                          }
-                        </div>
-                        <div className='fs--1 mb-1'>
-                          <strong className='fw-bold me-2'>Dias p/ Renovação:</strong>{dif(record.renovacao.data)}
                         </div>
 
                         {captacao && fieldsOutorga.map(f => 
@@ -178,9 +157,7 @@ const ModalRecord = ({show, reducer}) => {
                                   ? <div className="fs--1 row-10">{record[f.name] === true ? 'Sim' : 'Não'}</div>
                                   : <div className="fs--1 row-10">{record[f.string]}</div>
                                 )
-                              : f.type === 'select2' ? f.ismulti ? 
-                                  <div className="fs--1 row-10">{f.list.map(l => l[f.string]).join(', ')}</div>
-                                : 
+                              : f.type === 'select2' ? 
                                 f.string ?
                                   <div className="fs--1 row-10">{record[f.string]}</div>
                                 :
@@ -197,9 +174,25 @@ const ModalRecord = ({show, reducer}) => {
                               record={record} field={f} options={{captacao:captacao}}
                             />
                         )}
-                      </Tab.Pane>
-                      <Tab.Pane eventKey="farm">
-        
+
+                        <div className='fs--1 mb-2 mt-1'>
+                          <strong className='fw-bold me-2 d-block'>Status Portaria</strong>
+                          {new Date(record.data_validade) < new Date()
+                              ?<><SubtleBadge bg='danger'>Vencida</SubtleBadge></>
+                              :<><SubtleBadge bg='success'>Vigente</SubtleBadge> - {dif(record.data_validade)} dias restantes</>
+                          }
+                        </div>
+                        <div className='fs--1 mb-2'>
+                          <strong className='fw-bold me-2 d-block'>Data Limite Renovação</strong>
+                          {new Date(record.renovacao.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}
+                        </div>
+                        <div className='fs--1 mb-2'>
+                          <strong className='fw-bold me-2 d-block'>Status Renovação</strong>
+                          {new Date(record.renovacao.data) < new Date()
+                              ?<SubtleBadge bg='danger'>Expirado</SubtleBadge>
+                              :<><SubtleBadge bg='success'>No Prazo</SubtleBadge> - {dif(record.renovacao.data)} dias restantes</>
+                          }
+                        </div>
                       </Tab.Pane>
                     </Tab.Content>
                   </div>

@@ -15,6 +15,7 @@ import NavModal from './Nav.js'
 import PicturesGallery from '../../../components/Custom/Galery.js';
 import ModalDelete from '../../../components/Custom/ModalDelete.js';
 import { ImgForm } from './Form.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const options = {
   month: "short",
@@ -48,7 +49,7 @@ const ModalBenfeitoria = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'register/farm-assets')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
@@ -92,7 +93,7 @@ const ModalBenfeitoria = ({show, reducer}) => {
       setMessage({...dados})
     }
     else if (resposta.status === 401){
-      navigate("/auth/login");
+      RedirectToLogin(navigate);
     }
     else if (resposta.status === 201 || resposta.status === 200){
       if (type === 'edit'){
@@ -146,7 +147,7 @@ const ModalBenfeitoria = ({show, reducer}) => {
         if (erro.response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
         console.error('erro: '+erro);
       })

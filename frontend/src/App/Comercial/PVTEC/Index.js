@@ -8,6 +8,7 @@ import AdvanceTableFooter from "../../../components/common/advance-table/Advance
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { HandleSearch } from "../../../helpers/Data"
 import PVTECModal from "./Modal"
+import { RedirectToLogin } from "../../../Routes/PrivateRoute"
 
 const IndexPVTEC = () =>{
     const [searchResults, setSearchResults] = useState()
@@ -26,12 +27,12 @@ const IndexPVTEC = () =>{
     const handleChange = async (value) => {
         setSearchResults(null)
         const status = await HandleSearch(value, 'pipeline/pvtec', (data) => setSearchResults(data), `?resp=${user.id}`)
-        if (status === 401) navigate("/auth/login")
+        if (status === 401) RedirectToLogin(navigate)
     };
     const handleChange2 = async (value) => {
         setSearchResultsall(null)
         const status = await HandleSearch(value, 'pipeline/pvtec', (data) => setSearchResultsall(data))
-        if (status === 401) navigate("/auth/login")
+        if (status === 401) RedirectToLogin(navigate)
     };
     const handleTabSelect = async (key) => {
         setActiveTab(key)

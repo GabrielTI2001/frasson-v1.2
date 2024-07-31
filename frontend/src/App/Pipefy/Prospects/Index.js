@@ -8,6 +8,7 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { columnsCardProspects } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexProspects = () => {
     const [searchResults, setSearchResults] = useState();
@@ -30,7 +31,7 @@ const IndexProspects = () => {
         const getdata = async () =>{
             const status = await HandleSearch('', 'pipefy/cards/prospects', setter)
             if (status === 401){
-             navigate("/auth/login")
+                RedirectToLogin(navigate)
             } 
         }
         if ((user.permissions && user.permissions.indexOf("view_card_prospects") === -1) && !user.is_superuser){

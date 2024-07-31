@@ -80,13 +80,9 @@ import NotFound from "../Layouts/NotFound";
 import IndexAPPO from '../App/Ambiental/InemaAppo/Index';
 import IndexOutorgas from '../App/Ambiental/InemaOutorgas/Index';
 import IndexASV from '../App/Ambiental/InemaASV/Index';
-import ViewASV from '../App/Ambiental/InemaASV/View';
-import EditASV from '../App/Ambiental/InemaASV/Edit';
 import MapaAreasASV from '../App/Ambiental/InemaASV/Mapa';
 import IndexRequerimentos from '../App/Ambiental/Requerimentos/Index';
 import MapaPontosRequerimento from '../App/Ambiental/Requerimentos/Mapa';
-import NewRequerimento from '../App/Ambiental/Requerimentos/New';
-import ViewRequerimentoAPPO from '../App/Ambiental/Requerimentos/View';
 //Licenses
 import IndexLicenses from '../App/Licenses/Index';
 import ViewLicenca from '../App/Licenses/View';
@@ -104,6 +100,7 @@ import WebSocketComponent from '../App/Pipeline/Websocket';
 // import ViewCredit from '../App/Credit/View';
 import IndexContratosAmbiental from '../App/Finances/ContratosAmbiental/Index';
 import IndexPVTEC from '../App/Comercial/PVTEC/Index';
+import { RedirectToLogin } from './PrivateRoute';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -123,7 +120,7 @@ const LayoutRoutes = () => {
         });
         const data = await response.json();
         if (response.status === 401) {
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         } else if (response.status === 200) {
           profileDispatch({
             type: 'SET_PROFILE',
@@ -162,18 +159,16 @@ const LayoutRoutes = () => {
         <Route path="/ambiental/inema">
           <Route path="outorgas" element={<IndexOutorgas />}/>
           <Route path="outorgas/:uuid" element={<IndexOutorgas />} />
-          <Route path="outorga/map" element={<MapaPontos key='outorga' type='outorga' />} />
+          <Route path="outorga/map" element={<MapaPontos type='outorga' />} />
           <Route path="appos" element={<IndexAPPO/>}/>
           <Route path="appos/:uuid" element={<IndexAPPO />} />
-          <Route path="appo/map" element={<MapaPontos key='appo' type='appo' />} />
+          <Route path="appo/map" element={<MapaPontos type='appo' />} />
           <Route path="asv" element={<IndexASV/>}/>
           <Route path="asv/:uuid" element={<IndexASV/>}/>
-          {/* <Route path="asv/edit/:uuid" element={<EditASV />} /> */}
           <Route path="asv/map" element={<MapaAreasASV />} />
           <Route path="requerimentos" element={<IndexRequerimentos />} />
-          <Route path="requerimentos/appo" element={<MapaPontosRequerimento key='appo' type='appo' />} />
-          <Route path="requerimentos/new" element={<NewRequerimento key='appo' type='appo' />} />
-          <Route path="requerimentos/appo/:uuid" element={<ViewRequerimentoAPPO />} />
+          <Route path="requerimentos/appo" element={<MapaPontosRequerimento type='appo' />} />
+          <Route path="requerimentos/appo/:uuid" element={<MapaPontosRequerimento type='appo' />} />
         </Route>
         <Route path="/assessments">
           <Route path="quiz/:uuid" element={<Quiz />}/>
@@ -247,7 +242,7 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/licenses">
           <Route path="" element={<IndexLicenses />}/>
-          <Route path=":uuid" element={<ViewLicenca />}/>
+          <Route path=":uuid" element={<IndexLicenses />}/>
         </Route>
         <Route path="/litec">
           <Route path="glebas" element={<IndexGlebas />}/>

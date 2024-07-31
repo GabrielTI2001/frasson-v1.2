@@ -5,58 +5,38 @@ import { toast } from 'react-toastify';
 import { Button, Form, Row, Col} from 'react-bootstrap';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { AmbientalContext } from '../../../context/Context';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { sendData } from '../../../helpers/Data';
 
 const PontoForm = ({ hasLabel, type, data, update}) => {
-  const channel = new BroadcastChannel('meu_canal');
-
   const {ambientalState:{outorga}, ambientalDispatch} = useContext(AmbientalContext)
-
   const [formData, setFormData] = useState({
     processo: outorga.id
   });
-
   const [showModal, setShowModal] = useState({show:false, type:''});
-  
   const [message, setMessage] = useState();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
   
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/outorga/coordenadas-detail/${type === 'edit' ? data.id+'/' : ''}` 
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(dadosform)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          navigate("/auth/login");
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            toast.success("Registro Atualizado com Sucesso!")
-            ambientalDispatch({type:'UPDATE_PONTO', payload:{id:data.id, updatedPonto:data}})
-            update()
-          }
-          else{
-            toast.success("Registro Adicionado com Sucesso!")
-            channel.postMessage({ tipo: 'adicionar_coordenada', reg:data, outorga_id:outorga.id});
-            ambientalDispatch({type:'ADD_PONTO',payload:{novoponto:data}})
-            update()
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'environmental/inema/outorga/coordenadas-detail', keyfield: type === 'edit' ? data.id : null,
+      dadosform:dadosform
+    })
+    if(resposta.status === 400){
+      setMessage({...dados})
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        toast.success("Registro Atualizado com Sucesso!")
+        ambientalDispatch({type:'UPDATE_PONTO', payload:{id:dados.id, updatedPonto:dados}})
+      }
+      else{
+        toast.success("Registro Adicionado com Sucesso!")
+        ambientalDispatch({type:'ADD_PONTO',payload:{novoponto:dados}})
+      }
+      update()
     }
   };
 
@@ -75,13 +55,7 @@ const PontoForm = ({ hasLabel, type, data, update}) => {
 
   useEffect(()=>{
     const loadFormData = () => {
-      setFormData({...formData, processo: data.processo, descricao_ponto: data.descricao_ponto, latitude_gd: data.latitude_gd,
-        longitude_gd: data.longitude_gd, vazao_m3_dia: data.vazao_m3_dia, bombeamento_h: data.bombeamento_h, 
-        vazao_m3_dia_jan: data.vazao_m3_dia_jan, vazao_m3_dia_fev: data.vazao_m3_dia_fev, vazao_m3_dia_mar: data.vazao_m3_dia_mar,
-        vazao_m3_dia_abr: data.vazao_m3_dia_abr, vazao_m3_dia_mai: data.vazao_m3_dia_mai, vazao_m3_dia_jun: data.vazao_m3_dia_jun,
-        vazao_m3_dia_jul: data.vazao_m3_dia_jul, vazao_m3_dia_ago: data.vazao_m3_dia_ago, vazao_m3_dia_set: data.vazao_m3_dia_set,
-        vazao_m3_dia_out: data.vazao_m3_dia_out, vazao_m3_dia_nov: data.vazao_m3_dia_nov, vazao_m3_dia_dez: data.vazao_m3_dia_dez
-      })
+      setFormData({...formData, ...data})
     }
     if (type === 'edit'){
       if(!formData.descricao_ponto){   

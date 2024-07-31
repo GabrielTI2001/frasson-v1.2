@@ -9,58 +9,38 @@ import { fetchFinalidade } from './../Data';
 import AsyncSelect from 'react-select/async';
 import { useAppContext } from '../../../Main';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { sendData } from '../../../helpers/Data';
 
 const PontoForm = ({ hasLabel, type, data, update}) => {
-  const channel = new BroadcastChannel('meu_canal');
   const {config: {theme}} = useAppContext();
   const {ambientalState:{appo}, ambientalDispatch} = useContext(AmbientalContext)
-
   const [formData, setFormData] = useState({processo: appo.id});
-
   const [showModal, setShowModal] = useState({show:false, type:''});
   const [defaultoptions, setDefaultOptions] = useState()
   const [message, setMessage] = useState();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/appo/coordenadas-detail/${type === 'edit'?data.id+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(dadosform)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          navigate("/auth/login");
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            toast.success("Registro Atualizado com Sucesso!")
-            ambientalDispatch({type:'UPDATE_PONTO_APPO', payload:{id:data.id, updatedPonto:data}})
-            ambientalDispatch({type:'TOGGLE_MODAL'})
-          }
-          else{
-            toast.success("Registro Adicionado com Sucesso!")
-            channel.postMessage({ tipo: 'adicionar_coordenada', reg:data, appo_id:appo.id});
-            ambientalDispatch({type:'ADD_PONTO_APPO',payload:{novoponto:data}})
-            ambientalDispatch({type:'TOGGLE_MODAL'})
-          }
-        }
-        update()
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'environmental/inema/appo/coordenadas-detail', keyfield: type === 'edit' ? data.id : null,
+      dadosform:dadosform
+    })
+    if(resposta.status === 400){
+      setMessage({...dados})
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        toast.success("Registro Atualizado com Sucesso!")
+        ambientalDispatch({type:'UPDATE_PONTO_APPO', payload:{id:dados.id, updatedPonto:dados}})
+      }
+      else{
+        toast.success("Registro Adicionado com Sucesso!")
+        ambientalDispatch({type:'ADD_PONTO_APPO',payload:{novoponto:dados}})
+      }
+      update()
     }
   };
 

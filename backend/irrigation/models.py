@@ -45,7 +45,8 @@ class Fabricantes_Bombas(models.Model):
 #modelo para cadastro de equipamentos pivot central - cadastro geral
 class Cadastro_Pivots(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    proprietario = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Proprietário')
+    razao_social_proprietario = models.CharField(max_length=100, null=True, blank=True, verbose_name='Razão Social Proprietário')
+    cpf_cnpj_proprietario = models.CharField(max_length=20, null=True, blank=True, verbose_name='CPF/CNPJ Proprietário')
     propriedade_localizacao = models.CharField(max_length=255, null=True, blank=True, verbose_name='Nome da Fazenda')
     municipio_localizacao = models.ForeignKey(Municipios, on_delete=models.CASCADE, null=True, verbose_name='Município Localização')
     identificacao_pivot = models.CharField(max_length=100, null=True, blank=True, verbose_name='Indentificação do Pivot')

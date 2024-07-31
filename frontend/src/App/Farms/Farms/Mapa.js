@@ -8,6 +8,7 @@ import PolygonMap from "../../../components/map/PolygonMap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { MapInfoDetailCAR } from "./MapInfo";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const MapaCAR = () => {
     const [poligonos, setPoligonos] = useState()
@@ -36,7 +37,7 @@ const MapaCAR = () => {
             if (response.status === 401){
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate);
             }
             else if (response.status === 200){
                 const data = await response.json();

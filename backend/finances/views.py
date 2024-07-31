@@ -50,7 +50,7 @@ class PagamentosView(viewsets.ModelViewSet):
                                 (Q(beneficiario__razao_social__icontains=search) | Q(status__icontains=search) | Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)))
                 queryset = Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
-                        When(status__is_null=False, then=F('data_pagamento')),
+                        When(status__isnull=False, then=F('data_pagamento')),
                         default=F('data_vencimento'),
                         output_field=DateField()
                     )
@@ -63,7 +63,7 @@ class PagamentosView(viewsets.ModelViewSet):
                                 ))
                 queryset = Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
-                        When(status__is_null=False, then=F('data_pagamento')),
+                        When(status__isnull=False, then=F('data_pagamento')),
                         default=F('data_vencimento'),
                         output_field=DateField()
                     )
@@ -785,7 +785,6 @@ def index_dre_provisionado(request):
 
     aberto_gc = query_cobrancas_abertas.get('total_gc', 0) or 0
     aberto_gai = query_cobrancas_abertas.get('total_gai', 0) or 0
-    print( Cobrancas.objects.filter(status__in=cobrancas_abertas_phases).values())
     aberto_avaliacao = query_cobrancas_abertas.get('total_avaliacao', 0) or 0
     aberto_tecnologia = query_cobrancas_abertas.get('total_tecnologia', 0) or 0
     aberto_total = float(aberto_gc + aberto_gai + aberto_avaliacao + aberto_tecnologia)

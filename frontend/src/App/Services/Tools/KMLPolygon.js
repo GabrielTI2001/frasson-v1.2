@@ -6,6 +6,7 @@ import GoogleMap from '../../../components/map/GoogleMap';
 import MapInfo from './MapInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudArrowDown, faMapLocation } from '@fortawesome/free-solid-svg-icons';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const KMLPolygon = () => {
   const {config: {theme}} = useAppContext();
@@ -35,7 +36,7 @@ const KMLPolygon = () => {
         else if (response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login");
+          RedirectToLogin(navigate);
         }
         else if (response.status === 201 || response.status === 200){
           setDados({...data})

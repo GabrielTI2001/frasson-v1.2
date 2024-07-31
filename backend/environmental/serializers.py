@@ -99,6 +99,10 @@ class detailOutorga(serializers.ModelSerializer):
             raise serializers.ValidationError("A Data de Vencimento não pode ser menor que a Data de Publicação.")
         
         return value
+    def validate_cpf_cnpj(self, value):
+        if not Frasson.valida_cpf_cnpj(value):
+            raise serializers.ValidationError("CPF ou CNPJ Inválido!")
+        return value
     
     class Meta:
         model = Outorgas_INEMA
@@ -473,7 +477,7 @@ class detailAreasASV(serializers.ModelSerializer):
 
 class listRequerimentosAPPO(serializers.ModelSerializer):
     class Meta:
-        model = Requerimentos_APPO_Coordenadas
+        model = Requerimentos_APPO_INEMA
         fields = ['uuid', 'nome_requerente', 'numero_requerimento']
 
 class detailRequerimentosAPPO(serializers.ModelSerializer):
@@ -508,7 +512,7 @@ class detailRequerimentosAPPO(serializers.ModelSerializer):
 class listCoordenadaRequerimentoAPPO(serializers.ModelSerializer):
     class Meta:
         model = Requerimentos_APPO_Coordenadas
-        fields = ['id', 'latitude_gd', 'longitude_gd']
+        fields = ['id', 'latitude_gd', 'longitude_gd', 'numero_poco']
 
 class detailCoordenadaRequerimentoAPPO(serializers.ModelSerializer):
     info_processo = serializers.SerializerMethodField(read_only=True, required=False)

@@ -10,6 +10,7 @@ import { HandleSearch } from '../../helpers/Data';
 import { toast } from 'react-toastify';
 import api from '../../context/data';
 import ModalDelete from '../../components/Custom/ModalDelete';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) => {
   const user = JSON.parse(localStorage.getItem('user'))
@@ -67,7 +68,7 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
       if (error.response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{toast.error("Ocorreu Um Erro!")}
       setaccFiles()
@@ -102,7 +103,7 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
         const param2 = pvtecresponse ? '&isresponse=1' : ''
         const status = await HandleSearch('', 'pipeline/card-anexos',(data) => {setAnexos(data)}, `?${param}=${card.id}&${param2}`)
         if (status === 401){
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
       }
     }

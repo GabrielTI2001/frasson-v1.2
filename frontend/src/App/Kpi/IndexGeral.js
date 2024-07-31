@@ -8,6 +8,7 @@ import IndicatorForm from "./Form";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen} from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from "../../components/Custom/ModalDelete";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const IndexIndicators = () => {
     const [searchResults, setSearchResults] = useState();
@@ -26,7 +27,7 @@ const IndexIndicators = () => {
     }
     const submit = (type, data) => {
         // setRegister(data)
-        if (type === 'add') setSearchResults([...searchResults, data])
+        if (type === 'add') setSearchResults([data, ...searchResults])
         if (type === 'edit') setSearchResults([...searchResults.map(r => (r.id === data.id ? data : r))])
         if (type === 'delete') setSearchResults([...searchResults.filter(r => r.uuid !== data)])
         setShowModal(false)
@@ -35,7 +36,7 @@ const IndexIndicators = () => {
     useEffect(()=>{
         const Search = async () => {
             const status = await HandleSearch('', 'kpi/metas', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             Search()
@@ -87,10 +88,10 @@ const IndexIndicators = () => {
         </Row>
         : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -99,7 +100,7 @@ const IndexIndicators = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         {showmodal.type == 'edit' 
                             ? <IndicatorForm hasLabel type='edit' submit={submit} pk={showmodal.pk}/>

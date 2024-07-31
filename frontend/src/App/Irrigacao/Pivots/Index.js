@@ -13,6 +13,7 @@ import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexPivots = () => {
     const [searchResults, setSearchResults] = useState();
@@ -30,7 +31,7 @@ const IndexPivots = () => {
         setIsLoading(false)
     }
     const submit = (type, data) => {
-        if (type === 'add') setSearchResults([...searchResults, data])
+        if (type === 'add') setSearchResults([data, ...searchResults])
         setShowModal(false)
     }
     const handleChange = async (value) => {
@@ -44,7 +45,7 @@ const IndexPivots = () => {
         }
         const Search = async () => {
             const status = await HandleSearch('', 'irrigation/pivots', setter) 
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             Search()
@@ -110,10 +111,10 @@ const IndexPivots = () => {
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
-            size="xl"
+            size="md"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -122,7 +123,7 @@ const IndexPivots = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                        <PivotForm hasLabel type='add' submit={submit} />
                     </Row>

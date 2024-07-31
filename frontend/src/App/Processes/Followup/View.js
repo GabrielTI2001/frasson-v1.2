@@ -9,6 +9,7 @@ import { faTrash, faPencil } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 import FormAcomp from './FormAcomp';
 import FormProcesso from './FormProcesso';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const ViewFollowup = () => {
     const {id} = useParams()
@@ -44,7 +45,7 @@ const ViewFollowup = () => {
         const getdata = async () =>{
             const status = await RetrieveRecord(id, 'processes/followup', setter)
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_processos_andamento") === -1) && !user.is_superuser){
@@ -67,13 +68,13 @@ const ViewFollowup = () => {
         </li>  
     </ol>
     {card ? <>
-    <Row className='mt-2 mb-2' xl={2} sm={2} xs={1}>
+    <Row className='mt-2 mb-2' xl={card.inema.id ? 2 : 1} sm={card.inema.id ? 2 : 1} xs={1}>
         <Col className='d-flex flex-column'>
             <Row xs={1} xl={1} className='gy-1'>
                 <h6 style={{fontSize: '12px'}} className='fw-bold mb-0'>Informações do Processo</h6>
                 <h6 style={{fontSize: '12px'}} className='text-600 mb-0'>
-                    Processo aberto em: {new Date(card.pipefy.created_at).toLocaleDateString('pt-br', {timeZone:'UTC'})}
-                    {' '+new Date(card.pipefy.created_at).toLocaleTimeString('pt-br', {minute:'numeric', hour:'numeric'})}
+                    Processo aberto em: {new Date(card.pipeline.created_at).toLocaleDateString('pt-br', {timeZone:'UTC'})}
+                    {' '+new Date(card.pipeline.created_at).toLocaleTimeString('pt-br', {minute:'numeric', hour:'numeric'})}
                 </h6>
                 <hr className='my-1 ms-3' style={{width:'95%'}}></hr>
                 <Col className='mt-0'>
@@ -82,20 +83,21 @@ const ViewFollowup = () => {
                 </Col>
                 <Col>
                     <strong className='me-1'>Beneficiário:</strong>
-                    <span className='my-1 text-info'>{card.pipefy.beneficiario}</span>
+                    <span className='my-1 text-info'>{card.pipeline.beneficiario}</span>
                 </Col>
                 <Col>
                     <strong className='me-1'>Detalhamento:</strong>
-                    <span className='my-1 text-info'>{card.pipefy.detalhamento}</span>
+                    <span className='my-1 text-info'>{card.pipeline.detalhamento}</span>
                 </Col>
                 <Col>
                     <strong className='me-1'>Órgão Ambiental:</strong>
-                    <span className='my-1 text-info'>{card.pipefy.instituicao}</span>
+                    <span className='my-1 text-info'>{card.pipeline.instituicao}</span>
                 </Col>
                 <Col>
                     <strong className='me-1'>Fase Atual:</strong>
-                    <span className='my-1 text-info'>{card.pipefy.current_phase}</span>
+                    <span className='my-1 text-info'>{card.pipeline.current_phase}</span>
                 </Col>
+                {card.inema.id ? <>
                 <Col> 
                     <Row xs={1} xl={2} className='gy-1'>
                         <Col>
@@ -126,40 +128,49 @@ const ViewFollowup = () => {
                 </Col>
                 <Col className='mt-2 mb-1'>
                     <div>
-                    {((user.permissions && user.permissions.indexOf("change_processos_andamento") !== -1) | user.is_superuser) ?
-                        <Button className='col-auto btn-success btn-sm px-2 me-1' style={{fontSize:'10px'}} onClick={() => setModalform({show:true, type:'process'})}>
-                            <FontAwesomeIcon icon={faPencil} className='me-2' /> Editar Acompanhamento
-                        </Button> : null
-                    }
-                    {((user.permissions && user.permissions.indexOf("delete_processos_andamento") !== -1) | user.is_superuser) ?
-                        <Button className='col-auto btn-danger btn-sm px-2' style={{fontSize:'10px'}} 
-                            onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/processes/followup/${id}/`})}>
-                            <FontAwesomeIcon icon={faTrash} className='me-2' />Excluir Acompanhamento
-                        </Button> : null
-                    }
+                        {((user.permissions && user.permissions.indexOf("change_processos_andamento") !== -1) | user.is_superuser) ?
+                            <Button className='col-auto btn-success btn-sm px-2 me-1' style={{fontSize:'10px'}} onClick={() => setModalform({show:true, type:'process'})}>
+                                <FontAwesomeIcon icon={faPencil} className='me-2' /> Editar Acompanhamento
+                            </Button> : null
+                        }
+                        {((user.permissions && user.permissions.indexOf("delete_processos_andamento") !== -1) | user.is_superuser) ?
+                            <Button className='col-auto btn-danger btn-sm px-2' style={{fontSize:'10px'}} 
+                                onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/processes/followup/${id}/`})}>
+                                <FontAwesomeIcon icon={faTrash} className='me-2' />Excluir Acompanhamento
+                            </Button> : null
+                        }
                     </div>
                 </Col>
+                </>
+                : <>
+                    <span className='text-danger fw-bold'>Esta demanda não possui processo de acompanhamento vinculado... Por favor faça o registro!</span>
+                    <hr className='my-2 ms-3' style={{width:'95%'}}></hr>
+                    <FormProcesso type='add' submit={(type, data) => setter({...card, inema:data, acompanhamentos:[]})} data={{processo:card.pipeline.id}}/>
+                </>}
                 <hr className='my-1 ms-3' style={{width:'95%'}}></hr>
             </Row>
-            <div>
-                <Button className='col-auto btn-success btn-sm px-2' style={{fontSize:'10px'}} onClick={() => setModalform({show:true, type:'status'})}>
-                    Atualização de status
-                </Button>
-            </div>
+            {card.inema.id && 
+                <div>
+                    <Button className='col-auto btn-success btn-sm px-2' style={{fontSize:'10px'}} onClick={() => setModalform({show:true, type:'status'})}>
+                        Atualização de status
+                    </Button>
+                </div>
+            }
         </Col>
+        {card.inema.id && 
         <Col className='d-flex flex-column'>
-            <h6 style={{fontSize: '12px'}} className='fw-bold mb-2'>Atualizações de Acompanhamento</h6>
+        <h6 style={{fontSize: '12px'}} className='fw-bold mb-2'>Atualizações de Acompanhamento</h6>
             {acompanhamentos && acompanhamentos.map(a => 
                 <div className='mb-3 d-flex align-items-center' key={a.id}>
                     <OverlayTrigger
                         overlay={
                             <Tooltip id="overlay-trigger-example">
-                                {`${a.user}`}
+                                {`${a.user_name}`}
                             </Tooltip>
                         }
                     >
                         <img className='p-0 rounded-circle me-2' style={{width: '42px', height: '38px'}} 
-                            src={`${process.env.REACT_APP_API_URL}${a.user_avatar}`}
+                            src={`${process.env.REACT_APP_API_URL}/${a.user_avatar}`}
                         />
                     </OverlayTrigger>
                     <Card as={Col}>
@@ -182,6 +193,7 @@ const ViewFollowup = () => {
                 </div>
             )}
         </Col>
+        }
     </Row>
     </>
     :
@@ -200,10 +212,10 @@ const ViewFollowup = () => {
         } 
     />
     <Modal
-        size="xl"
+        size="md"
         show={modalform.show}
         onHide={() => setModalform({show:false})}
-        dialogClassName="mt-7"
+        centered scrollable
         aria-labelledby="example-modal-sizes-title-lg"
     >
         <Modal.Header>
@@ -212,7 +224,7 @@ const ViewFollowup = () => {
         </Modal.Title>
             <CloseButton onClick={() => setModalform({show:false})}/>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className='pb-0'>
             <Row className="flex-center sectionform">
             {modalform.type == 'status' 
                 ? <FormAcomp hasLabel data={card} submit={submit}/> 

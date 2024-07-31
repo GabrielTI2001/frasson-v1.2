@@ -20,7 +20,7 @@ class PivotsView(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)   
         if search:
             queryset = queryset.filter(
-                Q(proprietario__razao_social__icontains=search) | 
+                Q(razao_social_proprietario__icontains=search) | 
                 Q(propriedade_localizacao__icontains=search) | 
                 Q(municipio_localizacao__nome_municipio__icontains=search)
             )
@@ -41,7 +41,7 @@ class PivotsPointsView(viewsets.ModelViewSet):
         search = self.request.query_params.get('search', None)   
         if search:
             queryset = queryset.filter(
-                Q(proprietario__razao_social__icontains=search) | 
+                Q(razao_social_proprietario__icontains=search) | 
                 Q(propriedade_localizacao__icontains=search) | 
                 Q(municipio_localizacao__nome_municipio__icontains=search)
             )

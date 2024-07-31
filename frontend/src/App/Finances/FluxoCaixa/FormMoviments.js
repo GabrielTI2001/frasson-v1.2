@@ -1,13 +1,14 @@
 import React, { useEffect, useState} from 'react';
 import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
+import { Button, Form, Col, Spinner} from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
-import { SelectOptions } from '../../../helpers/Data';
+import { SelectOptions, sendData } from '../../../helpers/Data';
 import { SelectSearchOptions } from '../../../helpers/Data';
 import { RetrieveRecord } from '../../../helpers/Data';
 import AsyncSelect from 'react-select/async';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -18,53 +19,40 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
   const [message, setMessage] = useState()
   const [record, setRecord] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
   const id = data ? data.id : '';
   const [caixas, setCaixas] = useState()
   const [defaultoptions, setDefaultOptions] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/finances/moviments/${type === 'edit' ? id+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-      const response = await fetch(link, {
-        method: method,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(dadosform)
-      });
-      const data = await response.json();
-      if(response.status === 400){
-        setMessage({...data})
-      }
-      else if (response.status === 401){
-        localStorage.setItem("login", JSON.stringify(false));
-        localStorage.setItem('token', "");
-        navigate("/auth/login");
-      }
-      else if (response.status === 201 || response.status === 200){
-        if (type === 'edit'){
-          submit('edit', {...data, valor:{color:data.str_rd === 'R' ? 'success' : 'danger', 
-            text:Number(data.valor).toLocaleString('pt-BR', {maximumFractionDigits:2, minimumFractionDigits:2})
-          }})
-          toast.success("Registro Atualizado com Sucesso!")
-        }
-        else{
-          submit('add', {...data, valor:{color:data.str_rd === 'R' ? 'success' : 'danger', 
-            text:Number(data.valor).toLocaleString('pt-BR', {maximumFractionDigits:2, minimumFractionDigits:2})
-          }})
-          toast.success("Registro Efetuado com Sucesso!")
-        }
-      }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'finances/moviments', keyfield:type === 'edit' ? id : null, 
+      dadosform:dadosform})
+    if(resposta.status === 400){
+      setMessage(dados)
     }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate);
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        submit('edit', {...dados, valor:{color:dados.str_rd === 'R' ? 'success' : 'danger', 
+          text:Number(dados.valor).toLocaleString('pt-BR', {maximumFractionDigits:2, minimumFractionDigits:2})
+        }})
+        toast.success("Registro Atualizado com Sucesso!")
+      }
+      else{
+        submit('add', {...dados, valor:{color:dados.str_rd === 'R' ? 'success' : 'danger', 
+          text:Number(dados.valor).toLocaleString('pt-BR', {maximumFractionDigits:2, minimumFractionDigits:2})
+        }})
+        toast.success("Registro Efetuado com Sucesso!")
+      }
+    }
+    setIsLoading(false)
   };
 
   const handleSubmit = async e => {
     setMessage(null)
+    setIsLoading(true)
     e.preventDefault();
     await handleApi(formData);
   };
@@ -93,7 +81,7 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
         }
       }
       else{
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
     }
 
@@ -118,7 +106,7 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row'>
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Data' : ''}
@@ -131,7 +119,7 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Tipo Movimentação*</Form.Label>}
             <AsyncSelect 
               name='tipo' 
@@ -149,7 +137,7 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
           </Form.Group>        
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Valor*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Valor' : ''}
@@ -161,7 +149,7 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.valor : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Caixa*</Form.Label>}
           <Form.Select
             name='caixa'
@@ -176,7 +164,7 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.caixa : ''}</label>
         </Form.Group>     
 
-        <Form.Group className="mb-2" as={Col} xl={6} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Descrição*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Descrição' : ''}
@@ -189,14 +177,11 @@ const FormMovimentacao = ({ hasLabel, type, submit, data}) => {
           <label className='text-danger'>{message ? message.description : ''}</label>
         </Form.Group>
 
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-            >
-              {type === 'edit' ? "Atualizar" : "Cadastrar"}
-          </Button>
-        </Form.Group>    
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Button className="w-50" type="submit" disabled={isLoading} >
+            {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : type === 'edit' ? 'Atualizar' : 'Cadastrar'}
+          </Button> 
+        </Form.Group>   
       </Form>
     </>
   );

@@ -7,6 +7,7 @@ import { useAppContext } from '../../../Main';
 import { fieldsAnaliseSolo } from '../Data';
 import RenderFields from '../../../components/Custom/RenderFields';
 import { sendData } from '../../../helpers/Data';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const AnaliseSoloForm = ({ hasLabel, type, submit}) => {
   const {config: {theme}} = useAppContext();
@@ -25,7 +26,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit}) => {
       setMessage({...dados})
     }
     else if (resposta.status === 401){
-      navigate("/auth/login");
+      RedirectToLogin(navigate);
     }
     else if (resposta.status === 201 || resposta.status === 200){
       const {results, other_info, ...rest} = dados

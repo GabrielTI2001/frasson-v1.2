@@ -89,7 +89,7 @@ const DashProdutos = () =>{
             />
         </Row>
         <Row xs={1} sm={3} xl={3} className="gx-4 gy-2 d-flex"> 
-            {data.faturamento_estimado_gc && data.faturamento_estimado_gc.length > 0 &&
+            {data && data.faturamento_estimado_gc.length > 0 && (
                 <Col>
                     <Card as={Col} className="p-3">
                         <BarChart
@@ -107,8 +107,8 @@ const DashProdutos = () =>{
                         />
                     </Card>
                 </Col>
-            }
-            {data.faturamento_estimado_gai && data.faturamento_estimado_gai.length > 0 &&
+            )}
+            {data && data.faturamento_estimado_gai.length > 0 && (
                 <Col>
                     <Card as={Col} className="p-3">
                         <BarChart
@@ -126,8 +126,8 @@ const DashProdutos = () =>{
                         />
                     </Card>
                 </Col>
-            }
-            {data.operacoes_andamento && data.operacoes_andamento.length > 0 &&
+            )}
+            {data && data.operacoes_andamento.length > 0 && (
                 <Col>
                     <Card as={Col} className="p-3">
                         <BarChart
@@ -145,7 +145,7 @@ const DashProdutos = () =>{
                         />
                     </Card>
                 </Col>
-            }
+            )}
         </Row> 
         </>    
         : <div className="text-center"><Spinner></Spinner></div>} 

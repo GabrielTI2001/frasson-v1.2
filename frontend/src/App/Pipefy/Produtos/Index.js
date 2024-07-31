@@ -8,6 +8,7 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { columnsCardProdutos } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexProdutos = ({phasename}) => {
     const [searchResults, setSearchResults] = useState();
@@ -29,7 +30,7 @@ const IndexProdutos = ({phasename}) => {
         const getdata = async () =>{
             const status = await HandleSearch('', 'pipefy/fluxos/gestao-ambiental', setter, `${phasename ? '?phase='+phasename : ''}`)
             if (status === 401){
-             navigate("/auth/login")
+                RedirectToLogin(navigate)
             } 
         }
         if ((user.permissions && user.permissions.indexOf("view_card_produtos") === -1) && !user.is_superuser){

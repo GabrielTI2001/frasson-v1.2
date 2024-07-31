@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faLocationDot } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetail} from "./MapInfo";
 import CircleMap from "../../../components/map/CircleMap";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const MapaPivots = () => {
     const [coordenadas, setCoordenadas] = useState()
@@ -41,7 +42,7 @@ const MapaPivots = () => {
             if (response.status === 401){
                 localStorage.setItem("login", JSON.stringify(false));
                 localStorage.setItem('token', "");
-                navigate("/auth/login");
+                RedirectToLogin(navigate);
             }
             if ((user.permissions && user.permissions.indexOf("view_cadastro_pivots") === -1) && !user.is_superuser){
                 navigate("/error/403")
@@ -100,7 +101,7 @@ const MapaPivots = () => {
                         onChange={handleChange}
                         size="sm"
                         id="search"
-                        placeholder='Requerente, CPF/CNPJ, Requerimento, N° Processo, Município, Email...'
+                        placeholder='Proprietário, Localização, Município...'
                         type="search"
                         className="shadow-none"
                     />
@@ -123,11 +124,11 @@ const MapaPivots = () => {
           }
             <Col className="fw-bold">{coordenadas && (coordenadas.length)} pivots</Col>
         </div>
-        {tokenmaps && coordenadas && coordenadas.length > 0 ?
+        {tokenmaps && coordenadas? 
             <CircleMap
                 initialCenter={{
-                    lat: Number(coordenadas[0].lat_center_gd),
-                    lng: Number(coordenadas[0].long_center_gd)
+                    lat: coordenadas.length > 0 ? Number(coordenadas[0].lat_center_gd) : -13.7910,
+                    lng: coordenadas.length > 0 ? Number(coordenadas[0].long_center_gd) : -45.6814
                 }}
                 mapStyle="Default"
                 className="rounded-soft mt-0 google-maps-l container-map-l"

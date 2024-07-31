@@ -4,6 +4,7 @@ import {Spinner, Table} from 'react-bootstrap';
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const MovContas = ({id}) => {
     const [movimentacoes, setMovimentacoes] = useState();
@@ -18,7 +19,7 @@ const MovContas = ({id}) => {
     useEffect(()=>{
         const getdata = async () =>{
             const status = await HandleSearch('', `finances/accounts/${id}`, setter)
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
             if (status === 404) setMovimentacoes([])
         }
         if ((user.permissions && user.permissions.indexOf("ver_saldos_bancarios") === -1) && !user.is_superuser){

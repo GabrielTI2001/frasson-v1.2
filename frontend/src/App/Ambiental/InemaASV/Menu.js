@@ -6,11 +6,6 @@ import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import ModalDeleteCard from '../../../components/Custom/ModalDeleteCard';
 
-export const calcdif = (data) => {
-  const dif = (new Date(data) - new Date())/(24 * 60 * 60 * 1000)
-  return dif
-};
-
 export const DropMenu = ({ record, reducer }) => {
   const [modaldel, setModaldel] = useState({show:false})
   const navigate = useNavigate()

@@ -6,6 +6,7 @@ import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'title': 'Report Cobranças'
@@ -56,7 +57,7 @@ const ReportCobrancas = () => {
     useEffect(()=>{
         const getdata = async () =>{
             const status = await HandleSearch('', 'finances/revenues', setter)
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
         }
         if ((user.permissions && user.permissions.indexOf("view_cobrancas_pipefy") === -1) && !user.is_superuser){
             navigate("/error/403")

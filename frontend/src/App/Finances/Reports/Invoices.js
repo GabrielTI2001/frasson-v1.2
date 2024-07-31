@@ -4,6 +4,7 @@ import {Spinner, Table} from 'react-bootstrap';
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const produtos = {
     'gc': {'desc':'Gestão de Crédito', 'id':864795372},
@@ -30,7 +31,7 @@ const Invoices = ({produto}) => {
         const getdata = async () =>{
             const params = `?produto=${produtos[produto].id}`
             const status = await HandleSearch('', 'finances/revenues-invoices', setter, params)
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
         }
         if ((user.permissions && user.permissions.indexOf("view_cobrancas_pipefy") === -1) && !user.is_superuser){
             navigate("/error/403")

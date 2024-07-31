@@ -11,6 +11,7 @@ import { useDropzone } from 'react-dropzone';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import Flex from '../../../components/common/Flex';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const ContratoForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -62,10 +63,10 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
       else if (response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        navigate("/auth/login");
+        RedirectToLogin(navigate);
       }
       else if (response.status === 201 || response.status === 200){
-        submit('add', {str_contratante:data.info_contratante.label, uuid:data.uuid, str_servicos:data.str_servicos.map(s => s.label).join(', '),
+        submit('add', {str_contratante:data.info_contratante.label, uuid:data.uuid, code:data.code, str_servicos:data.str_servicos.map(s => s.label).join(', '),
           status:{'text': 'Em Andamento', 'color': 'warning'}, str_produto:data.str_produto, valor:data.valor, data_assinatura:data.data_assinatura
         })
         toast.success("Registro Efetuado com Sucesso!")
@@ -167,7 +168,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
           <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Serviço(s) Contratado(s)*</Form.Label>}
             <AsyncSelect 
-              loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico', null, false, 'produto=GAI')} 
+              loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico', null, false, 'produto=GAI', navigate)} 
               isMulti
               name='servicos' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.servicos : '') : ''}
@@ -183,6 +184,12 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group> 
         }  
 
+        <Form.Group>
+          <ServicoEtapa servicos={selectedServices}
+            change={(data) => setFormData({...formData, servicos_etapas:data})} etapas_current={etapas}
+          />
+        </Form.Group>
+
         <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Data Assinatura*</Form.Label>}
           <Form.Control
@@ -197,7 +204,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
         <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Detalhes Negociação</Form.Label>}
           <Form.Control
-            as='textarea'
+            as='textarea' rows={5}
             value={formData.detalhes || ''}
             name="detalhes"
             onChange={handleFieldChange}
@@ -217,12 +224,6 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
               </p>
             </Flex>
           </div>
-        </Form.Group>
-
-        <Form.Group>
-            <ServicoEtapa servicos={selectedServices}
-              change={(data) => setFormData({...formData, servicos_etapas:data})} etapas_current={etapas}
-            />
         </Form.Group>
 
         <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>

@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import api from '../../context/data';
 import ModalDelete from '../../components/Custom/ModalDelete';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 export const Cedulas = ({card, cedulas, submit}) => {
   const user = JSON.parse(localStorage.getItem('user'))
@@ -64,7 +65,7 @@ export const Cedulas = ({card, cedulas, submit}) => {
       if (error.response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{toast.error("Ocorreu Um Erro!")}
       setaccFiles()

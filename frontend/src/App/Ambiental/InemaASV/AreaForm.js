@@ -2,60 +2,41 @@ import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Row, Col} from 'react-bootstrap';
+import { Button, Form, Col} from 'react-bootstrap';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { AmbientalContext } from '../../../context/Context';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { sendData } from '../../../helpers/Data';
 
-const AreaForm = ({ hasLabel, type, data}) => {
-  const channel = new BroadcastChannel('meu_canal');
-
+const AreaForm = ({ hasLabel, type, data, update}) => {
   const {ambientalState:{asv}, ambientalDispatch} = useContext(AmbientalContext)
-
   const [formData, setFormData] = useState({
     processo: asv.id
   });
-
   const [showModal, setShowModal] = useState({show:false, type:''});
-  
   const [message, setMessage] = useState();
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
   
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/environmental/inema/asv/areas-detail/${type === 'edit' ? data.id+'/' : ''}` 
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-              'Authorization': `Bearer ${token}`
-            },
-            body: dadosform
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          navigate("/auth/login");
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            toast.success("Registro Atualizado com Sucesso!")
-            ambientalDispatch({type:'UPDATE_PONTO_ASV', payload:{id:data.id, updatedArea:data}})
-            ambientalDispatch({type:'TOGGLE_MODAL'})
-          }
-          else{
-            toast.success("Registro Adicionado com Sucesso!")
-            channel.postMessage({ tipo: 'adicionar_coordenada', reg:data, asv_id:asv.id});
-            ambientalDispatch({type:'ADD_PONTO_ASV',payload:{novaarea:data}})
-            ambientalDispatch({type:'TOGGLE_MODAL'})
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'environmental/inema/asv/areas-detail', keyfield: type === 'edit' ? data.id : null,
+      dadosform:dadosform, is_json:false
+    })
+    if(resposta.status === 400){
+      setMessage({...dados})
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        toast.success("Registro Atualizado com Sucesso!")
+        ambientalDispatch({type:'UPDATE_PONTO_ASV', payload:{id:dados.id, updatedArea:dados}})
+      }
+      else{
+        toast.success("Registro Adicionado com Sucesso!")
+        ambientalDispatch({type:'ADD_PONTO_ASV',payload:{novaarea:dados}})
+      }
+      update()
     }
   };
 
@@ -96,7 +77,7 @@ const AreaForm = ({ hasLabel, type, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row'>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Identificação Área*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Identificação Área' : ''}
@@ -108,8 +89,8 @@ const AreaForm = ({ hasLabel, type, data}) => {
           <label className='text-danger'>{message && (message.identificacao_area)}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
-          {hasLabel && <Form.Label className='fw-bold mb-1'>Área Total (ha)</Form.Label>}
+        <Form.Group className="mb-2" as={Col} xl={12}>
+          {hasLabel && <Form.Label className='fw-bold mb-1'>Área Total (ha)*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Área Total' : ''}
             value={formData.area_total || ''}
@@ -120,7 +101,7 @@ const AreaForm = ({ hasLabel, type, data}) => {
           <label className='text-danger'>{message && (message.area_total)}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} lg={3}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Arquivo KML*</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Arquivo PDF' : ''}
@@ -137,8 +118,8 @@ const AreaForm = ({ hasLabel, type, data}) => {
             className="w-40"
             type="submit"
           >
-            {type === 'edit' ? "Atualizar Ponto"
-            : "Cadastrar Ponto"}
+            {type === 'edit' ? "Atualizar Área"
+            : "Cadastrar Área"}
           </Button>
         </Form.Group>           
       </Form>

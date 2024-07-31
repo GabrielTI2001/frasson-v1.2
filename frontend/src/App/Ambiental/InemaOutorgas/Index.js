@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const IndexOutorgas = () => {
     const [searchResults, setSearchResults] = useState();
@@ -38,7 +39,7 @@ const IndexOutorgas = () => {
     };
     const reducer = (type, data) =>{
         if (type == 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal(false)
             navigate(`/ambiental/inema/outorgas/${data.uuid}`);
         }
@@ -60,7 +61,7 @@ const IndexOutorgas = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', 'environmental/inema/outorgas', setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})
@@ -150,10 +151,10 @@ const IndexOutorgas = () => {
         }
         <ModalRecord show={modal.show} reducer={reducer}/>
         <Modal
-            size="xl"
+            size="md"
             show={showmodal}
             onHide={() => setShowModal(false)}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -162,7 +163,7 @@ const IndexOutorgas = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                        <OutorgaForm hasLabel type='add' submit={reducer}></OutorgaForm>
                     </Row>

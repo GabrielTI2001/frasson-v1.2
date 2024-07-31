@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
 import FormMonitoramento from './FormMonit';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const ViewProspect = () => {
     const {id} = useParams()
@@ -37,7 +38,7 @@ const ViewProspect = () => {
         const getdata = async () =>{
             const status = await RetrieveRecord(id, 'pipefy/cards/prospects', setter)
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("view_imoveis_rurais") === -1) && !user.is_superuser){

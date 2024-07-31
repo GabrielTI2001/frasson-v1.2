@@ -4,6 +4,7 @@ import { Button, Col} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { fetchStatus } from '../Data';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const FormEtapa = ({type, data, submit, contrato}) => {
     const navigate = useNavigate()
@@ -32,7 +33,7 @@ const FormEtapa = ({type, data, submit, contrato}) => {
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 type === 'edit' ? submit('edit', data) : submit('add', data)

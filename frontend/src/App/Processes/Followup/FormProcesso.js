@@ -3,16 +3,17 @@ import { useNavigate } from "react-router-dom";
 import { Button, Col,} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const FormProcesso = ({type, data, submit}) => {
     const navigate = useNavigate()
     const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const [message, setMessage] = useState();
-    const [formData, setformData] = useState({user:user.id});
+    const [formData, setformData] = useState({user:user.id, processo:data.processo});
     
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/processes/followup/${type == 'edit' ? data.id : ''}/`
+        const link = `${process.env.REACT_APP_API_URL}/processes/followup/${type == 'edit' ? data.id+'/' : ''}`
         const method = type == 'edit' ? 'PUT' : 'POST';
         try {
             const response = await fetch(link, {
@@ -30,7 +31,7 @@ const FormProcesso = ({type, data, submit}) => {
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
               localStorage.setItem('token', "");
-              navigate("/auth/login");
+              RedirectToLogin(navigate);
             }
             else if (response.status === 201 || response.status === 200){
                 submit('edit', data)

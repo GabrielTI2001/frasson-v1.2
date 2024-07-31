@@ -13,6 +13,7 @@ import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FarmForm from "./Form";
 import ModalRecord from "./Modal";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'urlapilist':'farms/farms', 
@@ -34,20 +35,20 @@ const IndexFarms = () => {
 
     const submit = (type, data, id) => {
         if (type === 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal({show:false})
         }
         if (type === 'edit'){
             setSearchResults()
         }
-        if (type === 'delete'){
+        if (type === 'delete' && searchResults){
             setSearchResults(searchResults.filter(r => r.uuid !== data))
         }
     }
 
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-        if (status === 401) navigate("/auth/login");
+        if (status === 401) RedirectToLogin(navigate);
     };
 
     useEffect(()=>{
@@ -58,7 +59,7 @@ const IndexFarms = () => {
     useEffect(() => {
         const search = async () => {
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (uuid){
             setModal({show:true})

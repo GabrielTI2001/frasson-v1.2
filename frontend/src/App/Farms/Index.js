@@ -2,11 +2,10 @@ import React, {useEffect, useState} from "react";
 import { Card, Row, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUsers, faTractor, faPersonDigging, faFlask, faFileSignature, faPerson, faContactBook} from "@fortawesome/free-solid-svg-icons";
-import { fetchPessoal } from "../Pipefy/Data";
-import { fetchBenfeitorias, FetchAnaliseSolo } from "./Data";
+import { faTractor,  faPerson } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../Main";
 import { GetRecord } from "../../helpers/Data";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const IndexAppFarms = () =>{
     const {config: { theme}} = useAppContext();
@@ -18,7 +17,7 @@ const IndexAppFarms = () =>{
         const dadosfarms = await GetRecord('', 'farms/farms');
         const dadosregime = await GetRecord('', 'farms/regime');
         if (!dadosfarms || !dadosregime){
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
         else{
           setCountRegs({'farms':dadosfarms.length, 'regimes':dadosregime.length})

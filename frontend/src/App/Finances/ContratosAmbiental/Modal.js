@@ -17,6 +17,7 @@ import EditForm from './EditForm.js';
 import Etapas, { Processos } from './Etapas.js';
 import { Anexos } from '../Anexos.js';
 import ModalActivityContent from '../../Pipeline/ModalActivityContent.js';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const options = {
   month: "short",
@@ -51,7 +52,7 @@ const ModalContract = ({show, reducer}) => {
       const reg = await GetRecord(uuid, 'finances/contratos-ambiental')
       if (!reg){
         handleClose()
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       else{
         if (Object.keys(reg).length === 0){
@@ -120,7 +121,7 @@ const ModalContract = ({show, reducer}) => {
         if (erro.response.status === 401){
           localStorage.setItem("login", JSON.stringify(false));
           localStorage.setItem('token', "");
-          navigate("/auth/login")
+          RedirectToLogin(navigate)
         }
         console.error('erro: '+erro);
       })

@@ -4,6 +4,7 @@ import {Placeholder} from 'react-bootstrap';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 export const ResultPipe = () => {
     const [data, setData] = useState();
@@ -15,7 +16,7 @@ export const ResultPipe = () => {
     useEffect(()=>{
         const getdata = async () =>{
             const status = await HandleSearch('', `administrator/tests/pipe/${id}`, (data) => setData(data))
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
             if (status === 500) {return <div>Erro Interno</div>}
         }
         if ((user.permissions && user.permissions.indexOf("ver_administrator") === -1) && !user.is_superuser){
@@ -75,7 +76,7 @@ export const ResultDatabase = () => {
     useEffect(()=>{
         const getdata = async () =>{
             const status = await HandleSearch('', `administrator/tests/database/${id}`, (data) => setData(data))
-            if (status === 401) navigate("/auth/login")
+            if (status === 401) RedirectToLogin(navigate)
         }
         if ((user.permissions && user.permissions.indexOf("ver_administrator") === -1) && !user.is_superuser){
             navigate("/error/403")

@@ -6,6 +6,7 @@ import { useAppContext } from '../../../Main';
 import { sendData } from '../../../helpers/Data';
 import RenderFields from '../../../components/Custom/RenderFields';
 import { fieldsRegime } from '../Data';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const RegimeForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -23,7 +24,7 @@ const RegimeForm = ({ hasLabel, type, submit, data}) => {
       setMessage({...dados})
     }
     else if (resposta.status === 401){
-      navigate("/auth/login");
+      RedirectToLogin(navigate);
     }
     else if (resposta.status === 201 || resposta.status === 200){
       submit('add', {matricula_imovel:dados.farm_data.matricula, uuid:dados.uuid, nome_imovel:dados.farm_data.nome,

@@ -1,8 +1,9 @@
-import React, {useEffect} from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import RequerimentoAPPOForm from "./Form";
+import { CloseButton, Modal, Row } from "react-bootstrap";
 
-const NewRequerimento = () =>{
+const NewRequerimento = ({show, reduce, close}) =>{
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     useEffect(() =>{
@@ -11,18 +12,25 @@ const NewRequerimento = () =>{
         }
     },[])
     return (<>
-    <ol className="breadcrumb breadcrumb-alt mb-3">
-        <li className="breadcrumb-item fw-bold">
-            <Link className="link-fx text-primary" to={`/ambiental/inema/requerimentos`}>Requerimentos Inema</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold">
-            <Link className="link-fx text-primary" to={`/ambiental/inema/requerimentos/appo`}>APPO</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
-            Requerimentos INEMA
-        </li>             
-    </ol>
-    <RequerimentoAPPOForm hasLabel type='add' submit={() =>{}} />
+    <Modal
+        size="xl"
+        show={show}
+        onHide={close}
+        scrollable
+        aria-labelledby="example-modal-sizes-title-lg"
+    >
+        <Modal.Header>
+            <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
+                Requerimentos INEMA - APPO - NOVO
+            </Modal.Title>
+                <CloseButton onClick={close}/>
+            </Modal.Header>
+            <Modal.Body className="">
+                <Row className="flex-center sectionform">
+                    <RequerimentoAPPOForm hasLabel type='add' submit={(type, data, coordenadas) =>{reduce(type, data, coordenadas)}} />
+                </Row>
+        </Modal.Body>
+    </Modal>
     </>)
 }
 

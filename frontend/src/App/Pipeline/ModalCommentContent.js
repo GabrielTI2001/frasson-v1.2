@@ -12,6 +12,7 @@ import api from '../../context/data';
 import { toast } from 'react-toastify';
 import ModalDelete from '../../components/Custom/ModalDelete';
 import { useNavigate } from 'react-router-dom';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 export const renderComment = (comment) => {
   const parts = comment ? comment.split(/(\@\[[^\]]+\]\([^)]+\))/g) : [];
@@ -71,7 +72,7 @@ const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc}) => {
         `${card.pipe_code ? '?pipe='+card.pipe_code : ''}`
       )
       if (status === 401){
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
     }
     getusers()

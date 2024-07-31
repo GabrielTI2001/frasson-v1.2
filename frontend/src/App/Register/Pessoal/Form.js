@@ -6,6 +6,7 @@ import { useAppContext } from '../../../Main';
 import { SelectOptions, sendData } from '../../../helpers/Data';
 import { fieldsPessoal } from '../Data';
 import RenderFields from '../../../components/Custom/RenderFields';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const PessoaForm = ({ hasLabel, type, submit}) => {
   const {config: {theme}} = useAppContext();
@@ -24,7 +25,7 @@ const PessoaForm = ({ hasLabel, type, submit}) => {
       setMessage({...dados})
     }
     else if (resposta.status === 401){
-      navigate("/auth/login");
+      RedirectToLogin(navigate);
     }
     else if (resposta.status === 201 || resposta.status === 200){
       submit('add', {razao_social:dados.razao_social, uuid:dados.uuid, str_municipio:dados.str_municipio, numero_rg:dados.numero_rg,

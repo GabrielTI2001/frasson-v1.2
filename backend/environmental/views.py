@@ -1,9 +1,11 @@
 from django.db.models import Q, Subquery
+from rest_framework.response import Response
 from .models import Tipo_Captacao, Finalidade_APPO
 from .models import Aquifero_APPO, Empresas_Consultoria
+from cadastro.models import Municipios
 from .serializers import *
 from rest_framework.permissions import IsAuthenticated
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.http import HttpResponse, JsonResponse
 import os
@@ -13,8 +15,7 @@ from lxml import etree
 from pyproj import Proj, transform
 from pyproj import Transformer
 from PyPDF2 import PdfReader
-import re
-import tempfile
+import re, json, tempfile
 from django.views.decorators.csrf import csrf_exempt
 
 class OutorgaView(viewsets.ModelViewSet):
@@ -255,7 +256,22 @@ class RequerimentoAPPOView(viewsets.ModelViewSet):
             return listRequerimentosAPPO
         else:
             return self.serializer_class
-
+    def create(self, request, *args, **kwargs):
+        coordenadas = json.loads(request.POST.get('coordenadas'))
+        serializer = self.get_serializer(data=request.data)
+        # print(json.loads(coordenadas))
+        if serializer.is_valid():
+            pontos = []
+            self.perform_create(serializer)
+            response_data = serializer.data.copy()
+            for c in coordenadas:
+                reg = Requerimentos_APPO_Coordenadas.objects.create(requerimento=serializer.instance, numero_poco=int(c['ponto']),
+                    latitude_gd=c['latitude_gd'], longitude_gd=c['longitude_gd'])
+                pontos.append({'id':reg.id, 'latitude_gd': reg.latitude_gd, 'longitude_gd':reg.longitude_gd})
+            response_data.update({'coordenadas':pontos})
+            headers = self.get_success_headers(serializer.data)
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class CoordenadaRequerimentoAPPOView(viewsets.ModelViewSet):
     queryset = Requerimentos_APPO_Coordenadas.objects.all()
     serializer_class = listCoordenadaRequerimentoAPPO
@@ -632,10 +648,8 @@ def requerimentos_appo_read_pdf(request):
                 if match_municipio:
                     location = match_municipio.group(1).strip()
                     state = match_municipio.group(2)
-                    initial_data['municipio'] = 1
-                    initial_data['str_municipio'] = 'Posse - GO'
-                    # municipio_id = Municipios.objects.get(sigla_uf=state, nome_municipio__icontains=location).id
-                    # initial_data['municipio'] = municipio_id
+                    municipio_id = Municipios.objects.get(sigla_uf=state, nome_municipio__icontains=location).id
+                    initial_data['municipio'] = municipio_id
 
                 # Regex to find projection coordinates
                 matches_projection = re.findall(r'(\d{7,8}\.\d+)\s+(\d{6}\.\d+)', text_content)

@@ -12,6 +12,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import FormReembolso from "./FormRefunds";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
 const InitData = {
     'columns':columnsReembolso, 'urlapilist':'finances/refunds', 
@@ -36,7 +37,7 @@ const IndexReembolsos = () => {
 
     const submit = (type, data) => {
         if (type === 'add'){
-            setSearchResults([...searchResults, data])
+            setSearchResults([data, ...searchResults])
             setShowModal({show:false})
         }
         if (type === 'edit'){
@@ -55,7 +56,7 @@ const IndexReembolsos = () => {
         }
         const getdata = async () =>{
             const status = await HandleSearch('', InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         if (!searchResults){
             getdata()
@@ -64,10 +65,10 @@ const IndexReembolsos = () => {
 
     const handleChange = async (value) => {
         const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-        if (status === 401) navigate("/auth/login");
+        if (status === 401) RedirectToLogin(navigate);
         const getdata = async () =>{
             const status = await HandleSearch(value, InitData.urlapilist, setSearchResults)
-            if (status === 401) navigate("/auth/login");
+            if (status === 401) RedirectToLogin(navigate);
         }
         getdata()
     };
@@ -124,10 +125,10 @@ const IndexReembolsos = () => {
             </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
-            size="xl"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
-            dialogClassName="mt-7"
+            scrollable
             aria-labelledby="example-modal-sizes-title-lg"
         >
             <Modal.Header>
@@ -136,7 +137,7 @@ const IndexReembolsos = () => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal({show:false})}/>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body className="pb-0">
                     <Row className="flex-center sectionform">
                         {showmodal.type === 'add' 
                             ? <FormReembolso hasLabel type='add' submit={submit}/>

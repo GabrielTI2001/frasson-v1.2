@@ -51,7 +51,7 @@ const EditFormModal = ({
         >
           {field.label_html 
             ? <Form.Label className='mb-0 fw-bold fs--1'>{field.label_html}</Form.Label>
-            : <Form.Label className='mb-0 fw-bold fs--1'>{field.label} {field.medida && <>({field.medida}<sup>{field.potencia}</sup>)</>}</Form.Label>
+            : <Form.Label className='mb-0 fw-bold fs--1'>{field.label.replace('*','')} {field.medida && <>({field.medida}<sup>{field.potencia}</sup>)</>}</Form.Label>
           }
           {field.tooltip && 
             <OverlayTrigger overlay={

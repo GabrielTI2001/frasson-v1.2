@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { faCheck } from '@fortawesome/free-solid-svg-icons'
 import api from '../../../context/data';
 import { toast } from 'react-toastify';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const ModalSidebar = ({card, reducer}) => {
   const token = localStorage.getItem("token")
@@ -27,7 +28,7 @@ const ModalSidebar = ({card, reducer}) => {
       if (erro.response.status === 401){
         localStorage.setItem("login", JSON.stringify(false));
         localStorage.setItem('token', "");
-        navigate("/auth/login")
+        RedirectToLogin(navigate)
       }
       console.error('erro: '+erro);
     })

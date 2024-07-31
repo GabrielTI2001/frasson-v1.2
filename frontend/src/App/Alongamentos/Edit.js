@@ -4,6 +4,7 @@ import { RetrieveRecord } from "../../helpers/Data";
 import {useNavigate, Link } from "react-router-dom";
 import { Row, Col } from "react-bootstrap";
 import FormAlongamento from "./Form";
+import { RedirectToLogin } from "../../Routes/PrivateRoute";
 
 const Edit = ({id, update}) => {
     const user = JSON.parse(localStorage.getItem("user"))
@@ -23,7 +24,7 @@ const Edit = ({id, update}) => {
         const getData = async () => {
             const status = await RetrieveRecord(id, 'alongamentos/index', setter)
             if(status === 401){
-                navigate("/auth/login")
+                RedirectToLogin(navigate)
             }
         }
         if ((user.permissions && user.permissions.indexOf("change_operacoes_credito") === -1) && !user.is_superuser){

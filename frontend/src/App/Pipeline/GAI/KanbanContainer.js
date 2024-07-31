@@ -13,6 +13,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SearchForm from '../Search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
 const clientId = Math.floor(Math.random() * 1000000)
@@ -174,7 +175,7 @@ const KanbanContainer = () => {
           if (erro.response.status === 401){
             localStorage.setItem("login", JSON.stringify(false));
             localStorage.setItem('token', "");
-            navigate("/auth/login")
+            RedirectToLogin(navigate)
           }
           kanbanDispatch({
             type: 'REVERT_DRAG',

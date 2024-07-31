@@ -82,13 +82,7 @@ const AdvanceTable = ({
                 </th>
               );
             })}
-            {tableProps.showactions && (
-              <th className="text-center">Ações</th>
-            )}
-            {tableProps.followup && (
-              <th className="text-center">Ações</th>
-            )}
-            {tableProps.alongamento && (
+            {(tableProps.showactions || tableProps.followup || tableProps.alongamento) && (
               <th className="text-center">Ações</th>
             )}
           </tr>
