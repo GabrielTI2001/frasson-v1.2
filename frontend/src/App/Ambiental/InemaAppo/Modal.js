@@ -111,6 +111,9 @@ const ModalRecord = ({show, reducer}) => {
         }})
       })
       .catch((erro) => {
+        if (erro.response.status === 400){
+          toast.error(Object.values(erro.response.data)[0][0])
+        }
         console.error('erro: '+erro);
       })
     }

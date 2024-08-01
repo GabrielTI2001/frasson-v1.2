@@ -8,7 +8,7 @@ export const MapInfoDetail = ({infoponto}) => {
     <div style={{width:'300px'}} className='info'>
       {infoponto ? 
         <>
-          <div><strong className='fw-bold me-1'>Proprietário: </strong><label className='mb-0'>{infoponto.str_proprietario || '-'}</label></div>
+          <div><strong className='fw-bold me-1'>Proprietário: </strong><label className='mb-0'>{infoponto.razao_social_proprietario || '-'}</label></div>
           <div><strong className='fw-bold me-1'>Município: </strong><label className='mb-0'>{infoponto.str_municipio || '-'}</label></div>
           <div><strong className='fw-bold me-1'>Identificação Pivot: </strong><label className='mb-0'>{infoponto.identificacao_pivot || '-'}</label></div>
           <div><strong className='fw-bold me-1'>Identificação Pivot: </strong>

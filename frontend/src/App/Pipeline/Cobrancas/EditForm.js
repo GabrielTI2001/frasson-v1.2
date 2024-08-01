@@ -53,15 +53,30 @@ const EditForm = ({
             <Form.Label className='mb-0 fw-bold fs--1'>Status</Form.Label>
             <Form.Select
               ref={inputRef}
-              className="mb-2 w-50 fs-xs py-0 shadow-none outline-none"
+              className="mb-2 w-100 fs-xs py-0 shadow-none outline-none"
               onChange={({ target }) =>
                 setFormData({ ...formData, status: target.value })
               }
               defaultValue={data || ''}
             >
-              <option value='EA'>Em Aberto</option>
-              <option value='P'>Pago</option>
+              <option value='AD'>Aguardando Distribuição</option>
+              <option value='NT'>Notificação</option>
+              <option value='FT'>Faturamento</option>
+              <option value='AG'>Agendado</option>
+              <option value='PG'>Pago</option>
             </Form.Select>  
+          </>)}
+          {fieldkey === 'data_previsao' &&(<>
+            <Form.Label className='mb-0 fw-bold fs--1'>Data Previsão Pagamento</Form.Label>
+            <Form.Control
+              ref={inputRef}
+              type='date'
+              className="mb-2 w-100 fs-xs py-0 shadow-none outline-none"
+              onChange={({ target }) =>
+                setFormData({ ...formData, data_previsao: target.value })
+              }
+              defaultValue={data || ''}
+            />
           </>)}
           {fieldkey === 'orientacoes' &&( defaultselected && <>
             <Form.Label className='mb-0 fw-bold fs--1'>Orientações</Form.Label>

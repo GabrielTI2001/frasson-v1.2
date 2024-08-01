@@ -39,7 +39,7 @@ const ModalDeleteCard = ({show, close, link, update, name}) => {
       onHide={() => close()}
       aria-labelledby="example-modal-sizes-title-lg"
       className="align-items-center pt-10 modal-delete-card"
-      dialogClassName="mt-20"
+      backdrop={false}
     >
       <Modal.Body className="text-center">
         <h2 className="mt-4" id="" style={{display: 'block', fontSize:'18px'}}>Excluir este {name || 'card'}</h2>

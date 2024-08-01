@@ -93,7 +93,9 @@ const RenderFields = ({ fields, formData, changefield, changefile, message, hasL
             <label className='text-danger'>{message ? message[f.name] : ''}</label>
         </Form.Group>
     ))}
-    <ModalGMS show={showModal.show} type={showModal.type} changemodal={setShowModal} formData={formData} changeform={setform}/>
+    <ModalGMS show={showModal.show} type={showModal.type} changemodal={setShowModal} formData={formData} changeform={setform}
+        fields={fields.filter(f => f.iscoordenada === true).map(f => f.name)}
+    />
     </>
   );
 };

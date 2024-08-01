@@ -10,13 +10,15 @@ import ModalDelete from '../../../components/Custom/ModalDelete';
 import FormCobranca from './Form';
 import { Link } from 'react-router-dom';
 import ExpandableCard from '../../../components/Custom/ExpandableCard';
-import { Anexos } from './Anexos';
 import EditForm from './EditForm';
 import {CardTitle} from '../CardInfo';
+import { fieldsCobranca } from '../../Finances/Data';
+import EditFormModal from '../../../components/Custom/EditForm';
+
+const fields = ['status', 'saldo_devedor', 'caixa', 'data_previsao']
 
 const Cobrancas = ({card, updatedactivity, isgc}) => {
   const user = JSON.parse(localStorage.getItem('user'))
-  const [users, setUsers] = useState([]);
   const [cobrancas, setCobrancas] = useState();
   const {config: {theme, isRTL}} = useAppContext();
   const token = localStorage.getItem("token")
@@ -26,7 +28,7 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
 
   const submit = (type, data) => {
     if (type === 'add'){
-      setCobrancas([{...data, str_responsaveis:data.list_responsaveis.map(l => l.nome).join(', ')}, ...cobrancas])
+      setCobrancas([data, ...cobrancas])
     } 
     setShowModal({show:false})
     updatedactivity({type:'ch', campo:'Cobranças', created_at:data.created_at, user:data.user})
@@ -60,16 +62,18 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
       .then((response) => {
         toast.success("Cobrança Atualizada com Sucesso!")
         setCobrancas(cobrancas.map(p => p.uuid === uuid ? response.data : p))
+        setShowForm({})
         if (response.data.activity){
           updatedactivity(response.data.activity)
         }
       })
       .catch((erro) => {
+        if (erro.response.status === 400){
+          toast.error(Object.values(erro.response.data)[0][0])
+        }
         console.error('erro: '+erro);
       })
     }
-    setShowForm({...showForm, 'orientacoes':false, 'status':false, 'atividade':false, 'responsaveis':false, 
-    'instituicao':false, 'contrato':false})
   }
 
   const handledelete = (type, data) =>{
@@ -100,38 +104,43 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
       </ExpandableCard>
     }
 
-    {cobrancas && cobrancas.filter(p => p.status === 'EA').length > 0 &&
+    {cobrancas && cobrancas.filter(p => p.status !== 'PG').length > 0 &&
       <span className='text-uppercase d-block' style={{fontWeight:'500'}}>
-        Em Aberto ({cobrancas.filter(p => p.status === 'EA').length})
+        Em Aberto ({cobrancas.filter(p => p.status !== 'PG').length})
       </span>
     }
-    {cobrancas && cobrancas.filter(p => p.status === 'EA').length > 0 ? cobrancas.filter(p => p.status === 'EA').map(p =>
+    {cobrancas ? cobrancas.filter(p => p.status !== 'PG').map(p =>
       <ExpandableCard data={p} attr1='str_cliente' key={p.id} url='finances/revenues'
         footer={`Criado por ${p.str_created_by} em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
         clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/revenues/${p.uuid}/`})}}
       >
-        {!showForm.status &&
-          <div className='my-2'>
-            <CardTitle title='Status' click={handleEdit} field='status'/>
-            <div>
-              <span className={`badge bg-${p.status === 'P' ? 'success' : 'warning'} fs--2 p-1`}>
-                {p.status === 'P' ? 'Paga' : 'Em Aberto'}
-              </span>
+        {fieldsCobranca.filter(f => fields.some(n => f.name === n)).map(f => 
+          !showForm[f.name] ?
+            <div className='my-2' key={f.name}>
+              <CardTitle title={f.label.replace('*', '')} click={handleEdit} field={f.name}/>
+              {f.type === 'select' ?
+                <div><span className={`badge bg-success fs--2 p-1 px-2`}>{p[f.string] || '-'}</span></div>
+              : f.type === 'select2' ?
+                f.string ?
+                  <div className="fs--1 row-10">{p[f.string] || '-'}</div>
+                :
+                  <div className="fs--1 row-10">{p[f.data] && p[f.data][f.attr_data]}</div>
+              : f.type === 'date' ? 
+                <div className="fs--1 row-10">{p[f.name] ? new Date(p[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
+              : 
+                <div className="fs--1 row-10">{p[f.name] ? f.is_number 
+                  ? Number(p[f.name]).toLocaleString('pt-BR', {minimumFractionDigits:2}) : p[f.name] : '-'}
+                </div>
+              }
             </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['status']}
-          fieldkey='status'
-          setShow={setShowForm}
-          data={p.status}
-          pipe={card.pipe_code}
-        />
-        {/* <div>
-          <Anexos pvtec={p} />
-        </div> */}
+          : 
+          <EditFormModal key={f.name}
+            onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
+            show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
+            record={p} field={f}
+          />
+        )}
       </ExpandableCard>
     ) : 
     <div className='text-center mb-4'>
@@ -139,68 +148,36 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
     </div> 
     }
 
-    {cobrancas && cobrancas.filter(p => p.status === 'P').length > 0 &&
+    {cobrancas && cobrancas.filter(p => p.status === 'PG').length > 0 &&
       <span className='text-uppercase' style={{fontWeight:'500'}}>
-        Pago ({cobrancas.filter(p => p.status === 'P').length})
+        Pago ({cobrancas.filter(p => p.status === 'PG').length})
       </span>
     }
-    {cobrancas && cobrancas.filter(p => p.status === 'P').map(p =>
+    {cobrancas && cobrancas.filter(p => p.status === 'PG').map(p =>
       <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='finances/revenues'
         footer={`Criado em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
         clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/revenues/${p.uuid}/`})}}
       >
-        {!showForm.atividade &&
-          <div className='my-2'>
-            <CardTitle title='Atividade' click={handleEdit} field='atividade'/>
-            <div>
-              {p.atividade_display}
+        {fieldsCobranca.filter(f => fields.some(f.name)).map(f => 
+          !showForm[f.name] ?
+            <div className='my-2'>
+              <CardTitle title={f.label} click={handleEdit} field={f.name}/>
+              <div>
+                <span className={`badge bg-success fs--2 p-1 px-2`}>{p[f.name]}</span>
+              </div>
             </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['atividade']}
-          fieldkey='atividade'
-          setShow={setShowForm}
-          data={p.atividade}
-          pipe={card.pipe_code}
-        />
-        {!showForm.status &&
-          <div className='my-2'>
-            <CardTitle title='Status' click={handleEdit} field='status'/>
-            <div>
-              <span className={`badge bg-${p.status_display === 'Concluído' ? 'success' : 'warning'} fs--2 p-1`}>{p.status_display}</span>
-            </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['status']}
-          fieldkey='status'
-          setShow={setShowForm}
-          data={p.status}
-          pipe={card.pipe_code}
-        />
-        {!showForm.responsaveis &&
-          <div className='my-2'>
-            <CardTitle title='Responsáveis:' click={handleEdit} field='responsaveis'/>
-            <div>
-              {p.list_responsaveis.map(r => r.nome).join(', ')}
-            </div>
-          </div>
-        }
-        <EditForm 
-          onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-          show={showForm['responsaveis']}
-          fieldkey='responsaveis'
-          setShow={setShowForm}
-          data={p.list_responsaveis}
-          pipe={card.pipe_code}
-        />
-        {/* <div>
-          <Anexos pvtec={p} />
-        </div> */}
+          : 
+            <EditForm 
+              onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
+              show={showForm[f.name]}
+              fieldkey={f.name}
+              setShow={setShowForm}
+              data={p.f.name}
+              pipe={card.pipe_code}
+            />
+        )}
+
       </ExpandableCard>
     )}
     <ModalDelete show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>

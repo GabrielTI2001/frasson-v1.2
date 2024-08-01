@@ -1,7 +1,7 @@
 import { useState, useEffect} from "react";
 import React from 'react';
 import {Row, Col, Spinner} from 'react-bootstrap';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
 import AdvanceTableSearchBox from '../../../components/common/advance-table/AdvanceTableSearchBox';
@@ -14,6 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import ModalRecord from "./Modal";
 
 const IndexPivots = () => {
     const [searchResults, setSearchResults] = useState();
@@ -21,6 +22,8 @@ const IndexPivots = () => {
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
     const [isloading, setIsLoading] = useState(false)
+    const {uuid} = useParams()
+    const [modal, setModal] = useState({show:false});
 
     const onClick = (id, uuid) =>{
         const url = `/irrigation/pivots/${uuid}`
@@ -32,6 +35,8 @@ const IndexPivots = () => {
     }
     const submit = (type, data) => {
         if (type === 'add') setSearchResults([data, ...searchResults])
+        else if (type === 'edit' && searchResults) setSearchResults([...searchResults.map(reg => reg.uuid === data.uuid ? data : reg)])
+        else if (type === 'delete' && searchResults) setSearchResults(searchResults.filter(r => r.uuid !== data))
         setShowModal(false)
     }
     const handleChange = async (value) => {
@@ -43,14 +48,22 @@ const IndexPivots = () => {
         if ((user.permissions && user.permissions.indexOf("view_cadastro_pivots") === -1) && !user.is_superuser){
             navigate("/error/403")
         }
-        const Search = async () => {
-            const status = await HandleSearch('', 'irrigation/pivots', setter) 
+    },[])
+    useEffect(() => {
+        const search = async () => {
+            const status = await HandleSearch('', 'irrigation/pivots', setSearchResults)
             if (status === 401) RedirectToLogin(navigate);
         }
-        if (!searchResults){
-            Search()
+        if (uuid){
+            setModal({show:true})
         }
-    },[])
+        else{
+            setModal({show:false})
+            if (!searchResults){
+                search()
+            }
+        }
+    },[uuid])
 
     return (
         <>
@@ -110,6 +123,7 @@ const IndexPivots = () => {
             />
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+        <ModalRecord show={modal.show} reducer={submit} />
         <Modal
             size="md"
             show={showmodal}

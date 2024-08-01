@@ -13,7 +13,7 @@ import NavPVTEC, { Fazenda } from './Nav.js';
 import { fieldsRegime } from '../Data.js';
 import EditFormModal from '../../../components/Custom/EditForm.js';
 import PolygonMap from '../../../components/map/PolygonMap.js';
-import { faDownload, faFile, faGlobeAmericas } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faFile } from '@fortawesome/free-solid-svg-icons';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
 const ModalRecord = ({show, reducer}) => {
@@ -71,6 +71,9 @@ const ModalRecord = ({show, reducer}) => {
         setRecord(response.data)
       })
       .catch((erro) => {
+        if (erro.response.status === 400){
+          toast.error(Object.values(erro.response.data)[0][0])
+        }
         console.error('erro: '+erro);
       })
     }

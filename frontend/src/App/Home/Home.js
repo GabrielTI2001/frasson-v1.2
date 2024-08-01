@@ -1,23 +1,26 @@
 import React, { useContext, useState, useEffect} from 'react';
 import {ProfileContext} from '../../context/Context';
 import { Col, Row } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPenSquare, faPencilSquare } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '../../Main';
 import { GetRecord, HandleSearch } from '../../helpers/Data';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 const Home = () => {
     const {profileState:{perfil}} = useContext(ProfileContext)
     const {config: {theme}} = useAppContext();
     const user = JSON.parse(localStorage.getItem('user'))
     const [data, setData] = useState()
     const [pipes, setPipes] = useState()
+    const navigate = useNavigate()
 
     useEffect(() => {
         const getdata = async () =>{
             const dados = await GetRecord('', 'register/landing')
             setData(dados)
             const status = await HandleSearch('', 'pipeline/pipe-data', (data) => setPipes(data), `?user=${user.id}`)
+            if (status === 401) RedirectToLogin(navigate)
         }   
         getdata()
     }, [])

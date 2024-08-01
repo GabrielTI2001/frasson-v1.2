@@ -138,7 +138,7 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
     else{
       if(!defaultoptions){
         loadFormData()
-        setDefaultOptions({contratante:{}, grupo:{}})
+        setDefaultOptions({})
       }
     }
 

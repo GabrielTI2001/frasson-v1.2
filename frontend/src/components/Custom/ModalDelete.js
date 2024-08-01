@@ -41,6 +41,7 @@ const ModalDelete = ({show, close, link, update, transparent}) => {
       aria-labelledby="example-modal-sizes-title-lg"
       className="align-items-center pt-10 modal-delete"
       dialogClassName="mt-20"
+      backdrop={false}
     >
       <Modal.Body className="text-center">
         <div className="swal2-icon swal2-warning swal2-icon-show mt-4" style={{display: 'flex'}}>

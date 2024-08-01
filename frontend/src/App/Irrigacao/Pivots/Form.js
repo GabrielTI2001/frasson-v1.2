@@ -101,7 +101,7 @@ const PivotForm = ({ hasLabel, type, submit, data}) => {
     <>
       <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
         <RenderFields fields={fieldsPivot} formData={formData} changefield={handleFieldChange} changefile={handleFileChange} 
-          hasLabel={hasLabel} message={message} type={type} defaultoptions={defaultoptions}
+          hasLabel={hasLabel} message={message} type={type} defaultoptions={defaultoptions} setform={setFormData}
         />
         <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
           <Button className="w-50" type="submit" disabled={isLoading} >

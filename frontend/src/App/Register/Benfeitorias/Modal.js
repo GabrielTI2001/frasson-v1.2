@@ -1,31 +1,23 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Button, CloseButton, Col, Dropdown, Form, Modal, Nav, Row, Tab } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { CloseButton, Col, Modal, Row, Tab } from 'react-bootstrap';
 import ModalMediaContent from '../../Pipeline/ModalMediaContent.js';
 import api from '../../../context/data.js';
 import { GetRecord, sendData } from '../../../helpers/Data.js';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../../../Main.js';
 import {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import EditForm from './EditForm.js';
-import Avatar from '../../../components/common/Avatar.js';
 import NavModal from './Nav.js'
 import PicturesGallery from '../../../components/Custom/Galery.js';
 import ModalDelete from '../../../components/Custom/ModalDelete.js';
 import { ImgForm } from './Form.js';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 
-const options = {
-  month: "short",
-  day: "numeric",
-  timeZone: 'UTC'
-};
-
 const ModalBenfeitoria = ({show, reducer}) => {
-  const [showForm, setShowForm] = useState({'card':false,'data':false,'beneficiario':false, 
-    'detalhamento': false, 'instituicao': false, 'others':false});
+  const [showForm, setShowForm] = useState({});
   const navigate = useNavigate()
   const token = localStorage.getItem("token")
   const {uuid} = useParams()

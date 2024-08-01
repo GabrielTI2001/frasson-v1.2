@@ -77,7 +77,7 @@ const EditFormModal = ({
           : field.type === 'select' ?
           (<>
             <Form.Select ref={inputRef} defaultValue={record[field.name] || ''}
-              className='mb-1 fs--1 py-0 w-75'
+              className='mb-1 fs--1 py-0 w-100'
               onChange={({target}) => {
                 setFormData(({...formData, [field.name]: target.value}));
               }
@@ -100,7 +100,7 @@ const EditFormModal = ({
             <Form.Control
                 name={field.name}
                 className='mb-2'
-                onChange={() => {}}
+                onChange={(e) => {setFormData({...formData, [e.target.name]:e.target.files})}}
                 type="file"
             />
             </>
@@ -152,7 +152,9 @@ const EditFormModal = ({
         </Form>
       </div>   
     )}
-    <ModalGMS show={showModal.show} type={showModal.type} changemodal={setShowModal} formData={formData} changeform={setFormData}/>
+    <ModalGMS show={showModal.show} type={showModal.type} changemodal={setShowModal} formData={formData} changeform={setFormData}
+      field={field.name}
+    />
     </>
   );
 };

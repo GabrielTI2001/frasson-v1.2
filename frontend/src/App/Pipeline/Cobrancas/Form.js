@@ -7,10 +7,6 @@ import AsyncSelect from 'react-select/async';
 import { SelectSearchOptions } from '../../../helpers/Data';
 import customStyles, { customStylesDark } from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { useDropzone } from 'react-dropzone';
-import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
-import Flex from '../../../components/common/Flex';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const FormCobranca = ({type, data, submit, card}) => {
@@ -31,9 +27,9 @@ const FormCobranca = ({type, data, submit, card}) => {
             const response = await fetch(link, {
                 method: method,
                 headers: {
-                    'Authorization': `Bearer ${token}`
+                    'Authorization': `Bearer ${token}`, 'Content-Type':'application/json'
                 },
-                body: dadosform
+                body: JSON.stringify(dadosform)
             });
             const data = await response.json();
             if(response.status === 400){
@@ -55,22 +51,7 @@ const FormCobranca = ({type, data, submit, card}) => {
     const handleSubmit = async e => {
         setMessage(null)
         e.preventDefault();
-        const formDataToSend = new FormData();
-        for (const key in formData) {
-          if (key === 'file') {
-            for (let i = 0; i < formData[key].length; i++) {
-              formDataToSend.append('file', formData[key][i]);
-            }
-          }
-          else if (Array.isArray(formData[key])) {
-            formData[key].forEach(value => {
-              formDataToSend.append(key, value);
-            });
-          } else {
-            formDataToSend.append(key, formData[key]);
-          }
-        }
-        await handleApi(formDataToSend);
+        await handleApi(formData);
     };
     const handleFieldChange = e => {
       setformData({
@@ -104,8 +85,11 @@ const FormCobranca = ({type, data, submit, card}) => {
               type="select"
             >
               <option value={undefined}>----</option>
-              <option value='EA'>Em Aberto</option>
-              <option value='P'>Pago</option>
+              <option value='AD'>Aguardando Distribuição</option>
+              <option value='NT'>Notificação</option>
+              <option value='FT'>Faturamento</option>
+              <option value='AG'>Agendado</option>
+              <option value='PG'>Pago</option>
             </Form.Select>
             <label className='text-danger'>{message ? message.status : ''}</label>
         </Form.Group>
@@ -124,7 +108,7 @@ const FormCobranca = ({type, data, submit, card}) => {
                   }));
               }}>
             </AsyncSelect>
-            <label className='text-danger'>{message ? message.servicos : ''}</label>
+            <label className='text-danger'>{message ? message.servico : ''}</label>
           </Form.Group> 
         }  
 
@@ -144,54 +128,35 @@ const FormCobranca = ({type, data, submit, card}) => {
             <label className='text-danger'>{message ? message.etapa : ''}</label>
         </Form.Group>
 
+        <Form.Group className="mb-1" as={Col} xl={12}>
+            <Form.Label className='fw-bold mb-1'>Data Previsão Pagamento*</Form.Label>
+            <Form.Control
+              value={formData.data_previsao || ''}
+              name="data_previsao"
+              onChange={handleFieldChange}
+              type="date"
+            />
+            <label className='text-danger'>{message ? message.data_previsao : ''}</label>
+        </Form.Group>
+
         {defaultoptions && 
           <Form.Group className="mb-2" as={Col} xl={12}>
             <Form.Label className='fw-bold mb-1'>Caixa*</Form.Label>
             <AsyncSelect 
               loadOptions={(value) => SelectSearchOptions(value, 'finances/caixas', 'nome', null, false)} 
-              name='servicos' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+              name='caixa' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.servicos : '') : ''}
               onChange={(selected) => {
                 setformData((prevFormData) => ({
                   ...prevFormData,
-                  servico: selected.value
+                  caixa: selected.value
                   }));
               }}>
             </AsyncSelect>
-            <label className='text-danger'>{message ? message.servicos : ''}</label>
+            <label className='text-danger'>{message ? message.caixa : ''}</label>
           </Form.Group> 
-        }  
-
-        {/* {defaultoptions && (
-          <Form.Group className="mb-1" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Responsáveis*</Form.Label>
-            <AsyncSelect isMulti
-              loadOptions={(value) => SelectSearchOptions(value, 'users/users', 'first_name', 'last_name', true, `pipe=${card.pipe_code}`)}
-              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={type === 'edit' ? defaultoptions.responsaveis || '' : ''}
-              onChange={(selected) => {
-                setformData((prevFormData) => ({
-                  ...prevFormData,
-                  responsaveis: selected.map(s => s.value)
-                }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.responsaveis : ''}</label>
-          </Form.Group>        
-        )} */}
-        {/* <label className='fw-bold mb-0'>Anexos</label>
-        <Form.Group as={Col} xl={12} className='mb-2'>
-          <div {...getRootProps({ className: `dropzone-area py-2 container container-fluid ${isDragActive ? 'dropzone-active' : ''}`})}>
-            <input {...getInputProps()} />
-            <Flex justifyContent="center" alignItems="center">
-              <span className='text-midle'><FontAwesomeIcon icon={faCloudArrowUp} className='mt-1 fs-2 text-warning' /></span>
-              <p className="fs-9 mb-0 text-700 ms-2">
-                {!formData.file ? 'Arraste os arquivos aqui' : formData.file.length+' Arquivo(s) Selecionado(s)'}
-              </p>
-            </Flex>
-          </div>
-        </Form.Group> */}
-
+        }
+        <label className='text-danger'>{message ? message.non_fields_errors : ''}</label>  
         <Form.Group as={Col} className='text-end' xl={12}>
             <Button type='submit'>Cadastrar</Button>
         </Form.Group>

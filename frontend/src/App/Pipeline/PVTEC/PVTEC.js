@@ -59,16 +59,18 @@ const PVTEC = ({card, updatedactivity, isgc}) => {
       .then((response) => {
         toast.success("PVTEC Atualizada com Sucesso!")
         setPvtecs(pvtecs.map(p => p.uuid === uuid ? response.data : p))
+        setShowForm({})
         if (response.data.activity){
           updatedactivity(response.data.activity)
         }
       })
       .catch((erro) => {
+        if (erro.response.status === 400){
+          toast.error(Object.values(erro.response.data)[0][0])
+        }
         console.error('erro: '+erro);
       })
     }
-    setShowForm({...showForm, 'orientacoes':false, 'status':false, 'atividade':false, 'responsaveis':false, 
-    'instituicao':false, 'contrato':false})
   }
 
   const handledelete = (type, data) =>{

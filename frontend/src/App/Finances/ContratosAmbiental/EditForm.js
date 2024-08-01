@@ -91,7 +91,6 @@ const EditForm = ({
                   ...prevFormData,
                   servicos: selected.map(s => s.value)
                 }));
-                console.log(selected)
                 setServicesSelected(selected)
               }
             } className='mb-1 fs--1'/>

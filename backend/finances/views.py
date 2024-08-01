@@ -88,6 +88,7 @@ class PagamentosView(viewsets.ModelViewSet):
 class CobrancasView(viewsets.ModelViewSet):
     queryset = Cobrancas.objects.all()
     serializer_class = detailCobrancas
+    lookup_field = 'uuid'
     # permission_classes = [IsAuthenticated]
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -104,25 +105,22 @@ class CobrancasView(viewsets.ModelViewSet):
             if search_month:
                 search_month = int(search_month)
                 if search_pago:
-                    query_search = (Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
-                        (Q(data_pagamento__month=search_month) | Q(data_previsao__month=search_month)) & 
-                            (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+                    query_search = (Q(status='PG') & 
+                        (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
 
                 else:
-                    query_search = (~Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
-                        (Q(data_pagamento__month=search_month) | Q(data_previsao__month=search_month)) & 
-                            (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
+                    query_search = (~Q(status='PG') & 
+                        (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
                     
                 queryset = Cobrancas.objects.filter(query_search).annotate(
                 valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
                 data=Case(When(status='PG', then=F('data_pagamento')), default='data_previsao')).filter(data__year=search_year, data__month=search_month).order_by('data')
-            
             else:
                 if search_pago:
-                    query_search = (Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                    query_search = (Q(status='PG') & 
                         (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
                 else:
-                    query_search = (~Q(status='PG') & (Q(data_pagamento__year=search_year) | Q(data_previsao__year=search_year)) & 
+                    query_search = (~Q(status='PG') &
                         (Q(cliente__razao_social__icontains=search) | Q(status__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search)))
                 queryset = Cobrancas.objects.filter(query_search).annotate(
                 valor=Case(When(status='PG', then=F('valor_faturado')), default='saldo_devedor', output_field=DecimalField()),
@@ -173,28 +171,35 @@ class CobrancasView(viewsets.ModelViewSet):
             return self.serializer_class
         
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        contrato = request.POST.get('contrato')
-        servico = request.POST.get('servico')
-        etapa = request.POST.get('etapa')
-        if serializer.is_valid():
-            if contrato:
-                etapa = Contratos_Ambiental_Pagamentos.objects.filter(contrato=contrato, servico=servico, etapa=etapa).first()
-                if etapa:
-                    cobranca = Cobrancas.objects.filter(etapa_ambiental=etapa)
+        contrato = request.data.get('contrato')
+        servico = request.data.get('servico')
+        etapa = request.data.get('etapa')
+        data = request.data.copy() 
+        erros = {}
+        if contrato:
+            if not etapa or not servico:
+                erros = {'servico':'Esse Campo é obrigatório' if not servico else None, 'etapa':'Esse Campo é obrigatório'if not etapa else None}
+            else:
+                etapa_instance = Contratos_Ambiental_Pagamentos.objects.filter(contrato=contrato, servico=servico, etapa=etapa).first()
+                if etapa_instance:
+                    cobranca = Cobrancas.objects.filter(etapa_ambiental=etapa_instance)
                     if not cobranca:
-                        serializer.validated_data['etapa_ambiental_id'] = etapa.id
-                        serializer.validated_data['saldo_devedor'] = etapa.valor
-                        self.perform_create(serializer)
-                        headers = self.get_success_headers(serializer.data)
-                        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+                        data['etapa_ambiental'] = etapa_instance.id
+                        data['saldo_devedor'] = etapa_instance.valor
                     else:
                         return Response({'non_fields_errors':'Já existe uma cobrança gerada para essa etapa e serviço'}, 
-                        status=status.HTTP_400_BAD_REQUEST)
+                            status=status.HTTP_400_BAD_REQUEST)
                 else:
                     return Response({'non_fields_errors':'Não existe essa etapa de pagamento para esse serviço no contrato'}, 
                         status=status.HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        else:
+            erros.update(serializer.errors)
+            return Response(erros, status=status.HTTP_400_BAD_REQUEST)
 
 class CobrancasInvoicesView(viewsets.ModelViewSet):
     queryset = Cobrancas.objects.all()
@@ -1231,8 +1236,8 @@ def cobrancas_pipefy_report_pdf(request):
             c.setFont("Helvetica-Bold", 9)
             c.drawString(margin_left, margin_top, "Data")
             c.drawString(margin_left + 60, margin_top, "Cliente")
-            c.drawString(margin_left + 350, margin_top, "Detalhamento")
-            c.drawString(margin_left + 550, margin_top, "Status")
+            c.drawString(margin_left + 280, margin_top, "Detalhamento")
+            c.drawString(margin_left + 500, margin_top, "Status")
             c.drawString(margin_left + 640, margin_top, "Valor")
             c.line(margin_left, margin_top - 5, margin_left + 700, margin_top - 5)
         
@@ -1241,10 +1246,18 @@ def cobrancas_pipefy_report_pdf(request):
         vertical_position = margin_top - 15
         for j in range(registro_cobranca, registro_cobranca + numero_registros_por_pagina):
             if registro_cobranca < len(cobrancas_pipefy):
+                if cobrancas_pipefy[registro_cobranca].etapa_ambiental:
+                    detalhe_servico = cobrancas_pipefy[registro_cobranca].etapa_ambiental.servico.detalhamento_servico 
+                elif cobrancas_pipefy[registro_cobranca].etapa_credito:
+                    detalhe_servico = cobrancas_pipefy[registro_cobranca].etapa_credito.servico.detalhamento_servico 
+                elif cobrancas_pipefy[registro_cobranca].detalhamento:
+                    detalhe_servico = cobrancas_pipefy[registro_cobranca].detalhamento.detalhamento_servico 
+                else:
+                    detalhe_servico = '-'
                 c.drawString(margin_left, vertical_position, datetime.strptime(str(cobrancas_pipefy[registro_cobranca].data), '%Y-%m-%d').strftime('%d/%m/%Y'))
                 c.drawString(margin_left + 60, vertical_position, str(cobrancas_pipefy[registro_cobranca].cliente.razao_social)[:60])
-                c.drawString(margin_left + 350, vertical_position, str(cobrancas_pipefy[registro_cobranca].detalhamento.detalhamento_servico))
-                c.drawString(margin_left + 550, vertical_position, str(cobrancas_pipefy[registro_cobranca].status))
+                c.drawString(margin_left + 280, vertical_position, str(detalhe_servico))
+                c.drawString(margin_left + 500, vertical_position, str(cobrancas_pipefy[registro_cobranca].get_status_display()))
                 c.drawString(margin_left + 640, vertical_position, locale.currency(cobrancas_pipefy[registro_cobranca].valor, grouping=True))
                 c.line(margin_left, vertical_position - 5, margin_left + 700, vertical_position - 5)
             else:

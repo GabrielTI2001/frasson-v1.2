@@ -274,3 +274,6 @@ button.gm-ui-hover-effect{
   margin-right: 5px !important;
   margin-top: 2px !important;
 }
+.modal-delete-card{
+  background-color: rgba(100, 100, 100, 0.1);
+}

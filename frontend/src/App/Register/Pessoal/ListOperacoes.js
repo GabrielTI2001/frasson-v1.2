@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {Spinner} from 'react-bootstrap';
 import { useAppContext } from "../../../Main";
-import {Table} from "react-bootstrap";
 import { useNavigate } from 'react-router-dom';
 import CardInfo from '../../Pipeline/CardInfo';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';

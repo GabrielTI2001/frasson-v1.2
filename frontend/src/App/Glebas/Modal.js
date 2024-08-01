@@ -74,12 +74,15 @@ const ModalRecord = ({show, reducer}) => {
         reducer('edit', {...response.data, list_propriedades: response.data.list_propriedades.map(l => l.label).join(", ")})
         toast.success("Gleba Atualizada com Sucesso!")
         setRecord(response.data)
+        setShowForm({})
       })
       .catch((erro) => {
+        if (erro.response.status === 400){
+          toast.error(Object.values(erro.response.data)[0][0])
+        }
         console.error('erro: '+erro);
       })
     }
-    setShowForm({})
   }
 
   return (

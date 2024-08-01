@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { RedirectToLogin } from "../Routes/PrivateRoute";
 
 export const HandleSearch = async (search, urlapi, setResults, adicional='') => {
     const token = localStorage.getItem("token")
@@ -125,7 +125,7 @@ export const SelectSearchOptions = async (inputValue, link, field, field2, join=
     else if (response.status === 401){
       localStorage.setItem("login", JSON.stringify(false));
       localStorage.setItem('token', "");
-      navigate('/auth/login');
+      RedirectToLogin(navigate)
     }
     else{
       return [];

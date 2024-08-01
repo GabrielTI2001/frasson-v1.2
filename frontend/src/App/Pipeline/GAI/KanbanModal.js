@@ -102,17 +102,19 @@ const KanbanModal = ({show, movercard}) => {
           }
         })
         toast.success("Card Atualizado com Sucesso!")
+        setShowForm({})
         setCard(response.data)
         if (response.data.activity){
           setActivities([response.data.activity, ...activities])
         }
       })
       .catch((erro) => {
+        if (erro.response.status === 400){
+          toast.error(Object.values(erro.response.data)[0][0])
+        }
         console.error('erro: '+erro);
       })
     }
-    setShowForm({...showForm, 'card':false,'data':false,'beneficiario':false,'detalhamento':false, 
-    'instituicao':false, 'contrato':false})
   }
 
   return (

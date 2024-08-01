@@ -62,7 +62,6 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
     })
     .catch((error) =>{
       setIsUploading(false)
-      console.log(error)
       setFormData({...formData, file:null})
       if (error.response.status === 400) {toast.error(error.response.data.file[0])}
       if (error.response.status === 401){

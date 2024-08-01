@@ -1,6 +1,6 @@
 import React, { useEffect, useState} from 'react';
 import { useNavigate, Link} from 'react-router-dom';
-import { Button, Form, Col, Row, Table, Spinner, Placeholder} from 'react-bootstrap';
+import { Button, Form, Col, Row, Spinner, Placeholder} from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
 import GoogleMap from '../../../components/map/GoogleMap';
 import MapInfo from './MapInfo';

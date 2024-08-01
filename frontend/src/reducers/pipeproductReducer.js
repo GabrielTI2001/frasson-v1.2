@@ -37,7 +37,6 @@ export const kanbanReducer = (state, action) => {
       };
 
     case 'ADD_TASK_CARD':
-      console.log(state.fases.map(fase => fase.id === payload.targetListId))
       return {
         ...state,
         fases: state.fases.map(fase =>

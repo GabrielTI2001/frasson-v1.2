@@ -85,7 +85,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
     }
     else{
       if(!defaultoptions){
-        setDefaultOptions({beneficiario:{}, categoria_pagamento:{}})
+        setDefaultOptions({})
       }
     }
 
@@ -130,7 +130,7 @@ const FormAutomPagamento = ({ hasLabel, type, submit, data}) => {
             {hasLabel && <Form.Label className='fw-bold mb-1'>Categoria Pagamento*</Form.Label>}
             <AsyncSelect 
               name='categoria_pagamento' 
-              loadOptions={(value) => SelectSearchOptions(value, 'finances/category-payments', 'category', 'sub_category')}
+              loadOptions={(value) => SelectSearchOptions(value, 'finances/category-payments', 'category', 'sub_category', false, null, navigate)}
               styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={defaultoptions.categoria_pagamento || ''}
               onChange={(selected) => {

@@ -6,12 +6,7 @@ import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import ModalDeleteCard from '../../../components/Custom/ModalDeleteCard';
 
-export const calcdif = (data) => {
-  const dif = (new Date(data) - new Date())/(24 * 60 * 60 * 1000)
-  return dif
-};
-
-export const DropMenu = ({ record, click }) => {
+export const DropMenu = ({ record, reducer }) => {
   const [modaldel, setModaldel] = useState({show:false})
   const navigate = useNavigate()
 
@@ -19,8 +14,9 @@ export const DropMenu = ({ record, click }) => {
     config: { isRTL }
   } = useContext(AppContext);
 
-  const handledelete = () =>{
-    navigate(`/pipeline/518984721`)
+  const handledelete = (type, uuid) =>{
+    navigate(`/irrigation/pivots`)
+    reducer(type, uuid)
   }
 
   return (
@@ -37,11 +33,11 @@ export const DropMenu = ({ record, click }) => {
         <FontAwesomeIcon icon={faEllipsisV} transform="shrink-2" className='fs-2'/>
       </Dropdown.Toggle>
       <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
-        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/pvtec/${record.uuid}/`})}}>
-          Excluir PVTEC
+        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/irrigation/pivots/${record.uuid}/`})}}>
+          Excluir Pivot
         </Dropdown.Item>
       </Dropdown.Menu>
-      <ModalDeleteCard show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
+      <ModalDeleteCard name='registro' show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>
     </Dropdown>
   );
 };

@@ -2,6 +2,7 @@ import React, { useReducer, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PipeContext } from '../../context/Context';
 import { kanbanReducer } from '../../reducers/pipeproductReducer';
+import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const KanbanProvider = ({ children, code }) => {
   const token = localStorage.getItem("token")
@@ -34,7 +35,7 @@ const KanbanProvider = ({ children, code }) => {
 
       if (response.status === 401) {
         // Token inválido, redirecione para a página de login
-        navigate('/authentication/login');
+        RedirectToLogin(navigate)
       }
       else if (response.status === 200){
         const data = await response.json();

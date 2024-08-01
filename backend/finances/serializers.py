@@ -20,35 +20,79 @@ class listPagamentosPipefy(serializers.ModelSerializer):
         fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'data', 'valor_pagamento']
 
 class listCobrancas(serializers.ModelSerializer):
-    str_detalhe = serializers.CharField(source='etapa_ambiental.servico.detalhamento_servico', read_only=True)
-    str_produto = serializers.CharField(source='etapa_ambiental.servico.produto.description', read_only=True)
+    str_detalhe = serializers.SerializerMethodField(read_only=True)
+    str_produto = serializers.SerializerMethodField(read_only=True)
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    str_status = serializers.CharField(source='get_status_display', read_only=True)
     data = serializers.DateField(read_only=True)
     valor = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
+    def get_str_produto(self, obj):
+        if obj.etapa_ambiental:
+            return obj.etapa_ambiental.servico.produto.description
+        elif obj.etapa_credito:
+            return obj.etapa_credito.servico.produto.description
+        elif obj.detalhamento:
+            return obj.detalhamento.produto.description
+        else:
+            return None
+    def get_str_detalhe(self, obj):
+        if obj.etapa_ambiental:
+            return obj.etapa_ambiental.servico.detalhamento_servico
+        elif obj.etapa_credito:
+            return obj.etapa_credito.servico.detalhamento_servico
+        elif obj.detalhamento:
+            return obj.detalhamento.detalhamento_servico
+        else:
+            return None
     class Meta:
         model = Cobrancas
-        fields = ['id', 'status', 'saldo_devedor', 'str_cliente', 'str_produto', 'str_detalhe', 'data', 'valor']
+        fields = ['id', 'uuid', 'str_status', 'saldo_devedor', 'str_cliente', 'str_produto', 'str_detalhe', 'data', 'valor']
 
 class detailCobrancas(serializers.ModelSerializer):
-    str_detalhe = serializers.CharField(source='etapa_ambiental.servico.detalhamento_servico', read_only=True)
-    str_produto = serializers.CharField(source='etapa_ambiental.servico.produto.description', read_only=True)
+    str_detalhe = serializers.SerializerMethodField(read_only=True)
+    str_produto = serializers.SerializerMethodField(read_only=True)
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    str_caixa = serializers.CharField(source='caixa.nome', read_only=True)
+    str_status = serializers.CharField(source='get_status_display', read_only=True)
     str_created_by = serializers.SerializerMethodField(read_only=True)
     data = serializers.DateField(read_only=True)
     valor = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
     def get_str_created_by(self, obj):
         return obj.created_by.first_name+' '+obj.created_by.last_name
+    def get_str_produto(self, obj):
+        if obj.etapa_ambiental:
+            return obj.etapa_ambiental.servico.produto.description
+        elif obj.etapa_credito:
+            return obj.etapa_credito.servico.produto.description
+        elif obj.detalhamento:
+            return obj.detalhamento.produto.description
+        else:
+            return None
+    def get_str_detalhe(self, obj):
+        if obj.etapa_ambiental:
+            return obj.etapa_ambiental.servico.detalhamento_servico
+        elif obj.etapa_credito:
+            return obj.etapa_credito.servico.detalhamento_servico
+        elif obj.detalhamento:
+            return obj.detalhamento.detalhamento_servico
+        else:
+            return None
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            field.required = False 
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['cliente', 'saldo_devedor', 'caixa' ,'status', 'data_previsao']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False 
     class Meta:
         model = Cobrancas
         fields = '__all__'
 
 class listCobrancasInvoices(serializers.ModelSerializer):
-    str_detalhe = serializers.CharField(source='detalhamento.detalhamento_servico', read_only=True)
-    str_produto = serializers.CharField(source='detalhamento.produto.description', read_only=True)
+    str_detalhe = serializers.CharField(source='etapa_ambiental.servico.detalhamento_servico', read_only=True)
+    str_produto = serializers.CharField(source='etapa_ambiental.servico.produto.description', read_only=True)
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     class Meta:
         model = Cobrancas

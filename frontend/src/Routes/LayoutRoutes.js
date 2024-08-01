@@ -85,7 +85,6 @@ import IndexRequerimentos from '../App/Ambiental/Requerimentos/Index';
 import MapaPontosRequerimento from '../App/Ambiental/Requerimentos/Mapa';
 //Licenses
 import IndexLicenses from '../App/Licenses/Index';
-import ViewLicenca from '../App/Licenses/View';
 //Services
 import ExternalAPIs from '../App/Services/API';
 import Commodities from '../App/Services/Currency/Commodities';
@@ -119,9 +118,7 @@ const LayoutRoutes = () => {
           },
         });
         const data = await response.json();
-        if (response.status === 401) {
-          RedirectToLogin(navigate);
-        } else if (response.status === 200) {
+        if (response.status === 200) {
           profileDispatch({
             type: 'SET_PROFILE',
             payload: {
@@ -220,6 +217,7 @@ const LayoutRoutes = () => {
           <Route path="refunds" element={<IndexReembolsos />}/>
           <Route path="billings" element={<ReportPagamentos />}/>
           <Route path="revenues" element={<ReportCobrancas />}/>
+          <Route path="revenues/:uuid" element={<ReportCobrancas />}/>
           <Route path="contracts/environmental" element={<IndexContratosAmbiental />}/>
           <Route path="contracts/environmental/:uuid" element={<IndexContratosAmbiental />}/>
         </Route>
@@ -232,7 +230,7 @@ const LayoutRoutes = () => {
         <Route path="/irrigation">
           <Route path="" element={<IndexIrrigacao />}/>
           <Route path="pivots" element={<IndexPivots />}/>
-          <Route path="pivots/:uuid" element={<ViewPivot />}/>
+          <Route path="pivots/:uuid" element={<IndexPivots />}/>
           <Route path="pivots/map" element={<MapaPivots />}/>
         </Route>
         <Route path="/kpi">
