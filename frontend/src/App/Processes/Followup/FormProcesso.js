@@ -4,41 +4,25 @@ import { Button, Col,} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { sendData } from '../../../helpers/Data';
 
 const FormProcesso = ({type, data, submit}) => {
     const navigate = useNavigate()
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const [message, setMessage] = useState();
     const [formData, setformData] = useState({user:user.id, processo:data.processo});
     
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/processes/followup/${type == 'edit' ? data.id+'/' : ''}`
-        const method = type == 'edit' ? 'PUT' : 'POST';
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dadosform)
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate);
-            }
-            else if (response.status === 201 || response.status === 200){
-                submit('edit', data)
-                toast.success("Registro Atualizado com Sucesso!")
-            }
-        } catch (error) {
-            console.error('Erro:', error);
+        const {resposta, dados} = await sendData({type:type, url:'processes/followup', keyfield:type == 'edit' && data.id, dadosform:dadosform})
+        if(resposta.status === 400){
+          setMessage({...dados})
+        }
+        else if (resposta.status === 401){
+          RedirectToLogin(navigate)
+        }
+        else if (resposta.status === 201 || resposta.status === 200){
+          submit('edit', dados)
+          toast.success("Registro Atualizado com Sucesso!")
         }
     };
 
@@ -63,7 +47,7 @@ const FormProcesso = ({type, data, submit}) => {
 
     return (
     <Form onSubmit={handleSubmit} className='row'>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>Data Requerimento*</Form.Label>
             <Form.Control type='date' value={formData.data_requerimento || ''} 
                 onChange={handleFieldChange}
@@ -71,7 +55,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_requerimento : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>N° Requerimento*</Form.Label>
             <Form.Control type='text' value={formData.requerimento || ''} 
                 onChange={handleFieldChange}
@@ -79,7 +63,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.requerimento : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>Data Enquadramento</Form.Label>
             <Form.Control type='date' value={formData.data_enquadramento || ''} 
                 onChange={handleFieldChange}
@@ -87,7 +71,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_enquadramento : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>Data Validação</Form.Label>
             <Form.Control type='date' value={formData.data_validacao || ''} 
                 onChange={handleFieldChange}
@@ -95,7 +79,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_validacao : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>Valor Boleto (R$)</Form.Label>
             <Form.Control type='number' value={formData.valor_boleto || ''} 
                 onChange={handleFieldChange}
@@ -103,7 +87,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.valor_boleto : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>Vencimento Boleto</Form.Label>
             <Form.Control type='date' value={formData.vencimento_boleto || ''} 
                 onChange={handleFieldChange}
@@ -111,7 +95,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.vencimento_boleto : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>Data Formação</Form.Label>
             <Form.Control type='date' value={formData.data_formacao || ''} 
                 onChange={handleFieldChange}
@@ -119,7 +103,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.data_formacao : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>N° Processo</Form.Label>
             <Form.Control type='text' value={formData.numero_processo || ''} 
                 onChange={handleFieldChange}
@@ -127,7 +111,7 @@ const FormProcesso = ({type, data, submit}) => {
             />
             <label className='text-danger'>{message ? message.numero_processo : ''}</label>
         </Form.Group>
-        <Form.Group as={Col} xl={4} className='mb-3'>
+        <Form.Group as={Col} xl={type === 'add' ? 4 : 12} className='mb-3'>
             <Form.Label className='mb-0'>N° Processo SEI</Form.Label>
             <Form.Control type='text' value={formData.processo_sei || ''} 
                 onChange={handleFieldChange}

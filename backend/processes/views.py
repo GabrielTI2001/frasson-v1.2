@@ -21,7 +21,6 @@ class FollowupView(viewsets.ModelViewSet):
     def list(self, request, *args, **kwargs):
         processos = []
         produto_gai = 2
-        card_type = "Principal"
         phases_produtos = [65, 66, 64]
         search = request.GET.get('search')
 
@@ -195,7 +194,7 @@ class FollowupView(viewsets.ModelViewSet):
                 'data_formacao': processo_inema.data_formacao,
                 'processo_inema': processo_inema.numero_processo,
                 'processo_sei': processo_inema.processo_sei,
-                'proxima_consulta': proxima_consulta.proxima_consulta
+                'proxima_consulta': proxima_consulta.proxima_consulta if proxima_consulta else None
             }
         else:
             inema = {}
@@ -218,8 +217,8 @@ class FollowupView(viewsets.ModelViewSet):
             'inema': inema, 
             'acompanhamentos': acompanhamentos
         }
-
         return Response(response_data)
+
 class AcompanhamentoView(viewsets.ModelViewSet):
     queryset = Acompanhamento_Processos.objects.all()
     serializer_class = detailAcompanhamentoProcessos

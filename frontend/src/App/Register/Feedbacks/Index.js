@@ -9,6 +9,7 @@ import ModalDelete from '../../../components/Custom/ModalDelete';
 import { HandleSearch } from '../../../helpers/Data';
 import ViewFeedback from './View';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import CustomBreadcrumb from '../../../components/Custom/Commom';
 
 const IndexFeedbacks = () => {
     const navigate = useNavigate()
@@ -55,14 +56,14 @@ const IndexFeedbacks = () => {
 
     return (
     <>
-    <ol className="breadcrumb breadcrumb-alt fs-xs">
-        <li className="breadcrumb-item fw-bold">
+    <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold">
             <Link className="link-fx text-primary" to={'/administrator'}>Administrator Panel</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
             Feedbacks
-        </li>  
-    </ol>
+        </span>  
+    </CustomBreadcrumb>
     {feedbacks ? <>
     <Row className='mt-2 mb-2' xl={1} sm={1} xs={1}>
         <Col className='d-flex flex-column'>

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Tipo_Benfeitorias, Pictures_Benfeitorias, Analise_Solo
-from .models import Feedbacks_System, Feedbacks_Category, Feedbacks_Replies, Senhas_Logins
+from .models import Feedbacks_System, Feedbacks_Category, Feedbacks_Replies, Senhas_Logins, Anexos
 from backend.frassonUtilities import Frasson
 from rest_framework import serializers
 from .models import Detalhamento_Servicos, Cadastro_Pessoal, Produtos_Frasson, Cartorios_Registro, Categoria_Cadastro
@@ -63,7 +63,7 @@ class ListMachinery(serializers.ModelSerializer):
         fields = ['id', 'modelo', 'proprietario', 'fabricante', 'quantidade', 'propriedade', 'ano_fabricacao', 'valor_total']
 
 class ListBenfeitorias(serializers.ModelSerializer):
-    name_farm = serializers.CharField(source='farm.nome_imovel', read_only=True)
+    name_farm = serializers.CharField(source='farm.nome', read_only=True)
     name_type = serializers.CharField(source='type.description', read_only=True)
     class Meta:
         model = Benfeitorias_Fazendas
@@ -135,7 +135,7 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
             'calcio_cmolc_dm3': Frasson.avaliar_nivel_nutriente_solo('calcio', obj.calcio_cmolc_dm3),
             'sodio': obj.sodio,
             'magnesio_cmolc_dm3': Frasson.avaliar_nivel_nutriente_solo('magnesio', obj.magnesio_cmolc_dm3),
-            'aluminio_cmolc_dm3': obj.aluminio_cmolc_dm3,
+            'aluminio_cmolc_dm3': Frasson.avaliar_nivel_nutriente_solo('magnesio', obj.aluminio_cmolc_dm3 ),
             'potassio_cmolc_dm3': Frasson.avaliar_nivel_nutriente_solo('potassio', obj.potassio_cmolc_dm3),
             'fosforo': Frasson.avaliar_nivel_nutriente_solo('fosforo', obj.fosforo),
             'fosforo_rem': Frasson.avaliar_nivel_nutriente_solo('fosforo_rem', obj.fosforo_rem),
@@ -162,15 +162,15 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
             'pH_H2O': {'min': 6, 'max': 6.5},
             'pH_CaCl': {'min': 5.5, 'max': 6.0},
         }
-        if obj.magnesio_cmolc_dm3 != None and obj.calcio_cmolc_dm3 != None and obj.potassio_cmolc_dm3 != None and obj.h_mais_al != None:
+        if obj.magnesio_cmolc_dm3 != None and obj.calcio_cmolc_dm3 != None and obj.potassio_cmolc_dm3 != None:
             soma_bases = obj.calcio_cmolc_dm3 + obj.magnesio_cmolc_dm3 + obj.potassio_cmolc_dm3
-            capacidade_troca_cations = soma_bases + obj.h_mais_al
-            saturacao_bases = (soma_bases/capacidade_troca_cations) * 100
-            calagem = ((70 - saturacao_bases)/100) *  capacidade_troca_cations if saturacao_bases < 70 else 0
+            capacidade_troca_cations = soma_bases + obj.h_mais_al if obj.h_mais_al != None else None
+            saturacao_bases = (soma_bases/capacidade_troca_cations) * 100 if obj.h_mais_al != None else None
+            calagem = (((70 - saturacao_bases or 0)/100) *  capacidade_troca_cations if  saturacao_bases < 70 else 0) if saturacao_bases else None
             calculos = {
                 'soma_bases': locale.format_string('%.2f', soma_bases, True),
-                'capacidade_troca_cations': locale.format_string('%.2f', capacidade_troca_cations, True),
-                'saturacao_bases': locale.format_string('%.2f', saturacao_bases, True),
+                'capacidade_troca_cations': locale.format_string('%.2f', capacidade_troca_cations, True) if capacidade_troca_cations else '-',
+                'saturacao_bases': locale.format_string('%.2f', saturacao_bases, True) if saturacao_bases else '-',
                 'rel_calcio_magnesio': {
                     'value': locale.format_string('%.2f', obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3, True),
                     'level': 'BAIXO' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 < niveis_embrapa['rel_ca_mg']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.magnesio_cmolc_dm3 > niveis_embrapa['rel_ca_mg']['max'] else 'IDEAL'),
@@ -187,7 +187,7 @@ class resultsAnalisesSolo(serializers.ModelSerializer):
                     'level': 'BAIXO' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_mg_k']['min'] else ('ALTO' if obj.calcio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_ca_K']['max'] else 'IDEAL'),
                     'color': 'warning' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 < niveis_embrapa['rel_mg_k']['min'] else ('primary' if obj.magnesio_cmolc_dm3/obj.potassio_cmolc_dm3 > niveis_embrapa['rel_mg_k']['max'] else 'success'),
                 }, 
-                'calagem': locale.format_string('%.2f', calagem, True),
+                'calagem': locale.format_string('%.2f', calagem, True) if calagem else '-',
             }
         else:
             calculos = {
@@ -370,3 +370,14 @@ class serializerContratos_Servicos(serializers.ModelSerializer):
     class Meta:
         model = Contratos_Ambiental
         fields = ['id', 'contratante', 'produto']
+
+class serializerAnexos(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    def get_user(self, obj):
+        if obj.uploaded_by:
+            return {'id':obj.uploaded_by.id, 'name':obj.uploaded_by.first_name+' '+obj.uploaded_by.last_name}
+        else:
+            return {'id':'', 'name':'-'+' '+'-'}
+    class Meta:
+        model = Anexos
+        fields = '__all__'

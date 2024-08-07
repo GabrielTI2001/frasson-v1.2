@@ -7,6 +7,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear, faMoneyBills, faSeedling, faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { CardProduto } from "./Card";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -70,11 +71,11 @@ const DashProdutos = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-2">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Dashboard Produtos
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         {data ? <>
         <Row className="d-flex flex-row gx-4 gy-4 mb-4" xs={1} sm={2} xl={4}>
             <CardProduto title='Processos em Andamento' icon={faGear} data={data} atribute='qtd_processos'/>

@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetail} from "./MapInfo";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const initData = {'appo': {title:'Processos APPO', textpoint: 'Poço(s) '}, 
     'outorga': {title:'Processos Outorga', textpoint: 'ponto(s) de outorga '}
@@ -112,14 +113,14 @@ const MapaPontos = ({type}) => {
 
     return (
     <>
-        <ol className="breadcrumb breadcrumb-alt mb-2">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={`/ambiental/inema/${type}s`}>{initData[type].title}</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Mapa
-            </li>             
-        </ol>
+            </span> 
+        </CustomBreadcrumb>
         <Row className="flex-end-center justify-content-start mb-3">
             <Col lg={6} xxl={6}>
                 <InputGroup className='position-relative'>

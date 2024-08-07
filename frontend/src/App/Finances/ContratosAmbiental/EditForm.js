@@ -64,7 +64,7 @@ const EditForm = ({
               onChange={({target}) => {
                 setFormData(({...formData, detalhes: target.value}));
               }
-            } className='mb-1 fs--1'/>
+            } className='mb-1 fs--1 px-2'/>
           </>)}
 
           {fieldkey === 'contratante' &&( defaultselected && <>
@@ -106,7 +106,7 @@ const EditForm = ({
             <Form.Label className='mb-0 fw-bold fs--1'>Data Assinatura</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''}
               type='date'
-              className='mb-1 fs--1 py-0 w-50'
+              className='mb-1 fs--1 px-2'
               onChange={({target}) => {
                   setFormData(({...formData, data_assinatura: target.value}));
                 }
@@ -118,7 +118,7 @@ const EditForm = ({
             <Button
               variant="primary"
               size="sm"
-              className="col w-30 fs-xs p-0 me-1 ms-0"
+              className="col-auto me-1 ms-0"
               type="submit"
             >
               <span>Atualizar</span>
@@ -126,7 +126,7 @@ const EditForm = ({
             <Button
               variant="outline-secondary"
               size="sm"
-              className="col w-30 fs-xs p-0 border-400"
+              className="col-auto border-400"
               type="button"
               onClick={() =>     
                 setShow(prevState => ({

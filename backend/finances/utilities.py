@@ -19,7 +19,7 @@ def calcdre(year):
     class_outros = 'Outros'
 
     #FATURAMENTO CONSOLIDADO POR PRODUTO
-    query_faturado_total= Cobrancas.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
+    query_faturado_total= Cobrancas.objects.filter(data_pagamento__year=year, status='PG').aggregate(
         credito=Sum(Case(When(detalhamento__produto=produto_gc, then='valor_faturado'), default=0, output_field=DecimalField())),
         ambiental=Sum(Case(When(detalhamento__produto=produto_gai, then='valor_faturado'), default=0, output_field=DecimalField())),
         avaliacao=Sum(Case(When(detalhamento__produto=produto_avaliacao, then='valor_faturado'), default=0, output_field=DecimalField())),
@@ -38,7 +38,7 @@ def calcdre(year):
     percentual_faturado_tecnologia = (faturado_tecnologia / faturado_total * 100) if faturado_total > 0 else 0
 
     #FATURAMENTO TRIBUTADO E SEM TRIBUTAÇÃO
-    query_fatu_tributacao = Cobrancas.objects.filter(data_pagamento__year=year, phase_id=317532039).aggregate(
+    query_fatu_tributacao = Cobrancas.objects.filter(data_pagamento__year=year, status='PG').aggregate(
         faturamento_tributado=Sum(Case(When(~Q(caixa_id=667994628), then='valor_faturado'), default=0, output_field=DecimalField())),
         faturamento_sem_tributacao=Sum(Case(When(caixa_id=667994628, then='valor_faturado'), default=0, output_field=DecimalField())))
 
@@ -48,7 +48,7 @@ def calcdre(year):
     percentual_fatu_sem_tributacao = (faturamento_sem_tributacao / faturado_total) * 100 if faturado_total > 0 else 0
  
     #IMPOSTOS INDIRETOS (ISS, PIS E COFINS) - VALOR TOTAL E PERCENTUAL
-    query_total_impostos_indiretos = Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_total_impostos_indiretos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         total_iss=Sum(Case(When(categoria_id=687761062, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_pis=Sum(Case(When(categoria_id=687760058, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_cofins=Sum(Case(When(categoria_id=687760600, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -65,7 +65,7 @@ def calcdre(year):
     receita_liquida = faturado_total - total_impostos_indiretos
  
     #TOTAL CUSTOS, DESPESAS OPERACIONAIS E DESPESAS NÃO OPERACIONAIS
-    query_total_despesas = Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_total_despesas = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         total_custos=Sum(Case(When(categoria__classification=class_custo, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_oper=Sum(Case(When(categoria__classification=class_desp_oper, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_nao_oper=Sum(Case(When(categoria__classification=class_desp_nao_oper, then='valor_pagamento'), default=0, output_field=DecimalField())))
@@ -95,7 +95,7 @@ def calcdre(year):
     ebitda = lucro_operacional + resultado_financeiro
 
     #CÁLCULO IMPOSTOS DIRETOS (CSLL E IRPJ)
-    query_total_impostos_diretos = Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_total_impostos_diretos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         total_csll=Sum(Case(When(categoria_id=687761501, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_irpj=Sum(Case(When(categoria_id=687761676, then='valor_pagamento'), default=0, output_field=DecimalField())))
 
@@ -118,7 +118,7 @@ def calcdre(year):
     percentual_impostos_total = (total_impostos / faturado_total * 100) if faturado_total > 0 else 0
 
     #CALCULA SALDOS CONSIDERANDO RETIRADAS DE SÓCIO, PAG. COMISSÃO, ATIVOS IMOB. E OUTROS ACERTOS
-    query_dre_saldos = Pagamentos.objects.filter(phase_id=317163732, data_pagamento__year=year).aggregate(
+    query_dre_saldos = Pagamentos.objects.filter(status='PG', data_pagamento__year=year).aggregate(
         retirada_socios=Sum(Case(When(categoria__classification=class_retirada, then='valor_pagamento'), default=0, output_field=DecimalField())),
         pagamento_comissao=Sum(Case(When(categoria__classification=class_comissao, then='valor_pagamento'), default=0, output_field=DecimalField())),
         ativos_imobilizados=Sum(Case(When(categoria__classification=class_ativos, then='valor_pagamento'), default=0,  output_field=DecimalField())),

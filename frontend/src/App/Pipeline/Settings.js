@@ -5,6 +5,9 @@ import { Button, Col, Form } from 'react-bootstrap';
 import AsyncSelect from 'react-select/async';
 import customStyles, { customStylesDark } from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
+import api from '../../context/data';
+import { toast } from 'react-toastify';
+import CustomBreadcrumb from '../../components/Custom/Commom';
 
 const SettingsPipe = () => {
   const [dados, setDados] = useState()
@@ -13,11 +16,19 @@ const SettingsPipe = () => {
   const {config: {theme}} = useAppContext();
   const {pipe} = useParams()
   const [message, setMessage] = useState()
+  const token = localStorage.getItem("token")
 
   const handleSubmit = async e => {
     setMessage(null)
     e.preventDefault();
-    // await handleApi(formData);
+    api.put(`pipeline/pipes/${pipe}/`, formData, {headers: {Authorization: `Bearer ${token}`}})
+    .then((response) => {
+      toast.success("Pipe Atualizado com Sucesso!")
+    })
+    .catch((erro) => {
+      console.error('erro: '+erro);
+    })
+
   };
 
   useEffect(() => {
@@ -32,14 +43,14 @@ const SettingsPipe = () => {
 
   return (
   <>
-    <ol className="breadcrumb breadcrumb-alt fs-0 mb-3 col">
-        <li className="breadcrumb-item fw-bold">
+    <CustomBreadcrumb >
+        <span className="breadcrumb-item fw-bold">
             <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold fs--1" aria-current="page">
           Configurações Pipe {dados && dados.descricao}
-        </li>  
-    </ol>
+        </span>  
+    </CustomBreadcrumb>
     <Form onSubmit={handleSubmit} className='row'>
         {defaultoptions && (
           <Form.Group className="mb-2" as={Col} xl={5}>
@@ -51,7 +62,7 @@ const SettingsPipe = () => {
               onChange={(selected) => {
               setFormData((prevFormData) => ({
                 ...prevFormData,
-                pessoas: selected.value
+                pessoas: selected.map(s => s.value)
                 }));
               }}>
             </AsyncSelect>

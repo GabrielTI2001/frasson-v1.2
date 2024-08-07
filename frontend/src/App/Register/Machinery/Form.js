@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Button, Form, Col, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { SelectSearchOptions, sendData } from '../../../helpers/Data';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const MachineryForm = ({ hasLabel, type, submit, data}) => {
@@ -24,49 +24,27 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/register/machinery/${type === 'edit' ? uuid+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(dadosform)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          RedirectToLogin(navigate);
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            submit('edit', ...formData)
-            toast.success("Registro Atualizado com Sucesso!")
-          }
-          else{
-            toast.success("Registro Efetuado com Sucesso!")
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:'add', url:'register/machinery', keyfield:type === 'edit' && uuid, dadosform:dadosform})
+    if(resposta.status === 400){
+      setMessage({...dados})
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        toast.success("Registro Atualizado com Sucesso!")
+      }
+      else{
+        toast.success("Registro Efetuado com Sucesso!")
+      }
+      submit(type, ...formData)
     }
     setIsLoading(false)
   };
 
   const handleSubmit = e => {
     setIsLoading(true)
-    if (formData.data_validade === ''){
-      setFormData({...formData, data_validade:undefined})
-    }
-    if (formData.data_publicacao === ''){
-      setFormData({...formData, data_publicacao:undefined})
-    }
     setMessage(null)
     e.preventDefault();
     handleApi(formData);

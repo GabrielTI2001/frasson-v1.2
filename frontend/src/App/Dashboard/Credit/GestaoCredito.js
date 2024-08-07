@@ -5,6 +5,7 @@ import { useAppContext } from "../../../Main";
 import { BarChart, ColumnChart, PieChart } from "../../../components/Custom/Charts";
 import IndexProdutos from "../../Pipefy/Produtos/Index";
 import { HandleSearch } from "../../../helpers/Data";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -37,14 +38,14 @@ const DashGestaoCredito = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-2">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/analytics/credit'}>Operações de Crédito</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Em Andamento
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         {data ? <>
         <Row className="d-flex gx-4 gy-2 mb-4" xs={1} sm={2} xl={2}>
             {data.processos_gc && data.processos_gc.length > 0 &&

@@ -4,7 +4,7 @@ import { Button, Col} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AsyncSelect from 'react-select/async';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { SelectSearchOptions, sendData } from '../../../helpers/Data';
 import customStyles, { customStylesDark } from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import { useDropzone } from 'react-dropzone';
@@ -16,7 +16,6 @@ import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 const FormPVTEC = ({type, data, submit, card}) => {
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate()
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const [message, setMessage] = useState();
     const [formData, setformData] = useState({created_by:user.id, fluxo_ambiental:card ? card.id : '', status:'EA',
@@ -38,33 +37,20 @@ const FormPVTEC = ({type, data, submit, card}) => {
   
 
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/pipeline/pvtec/${type === 'edit' ? data.id+'/' : ''}`
-        const method = type === 'edit' ? 'PUT' : 'POST'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: dadosform
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate);
-            }
-            else if (response.status === 201 || response.status === 200){
-                type === 'edit' ? submit('edit', data) : submit('add', data)
-                toast.success("Registro Atualizado com Sucesso!")
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
+      const {resposta, dados} = await sendData({type:type, url:'pipeline/pvtec', keyfield:type === 'edit' && data.id, dadosform:dadosform, 
+        is_json:false})
+      if(resposta.status === 400){
+        setMessage({...dados})
+      }
+      else if (resposta.status === 401){
+        RedirectToLogin(navigate)
+      }
+      else if (resposta.status === 201 || resposta.status === 200){
+        type === 'edit' ? submit('edit', data) : submit('add', data)
+        toast.success("Registro Atualizado com Sucesso!")
+      }
     };
+
     const handleSubmit = async e => {
         setMessage(null)
         e.preventDefault();
@@ -93,17 +79,17 @@ const FormPVTEC = ({type, data, submit, card}) => {
     };
 
     useEffect(() =>{
-        const setform = () =>{
-          setformData({...data, ...formData})
-        }
-        if(type === 'edit' && !formData.atividade){
-            setform()
-        }
-        else{
-            if(!defaultoptions){
-                setDefaultOptions({})
-            }
-        }
+      const setform = () =>{
+        setformData({...data, ...formData})
+      }
+      if(type === 'edit' && !formData.atividade){
+          setform()
+      }
+      else{
+          if(!defaultoptions){
+              setDefaultOptions({})
+          }
+      }
     },[])
 
     return (
@@ -130,7 +116,7 @@ const FormPVTEC = ({type, data, submit, card}) => {
               <option value='FOC'>Formalização Operação de Crédito</option>
               <option value='OF'>Outras Frentes</option>
             </Form.Select>
-            <label className='text-danger'>{message ? message.etapa : ''}</label>
+            <label className='text-danger'>{message ? message.atividade : ''}</label>
         </Form.Group>
 
         {defaultoptions && (

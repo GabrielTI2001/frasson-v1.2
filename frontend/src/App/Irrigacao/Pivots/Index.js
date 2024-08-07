@@ -15,6 +15,7 @@ import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 import ModalRecord from "./Modal";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexPivots = () => {
     const [searchResults, setSearchResults] = useState();
@@ -67,14 +68,14 @@ const IndexPivots = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/irrigation'}>Irrigation Application</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cadastro Pivots
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsPivot}

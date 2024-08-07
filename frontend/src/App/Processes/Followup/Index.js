@@ -8,6 +8,7 @@ import AdvanceTableSearchBox from '../../../components/common/advance-table/Adva
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { columnsFollowup } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexFollowup = () => {
     const [searchResults, setSearchResults] = useState();
@@ -36,11 +37,11 @@ const IndexFollowup = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Acompanhamento Processos GAI
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsFollowup}

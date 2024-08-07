@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Button, Form, Col, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { SelectOptions, SelectSearchOptions } from '../../../helpers/Data';
+import { SelectOptions, SelectSearchOptions, sendData } from '../../../helpers/Data';
 import { useDropzone } from 'react-dropzone';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,51 +19,29 @@ const BenfeitoriaForm = ({ hasLabel, type, submit, data}) => {
     created_by: user.id
   });
   const [message, setMessage] = useState()
-  const channel = new BroadcastChannel('meu_canal');
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
-  const {uuid} = useParams()
   const [defaultoptions, setDefaultOptions] = useState()
   const [tipos, setTipos] = useState()
   const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/register/farm-assets/${type === 'edit' ? uuid+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-        const response = await fetch(link, {
-          method: method,
-          headers: {
-              'Authorization': `Bearer ${token}`
-          },
-          body: dadosform
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          RedirectToLogin(navigate);
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            channel.postMessage({ tipo: 'atualizar_machinery', reg:data});
-            toast.success("Registro Atualizado com Sucesso!")
-          }
-          else{
-            submit('add', data)
-            toast.success("Registro Efetuado com Sucesso!")
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'register/farm-assets', keyfield:null, dadosform:dadosform, is_json:false})
+    if(resposta.status === 400){
+      setMessage({...dados})
     }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      submit('add', dados)
+      toast.success("Registro Efetuado com Sucesso!")
+    }
+    setIsLoading(false)
   };
 
   const handleSubmit = async e => {
     setMessage(null)
+    setIsLoading(true)
     e.preventDefault();
     const formDataToSend = new FormData();
     for (const key in formData) {

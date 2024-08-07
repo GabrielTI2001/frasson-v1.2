@@ -6,9 +6,8 @@ import { faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { toast } from 'react-toastify';
 import { useNavigate } from "react-router-dom";
 import EditFeedback from "./Edit";
-import { RetrieveRecord } from "../../../helpers/Data";
+import { RetrieveRecord, sendData } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-
 
 const ViewFeedback = ({feedback, submit}) =>{
     const navigate = useNavigate()
@@ -17,38 +16,21 @@ const ViewFeedback = ({feedback, submit}) =>{
     });
     const [message, setMessage] = useState()
     const [datafeedback, setDataFeedback] = useState()
-    const token = localStorage.getItem("token")
     const [modal, setModal] = useState({show:false, link:''});
     const [modalform, setModalform] = useState({show:false, data:{}});
 
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/register/feedbacks-reply/`
-        const method = 'POST'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dadosform)
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate);
-            }
-            else if (response.status === 201 || response.status === 200){
-                toast.success("Resposta Registrada!")
-                setDataFeedback({...datafeedback, replys:[...datafeedback.replys, data]})
-                submit('edit', {...datafeedback, replys:[...datafeedback.replys, data]})
-            }
-        } catch (error) {
-            console.error('Erro:', error);
+        const {resposta, dados} = await sendData({type:'add', url:'register/feedbacks-reply', dadosform:dadosform})
+        if(resposta.status === 400){
+          setMessage(dados)
+        }
+        else if (resposta.status === 401){
+          RedirectToLogin(navigate)
+        }
+        else if (resposta.status === 201 || resposta.status === 200){
+            toast.success("Resposta Registrada!")
+            setDataFeedback({...datafeedback, replys:[...datafeedback.replys, dados]})
+            submit('edit', {...datafeedback, replys:[...datafeedback.replys, dados]})
         }
     };
     const handleFieldChange = e => {
@@ -62,6 +44,7 @@ const ViewFeedback = ({feedback, submit}) =>{
         e.preventDefault();
         handleApi(formData);
     };
+
     const submitreply = (type, data) =>{
         if (type === 'edit') {
             setDataFeedback({...datafeedback, replys:datafeedback.replys.map(f =>(
@@ -75,6 +58,7 @@ const ViewFeedback = ({feedback, submit}) =>{
             submit('edit', {...datafeedback, replys:datafeedback.replys.filter(r => r.id !== parseInt(data))} )
         }
     }
+    
     useEffect(() =>{
         const getdata = async () =>{
             const status = await RetrieveRecord(feedback.id, 'register/feedbacks', (data) => setDataFeedback(data))

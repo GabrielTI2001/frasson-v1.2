@@ -3,44 +3,25 @@ import PropTypes from 'prop-types';
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Row, Col, Spinner } from 'react-bootstrap';
+import { sendData } from '../../helpers/Data';
 
 const RegistrationForm = ({ hasLabel }) => {
-  const [formData, setFormData] = useState({
-    first_name: '',
-    last_name: '',
-    email: '',
-    password: '',
-    re_password: '',
-  });
-  const [message, setMessage] = useState({email:"", password:"", re_password:""})
+  const [formData, setFormData] = useState({});
+  const [message, setMessage] = useState({})
   const navigate = useNavigate();
   const [isload, setIsLoad] = useState(false)
 
   const handleApi = async (credentials) => {
-    try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/users/create/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(credentials)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...message, email: data.email ? data.email : "", password: data.password ? data.password : "",
-            re_password: data.re_password ? data.re_password : ""
-          })
-          setIsLoad(false)
-        }
-        else if (response.status === 201){
-          toast.success("Registro Efetuado com Sucesso!")
-          toast.success("Acesse seu E-mail Para Ativar Sua Conta", {autoClose:4000})
-          setIsLoad(false)
-          navigate(`${process.env.PUBLIC_URL}/auth/login`);
-        }
-    } catch (error) {
-        console.error('Erro ao fazer login:', error);
+    const {resposta, dados} = await sendData({type:'add', url:'users/create', keyfield:null, dadosform:credentials})
+    if(resposta.status === 400){
+      setMessage(dados)
     }
+    else if (resposta.status === 201 || resposta.status === 200){
+      toast.success("Registro Efetuado com Sucesso!")
+      toast.success("Acesse seu E-mail Para Ativar Sua Conta", {autoClose:4000})
+      navigate(`${process.env.PUBLIC_URL}/auth/login`);
+    }
+    setIsLoad(false)
   };
 
   const handleSubmit = e => {
@@ -64,12 +45,12 @@ const RegistrationForm = ({ hasLabel }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} className='mt-4'>
       <Form.Group className="mb-3">
         {hasLabel && <Form.Label>Nome</Form.Label>}
         <Form.Control
           placeholder={!hasLabel ? 'Nome' : ''}
-          value={formData.first_name}
+          value={formData.first_name || ''}
           name="first_name"
           onChange={handleFieldChange}
           type="text"
@@ -80,7 +61,7 @@ const RegistrationForm = ({ hasLabel }) => {
         {hasLabel && <Form.Label>Sobrenome</Form.Label>}
         <Form.Control
           placeholder={!hasLabel ? 'Sobrenome' : ''}
-          value={formData.last_name}
+          value={formData.last_name || ''}
           name="last_name"
           onChange={handleFieldChange}
           type="text"
@@ -91,7 +72,7 @@ const RegistrationForm = ({ hasLabel }) => {
         {hasLabel && <Form.Label>Email</Form.Label>}
         <Form.Control
           placeholder={!hasLabel ? 'Email address' : ''}
-          value={formData.email}
+          value={formData.email || ''}
           name="email"
           onChange={handleFieldChange}
           type="text"
@@ -102,7 +83,7 @@ const RegistrationForm = ({ hasLabel }) => {
           {hasLabel && <Form.Label>Senha</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Password' : ''}
-            value={formData.password}
+            value={formData.password || ''}
             name="password"
             onChange={handleFieldChange}
             type="password"
@@ -113,7 +94,7 @@ const RegistrationForm = ({ hasLabel }) => {
           {hasLabel && <Form.Label>Confirmar Senha</Form.Label>}
           <Form.Control
             placeholder={!hasLabel ? 'Confirm Password' : ''}
-            value={formData.re_password}
+            value={formData.re_password || ''}
             name="re_password"
             onChange={handleFieldChange}
             type="password"

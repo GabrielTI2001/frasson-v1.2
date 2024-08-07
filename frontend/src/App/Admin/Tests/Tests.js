@@ -1,14 +1,11 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Table, Placeholder} from 'react-bootstrap';
+import { Table, Placeholder} from 'react-bootstrap';
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-
-const InitData = {
-    'title': 'Assessments'
-}
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const TestsIndex = () => {
     const [data, setData] = useState();
@@ -31,14 +28,15 @@ const TestsIndex = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/administrator'}>Administrator Panel</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
-               {InitData.title}
-            </li>  
-        </ol>
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
+               {data && data.title}
+            </span> 
+        </CustomBreadcrumb>
+        
         {data ? 
             <Table responsive className="mt-3">
                 <thead className="bg-300">

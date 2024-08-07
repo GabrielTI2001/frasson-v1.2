@@ -7,3 +7,8 @@ fields_cardproduto_info = {
 fields_pvtec = {
     'orientacoes':'Orientações', 'atividade':'Atividade', 'responsaveis':'Responsáveis'
 }
+
+fields_cardprospect_info = {
+    'cliente':'Cliente', 'produto':'Produto de Interesse', 'data_vencimento':'Data de Vencimento', 'classificacao':'Classificação',
+    'origem':'Origem'
+}

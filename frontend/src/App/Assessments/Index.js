@@ -13,6 +13,7 @@ import ModalDelete from "../../components/Custom/ModalDelete";
 import FormAvaliacao from "./FormAva";
 import FormQuestion from "./Form";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const InitData = {
     'title': 'Assessments'
@@ -116,11 +117,11 @@ const IndexAssessments = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <h5 className="fs-0 fw-bold mb-3">Avaliações</h5>
         <div><Button className="btn-success btn-sm fs--1" onClick={() => setShowModal({show:true})}>Adicionar Avaliação</Button></div>
         {avaliacoes ? 

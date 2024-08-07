@@ -7,6 +7,7 @@ import { faChartColumn, faArrowTrendDown, faArrowTrendUp, faChartLine } from "@f
 import { useAppContext } from "../../../Main";
 import { LineChart } from "../../../components/Custom/Charts";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const Commodities = () =>{
     const {config: {theme}} = useAppContext();
@@ -107,14 +108,14 @@ const Commodities = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/external-api'}>API de Terceiros</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Commodities
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         <Form className='row mb-2'>
             <Form.Group className="mb-2" as={Col} lg={3} xl={3} sm={3}>
                 <Form.Label className='fw-bold mb-1'>Produto*</Form.Label>

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { HandleSearch } from "../../helpers/Data";
 import { useAppContext } from "../../Main";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexMyIndicators = () => {
     const [searchResults, setSearchResults] = useState();
@@ -32,11 +33,11 @@ const IndexMyIndicators = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Meus Indicadores
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <span className="fs--1">Você Possui {searchResults && searchResults.length} Indicador</span>
         {searchResults ?
         <Row xl={2} xs={1} className="mt-3">

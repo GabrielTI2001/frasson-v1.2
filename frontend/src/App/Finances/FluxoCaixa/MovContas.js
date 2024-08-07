@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const MovContas = ({id}) => {
     const [movimentacoes, setMovimentacoes] = useState();
@@ -32,14 +33,14 @@ const MovContas = ({id}) => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">  
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>  
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/finances/accounts'}>Saldos</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                Movimentações {movimentacoes && movimentacoes.nome_caixa}
-            </li> 
-        </ol>
+            </span> 
+        </CustomBreadcrumb>
         <div className="fs--2">Registros de movimentações nos últimos 120 dias</div>
         {movimentacoes ? 
         <Table responsive className="mt-3">

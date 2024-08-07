@@ -192,6 +192,7 @@ textarea:focus, input:focus{
   opacity: 0;
   cursor: pointer;
   transition: opacity 0.3s ease;
+  border-radius: 20px;
 }
 .modal-editar:hover{
   opacity: 0.7;

@@ -13,6 +13,7 @@ import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import FormTransfer from "./Form";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const InitData = {
     'columns':columnsTransfers, 'urlapilist':'finances/transfers', 
@@ -75,14 +76,14 @@ const IndexTransfers = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/finances/accounts'}>Saldos Bancários</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={InitData.columns}

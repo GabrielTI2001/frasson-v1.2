@@ -169,9 +169,9 @@ export const SelectOptions = async (link, field, field2, pkfield, params) => {
     }
 };
 
-export const sendData = async ({type, url, keyfield, dadosform, is_json=true}) => {
+export const sendData = async ({type, url, keyfield, dadosform, is_json=true, params}) => {
   const token = localStorage.getItem("token")
-  const link = `${process.env.REACT_APP_API_URL}/${url}/${type === 'edit' ? keyfield+'/' : ''}`
+  const link = `${process.env.REACT_APP_API_URL}/${url}/${type === 'edit' ? keyfield+'/' : ''}${params || ''}`
   const method = type === 'edit' ? 'PUT' : 'POST'
   const headers = {'Authorization': `Bearer ${token}`};
   if (is_json) {

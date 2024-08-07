@@ -6,6 +6,7 @@ import { BarChart } from "../../components/Custom/Charts";
 import { HandleSearch } from "../../helpers/Data";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const ResultsAssessment = () =>{
     const {config: {theme}} = useAppContext();
@@ -44,14 +45,14 @@ const ResultsAssessment = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/assessments'}>Avaliações</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Resultados
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         <Form className='row mb-3'>
             <Form.Group className="mb-0" as={Col} xl={3} sm={4}>
                 <Form.Select name='colaborador' onChange={handleFieldChange} value={formData ? formData.colaborador : ''}>

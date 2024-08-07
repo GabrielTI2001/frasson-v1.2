@@ -9,7 +9,7 @@ import { useAppContext } from '../../../Main.js';
 import {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
-import NavModal from './Nav.js';
+import NavModal, { NavModal2 } from './Nav.js';
 import ResultAnaliseSolo, { OtherInfo } from './SoloResults.js';
 import GoogleMap from '../../../components/map/GoogleMap';
 import MapInfo from './MapInfo.js';
@@ -18,6 +18,7 @@ import { faFile } from '@fortawesome/free-solid-svg-icons';
 import { fieldsAnaliseSolo } from '../Data.js';
 import EditFormModal from '../../../components/Custom/EditForm.js';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
+import { Anexos } from '../Anexos.js';
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -26,7 +27,7 @@ const ModalRecord = ({show, reducer}) => {
   const {uuid} = useParams()
   const [record, setRecord] = useState();
   const {config: {theme}} = useAppContext();
-  const [activeTab, setActiveTab] = useState('main');
+  const [activeTab, setActiveTab] = useState('results');
 
   const handleClose = () => {
     navigate('/register/analysis/soil')
@@ -110,12 +111,12 @@ const ModalRecord = ({show, reducer}) => {
       dialogClassName="mt-2 modal-custom modal-xl mb-0"
     >
       <div className="position-absolute d-flex top-0 end-0 mt-1 me-1" style={{ zIndex: 1000 }}>
-        <DropMenu record={record}/>
+        <DropMenu record={record} reducer={reducer}/>
         <CloseButton onClick={handleClose} className="btn btn-sm btn-circle d-flex flex-center transition-base ms-2"/>
       </div>
       <Modal.Body className="pt-2">
         <Row className='p-2 gy-1'>
-          <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={6}>
+          <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={4}>
             {record ? <>
               <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-2">
                 <h4 className="mb-1 fs-1 fw-bold">{record.localizacao}</h4>
@@ -133,7 +134,7 @@ const ModalRecord = ({show, reducer}) => {
                         {' às '+new Date(record.creation.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
                       </div>
 
-                      {fieldsAnaliseSolo.slice(0, 11).map(f => 
+                      {fieldsAnaliseSolo.slice(0, 10).map(f => 
                         !showForm[f.name] ?
                           <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
                             <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
@@ -143,13 +144,6 @@ const ModalRecord = ({show, reducer}) => {
                               : f.type === 'date' ? 
                                 <div className="fs--1 row-10">
                                   {record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}
-                                </div>
-                              : f.type === 'file' ? 
-                                <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer hover-children'>
-                                  <Link target='__blank' to={record.file} className='col-11'>
-                                    <FontAwesomeIcon icon={faFile} className='me-2 col-auto px-0 fs-1' />
-                                    <span className='col-10'>Abrir Arquivo</span>
-                                  </Link>
                                 </div>
                               : 
                                 <div className="fs--1 row-10">{record[f.name] ? f.is_number 
@@ -164,28 +158,8 @@ const ModalRecord = ({show, reducer}) => {
                           />
                       )}
                     </Tab.Pane>
-                    <Tab.Pane eventKey="map">
-                      <ModalMediaContent title='Mapa'> 
-                        {activeTab === 'map' && 
-                          <GoogleMap
-                            initialCenter={{
-                                lat: Number(record.latitude_gd),
-                                lng: Number(record.longitude_gd)
-                            }}
-                            infounlink
-                            mapStyle="Default"
-                            className="rounded-soft mt-2 google-maps container-map"
-                            token_api={record.token_apimaps}
-                            mapTypeId='satellite'
-                            coordenadas={[{id: record.id,latitude_gd:record.latitude_gd, longitude_gd:record.longitude_gd}]}
-                          >
-                            <MapInfo/>
-                          </GoogleMap>
-                        }
-                      </ModalMediaContent>
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="more">
-                        <OtherInfo info={record.other_info} />
+                    <Tab.Pane eventKey="anexos">
+                      <Anexos record={record} analisesolo/>
                     </Tab.Pane>
                   </Tab.Content>
                 </div>
@@ -195,23 +169,56 @@ const ModalRecord = ({show, reducer}) => {
             }
             
           </Col>
-          <Col lg={6} className='overflow-auto modal-column-scroll border border-bottom-0 border-top-0 border-end-0'>
-            {record ? <>
-              <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Resultados</span>
-                {fieldsAnaliseSolo.slice(11).map(f => 
-                  !showForm[f.name] ?
-                    <ResultAnaliseSolo record={record} field={f} click={handleEdit} key={f.name}/>
-                  :
-                    <EditFormModal key={f.name} onSubmit={(formData) => handleSubmit(formData, record.uuid)} show={showForm[f.name]} 
-                      fieldkey={f.name} setShow={setShowForm} record={record} field={f}
-                    />
-                )}
-              </div>
-              </>
-            : uuid &&
-              <SkeletBig />
-            }
+          <Col lg={8} className='overflow-auto modal-column-scroll border border-bottom-0 border-top-0 border-end-0'>
+            <Tab.Container id="right-tabs-example" defaultActiveKey="results" onSelect={handleTabSelect}>
+              <NavModal2 record={record} />
+              <Tab.Content>
+                <Tab.Pane eventKey="results">
+                  {record ? 
+                    <>
+                    <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Resultados</span>
+                    <Row xl={2}>
+                      {fieldsAnaliseSolo.slice(11).map(f => 
+                        !showForm[f.name] ?
+                          <ResultAnaliseSolo record={record} field={f} click={handleEdit} key={f.name}/>
+                        :
+                          <EditFormModal key={f.name} onSubmit={(formData) => handleSubmit(formData, record.uuid)} show={showForm[f.name]} 
+                            fieldkey={f.name} setShow={setShowForm} record={record} field={f}
+                          />
+                      )}
+                    </Row>
+                    <div className="mt-3 fw-normal" style={{fontSize: '11px'}}>
+                      <span>* Níveis ideais de nutrientes no solo conforme interpretação da Embrapa Cerrados.</span>
+                    </div>
+                    </>
+                  : uuid && <SkeletBig />
+                  }
+                </Tab.Pane>
+                <Tab.Pane eventKey="map">
+                  <ModalMediaContent title='Mapa'> 
+                    {activeTab === 'map' && 
+                      <GoogleMap
+                        initialCenter={{
+                            lat: Number(record.latitude_gd),
+                            lng: Number(record.longitude_gd)
+                        }}
+                        infounlink
+                        mapStyle="Default"
+                        className="rounded-soft mt-2 google-maps container-map"
+                        token_api={record.token_apimaps}
+                        mapTypeId='satellite'
+                        coordenadas={[{id: record.id,latitude_gd:record.latitude_gd, longitude_gd:record.longitude_gd}]}
+                      >
+                        <MapInfo/>
+                      </GoogleMap>
+                    }
+                  </ModalMediaContent>
+                </Tab.Pane>
+                <Tab.Pane eventKey="more">
+                  {record && <OtherInfo info={record.other_info} />}
+                </Tab.Pane>
+              </Tab.Content>
+            </Tab.Container>               
           </Col>
         </Row>
       </Modal.Body>

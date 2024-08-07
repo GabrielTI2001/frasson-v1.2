@@ -1,12 +1,15 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Spinner, Table, Form} from 'react-bootstrap';
-import { Link, useNavigate } from "react-router-dom";
+import {Row, Col, Spinner, Table, Form, Modal, CloseButton} from 'react-bootstrap';
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import { ModalPagamento } from "./Modal";
+import { PagamentoForm } from "./Form";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const InitData = {
     'urlapilist':'finances/billings', 
@@ -26,21 +29,23 @@ const meses = [
 const ReportPagamentos = () => {
     const [anos, setAnos] = useState();
     const [pagamentos, setPagamentos] = useState();
-    const [formData, setFormData] = useState({});
+    const [formData, setFormData] = useState({ano:new Date().getFullYear(), mes:new Date().getMonth()+1});
     const user = JSON.parse(localStorage.getItem("user"))
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate();
+    const {uuid} = useParams()
+    const [modal, setModal] = useState({show:false});
+    const [showmodal, setShowModal] = useState(false);
 
     const setter = (responsedata) => {
         setAnos(responsedata.anos)
         setPagamentos(responsedata.pagamentos)
     }
-    
-    if (formData && (formData.ano && formData.mes)){
-        if(!pagamentos){
-            const params = `?year=${formData.ano}&month=${formData.mes}`
-            HandleSearch(formData.search || '', 'finances/billings', setter, params)
-        }
+    const submit = (type, data) => {
+        if (type === 'add') setPagamentos([data, ...pagamentos])
+        else if (type === 'edit' && pagamentos) setPagamentos([...pagamentos.map(reg => reg.uuid === data.uuid ? data : reg)])
+        else if (type === 'delete' && pagamentos) setPagamentos(pagamentos.filter(r => r.uuid !== data))
+        setShowModal(false)
     }
 
     const handleFieldChange = e => {
@@ -52,7 +57,7 @@ const ReportPagamentos = () => {
     };
 
     const click = (url) =>{
-        window.open(url,'_blank') 
+        navigate('/finances/billings/'+url)
     }
    
     useEffect(()=>{
@@ -68,14 +73,36 @@ const ReportPagamentos = () => {
         }
         setFormData({...formData, ano:new Date().getFullYear(), mes:new Date().getMonth()+1})
     },[])
+    useEffect(()=>{
+        if ((user.permissions && user.permissions.indexOf("view_cobrancas_pipefy") === -1) && !user.is_superuser){
+            navigate("/error/403")
+        }
+    },[])
+    useEffect(() => {
+        const search = async () => {
+            if (formData && (formData.ano && formData.mes)){
+                if(!pagamentos){
+                    const params = `?year=${formData.ano}&month=${formData.mes}`
+                    HandleSearch(formData.search || '', 'finances/billings', setter, params)
+                }
+            }
+        }
+        if (uuid){
+            setModal({show:true})
+        }
+        else{
+            setModal({show:false})
+            search()
+        }
+    },[uuid, formData])
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <Row>
             <Form.Group className="mb-1" as={Col} xl={2} sm={3}>
                 <Form.Select name='ano' onChange={handleFieldChange} value={formData ? formData.ano : ''}>
@@ -101,7 +128,7 @@ const ReportPagamentos = () => {
                 />
             </Form.Group>
             {formData.ano && formData.mes &&
-            <Form.Group className="mb-1" as={Col} xl={3} sm={6}>
+            <Form.Group className="mb-1" as={Col} xl='auto' sm='auto'>
                 <Link className="btn btn-sm bg-danger-subtle text-danger" 
                     to={`${process.env.REACT_APP_API_URL}/finances/billings-report/?month=${formData.mes}&year=${formData.ano}&search${formData.search || ''}`}
                 >
@@ -109,6 +136,11 @@ const ReportPagamentos = () => {
                 </Link>
             </Form.Group>
             }
+            <Col xl={'auto'} sm='auto' xs={'auto'}>
+                <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
+                    style={{padding: '2px 8px'}} onClick={() =>{setShowModal({show:true})}}
+                >Novo Pagamento</Link>
+            </Col>
         </Row>
         {pagamentos ? 
         <Table responsive className="mt-3">
@@ -118,21 +150,21 @@ const ReportPagamentos = () => {
                     <th scope="col" className="text-center text-middle">Beneficiário</th>
                     <th scope="col" className="text-center text-middle">Categoria</th>
                     <th scope="col" className="text-center text-middle">Classificação</th>
-                    <th scope="col" className="text-center text-middle">Fase Atual</th>
+                    <th scope="col" className="text-center text-middle">Status</th>
                     <th scope="col" className="text-center text-middle">Data Ref.</th>
                     <th scope="col" className="text-center text-middle">Valor (R$)</th>
                 </tr>
             </thead>
             <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
             {pagamentos.map(registro =>
-            <tr key={registro.id} style={{cursor:'pointer'}} onClick={() => click(registro.card_url)} 
+            <tr key={registro.id} style={{cursor:'pointer'}} onClick={() => click(registro.uuid)} 
                 className={`${theme === 'light' ? 'hover-table-light': 'hover-table-dark'} py-0`}
             >
                 <td className="text-center text-middle fs--2">{registro.id}</td>
                 <td className="text-center text-middle fs--2">{registro.str_beneficiario}</td>
                 <td className="text-center text-middle fs--2">{registro.str_categoria}</td>
                 <td className="text-center text-middle fs--2">{registro.str_classificacao || '-'}</td>
-                <td className="text-center text-middle fs--2 text-primary">{registro.phase_name}</td>
+                <td className="text-center text-middle fs--2 text-primary">{registro.str_status}</td>
                 <td className="text-center text-middle fs--2">
                     {registro.data ? new Date(registro.data).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}
                 </td>
@@ -146,6 +178,24 @@ const ReportPagamentos = () => {
         </Table>
         : <div className="text-center"><Spinner /></div>
         }
+        <ModalPagamento show={modal.show} reducer={submit} />
+        <Modal
+            size="md"
+            show={showmodal.show}
+            onHide={() => setShowModal({show:false})}
+            aria-labelledby="example-modal-sizes-title-lg"
+            scrollable
+        >
+            <Modal.Header>
+                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
+                    {showmodal && showmodal.data ? 'Editar' : 'Adicionar'} Pagamento
+                </Modal.Title>
+                <CloseButton onClick={() => setShowModal({show:false})}/>
+            </Modal.Header>
+            <Modal.Body className="pb-0">
+                <PagamentoForm type='add' hasLabel submit={submit} />
+            </Modal.Body>
+        </Modal>
         </>
     );
   };

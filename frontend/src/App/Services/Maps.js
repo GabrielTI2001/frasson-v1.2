@@ -3,6 +3,7 @@ import { useNavigate, Link} from 'react-router-dom';
 import { Col, Row} from 'react-bootstrap';
 import { useAppContext } from '../../Main';
 import GoogleMap from '../../components/map/GoogleMap';
+import CustomBreadcrumb from '../../components/Custom/Commom';
 
 const ServicesMaps = () => {
   const {config: {theme}} = useAppContext();
@@ -27,11 +28,11 @@ const ServicesMaps = () => {
 
   return (
     <>
-      <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+      <CustomBreadcrumb >
+        <span className="breadcrumb-item fw-bold" aria-current="page">
           Mapas
-        </li>    
-      </ol>
+        </span>    
+      </CustomBreadcrumb>
       <Row xl={1} sm={1} style={{height: '66vh'}} className='gy-1 d-flex align-items-start mt-2'>
         <Col>
           {tokenmaps && 

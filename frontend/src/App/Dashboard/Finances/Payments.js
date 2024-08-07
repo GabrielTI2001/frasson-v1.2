@@ -5,6 +5,7 @@ import { useAppContext } from "../../../Main";
 import { BarChart } from "../../../components/Custom/Charts";
 import { HandleSearch } from "../../../helpers/Data";
 import ReportPagamentos from "../../Finances/Reports/Pagamentos";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -54,11 +55,11 @@ const DashBillings = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Dashboard Pagamentos
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         <Form className='row mb-3'>
             <Form.Group className="mb-1" as={Col} xl={2} sm={4}>
                 <Form.Select name='ano' onChange={handleFieldChange} value={formData ? formData.ano : ''}>

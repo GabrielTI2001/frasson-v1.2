@@ -22,6 +22,7 @@ router.register(r'produtos', views.ProdutosView)
 router.register(r'detalhamentos', views.Detalhamento_ServicosView)
 router.register(r'instituicoes', views.Instituicoes_ParceirasView)
 router.register(r'instituicoes-razaosocial', views.Instituicoes_RazaosocialView)
+router.register(r'anexos', views.AnexoView)
 
 urlpatterns = [
     path('landing/', views.home, name='home.page'),

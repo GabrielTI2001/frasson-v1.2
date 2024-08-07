@@ -9,6 +9,7 @@ import { SelectSearchOptions } from "../../../helpers/Data";
 import RegimeForm from "./Form";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const InitData = {
     'urlapilist':'farms/regime', 
@@ -94,14 +95,14 @@ const IndexRegimes = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/farms'}>Cadastros Fazendas</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <Row>
             <Form.Group className="mb-2" as={Col} lg={4}>
                 <Form.Label className='fw-bold mb-1'>Nome Cliente</Form.Label>

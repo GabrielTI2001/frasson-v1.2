@@ -1,4 +1,4 @@
-import { faInfoCircle, faMap} from "@fortawesome/free-solid-svg-icons"
+import { faFileClipboard, faInfoCircle, faMap, faPaperclip} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Nav } from "react-bootstrap"
 
@@ -8,6 +8,25 @@ const NavModal = ({record}) =>{
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2 link-primary" eventKey="main">
                 <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>Análise
+            </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab mb-2 link-primary" eventKey="anexos">
+                <FontAwesomeIcon icon={faPaperclip} className="me-1"/>Anexos
+            </Nav.Link>
+        </Nav.Item>
+    </Nav>
+    )
+}
+
+export default NavModal;
+
+export const NavModal2 = ({record}) =>{
+    return (
+    <Nav variant="pills" className="flex-row fs--2">
+        <Nav.Item>
+            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2 link-primary" eventKey="results">
+                <FontAwesomeIcon icon={faInfoCircle} className="me-1"/>Resultados
             </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -23,5 +42,3 @@ const NavModal = ({record}) =>{
     </Nav>
     )
 }
-
-export default NavModal;

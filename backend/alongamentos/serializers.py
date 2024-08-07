@@ -22,6 +22,7 @@ class detailAlongamentos(serializers.ModelSerializer):
     str_testemunha02 = serializers.CharField(source='testemunha02.razao_social', read_only=True)
     str_propriedade = serializers.SerializerMethodField(read_only=True)
     str_municipio = serializers.SerializerMethodField(read_only=True)
+    str_agencia = serializers.CharField(source='agencia_bancaria.instituicao.razao_social', read_only=True)
     produto = serializers.CharField(source='produto_agricola.description', read_only=True)
     def get_info_operacao(self, obj):
         if obj.operacao:

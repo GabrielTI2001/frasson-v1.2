@@ -18,7 +18,7 @@ class detailFollowup(serializers.ModelSerializer):
             num_dias_formado = dias_formado.days if data_formacao is not None else '-'
             data_formacao_str = f"{datetime.strptime(str(data_formacao), '%Y-%m-%d').strftime('%d/%m/%Y')} (há {num_dias_formado}{' dias' if num_dias_formado > 1 else ' dia'})" if data_formacao is not None else '-'
             inema = {
-                'id': processo_inema.id,
+                'id': obj.id,
                 'requerimento': processo_inema.requerimento,
                 'data_requerimento': datetime.strptime(str(processo_inema.data_requerimento), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.data_requerimento != None else '-',
                 'data_enquadramento': datetime.strptime(str(processo_inema.data_enquadramento), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.data_enquadramento != None else '-',
@@ -58,6 +58,11 @@ class detailFollowup(serializers.ModelSerializer):
             'created_at': processo_pipefy.created_at.strftime("%d/%m/%Y %H:%M") or '-'
         }
         return pipefy
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            if field_name in ['data_requerimento', 'requerimento']:
+                field.required = True
     class Meta:
         model = Processos_Andamento
         fields = '__all__'

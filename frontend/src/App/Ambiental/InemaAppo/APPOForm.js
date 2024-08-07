@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Spinner} from 'react-bootstrap';
-import { fetchAquifero, fieldsAPPO} from './../Data';
+import { fieldsAPPO} from './../Data';
 import { useAppContext } from '../../../Main';
 import RenderFields from '../../../components/Custom/RenderFields';
-import { sendData } from '../../../helpers/Data';
+import { SelectOptions, sendData } from '../../../helpers/Data';
 
 const APPOForm = ({ hasLabel, type, submit}) => {
   const {config: {theme}} = useAppContext();
@@ -62,7 +62,7 @@ const APPOForm = ({ hasLabel, type, submit}) => {
 
   useEffect(()=>{
     const buscar = async () =>{
-      const data = await fetchAquifero();
+      const data = await SelectOptions('environmental/inema/aquifero', 'description');
       if (data.status === 401){
         const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
         navigate(`/auth/login?next=${next}`);

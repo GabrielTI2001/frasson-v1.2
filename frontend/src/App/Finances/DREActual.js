@@ -7,6 +7,7 @@ from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";
 import { ItemTable } from "./AcordionItem";
 import { CardDRE } from "./Card";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const DREConsolidado = () =>{
     const {config: {theme}} = useAppContext();
@@ -47,11 +48,11 @@ const DREConsolidado = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 DRE Consolidado
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         <Form className='row mb-2'>
             <Form.Group className="mb-1" as={Col} xl={2} sm={4}>
                 <Form.Select name='ano' onChange={handleFieldChange} value={formData ? formData.ano : ''}>

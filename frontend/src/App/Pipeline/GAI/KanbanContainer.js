@@ -14,6 +14,7 @@ import { toast } from 'react-toastify';
 import SearchForm from '../Search';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import CustomBreadcrumb from '../../../components/Custom/Commom';
 
 const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
 const clientId = Math.floor(Math.random() * 1000000)
@@ -198,14 +199,14 @@ const KanbanContainer = () => {
 
   return (<>
     <Row className="gx-1 gy-2 px-0 d-flex align-items-center mb-2">
-      <ol className="breadcrumb breadcrumb-alt fs-0 col">
-          <li className="breadcrumb-item fw-bold">
+      <CustomBreadcrumb >
+          <span className="breadcrumb-item fw-bold">
               <Link className="link-fx text-primary fs--1" to={'/home'}>Home</Link>
-          </li>
-          <li className="breadcrumb-item fw-bold fs--1" aria-current="page">
+          </span>
+          <span className="breadcrumb-item fw-bold fs--1" aria-current="page">
             Fluxo - Gestão Ambiental e Irrigação
-          </li>  
-      </ol>
+          </span>  
+      </CustomBreadcrumb>
       <Col xs={12} xl={4} sm={4}>
         <SearchForm />
       </Col>

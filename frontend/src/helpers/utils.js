@@ -468,3 +468,30 @@ export const convertGDtoGMS = (val, type) => {
 
     return str_result
 }
+
+export const convertstringDMSToDD = (dmsLat, dmsLng) => {
+  // Splitting DMS strings into components
+  const latComponents = dmsLat.match(/-?\d+\.\d+|-?\d+/g);
+  const lngComponents = dmsLng.match(/-?\d+\.\d+|-?\d+/g);
+  if (!latComponents || !lngComponents) {
+      return null; // Invalid format
+  }
+  const latDegrees = parseFloat(latComponents[0]);
+  const latMinutes = parseFloat(latComponents[1] || 0);
+
+  let latSeconds = 0;
+  if (latComponents[2]) {
+      latSeconds = parseFloat(latComponents[2].replace(',', '.')) || 0;
+  }
+  const lngDegrees = parseFloat(lngComponents[0]);
+  const lngMinutes = parseFloat(lngComponents[1] || 0);
+
+  let lngSeconds = 0;
+  if (lngComponents[2]) {
+      lngSeconds = parseFloat(lngComponents[2].replace(',', '.')) || 0;
+  }
+
+  const latDecimal = latDegrees + (latDegrees < 0 ? -1 : 1) * (latMinutes / 60 + latSeconds / 3600);
+  const lngDecimal = lngDegrees + (lngDegrees < 0 ? -1 : 1) * (lngMinutes / 60 + lngSeconds / 3600);
+  return { lat: latDecimal, lng: lngDecimal };
+}

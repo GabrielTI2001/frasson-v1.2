@@ -2,7 +2,7 @@ import { faCircleCheck, faFileAlt, faFileLines, faFilePdf, faInfoCircle, faPenTo
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { useState } from "react"
 import { CloseButton, Modal, Nav } from "react-bootstrap"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 import ModalDeleteCard from "../../components/Custom/ModalDeleteCard"
 import FormAlongamento from "../Alongamentos/Form"
 import Edit from "../Alongamentos/Edit"
@@ -70,11 +70,12 @@ export const Alongamentos = ({record, reducer}) =>{
             </div></>
         }
         <Modal
-            size="lg"
+            size="md"
             show={modalform.show}
             onHide={() => setModalForm({show:false})}
             aria-labelledby="example-modal-sizes-title-lg"
-            scrollable
+            scrollable className="modal-delete-card"
+            backdrop={false}
         >
             <Modal.Header>
             <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
@@ -85,7 +86,7 @@ export const Alongamentos = ({record, reducer}) =>{
             </Modal.Title>
                 <CloseButton onClick={() => setModalForm({show:false})}/>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="pb-0">
                 <div className="">
                 {modalform && modalform.type == 'edit' 
                     ? <Edit id={modalform.id} update={update} operacao={record}/>

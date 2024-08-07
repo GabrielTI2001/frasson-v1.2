@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-// import ActionButton from '../../../components/common/ActionButton';
 import { Row, Table } from "react-bootstrap";
-// import { faTrashAlt, faEdit } from "@fortawesome/free-solid-svg-icons";
 import SubtleBadge from "../../../components/common/SubtleBadge";
 import AllowedEmailsForm from "../AllowedEmails/AllowedEmailsForm";
 import { useAppContext } from "../../../Main";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexUsers = () => {
     const {config: {theme}} = useAppContext();
@@ -97,14 +96,14 @@ const IndexUsers = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/home'}>Home</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Usuários do Sistema
-            </li>    
-        </ol>
+            </span>   
+        </CustomBreadcrumb>
         <Row>
         <h4 className="fw-600 fs--1">Usuários</h4>
         {users && 

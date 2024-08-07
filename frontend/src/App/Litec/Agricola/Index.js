@@ -7,7 +7,7 @@ import AdvanceTableFooter from '../../../components/common/advance-table/Advance
 import AdvanceTableWrapper from '../../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsAgricola} from "../Data";
-import { GetRecord, HandleSearch } from "../../../helpers/Data";
+import { HandleSearch } from "../../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import FormProdAgricola from "./Form";
 import EditProdAgricola from "./Edit";
@@ -26,7 +26,6 @@ const IndexProdAgricola = ({gleba}) => {
     const [showmodal, setShowModal] = useState({show:false})
 
     const onClick = async (pk, uuid) =>{
-        const gleba = await GetRecord(uuid, 'glebas/coordenadas');
         setShowModal({show:true, data:{gleba:gleba, id:pk}})
     }
 
@@ -97,11 +96,11 @@ const IndexProdAgricola = ({gleba}) => {
             </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
         <Modal
-            size="lg"
+            size="md"
             show={showmodal.show}
             onHide={() => setShowModal({show:false})}
             aria-labelledby="example-modal-sizes-title-lg"
-            centered scrollable
+            centered scrollable backdrop={false} className="modal-delete-card"
         >
             <Modal.Header>
                 <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
@@ -109,7 +108,7 @@ const IndexProdAgricola = ({gleba}) => {
                 </Modal.Title>
                     <CloseButton onClick={() => setShowModal(false)}/>
                 </Modal.Header>
-                <Modal.Body className="px-3 py-2">
+                <Modal.Body className="px-3 pb-0">
                     {!showmodal.data 
                         ? <FormProdAgricola hasLabel type={showmodal.data ? 'edit' : 'add'} data={showmodal.data} submit={submit} gleba={gleba.id}/>
                         : <EditProdAgricola gleba={gleba} id={showmodal.data.id} submit={submit}/>

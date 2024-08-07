@@ -1,7 +1,7 @@
 import { useEffect, useState} from "react";
 import React from 'react';
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, InputGroup, FormControl, Row, Col, Modal, CloseButton } from "react-bootstrap";
+import { InputGroup, FormControl, Row, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { Placeholder } from "react-bootstrap";
 import GoogleMap from "../../../components/map/GoogleMap";
@@ -12,6 +12,7 @@ import NewRequerimento from "./New";
 import { HandleSearch } from "../../../helpers/Data";
 import ViewRequerimentoAPPO from "./View";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const initData = {'appo': {title:'APPO', textpoint: 'Poços '}, 
     'outorga': {title:'Outorga', textpoint: 'pontos de outorga '}
@@ -100,14 +101,14 @@ const MapaPontosRequerimento = ({type}) => {
 
     return (
     <>
-        <ol className="breadcrumb breadcrumb-alt mb-2">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={`/ambiental/inema/requerimentos`}>Requerimentos Inema</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 {initData[type].title}
-            </li>             
-        </ol>
+            </span> 
+        </CustomBreadcrumb>
         <Row className="flex-end-center justify-content-start mb-3 gy-1">
             <Col lg={6} xxl={6}>
                 <InputGroup className='position-relative'>

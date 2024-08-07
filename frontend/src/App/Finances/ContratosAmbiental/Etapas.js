@@ -41,7 +41,7 @@ export const Processos = ({processos}) =>{
     return(<>
         <span className='ms-1 mt-0'>{processos && processos.length} card(s) em produtos</span>
         {processos && processos.map(p => 
-            <div className="rounded-top-lg pt-1 pb-0 mb-2" key={p.id}>
+            <div className="rounded-top-lg pt-1 pb-0 mb-2" key={p.uuid}>
                 <CardInfo data={p} title2='Em: ' attr1='detalhamento' attr2='phase' url='pipeline/518984721/processo'/>
             </div>
         )} 

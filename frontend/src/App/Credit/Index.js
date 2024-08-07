@@ -9,6 +9,7 @@ import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import OperacoesForm from "./Form";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const InitData = {
     'urlapilist':'credit/operacoes-contratadas', 
@@ -162,11 +163,11 @@ const IndexCredit = ({mes, ano}) => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <Row className="mb-2">
             {metadata && (!mes && !ano) && <>
                 <Form.Group className="mb-1" as={Col} lg='auto'>

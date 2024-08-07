@@ -56,7 +56,7 @@ const ModalPessoal = ({show, reducer}) => {
         setRecord(reg)
       }
     }
-    if(show && uuid){getData()}
+    if(show && uuid){if (!record) getData()}
   }, [show])
 
   const handleEdit = (key) =>{
@@ -69,10 +69,13 @@ const ModalPessoal = ({show, reducer}) => {
   const handleSubmit = (formData) =>{
     const formDataToSend = new FormData();
     for (const key in formData) {
-      if (Array.isArray(formData[key])) {
+      if (Array.isArray(formData[key] && key !== 'avatar')) {
         formData[key].forEach(value => {
           formDataToSend.append(key, value);
         });
+      }
+      else if (key === 'avatar') {
+        formDataToSend.append('avatar', formData[key][0]);
       }
       else{
         formDataToSend.append(key, formData[key]);
@@ -120,8 +123,9 @@ const ModalPessoal = ({show, reducer}) => {
         <Row className='p-2 gy-1'>
           <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={6}>
             {record ? <>
-              <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-2">
+              <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-3">
                 <h4 className="mb-1 fs-1 fw-bold">{record.razao_social}</h4>
+                <h6 className="mb-1 fs--1 fw-bold">{record.cpf_cnpj}</h6>
               </div>
               <Tab.Container id="left-tabs-example" defaultActiveKey="main" onSelect={handleTabSelect}>
                 <div className='ms-3 my-2'>
@@ -136,7 +140,7 @@ const ModalPessoal = ({show, reducer}) => {
                         {' às '+new Date(record.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
                       </div>
 
-                      <Avatar src={`${process.env.REACT_APP_API_URL}/media/avatars/clients/default-avatar.jpg`} size={'3xl'}/>
+                      <Avatar src={record.avatar || `${process.env.REACT_APP_API_URL}/media/avatars/clients/default-avatar.jpg`} size={'3xl'}/>
                       {fieldsPessoal.map(f => 
                           !showForm[f.name] ?
                             <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
@@ -161,7 +165,9 @@ const ModalPessoal = ({show, reducer}) => {
                                 </div>
                               : f.type === 'file' ? <div className="fs--1 row-10"></div>
                               : 
-                                <div className="fs--1 row-10">{record[f.name] || '-'}</div>}
+                                <div className="fs--1 row-10">{record[f.name] || '-'}</div>
+                              }
+                              {message && message[f.name] && <label className='text-danger fs--2'>{message[f.name]}</label>}
                             </div>
                             :
                             <EditFormModal key={f.name}

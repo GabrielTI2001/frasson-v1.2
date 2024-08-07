@@ -40,7 +40,7 @@ const Edit = ({id, update}) => {
     {alongamento && (
         <>
         <div><span className='fw-bold text-primary mb-1'>Informações da Operação</span></div>
-        <Row xl={4} sm={3} xs={1} className="mt-1">
+        <Row xl={2} sm={1} xs={1} className="mt-1">
             <Col className='mb-2'>
                 <strong className='me-1 d-block'>Beneficiário</strong>
                 <span className='my-1'>{alongamento.info_operacao.beneficiario}</span>
@@ -91,9 +91,6 @@ const Edit = ({id, update}) => {
             </Col>
             
         </Row>
-        <div style={{fontSize: '11px'}}>Qualquer alteração nas informações da operação deverá ser realizada no Pipefy. 
-            <Link className="fw-bold text-info" to={alongamento.info_operacao.url} target="__blank"> Clique Aqui</Link> para alterar esta operação.
-        </div>
         <hr className="my-1"></hr>
         <FormAlongamento hasLabel type='edit' data={alongamento} submit={submit}/>
         </>

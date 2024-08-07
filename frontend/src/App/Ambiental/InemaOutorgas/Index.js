@@ -15,6 +15,7 @@ import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexOutorgas = () => {
     const [searchResults, setSearchResults] = useState();
@@ -76,14 +77,14 @@ const IndexOutorgas = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/home'}>Home</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Processos Outorga
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsOutorga}

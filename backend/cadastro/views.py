@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo
+from .models import Municipios, Maquinas_Equipamentos, Benfeitorias_Fazendas, Pictures_Benfeitorias, Tipo_Benfeitorias, Analise_Solo, Anexos
 from .models import Feedbacks_Category, Feedbacks_System, Welcome_Messages, Detalhamento_Servicos, Instituicoes_Parceiras, Cartorios_Registro
 from pipeline.models import Fluxo_Gestao_Ambiental, Fluxo_Gestao_Credito
 from finances.models import Contratos_Ambiental, Contratos_Ambiental_Pagamentos
@@ -213,6 +213,17 @@ class AnalisesSoloView(viewsets.ModelViewSet):
             return ListAnalisesSolo
         else:
             return self.serializer_class
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        files = request.FILES.getlist('file')
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            if request.FILES:
+                for i in files:
+                    Anexos.objects.create(analise_solo=serializer.instance, uploaded_by=request.user, file=i)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CategoryFeedbackView(viewsets.ModelViewSet):
     queryset = Feedbacks_Category.objects.all()
@@ -331,3 +342,33 @@ class Instituicoes_RazaosocialView(viewsets.ModelViewSet):
         else:
             queryset = queryset.order_by('-created_at')[:10]
         return queryset
+
+class AnexoView(viewsets.ModelViewSet):
+    queryset = Anexos.objects.all().order_by('-created_at')
+    serializer_class = serializerAnexos
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        analise_solo = self.request.query_params.get('analisesolo', None)   
+        if analise_solo:
+            queryset = queryset.filter(Q(analise_solo_id=int(analise_solo)))
+        return queryset
+    def create(self, request, *args, **kwargs):
+        response_data = []
+        serializer = self.get_serializer(data=request.data)
+        files = request.FILES.getlist('file')
+        if serializer.is_valid():
+            for i in files:
+                reg = Anexos.objects.create(
+                    analise_solo_id=request.data.get('analise_solo') if request.data.get('analise_solo') else None, 
+                    uploaded_by_id=request.data.get('uploaded_by'), 
+                    file=i
+                )
+                response_data.append({
+                    'id': reg.id, 
+                    'file': '/media/' + reg.file.name, 
+                    'name': reg.name, 
+                    'user':{'name':reg.uploaded_by.first_name+' '+reg.uploaded_by.last_name, 'id':reg.uploaded_by.id},
+                    'created_at': reg.created_at
+                })
+            return Response(response_data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

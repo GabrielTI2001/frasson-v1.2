@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexOutorgasANA = () => {
     const [searchResults, setSearchResults] = useState();
@@ -43,11 +44,11 @@ const IndexOutorgasANA = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Outorgas ANA
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsOutorga}

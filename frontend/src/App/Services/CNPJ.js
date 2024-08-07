@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { Button, Form, Col, Table, Row, Placeholder} from 'react-bootstrap';
 import { useAppContext } from "../../Main";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const ConsultaCNPJ = () =>{
     const {config: {theme}} = useAppContext();
@@ -24,6 +25,7 @@ const ConsultaCNPJ = () =>{
             const data = await response.json();
             if(response.status === 400){
               setMessage(data.msg)
+              setFormData({})
             }
             else if (response.status === 401){
               localStorage.setItem("login", JSON.stringify(false));
@@ -55,14 +57,14 @@ const ConsultaCNPJ = () =>{
 
     return(
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/external-api'}>API de Terceiros</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold">
+            </span>
+            <span className="breadcrumb-item fw-bold">
                 Consulta CNPJ
-            </li>
-        </ol>
+            </span>
+        </CustomBreadcrumb>
         <Form onSubmit={handleSubmit} className='row d-flex align-items-center'>
             <Form.Group className="mb-2" as={Col} xl={3} sm={4}>
                 <Form.Label className='fw-bold mb-1'>CNPJ</Form.Label>

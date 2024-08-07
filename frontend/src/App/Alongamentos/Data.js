@@ -129,3 +129,31 @@ export const columnsAlongamento = [
     headerProps: { className: 'text-900 p-1' }
   },
 ];
+
+export const fieldsAlongamento = [
+  {name:'percentual', label:'Percentual de Garantia*', type:'text', is_number:true},
+  {name:'valor_unitario', label:'Valor Unitário (R$/Kg)*', type:'text', is_number:true},
+  {name:'valor_total', label:'Valor Total (R$)*', type:'text', is_number:true},
+  {name:'quant_penhor_kg', label:'Qtd. Penhor (kg)*', type:'text', is_number:true},
+  {name:'quant_penhor_tons', label:'Qtd. Penhor (tons)*', type:'text', is_number:true},
+  {name:'quant_sacas_60_kg', label:'Qtd. Sacas (60 kg)*', type:'text', is_number:true},
+  
+  {name:'data', label:'Data Alongamento*', type:'date'},
+  {name:'agencia_bancaria', label:'Agência Bancária*', type:'select2', url:'register/instituicoes', attr1:'razao_social',string:'str_agencia'},
+  {name:'tipo_armazenagem', label:'Tipo Armazenagem*', type:'select', string:'str_tipo_armazenagem'},
+  {name:'fiel_depositario', label:'Fiel Depositário*', type:'select2', url:'register/pessoal', attr1:'razao_social', 
+    attr2:'cpf_cnpj', string:'str_fiel_depositario' 
+  },
+  {name:'produto_agricola', label:'Tipo Armazenagem*', type:'select', string:'str_produto_agricola'},
+  {name:'capacidade_estatica_sacas_60_kg', label:'Capacidade Estática (scs 60 kg)*', type:'text', is_number:true},
+  {name:'tipo_classificacao', label:'Tipo Classificação*', type:'select', string:'str_tipo_classificacao'},
+  {name:'testemunha01', label:'Testemunha 01*', type:'select2', url:'register/pessoal', attr1:'razao_social', 
+    attr2:'cpf_cnpj', string:'str_testemunha02' 
+  },
+  {name:'testemunha02', label:'Testemunha 02*', type:'select2', url:'register/pessoal', attr1:'razao_social', 
+    attr2:'cpf_cnpj', string:'str_testemunha01' 
+  },
+  {name:'propriedades', label:'Fazendas*', type:'select2', ismulti:true, url:'farms/farms', attr1:'nome', 
+    attr2:'matricula', list:'str_propriedade', string:'label'
+  },
+]

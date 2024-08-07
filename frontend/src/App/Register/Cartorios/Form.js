@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Button, Form, Col } from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { GetRecord, SelectSearchOptions } from '../../../helpers/Data';
+import { GetRecord, SelectSearchOptions, sendData } from '../../../helpers/Data';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const CartorioForm = ({ hasLabel, type, submit, data}) => {
@@ -16,46 +16,25 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
   const [defaultoptions, setDefaultOptions] = useState();
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/register/cartorios/${type === 'edit' ? data+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-      const response = await fetch(link, {
-        method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(dadosform)
-      });
-      const data = await response.json();
-      if(response.status === 400){
-        setMessage({...data})
+    const {resposta, dados} = await sendData({type:type, url:'register/cartorios', keyfield:type === 'edit' && data, dadosform:dadosform})
+    if(resposta.status === 400){
+      setMessage({...dados})
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        submit('edit', dados, dados.id)
+        toast.success("Registro Atualizado com Sucesso!")
       }
-      else if (response.status === 401){
-        localStorage.setItem("login", JSON.stringify(false));
-        localStorage.setItem('token', "");
-        RedirectToLogin(navigate);
+      else{
+        submit('add', dados)
+        toast.success("Registro Efetuado com Sucesso!")
       }
-      else if (response.status === 201 || response.status === 200){
-        if (type === 'edit'){
-          submit('edit', {razao_social:data.razao_social, uuid:data.uuid, str_municipio:data.str_municipio, logradouro:data.logradouro,
-            cnpj:data.cnpj, atendente:data.atendente, id:data.id
-          }, data.id)
-          toast.success("Registro Atualizado com Sucesso!")
-        }
-        else{
-          submit('add', {razao_social:data.razao_social, uuid:data.uuid, str_municipio:data.str_municipio, logradouro:data.logradouro,
-            cnpj:data.cnpj, atendente:data.atendente, id:data.id
-          })
-          toast.success("Registro Efetuado com Sucesso!")
-        }
-      }
-    } catch (error) {
-        console.error('Erro:', error);
     }
   };
 
@@ -64,7 +43,6 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
     e.preventDefault();
     await handleApi(formData);
   };
-
 
   const handleFieldChange = e => {
     setFormData({
@@ -224,11 +202,8 @@ const CartorioForm = ({ hasLabel, type, submit, data}) => {
         </Form.Group>
 
         <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-            >
-              {type === 'edit' ? "Atualizar Cartório" : "Cadastrar Cartório"}
+          <Button className="w-40" type="submit">
+            {type === 'edit' ? "Atualizar Cartório" : "Cadastrar Cartório"}
           </Button>
         </Form.Group>    
       </Form>

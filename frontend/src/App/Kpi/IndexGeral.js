@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashCan, faPen} from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from "../../components/Custom/ModalDelete";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexIndicators = () => {
     const [searchResults, setSearchResults] = useState();
@@ -45,11 +46,11 @@ const IndexIndicators = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Key Performance Indicators
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <div><Button className="btn-success btn-sm fs--1" onClick={() => setShowModal({show:true, type:'add'})}>Nova Meta</Button></div>
         {searchResults ?
         <Row xl={2} xs={1} className="mt-3">

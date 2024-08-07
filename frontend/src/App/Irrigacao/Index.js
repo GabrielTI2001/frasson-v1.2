@@ -3,14 +3,15 @@ import { Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faScrewdriverWrench, faCircleNotch } from "@fortawesome/free-solid-svg-icons";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexIrrigacao = () =>{
     return (<>
-    <ol className="breadcrumb breadcrumb-alt mb-3">
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+    <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
             Irrigation Application
-        </li>             
-    </ol>
+        </span>             
+    </CustomBreadcrumb>
     <Row xl={6} sm={4} xs={2} className="gx-4 mt-1">
         <Col>
             <Link className="card shadow-sm px-1 py-1 panel cursor-pointer" to={'pivots'} style={{backgroundColor:'rgba(6, 159, 186, 0.75)'}}>

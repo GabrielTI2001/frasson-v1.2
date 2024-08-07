@@ -6,6 +6,7 @@ from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../helpers/Data";
 import { ItemTable } from "./AcordionItem";
 import { CardDRE } from "./Card";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const DREProvisionado = () =>{
     const navigate = useNavigate();
@@ -27,11 +28,11 @@ const DREProvisionado = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb >
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 DRE Provisionado
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         {data ? 
         <>
         <Row xs={1} sm={1} xl={2} className="gx-4 gy-3 d-flex"> 
@@ -111,7 +112,7 @@ const DREProvisionado = () =>{
                         atribute='ebitda' disabled
                     />
                     <ItemTable data={data} title='(-) Impostos Sobre Lucros (Diretos)' colorvalue='danger' colortitle='primary' 
-                        eventkey="6" atribute='total_impostos_diretos'
+                        eventkey="7" atribute='total_impostos_diretos'
                         items={[
                             {title:'CSLL', attrtotal:'total_csll'},
                             {title:'IRPJ', attrtotal:'total_irpj'}

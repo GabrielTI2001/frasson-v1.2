@@ -53,7 +53,6 @@ import Notifications from '../App/Inbox/Index';
 //Irrigation
 import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
-import ViewPivot from '../App/Irrigacao/Pivots/View';
 import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
 //KPI
 import IndexMyIndicators from '../App/Kpi/Index';
@@ -96,10 +95,9 @@ import InsertPoints from '../App/Services/Tools/InsertPoints';
 import KMLPolygon from '../App/Services/Tools/KMLPolygon';
 import ServicesMaps from '../App/Services/Maps';
 import WebSocketComponent from '../App/Pipeline/Websocket';
-// import ViewCredit from '../App/Credit/View';
 import IndexContratosAmbiental from '../App/Finances/ContratosAmbiental/Index';
 import IndexPVTEC from '../App/Comercial/PVTEC/Index';
-import { RedirectToLogin } from './PrivateRoute';
+import Prospects from '../App/Pipeline/Prospects/products';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -216,6 +214,7 @@ const LayoutRoutes = () => {
           <Route path="financial" element={<IndexMovimentacoes />}/>
           <Route path="refunds" element={<IndexReembolsos />}/>
           <Route path="billings" element={<ReportPagamentos />}/>
+          <Route path="billings/:uuid" element={<ReportPagamentos />}/>
           <Route path="revenues" element={<ReportCobrancas />}/>
           <Route path="revenues/:uuid" element={<ReportCobrancas />}/>
           <Route path="contracts/environmental" element={<IndexContratosAmbiental />}/>
@@ -251,6 +250,8 @@ const LayoutRoutes = () => {
         <Route path="/pipefy">
         </Route>
         <Route path="/pipeline">
+          <Route path="518984924" element={<Prospects />}/>
+          <Route path="518984924/processo/:code" element={<Prospects />}/>
           <Route path="518984721" element={<Products />}/>
           <Route path="518984721/processo/:code" element={<Products />}/>
           <Route path="519851272" element={<NotFound />}/>

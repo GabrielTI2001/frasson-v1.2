@@ -7,6 +7,8 @@ import MapInfo from './MapInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExcel } from '@fortawesome/free-solid-svg-icons';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { GetRecord, sendData } from '../../../helpers/Data';
+import CustomBreadcrumb from '../../../components/Custom/Commom';
 
 const KMLToCoordinate = () => {
   const {config: {theme}} = useAppContext();
@@ -14,42 +16,25 @@ const KMLToCoordinate = () => {
   const [formKML, setFormKML] = useState({})
   const [message, setMessage] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
   const [dados, setDados] = useState({coordinates:[]})
   const [tokenmaps, setTokenMaps] = useState()
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/services/tools/kml/coordenadas`
-
-    const method = 'POST'
-    try {
-        const response = await fetch(link, {
-          method: method,
-          headers: {
-              'Authorization': `Bearer ${token}`
-          },
-          body: dadosform
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          RedirectToLogin(navigate);
-        }
-        else if (response.status === 201 || response.status === 200){
-          setDados({...data})
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:'add', url:'services/tools/kml/coordenadas', keyfield:null, dadosform:dadosform, is_json:false})
+    if(!resposta){
+      setMessage({file:'Insira o Arquivo KML'})
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      setDados(dados)
     }
     setIsLoading(false)
   };
 
 
-  const handleKMLsubmit = async e => {
+  const handleKMLsubmit = async (e) => {
     setMessage(null)
     setIsLoading(true)
     e.preventDefault();
@@ -66,17 +51,9 @@ const KMLToCoordinate = () => {
 
   useEffect(()=>{
     const getTokenMaps = async () => {
-      try{
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/token/maps/`, {
-              method: 'GET'
-          });
-          if (response.status === 200){
-              const data = await response.json();
-              setTokenMaps(data.token)
-          }
-      } catch (error){
-          console.error("Erro: ",error)
-      }
+      const data = await GetRecord('', 'token/maps')
+      if (!data) RedirectToLogin(navigate)
+      else setTokenMaps(data.token)
     }
     if (!tokenmaps) getTokenMaps()
     const table = document.querySelector("table").outerHTML;
@@ -86,14 +63,14 @@ const KMLToCoordinate = () => {
 
   return (
     <>
-      <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-        <li className="breadcrumb-item fw-bold">
+      <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold">
           <Link className="link-fx text-primary" to={'/services/tools'}>Ferramentas</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
           Extrair Coordenadas
-        </li>    
-      </ol>
+        </span>    
+      </CustomBreadcrumb>
       <div className='fs--2 mb-3' style={{marginTop: '-0.3rem'}}>
         Esta ferramenta executa a extração das coordenadas de um arquivo KML, podendo ser Polígono, Caminho ou Pontos.
       </div>

@@ -16,6 +16,7 @@ import {CardCol, SimpleCard} from "./CardCol";
 import MovContas from "./MovContas";
 import CobrancasPhase from "../Reports/CobrancasPhase";
 import ReportPagamentos from "../Reports/Pagamentos";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const SaldosContasIndex = () =>{
     const {config: {theme}} = useAppContext();
@@ -39,11 +40,11 @@ const SaldosContasIndex = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-2">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Saldos Bancários
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         {data ? <>
         <h6 className="fw-bold mb-1"  style={{fontSize:'0.75rem'}}>Saldo Total</h6>
         <h3 className="px-0 fw-bold mb-2 fs-0">{data.saldo_total}</h3>

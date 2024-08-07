@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, PVTEC, Acompanhamento_GAI, Atualizacoes_Acompanhamento_GAI
+from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, PVTEC, Acompanhamento_GAI, Atualizacoes_Acompanhamento_GAI, Fluxo_Prospects
 from .models import Phases_History, Card_Comments, Card_Activities, Card_Anexos, Status_Acompanhamento
 from datetime import datetime
 from datetime import datetime, date, timedelta
@@ -22,7 +22,6 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
     str_created_by = serializers.SerializerMethodField(read_only=True)
     fases_list = serializers.SerializerMethodField(read_only=True)
     info_contrato = serializers.SerializerMethodField(read_only=True)
-    list_beneficiario = serializers.SerializerMethodField(read_only=True)
     info_instituicao = serializers.SerializerMethodField(read_only=True)
     info_detalhamento = serializers.SerializerMethodField(read_only=True)
     list_beneficiario = serializers.SerializerMethodField(read_only=True)
@@ -119,9 +118,80 @@ class listFluxoAmbiental(serializers.ModelSerializer):
         fields = ['id', 'uuid', 'code', 'str_detalhamento', 'str_beneficiario', 'prioridade', 'created_at', 'data_vencimento', 'list_responsaveis', 
             'str_instituicao', 'str_fase']
 
+class serializerFluxoProspects(serializers.ModelSerializer):
+    pipe_code = serializers.IntegerField(source='phase.pipe.code', read_only=True)
+    str_fase = serializers.CharField(source='phase.descricao', read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    fases_list = serializers.SerializerMethodField(read_only=True)
+    info_cliente = serializers.SerializerMethodField(read_only=True)
+    info_produto = serializers.SerializerMethodField(read_only=True)
+    list_responsaveis = serializers.SerializerMethodField(read_only=True)
+    history_fases_list = serializers.SerializerMethodField(read_only=True)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['cliente', 'produto']:
+                    field.required = True
+                else:
+                    field.required = False
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
+    def get_fases_list(self, obj):
+        fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe_id)]
+        return fases_list
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
+    def get_info_cliente(self, obj):
+        c = obj.cliente
+        return {'id':c.id, 'uuid':c.uuid, 'razao_social':c.razao_social, 'cpf_cnpj':c.cpf_cnpj}
+    def get_info_produto(self, obj):
+        p = obj.produto
+        return {'id':p.id, 'uuid':p.uuid, 'descricao':p.description, 'sigla':p.acronym}
+    def get_list_responsaveis(self, obj):
+        responsaveis = obj.responsaveis.all()
+        return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
+    def get_history_fases_list(self, obj):
+        list = [
+            {'id':f.id, 'last_time_in':f.last_time_in, 'last_time_out':f.last_time_out, 'first_time_in':f.first_time_in,
+                'duration':calcduration(f.first_time_in, f.last_time_in, f.last_time_out), 
+                'phase_name': f.phase.descricao  
+            } 
+            for f in Phases_History.objects.filter(fluxo_prospect_id=obj.id)
+        ]
+        return list
+    def validate_phase(self, value):
+        fase_anterior = self.instance.phase if self.instance else None
+        if fase_anterior and (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
+            raise serializers.ValidationError("Não é permitido mover para essa fase")
+        return value
+    def update(self, instance, validated_data):
+        responsaveis_data = validated_data.pop('responsaveis', [])
+        instance = super().update(instance, validated_data)
+        if responsaveis_data:
+            responsaveis_ids = [r.id for r in responsaveis_data]
+            instance.responsaveis.set(responsaveis_ids)
+        return instance
+    class Meta:
+        model = Fluxo_Prospects
+        fields = '__all__'
+
+class listFluxoProspects(serializers.ModelSerializer):
+    str_produto = serializers.CharField(source='produto.description', read_only=True)
+    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
+    list_responsaveis = serializers.SerializerMethodField(read_only=True)
+    str_fase = serializers.CharField(source='phase.descricao', read_only=True)
+    def get_list_responsaveis(self, obj):
+        responsaveis = obj.responsaveis.all()
+        return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
+    class Meta:
+        model = Fluxo_Prospects
+        fields = ['id', 'uuid', 'code', 'str_cliente', 'created_at', 'data_vencimento', 'list_responsaveis', 'str_produto', 'str_fase']
 
 class serializerFase(serializers.ModelSerializer):
     fluxo_gestao_ambiental_set = listFluxoAmbiental(many=True, read_only=True, required=False)
+    fluxo_prospects_set = listFluxoProspects(many=True, read_only=True, required=False)
     def validate_done(self, value):
         done = self.initial_data.get('done')
         count_done = Fase.objects.filter(pipe_id=self.initial_data.get('pipe'), done=True).count()

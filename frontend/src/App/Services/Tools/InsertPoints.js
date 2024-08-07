@@ -8,6 +8,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExcel, faVectorSquare, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { convertstringDMSToDD } from '../../../helpers/utils';
+import { GetRecord } from '../../../helpers/Data';
+import CustomBreadcrumb from '../../../components/Custom/Commom';
 
 const InsertPoints = () => {
   const {config: {theme}} = useAppContext();
@@ -55,56 +58,22 @@ const InsertPoints = () => {
         console.error('Erro:', error);
     }
   };
-
-
   
   function isMarkerAlreadyExists(lat, lng) {
     const s = coordenadas.filter(c => c.lat === lat && c.lng === lng)
     return s.length > 0 ? true : false; // No marker with the same coordinates found
   }
 
-  function convertDMSToDD(dmsLat, dmsLng) {
-    // Splitting DMS strings into components
-    const latComponents = dmsLat.match(/-?\d+\.\d+|-?\d+/g);
-    const lngComponents = dmsLng.match(/-?\d+\.\d+|-?\d+/g);
-
-    if (!latComponents || !lngComponents) {
-        return null; // Invalid format
-    }
-
-    const latDegrees = parseFloat(latComponents[0]);
-    const latMinutes = parseFloat(latComponents[1] || 0);
-
-    let latSeconds = 0;
-    if (latComponents[2]) {
-        latSeconds = parseFloat(latComponents[2].replace(',', '.')) || 0;
-    }
-
-    const lngDegrees = parseFloat(lngComponents[0]);
-    const lngMinutes = parseFloat(lngComponents[1] || 0);
-
-    let lngSeconds = 0;
-    if (lngComponents[2]) {
-        lngSeconds = parseFloat(lngComponents[2].replace(',', '.')) || 0;
-    }
-
-    const latDecimal = latDegrees + (latDegrees < 0 ? -1 : 1) * (latMinutes / 60 + latSeconds / 3600);
-    const lngDecimal = lngDegrees + (lngDegrees < 0 ? -1 : 1) * (lngMinutes / 60 + lngSeconds / 3600);
-
-    return { lat: latDecimal, lng: lngDecimal };
-  }
-
-
   const handleSubmit = async e => {
     if (formData.latitude && formData.longitude){
       const ddRegex = /^-?\d+(?:[.,]\d+)?$/;
       const dmsRegex = /^-?\d{1,2}(?:°\d{1,2}'(?:\d{1,2}(?:[.,]\d+)?)?"?)?$/;
 
-      var lat = formData.latitude
-      var lng = formData.longitude
+      let lat = formData.latitude
+      let lng = formData.longitude
       lat = lat.replace(/\s+/g, '');
       lng = lng.replace(/\s+/g, '');
-      var location;
+      let location;
 
       if (ddRegex.test(lat) && ddRegex.test(lng)) {
           // Decimal degrees format
@@ -113,7 +82,7 @@ const InsertPoints = () => {
           else setCoordenadas([...coordenadas, location])
       } else if (dmsRegex.test(lat) && dmsRegex.test(lng)) {
           // Degrees, minutes, seconds format
-          location = convertDMSToDD(lat, lng);
+          location = convertstringDMSToDD(lat, lng);
           if (isMarkerAlreadyExists(location.lat, location.lng)) toast.error("Coordenada já existe")
           else setCoordenadas([...coordenadas, location])
       } else {
@@ -129,31 +98,23 @@ const InsertPoints = () => {
 
   useEffect(()=>{
     const getTokenMaps = async () => {
-      try{
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/token/maps/`, {
-              method: 'GET'
-          });
-          if (response.status === 200){
-              const data = await response.json();
-              setTokenMaps(data.token)
-          }
-      } catch (error){
-          console.error("Erro: ",error)
-      }
+      const data = await GetRecord('', 'token/maps')
+      if (!data) RedirectToLogin(navigate)
+      else setTokenMaps(data.token)
     }
     if (!tokenmaps) getTokenMaps()
   },[])
 
   return (
     <>
-      <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-        <li className="breadcrumb-item fw-bold">
+      <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold">
           <Link className="link-fx text-primary" to={'/services/tools'}>Ferramentas</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
           Inserir Coordenadas
-        </li>    
-      </ol>
+        </span>    
+      </CustomBreadcrumb>
       <div className='fs--2 mb-3' style={{marginTop: '-0.3rem'}}>
         Insira as coordenadas e baixe o KML dos pontos ou do polígono...
       </div>
@@ -182,7 +143,9 @@ const InsertPoints = () => {
           </button>
         </Col>
         <Col xl='auto me-2'>
-          <button type="submit" className="badge btn btn-sm btn-warning shadow-none fs-xs fw-normal" onClick={createPolygon}>
+          <button type="submit" disabled={coordenadas.length < 3} className="badge btn btn-sm btn-warning shadow-none fs-xs fw-normal" 
+            onClick={createPolygon}
+          >
             Create Polygon
           </button>
         </Col>
@@ -192,7 +155,9 @@ const InsertPoints = () => {
           </button>
         </Col>
         <Col xl='auto me-2'>
-          <button type="submit" className="badge btn btn-sm btn-info shadow-none fs-xs fw-normal" onClick={() => handleApi('polygon')}>
+          <button type="submit" disabled={!poligonos.length > 0} className="badge btn btn-sm btn-info shadow-none fs-xs fw-normal" 
+            onClick={() => handleApi('polygon')}
+          >
             <FontAwesomeIcon icon={faVectorSquare} className='me-1'/>KML Polygon
           </button>
         </Col>

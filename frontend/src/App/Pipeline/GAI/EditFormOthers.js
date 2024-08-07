@@ -59,7 +59,7 @@ const EditFormOthers = ({
               <Form.Control
                 ref={inputRef}
                 type='date'
-                className="mb-2 w-50 fs-xs py-0 px-1 shadow-none outline-none"
+                className="mb-2 px-2 shadow-none outline-none"
                 onChange={({ target }) =>
                   setFormData({ ...formData, data_vencimento: target.value })
                 }
@@ -71,7 +71,7 @@ const EditFormOthers = ({
               <Form.Select
                 ref={inputRef}
                 rows={2}
-                className="mb-2 w-50 fs-xs py-0 px-1 shadow-none outline-none"
+                className="mb-2 px-2 shadow-none outline-none"
                 onChange={({ target }) =>
                   setFormData({ ...formData, prioridade: target.value })
                 }

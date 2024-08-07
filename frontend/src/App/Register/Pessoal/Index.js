@@ -12,6 +12,8 @@ import { HandleSearch } from "../../../helpers/Data";
 import PessoaForm from "./Form";
 import ModalPessoal from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import Breadcrumbs from '@mui/material/Breadcrumbs';
+import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 
 const IndexPessoal = () => {
     const [searchResults, setSearchResults] = useState();
@@ -70,14 +72,17 @@ const IndexPessoal = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <Breadcrumbs
+            separator={<NavigateNextIcon fontSize="small" />} className="fs--1 mb-2"
+            aria-label="breadcrumb"
+        >
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cadastro Pessoal
-            </li>  
-        </ol>
+            </span>  
+        </Breadcrumbs>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsPessoal}

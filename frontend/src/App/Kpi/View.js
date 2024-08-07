@@ -7,6 +7,7 @@ import { useAppContext } from "../../Main";
 import { ColumnLineChart } from "../../components/Custom/Charts";
 import IndicatorForm from "./Form";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 const months = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
@@ -71,17 +72,17 @@ const ViewIndicator = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb >
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/kpi/indicators'}>Key Performance Indicators</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold">
+            </span>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/kpi/myindicators'}>Meus Indicadores</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 {register && register.str_indicator+' '+register.year}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {register && total ?
         <Row xl={1} xs={1} className="mt-3">
             <Table responsive className="table-sm">

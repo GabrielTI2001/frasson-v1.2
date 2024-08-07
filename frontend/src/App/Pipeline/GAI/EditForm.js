@@ -112,11 +112,11 @@ const EditForm = ({
               }
             } className='mb-1 fs--1'/>
           )}
-          <Row className={`gx-2 w-50 ms-2`}>
+          <Row className={`px-0 w-50 ms-0`}>
             <Button
               variant="primary"
               size="sm"
-              className="col w-30 fs-xs p-0 me-1"
+              className="col col-auto me-1"
               type="submit"
             >
               <span>Atualizar</span>
@@ -124,7 +124,7 @@ const EditForm = ({
             <Button
               variant="outline-secondary"
               size="sm"
-              className="col w-30 fs-xs p-0 border-400"
+              className="col col-auto border-400"
               type="button"
               onClick={() =>     
                 setShow(prevState => ({

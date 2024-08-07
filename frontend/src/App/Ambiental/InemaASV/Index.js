@@ -15,6 +15,7 @@ import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexASV = () => {
     const [searchResults, setSearchResults] = useState();
@@ -77,11 +78,11 @@ const IndexASV = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Portarias ASV
-            </li>  
-        </ol>
+            </span>
+        </CustomBreadcrumb>
         {searchResults ? 
             <AdvanceTableWrapper
                 columns={columnsASV}

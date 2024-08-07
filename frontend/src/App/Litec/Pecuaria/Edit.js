@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { Row } from "react-bootstrap";
 import { Placeholder} from "react-bootstrap";
 import { RetrieveRecord } from "../../../helpers/Data";
 import PolygonMap from "../../../components/map/PolygonMap";

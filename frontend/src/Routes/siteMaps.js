@@ -163,26 +163,26 @@ export const operacionalRoutes = {
       active: true,
       children: [
         {
-          name: 'Produtos GAI',
-          icon: faCartShopping,
-          to: '/pipeline/518984721',
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Produtos GC',
-          icon: faCartShopping,
-          to: '/pipeline/518984721',
-          exact: true,
-          active: true
-        },
-        {
           name: 'Prospects',
           icon: faHandshake,
+          to: '/pipeline/518984924',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Gestão de Crédito',
+          icon: faCartShopping,
           to: '/pipeline/518984721',
           exact: true,
           active: true
-        }
+        },
+        {
+          name: 'Gestão Ambiental e Irrigação',
+          icon: faCartShopping,
+          to: '/pipeline/518984721',
+          exact: true,
+          active: true
+        },
       ]
     },
     {

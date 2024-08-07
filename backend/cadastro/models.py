@@ -306,7 +306,6 @@ class Analise_Solo(models.Model):
     argila_percentual = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='Argila (%)')
     silte_percentual = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='Silte (%)')
     areia_percentual = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True, verbose_name='Areia (%)')
-    file = models.FileField(upload_to=upload_to_analise, null=True, blank=True, verbose_name='Arquivo em PDF')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -403,3 +402,26 @@ class Contas_Bancarias_Clientes(models.Model):
 #         verbose_name_plural = 'Cadastro Colaboradores'
 #     def __str__(self):
 #         return self.colaborador.razao_social
+
+def upload_anexo(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{instance.uuid}.{ext}'
+    if instance.analise_solo:
+        return os.path.join('cadastro/soil-analysis/', filename)
+    else:
+        return os.path.join('cadastro/other/', filename)
+
+class Anexos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    analise_solo = models.ForeignKey(Analise_Solo, on_delete=models.CASCADE, null=True, verbose_name='Análise Solo')
+    file = models.FileField(null=True, upload_to=upload_anexo, verbose_name='Arquivo')
+    name = models.CharField(null=True, max_length=100, verbose_name='Nome Arquivo')
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Carregado por', related_name='cadupby')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Anexos Register'
+    def save(self, *args, **kwargs):
+        if self.file and not self.name:
+            self.name = self.file.name
+        super().save(*args, **kwargs)

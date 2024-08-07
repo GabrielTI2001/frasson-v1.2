@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 export const ResultPipe = () => {
     const [data, setData] = useState();
@@ -29,14 +30,15 @@ export const ResultPipe = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/administrator'}>Administrator Panel</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {data && data.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
+        
         <h5 className="fw-bold mb-2">Resultados</h5>
         
         {data ? <>
@@ -88,14 +90,15 @@ export const ResultDatabase = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/administrator'}>Administrator Panel</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {data && data.title}
-            </li>  
-        </ol>
+            </span>   
+        </CustomBreadcrumb>
+        
         <h5 className="fw-bold mb-2">Resultados</h5>
         {data ? <>
             <h6 className="fw-bold">Registros Inexistentes</h6>

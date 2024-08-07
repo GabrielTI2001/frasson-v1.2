@@ -57,7 +57,7 @@ const EditForm = ({
           {fieldkey === 'gleba' &&( defaultselected && <>
             <Form.Label className='mb-0 fw-bold fs--1'>Gleba</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''}
-              className='mb-1 fs--1 py-0 px-2 w-50'
+              className='mb-1 fs--1 px-2'
               onChange={({target}) => {
                 setFormData({...formData, gleba: target.value});
               }
@@ -114,7 +114,7 @@ const EditForm = ({
             <Button
               variant="primary"
               size="sm"
-              className="col w-30 fs-xs p-0 me-1 ms-0"
+              className="col col-auto me-1 ms-0"
               type="submit"
             >
               <span>Atualizar</span>
@@ -122,7 +122,7 @@ const EditForm = ({
             <Button
               variant="outline-secondary"
               size="sm"
-              className="col w-30 fs-xs p-0 border-400"
+              className="col col-auto border-400"
               type="button"
               onClick={() =>     
                 setShow(prevState => ({

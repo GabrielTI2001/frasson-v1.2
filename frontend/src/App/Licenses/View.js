@@ -11,6 +11,7 @@ import Info from "../../components/Custom/Info";
 import { RetrieveRecord } from "../../helpers/Data";
 import FormLicenca from "./Form";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const ViewLicenca = () => {
     const {uuid} = useParams()
@@ -45,16 +46,16 @@ const ViewLicenca = () => {
 
     return (
     <>
-        <ol className="breadcrumb breadcrumb-alt mb-2">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb >
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/licenses'}>Cadastro Licenças</Link>
-            </li>
+            </span>
             {licenca && (
-               <li className="breadcrumb-item fw-bold" aria-current="page">
+               <span className="breadcrumb-item fw-bold" aria-current="page">
                     {licenca.str_beneficiario}
-               </li>             
+               </span>             
             )}
-        </ol>
+        </CustomBreadcrumb>
         { licenca ? (
             <Row className="mb-2">
                 <Col xl={6} sm={4}>

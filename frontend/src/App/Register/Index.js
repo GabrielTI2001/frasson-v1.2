@@ -6,6 +6,7 @@ import { faTractor, faPersonDigging, faFlask, faPerson, faContactBook} from "@fo
 import { useAppContext } from "../../Main";
 import { GetRecord } from "../../helpers/Data";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexCadGerais = () =>{
     const {config: { theme}} = useAppContext();
@@ -33,11 +34,11 @@ const IndexCadGerais = () =>{
     },[])
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cadastros Gerais
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         <Row className="gy-3 gx-4" xs={1} sm={3} lg={5} xl={6}>
           <Col>
             <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>

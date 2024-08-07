@@ -5,6 +5,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const phases = {
     317532037: 'Aguardando Distribuição', 
@@ -52,14 +53,14 @@ const CobrancasPhase = ({idphase, produto}) => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">  
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>  
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/finances/revenues'}>Cobranças</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {idphase ? phases[idphase] : produto ? produtos[produto].desc : ''}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {cobrancas ? 
         <Table responsive className="mt-3">
             <thead className="bg-300">

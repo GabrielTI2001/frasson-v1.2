@@ -23,14 +23,6 @@ const EditForm = ({
 
   useEffect(() => {
     if (show) {
-      switch(fieldkey){
-        case 'responsaveis':
-          const ids_resps = data.map(b => ({value: b.id, label: b.nome}));
-          setdefaultSelected({...defaultselected, 'responsaveis':ids_resps})
-          break
-        default:
-          setdefaultSelected({...defaultselected})
-      }
     }
   }, [show]); 
 
@@ -53,7 +45,7 @@ const EditForm = ({
             <Form.Label className='mb-0 fw-bold fs--1'>Status</Form.Label>
             <Form.Select
               ref={inputRef}
-              className="mb-2 w-100 fs-xs py-0 shadow-none outline-none"
+              className="mb-2 shadow-none outline-none"
               onChange={({ target }) =>
                 setFormData({ ...formData, status: target.value })
               }
@@ -71,7 +63,7 @@ const EditForm = ({
             <Form.Control
               ref={inputRef}
               type='date'
-              className="mb-2 w-100 fs-xs py-0 shadow-none outline-none"
+              className="mb-2 shadow-none outline-none px-2"
               onChange={({ target }) =>
                 setFormData({ ...formData, data_previsao: target.value })
               }
@@ -103,7 +95,7 @@ const EditForm = ({
             <Button
               variant="primary"
               size="sm"
-              className="col w-30 fs-xs p-0 me-1 ms-0"
+              className="col col-auto me-1 ms-0"
               type="submit"
             >
               <span>Atualizar</span>
@@ -111,7 +103,7 @@ const EditForm = ({
             <Button
               variant="outline-secondary"
               size="sm"
-              className="col w-30 fs-xs p-0 border-400"
+              className="col col-auto border-400"
               type="button"
               onClick={() =>     
                 setShow(prevState => ({

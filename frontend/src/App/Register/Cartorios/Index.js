@@ -12,6 +12,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import CartorioForm from "./Form";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexCartorios = () => {
     const [searchResults, setSearchResults] = useState();
@@ -70,14 +71,14 @@ const IndexCartorios = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cartórios Registro
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsCartorio}

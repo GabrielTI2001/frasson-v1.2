@@ -5,15 +5,16 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "@fortawesome/fontawesome-svg-core/styles.css";  
 import { faLocationDot, faMapLocationDot, faGlobe, faMap } 
 from "@fortawesome/free-solid-svg-icons";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const ToolsIndex = () =>{
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb >
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Ferramentas Frasson
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         <Row className="gx-4 gy-2" xl={4} sm={2} xs={1}>
           <Col>
             <Card className="shadow-sm px-3">

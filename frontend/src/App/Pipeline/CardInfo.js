@@ -1,7 +1,7 @@
 import React from "react";
 import { useAppContext } from "../../Main";
 import { Link } from "react-router-dom";
-import { faArrowUpRightFromSquare, faPencil } from "@fortawesome/free-solid-svg-icons";
+import { faArrowUpRightFromSquare, faPencil, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const CardInfo = ({data, attr1, title2, attr2, url, pk, title}) =>{
@@ -40,8 +40,8 @@ export const CardTitle = ({title, click, field, className}) =>{
         <>
             <span className='fw-bold fs--1'>{title}</span>
             {click && 
-              <span className='modal-editar ms-2 fs--1' onClick={() => click(field)}>
-                <FontAwesomeIcon icon={faPencil} className='me-1'/>Editar
+              <span className='modal-editar bg-300 py-1 px-2 ms-2 fs--1' onClick={() => click(field)}>
+                <FontAwesomeIcon icon={faPenToSquare} className='me-1'/>Editar
               </span>
             }
         </>

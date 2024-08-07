@@ -227,7 +227,7 @@ class Pagamentos(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Pagamentos Pipefy'
+        verbose_name_plural = 'Pagamentos'
     def __str__(self):
         return self.beneficiario.razao_social
 

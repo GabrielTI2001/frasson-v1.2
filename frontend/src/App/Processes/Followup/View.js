@@ -10,6 +10,7 @@ import ModalDelete from '../../../components/Custom/ModalDelete';
 import FormAcomp from './FormAcomp';
 import FormProcesso from './FormProcesso';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import CustomBreadcrumb from '../../../components/Custom/Commom';
 
 const ViewFollowup = () => {
     const {id} = useParams()
@@ -37,7 +38,7 @@ const ViewFollowup = () => {
     const submit2 = (type, data) =>{
         if (type === 'edit') setCard({...data})
         if (type === 'delete'){
-            navigate('/processes/followup')
+            setCard({...card, inema:{}})
         }
         setModalform({show:false})
     }
@@ -59,14 +60,14 @@ const ViewFollowup = () => {
 
     return (
     <>
-    <ol className="breadcrumb breadcrumb-alt fs-xs">
-        <li className="breadcrumb-item fw-bold">
+    <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold">
             <Link className="link-fx text-primary" to={'/processes/followup'}>Acompanhamentos Processo GAI</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
             Processo {card && card.processo}
-        </li>  
-    </ol>
+        </span>  
+    </CustomBreadcrumb>
     {card ? <>
     <Row className='mt-2 mb-2' xl={card.inema.id ? 2 : 1} sm={card.inema.id ? 2 : 1} xs={1}>
         <Col className='d-flex flex-column'>
@@ -106,15 +107,22 @@ const ViewFollowup = () => {
                         </Col>
                         <Col>
                             <strong className='me-1'>Data Requerimento:</strong>
-                            <span className='my-1 text-info'>{card.inema.data_requerimento}</span> 
+                            <span className='my-1 text-info'>{card.inema.data_requerimento ? 
+                                new Date(card.inema.data_requerimento).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
+                            </span> 
                         </Col>
                         <Col>
                             <strong className='me-1'>Data Enquadramento:</strong>
-                            <span className='my-1 text-info'>{card.inema.data_enquadramento}</span> 
+                            <span className='my-1 text-info'>{card.inema.data_enquadramento ? 
+                                new Date(card.inema.data_enquadramento).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
+                            </span> 
                         </Col>
                         <Col>
                             <strong className='me-1'>Data Formação:</strong>
                             <span className='my-1 text-info'>{card.inema.data_formacao}</span> 
+                            <span className='my-1 text-info'>{card.inema.data_formacao ? 
+                                new Date(card.inema.data_formacao).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
+                            </span> 
                         </Col>
                     </Row>
                 </Col>
@@ -135,7 +143,7 @@ const ViewFollowup = () => {
                         }
                         {((user.permissions && user.permissions.indexOf("delete_processos_andamento") !== -1) | user.is_superuser) ?
                             <Button className='col-auto btn-danger btn-sm px-2' style={{fontSize:'10px'}} 
-                                onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/processes/followup/${id}/`})}>
+                                onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/processes/followup/${card.inema.id}/`})}>
                                 <FontAwesomeIcon icon={faTrash} className='me-2' />Excluir Acompanhamento
                             </Button> : null
                         }
@@ -207,7 +215,7 @@ const ViewFollowup = () => {
     </div>}
     <ModalDelete show={modal.show} link={modal.link} close={() => setModal({...modal, show:false})} 
         update={
-            modal.link == `${process.env.REACT_APP_API_URL}/processes/followup/${id}/` ?
+            modal.link === `${process.env.REACT_APP_API_URL}/processes/followup/${card && card.inema.id}/` ?
             submit2 : submit
         } 
     />
@@ -220,13 +228,13 @@ const ViewFollowup = () => {
     >
         <Modal.Header>
         <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-            {modalform.type == 'status' ? 'Adicionar Atualização de Status' : 'Editar Acompanhamento'}
+            {modalform.type === 'status' ? 'Adicionar Atualização de Status' : 'Editar Acompanhamento'}
         </Modal.Title>
             <CloseButton onClick={() => setModalform({show:false})}/>
         </Modal.Header>
         <Modal.Body className='pb-0'>
             <Row className="flex-center sectionform">
-            {modalform.type == 'status' 
+            {modalform.type === 'status' 
                 ? <FormAcomp hasLabel data={card} submit={submit}/> 
                 : <FormProcesso data={card && card.inema} type='edit' submit={submit2} />
             }

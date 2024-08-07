@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import React from 'react';
 import { useNavigate } from "react-router-dom";
-import { Row } from "react-bootstrap";
 import { Placeholder } from "react-bootstrap";
 import { RetrieveRecord } from "../../../helpers/Data";
 import PolygonMap from "../../../components/map/PolygonMap";
@@ -56,7 +55,7 @@ const EditProdAgricola = ({id, gleba, submit}) => {
                     lng: gleba.coordenadas.length > 0 ? Number(gleba.coordenadas[0]['lng']) : -45.6814
                 }}
                 mapStyle="Default"
-                className="rounded-soft mt-2 google-maps container-map"
+                className="rounded-soft mt-2 google-maps container-map position-static"
                 token_api={gleba.token_apimaps}
                 mapTypeId='satellite'
                 polygons={[{path:gleba.coordenadas.map(c=> ({lat:c.lat, lng:c.lng}))}]}

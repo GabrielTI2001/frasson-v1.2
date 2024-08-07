@@ -77,7 +77,7 @@ const EditFormModal = ({
           : field.type === 'select' ?
           (<>
             <Form.Select ref={inputRef} defaultValue={record[field.name] || ''}
-              className='mb-1 fs--1 py-0 w-100'
+              className='mb-1 fs--1'
               onChange={({target}) => {
                 setFormData(({...formData, [field.name]: target.value}));
               }
@@ -111,14 +111,14 @@ const EditFormModal = ({
                 <Form.Control
                   ref={inputRef} value={formData[field.name] || ''} name={field.name}
                   onChange={({target}) => setFormData(({...formData, [field.name]: target.value}))}
-                  className={`mb-1 fs--1 py-0 me-2`} type='number'
+                  className={`mb-1 fs--1 px-2 me-2`}
                 />
                 <Button className='py-0' onClick={() => {setShowModal({show:true, type:field.cat})}}>GMS</Button>
               </div>
             :
               <Form.Control
                 ref={inputRef} defaultValue={record[field.name] || ''} type={field.type}
-                className={`mb-1 fs--1 py-0 w-${field.xl === 3 ? '50' : '100'}`} 
+                className={`mb-1 fs--1 px-2`} 
                 as={field.type === 'textarea' ? 'textarea' : 'input'}
                 onChange={({target}) => setFormData(({...formData, [field.name]: target.value}))}
               />
@@ -130,7 +130,7 @@ const EditFormModal = ({
             <Button
               variant="primary"
               size="sm"
-              className="col w-30 fs-xs p-0 me-1 ms-0"
+              className="col col-auto ms-0 me-2"
               type="submit"
             >
               <span>Atualizar</span>
@@ -138,7 +138,7 @@ const EditFormModal = ({
             <Button
               variant="outline-secondary"
               size="sm"
-              className="col w-30 fs-xs p-0 border-400"
+              className="col col-auto border-400"
               type="button"
               onClick={() =>     
                 setShow(prevState => ({

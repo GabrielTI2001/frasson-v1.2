@@ -2,49 +2,32 @@ import React, { useState} from "react";
 import { Form, Col, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { sendData } from "../../../helpers/Data";
+import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 
-const AllowedEmailsForm = ({hasLabel, type, submit, dados}) => {
+const AllowedEmailsForm = ({hasLabel, type, submit}) => {
     const [formData, setFormData] = useState({});
     const [message, setMessage] = useState()
     const navigate = useNavigate();
-    const token = localStorage.getItem("token")
 
     const handleApi = async (dadosform) => {
-        const link =`${process.env.REACT_APP_API_URL}/users/allowed-emails/${type === 'edit' ? dados.id+'/' : ''}`
-        const method = type === 'edit' ? 'PUT' : 'POST'
-    
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dadosform)
-            });
-            const data = await response.json();
-    
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
-              navigate(`/auth/login?next=${next}`);
-            }
-            else if (response.status === 201 || response.status === 200){
-              if (type === 'edit'){
-                toast.success("Registro Atualizado com Sucesso!")
-                submit('edit', {id: dados.id, dados:data})
-              }
-              else{
-                toast.success("Registro Efetuado com Sucesso!")
-                submit('add', data)
-              }
-            }
-        } catch (error) {
-            console.error('Erro:', error);
+        const {resposta, dados} = await sendData({type:type, url:'users/allowed-emails', keyfield:type === 'edit' ? dados.id : null, 
+          dadosform:dadosform})
+        if(resposta.status === 400){
+          setMessage({...dados})
+        }
+        else if (resposta.status === 401){
+          RedirectToLogin(navigate)
+        }
+        else if (resposta.status === 201 || resposta.status === 200){
+          if (type === 'edit'){
+            toast.success("Registro Atualizado com Sucesso!")
+            submit('edit', {id: dados.id, dados:dados})
+          }
+          else{
+            toast.success("Registro Efetuado com Sucesso!")
+            submit('add', dados)
+          }
         }
       };
 

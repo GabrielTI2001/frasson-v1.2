@@ -7,6 +7,7 @@ import { faCaretDown, faCaretUp} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../../Main";
 import { LineChart } from "../../../components/Custom/Charts";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const Exchange = () =>{
     const {config: {theme}} = useAppContext();
@@ -45,14 +46,14 @@ const Exchange = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/external-api'}>API de Terceiros</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Taxa de Câmbio
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         {searchResults ?
         <Row xl={3}>
             <Col>

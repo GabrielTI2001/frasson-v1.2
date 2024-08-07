@@ -2,22 +2,44 @@ from rest_framework import serializers
 from .models import Lancamentos_Automaticos_Pagamentos, Categorias_Pagamentos, Transferencias_Contas, Caixas_Frasson, Resultados_Financeiros
 from .models import Tipo_Receita_Despesa, Reembolso_Cliente, Contratos_Ambiental, Contratos_Ambiental_Pagamentos, Anexos, Activities
 from pipeline.models import Fluxo_Gestao_Ambiental
-from cadastro.models import Detalhamento_Servicos
 from finances.models import Pagamentos, Cobrancas
 from backend.frassonUtilities import Frasson
-from django.db.models import Q, Sum
-import locale, requests, json
-from datetime import date, timedelta
-from backend.settings import TOKEN_GOOGLE_MAPS_API
+from django.db.models import Q
+import locale
 
-class listPagamentosPipefy(serializers.ModelSerializer):
+class listPagamentos(serializers.ModelSerializer):
     str_categoria = serializers.CharField(source='categoria.category', read_only=True)
-    str_classificacao = serializers.CharField(source='categoria.classification', read_only=True)
+    str_classificacao = serializers.CharField(source='categoria.get_classification_display', read_only=True)
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
+    str_status = serializers.CharField(source='get_status_display', read_only=True)
     data = serializers.DateField(read_only=True)
     class Meta:
         model = Pagamentos
-        fields = ['id', 'str_beneficiario', 'str_categoria', 'str_classificacao', 'data', 'valor_pagamento']
+        fields = ['id', 'uuid', 'str_beneficiario', 'str_categoria', 'str_status', 'str_classificacao', 'data', 'valor_pagamento']
+
+class detailPagamentos(serializers.ModelSerializer):
+    str_categoria = serializers.CharField(source='categoria.category', read_only=True)
+    str_classificacao = serializers.CharField(source='categoria.classification', read_only=True)
+    str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
+    str_caixa = serializers.CharField(source='caixa.nome', read_only=True)
+    str_status = serializers.CharField(source='get_status_display', read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    data = serializers.DateField(read_only=True)
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['beneficiario', 'categoria', 'caixa' ,'status', 'data_vencimento', 'valor_pagamento', 'descricao']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False 
+    class Meta:
+        model = Pagamentos
+        fields = '__all__'
+
 
 class listCobrancas(serializers.ModelSerializer):
     str_detalhe = serializers.SerializerMethodField(read_only=True)

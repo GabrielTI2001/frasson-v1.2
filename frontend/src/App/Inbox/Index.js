@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faInbox, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const Notifications = () => {
     const user = JSON.parse(localStorage.getItem("user"))
@@ -47,11 +48,11 @@ const Notifications = () => {
 
     return(
     <>
-    <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+    <CustomBreadcrumb >
+        <span className="breadcrumb-item fw-bold" aria-current="page">
             Central de Notificações
-        </li>  
-    </ol>
+        </span>  
+    </CustomBreadcrumb>
     <Tab.Container id="left-tabs-example" defaultActiveKey="inbox" onSelect={tabselect}>
         <Row>
             <Col sm={3}>

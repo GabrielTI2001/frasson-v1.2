@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Spinner, Table, Form} from 'react-bootstrap';
+import {Row, Col, Spinner, Table, Form, Modal, CloseButton} from 'react-bootstrap';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { HandleSearch } from "../../../helpers/Data";
@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 import ModalRecord from "./Modal";
+import CobrançaForm from "./Form";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const InitData = {
     'title': 'Report Cobranças'
@@ -86,11 +88,11 @@ const ReportCobrancas = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <Row className="gx-sm-1 gx-xl-3">
             <Form.Group className="mb-1" as={Col} xl={2} sm={2}>
                 <Form.Select name='ano' onChange={handleFieldChange} value={formData ? formData.ano : ''}>
@@ -122,7 +124,7 @@ const ReportCobrancas = () => {
                 />
             </Form.Group>
             {formData.ano && formData.mes &&
-            <Form.Group className="mb-1" as={Col} xl={3} sm={3}>
+            <Form.Group className="mb-1" as={Col} xl='auto' sm='auto'>
                 <Link className="btn btn-sm bg-danger-subtle text-danger" 
                     to={`${process.env.REACT_APP_API_URL}/finances/revenues-report/?month=${formData.mes}&year=${formData.ano}&status=${formData.status}&search${formData.search || ''}`}
                 >
@@ -130,6 +132,11 @@ const ReportCobrancas = () => {
                 </Link>
             </Form.Group>
             }
+            <Col xl={'auto'} sm='auto' xs={'auto'}>
+                <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
+                    style={{padding: '2px 8px'}} onClick={() =>{setShowModal({show:true})}}
+                >Nova Cobrança</Link>
+            </Col>
         </Row>
         {cobrancas ? 
         <Table responsive className="mt-3">
@@ -166,6 +173,23 @@ const ReportCobrancas = () => {
         : <div className="text-center"><Spinner /></div>
         }
         <ModalRecord show={modal.show} reducer={submit} />
+        <Modal
+            size="md"
+            show={showmodal.show}
+            onHide={() => setShowModal({show:false})}
+            aria-labelledby="example-modal-sizes-title-lg"
+            scrollable
+        >
+            <Modal.Header>
+            <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
+                {showmodal && showmodal.data ? 'Editar' : 'Adicionar'} Cobrança
+            </Modal.Title>
+                <CloseButton onClick={() => setShowModal({show:false})}/>
+            </Modal.Header>
+            <Modal.Body className="pb-0">
+                <CobrançaForm type='add' hasLabel submit={submit} />
+            </Modal.Body>
+        </Modal>
         </>
     );
   };

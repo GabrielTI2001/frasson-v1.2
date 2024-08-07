@@ -55,7 +55,7 @@ const EditForm = ({
             <Form.Select
               ref={inputRef}
               rows={2}
-              className="mb-2 w-75 fs-xs py-0 shadow-none outline-none"
+              className="mb-2 shadow-none outline-none"
               onChange={({ target }) =>
                 setFormData({ ...formData, atividade: target.value })
               }
@@ -80,7 +80,7 @@ const EditForm = ({
             <Form.Label className='mb-0 fw-bold fs--1'>Status</Form.Label>
             <Form.Select
               ref={inputRef}
-              className="mb-2 w-50 fs-xs py-0 shadow-none outline-none"
+              className="mb-2 shadow-none outline-none"
               onChange={({ target }) =>
                 setFormData({ ...formData, status: target.value })
               }
@@ -115,7 +115,7 @@ const EditForm = ({
             <Button
               variant="primary"
               size="sm"
-              className="col w-30 fs-xs p-0 me-1 ms-0"
+              className="col col-auto me-1 ms-0"
               type="submit"
             >
               <span>Atualizar</span>
@@ -123,7 +123,7 @@ const EditForm = ({
             <Button
               variant="outline-secondary"
               size="sm"
-              className="col w-30 fs-xs p-0 border-400"
+              className="col col-auto border-400"
               type="button"
               onClick={() =>     
                 setShow(prevState => ({

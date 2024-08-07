@@ -15,6 +15,7 @@ import { columnsAPPO } from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexAPPO = () => {
     const [searchResults, setSearchResults] = useState();
@@ -73,14 +74,14 @@ const IndexAPPO = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/home'}>Home</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Processos APPO
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsAPPO}

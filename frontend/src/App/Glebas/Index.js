@@ -8,13 +8,14 @@ import AdvanceTableSearchBox from '../../components/common/advance-table/Advance
 import AdvanceTableWrapper from '../../components/common/advance-table/AdvanceTableWrapper';
 import { Link } from "react-router-dom";
 import { columnsGleba} from "./Data";
-import { HandleSearch, RetrieveRecord } from "../../helpers/Data";
+import { HandleSearch } from "../../helpers/Data";
 import { Modal, CloseButton } from "react-bootstrap";
 import GlebaForm from "./Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const InitData = {
     'columns':columnsGleba, 'urlapilist':'glebas/index', 
@@ -82,11 +83,11 @@ const IndexGlebas = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={InitData.columns}

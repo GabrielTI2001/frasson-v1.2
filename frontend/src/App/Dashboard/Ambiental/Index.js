@@ -7,6 +7,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleNotch, faLeaf, faArrowAltCircleRight, faMapLocationDot, faDroplet, faClock, faStopwatch, faHourglassHalf } 
 from "@fortawesome/free-solid-svg-icons";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -38,11 +39,11 @@ const DashAmbiental = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-2">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
             Dashboard Gestão Ambiental e Irrigação
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         {data ? <>
         <Row className="d-flex flex-row gx-4 gy-4 mb-4" xs={1} sm={2} xl={2}>
             <Col className="d-flex">

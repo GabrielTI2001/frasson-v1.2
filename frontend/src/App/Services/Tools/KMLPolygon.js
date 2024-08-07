@@ -7,6 +7,8 @@ import MapInfo from './MapInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloudArrowDown, faMapLocation } from '@fortawesome/free-solid-svg-icons';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { GetRecord, sendData } from '../../../helpers/Data';
+import CustomBreadcrumb from '../../../components/Custom/Commom';
 
 const KMLPolygon = () => {
   const {config: {theme}} = useAppContext();
@@ -19,33 +21,19 @@ const KMLPolygon = () => {
   const [tokenmaps, setTokenMaps] = useState()
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/services/tools/kml/polygon/`
-    const method = 'POST'
-    try {
-        const response = await fetch(link, {
-          method: method,
-          headers: {
-              'Authorization': `Bearer ${token}`
-          },
-          body: dadosform
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          RedirectToLogin(navigate);
-        }
-        else if (response.status === 201 || response.status === 200){
-          setDados({...data})
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:'add', url:'services/tools/kml/polygon', dadosform:dadosform, is_json:false})
+    if(!resposta){
+      setMessage({file:'Insira o Arquivo KML'})
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      setDados(dados)
     }
     setIsLoading(false)
   };
+  
   const downloadKML = async () => {
     const link = `${process.env.REACT_APP_API_URL}/services/tools/kml/polygon/download`
     try {
@@ -89,31 +77,23 @@ const KMLPolygon = () => {
 
   useEffect(()=>{
     const getTokenMaps = async () => {
-      try{
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/token/maps/`, {
-              method: 'GET'
-          });
-          if (response.status === 200){
-              const data = await response.json();
-              setTokenMaps(data.token)
-          }
-      } catch (error){
-          console.error("Erro: ",error)
-      }
+      const data = await GetRecord('', 'token/maps')
+      if (!data) RedirectToLogin(navigate)
+      else setTokenMaps(data.token)
     }
     if (!tokenmaps) getTokenMaps()
   },[])
 
   return (
     <>
-      <ol className="breadcrumb breadcrumb-alt fs-xs mb-2">
-        <li className="breadcrumb-item fw-bold">
+      <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold">
           <Link className="link-fx text-primary" to={'/services/tools'}>Ferramentas</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
           Mapa Polígono
-        </li>    
-      </ol>
+        </span>    
+      </CustomBreadcrumb>
       <div className='fs--2 mb-2' style={{marginTop: '-0rem'}}>
         Esta ferramenta carrega o arquivo KML de um polígono e permite o download em formato compatível com o GeoMapa Rural do Banco do Brasil.
       </div>

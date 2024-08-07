@@ -31,10 +31,10 @@ export const renderComment = (comment) => {
 };
 
 
-const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc}) => {
+const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc, isprospect}) => {
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({created_by:user.id, fluxo_ambiental:!ispvtec ? card.id : null, phase:!ispvtec ? card.phase: null,
-    pvtec:ispvtec ? card.id : null, fluxo_credito: isgc ? card.id : null
+    pvtec:ispvtec ? card.id : null, fluxo_credito: isgc ? card.id : null, fluxo_prospect:isprospect ? card.id : null
   });
   const [users, setUsers] = useState([]);
   const [comentarios, setComentarios] = useState();
@@ -64,7 +64,7 @@ const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc}) => {
   useEffect(() =>{
     const getusers = async () =>{
       if (!comentarios){
-        const param = ispvtec ? 'pvtec' : isgc ? 'fluxogc' : 'fluxogai'
+        const param = ispvtec ? 'pvtec' : isgc ? 'fluxogc' : isprospect ? 'prospect' : 'fluxogai'
         HandleSearch('', 'pipeline/card-comments',(data) => {setComentarios(data)}, `?${param}=${card.id}`)
       }
       const status = HandleSearch('', 'users/users',

@@ -12,6 +12,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import ContratoForm from "./FormContrato";
 import ModalContract from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexContratosAmbiental = () => {
     const [searchResults, setSearchResults] = useState();
@@ -68,11 +69,11 @@ const IndexContratosAmbiental = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Contratos Serviços Ambiental
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         
         <AdvanceTableWrapper
             columns={columnsContratos}

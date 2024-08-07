@@ -6,6 +6,7 @@ import { HandleSearch } from "../../../helpers/Data";
 import { CardCobrancas } from "./CardCol";
 import CobrancasPhase from "../../Finances/Reports/CobrancasPhase";
 import Invoices from "../../Finances/Reports/Invoices";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const DashRevenues = () =>{
     const {config: {theme}} = useAppContext();
@@ -29,11 +30,11 @@ const DashRevenues = () =>{
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Dashboard Cobranças
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         {data ? <>
         <h6 className="fs--2 fw-bold mb-1">Cobranças abertas</h6>
         <h6 className="fs-0 fw-bold mb-2">{ data.aberto_total }</h6>

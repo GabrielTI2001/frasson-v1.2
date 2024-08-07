@@ -60,6 +60,62 @@ class FasesView(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(pipe__code=int(pipe)))
         return queryset
 
+class FluxoProspectsView(viewsets.ModelViewSet):
+    queryset = Fluxo_Prospects.objects.all()
+    serializer_class = serializerFluxoProspects
+    permission_classes = [permissions.AllowAny]
+    lookup_field = 'code'
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listFluxoAmbiental
+        else:
+            return self.serializer_class
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        phase_atual = request.data['phase'] if 'phase' in request.data else None
+        user = request.data['user'] if 'user' in request.data else None
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            if phase_atual:
+                historico_fase_anterior = Phases_History.objects.filter(phase=instance.phase, fluxo_prospect_id=instance.pk)
+                if historico_fase_anterior.exists():
+                    historico_fase_anterior.update(**{'last_time_out':datetime.now(), 'moved_by_id':user})
+                else:
+                    historico_fase_anterior = Phases_History.objects.create(last_time_out=datetime.now(), phase=instance.phase, fluxo_prospect_id=instance.pk, moved_by_id=user)
+                
+                historico_fase_atual = Phases_History.objects.filter(phase_id=phase_atual, fluxo_prospect_id=instance.pk)
+                if historico_fase_atual.exists():
+                    historico_fase_atual.update(**{'last_time_in':datetime.now(), 'last_time_out':None, 'moved_by_id':user})
+                    historico_fase_atual = historico_fase_atual.first()
+                else:
+                    historico_fase_atual = Phases_History.objects.create(first_time_in=datetime.now(), last_time_out=None, phase_id=phase_atual, 
+                        fluxo_prospect_id=instance.pk, moved_by_id=user)
+                
+                responsaveis = [r.id for r in historico_fase_atual.phase.responsaveis.all()]
+                if len(responsaveis) > 0:
+                    instance.responsaveis.set(responsaveis)
+                if historico_fase_atual.phase.dias_prazo:
+                    data_vencimento = datetime.now().date() + timedelta(days=historico_fase_atual.phase.dias_prazo)
+                    data_e_hora_vencimento = datetime.combine(data_vencimento, time(18, 0))
+                    instance.data_vencimento = data_e_hora_vencimento
+                text = 'de '+instance.phase.descricao+' para '+historico_fase_atual.phase.descricao
+                Card_Activities.objects.create(fluxo_prospect_id=instance.pk, type='cf', campo=text, updated_by_id=user)
+                instance.save()
+            activity = None
+            for key in fields_cardproduto_info.keys():
+                if key in request.data:
+                    activity = Card_Activities.objects.create(fluxo_prospect_id=instance.pk, type='ch', campo=fields_cardproduto_info[key], 
+                        updated_by_id=user)
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            response_data = serializer.data.copy()
+            if activity:
+                activity_serializer = serializerActivities(activity)
+                response_data.update({'activity':activity_serializer.data if activity else None})
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class FluxoAmbientalView(viewsets.ModelViewSet):
     queryset = Fluxo_Gestao_Ambiental.objects.all()
     serializer_class = serializerFluxoAmbiental
@@ -123,8 +179,11 @@ class CommentView(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         fluxogai = self.request.query_params.get('fluxogai', None)   
         pvtec = self.request.query_params.get('pvtec', None)   
+        prospect = self.request.query_params.get('prospect', None) 
         if fluxogai:
             queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
+        if prospect:
+            queryset = queryset.filter(Q(fluxo_prospect_id=int(prospect)))
         if pvtec:
             queryset = queryset.filter(Q(pvtec_id=int(pvtec)))
         return queryset
@@ -136,8 +195,11 @@ class ActivityView(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         fluxogai = self.request.query_params.get('fluxogai', None)   
         pvtec = self.request.query_params.get('pvtec', None)   
+        prospect = self.request.query_params.get('prospect', None) 
         if fluxogai:
             queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
+        if prospect:
+            queryset = queryset.filter(Q(fluxo_prospect_id=int(prospect)))
         if pvtec:
             queryset = queryset.filter(Q(pvtec_id=int(pvtec)))
         return queryset
@@ -148,10 +210,13 @@ class AnexoView(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = super().get_queryset()
         fluxogai = self.request.query_params.get('fluxogai', None)   
+        prospect = self.request.query_params.get('prospect', None)   
         pvtec = self.request.query_params.get('pvtec', None)  
         is_response = self.request.query_params.get('isresponse', None)  
         if fluxogai:
             queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
+        if prospect:
+            queryset = queryset.filter(Q(fluxo_prospect_id=int(prospect)))
         if pvtec:
             if is_response:
                 queryset = queryset.filter(Q(pvtec_id=int(pvtec)) & Q(pvtec_response=True))

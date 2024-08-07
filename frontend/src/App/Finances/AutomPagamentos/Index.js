@@ -13,6 +13,7 @@ import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import FormAutomPagamento from "./Form";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const InitData = {
     'columns':columnsAutomPayments, 'urlapilist':'finances/automation/payments', 
@@ -74,14 +75,14 @@ const IndexAutomPagamentos = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/home'}>Home</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={InitData.columns}

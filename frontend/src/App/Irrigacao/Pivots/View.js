@@ -11,6 +11,7 @@ import Info from "../../../components/Custom/Info";
 import { RetrieveRecord } from "../../../helpers/Data";
 import CircleMap from "../../../components/map/CircleMap";
 import PivotForm from "./Form";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const ViewPivot = () => {
     const {uuid} = useParams()
@@ -45,16 +46,16 @@ const ViewPivot = () => {
 
     return (
     <>
-        <ol className="breadcrumb breadcrumb-alt mb-2">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/irrigation/pivots'}>Pivots</Link>
-            </li>
+            </span>
             {registro && (
-               <li className="breadcrumb-item fw-bold" aria-current="page">
+               <span className="breadcrumb-item fw-bold" aria-current="page">
                     {registro.str_proprietario}
-               </li>             
+               </span>             
             )}
-        </ol>
+        </CustomBreadcrumb>
         { registro ? (
             <Row className="mb-2 gy-1" xl={6} sm={4} xs={1}>
                 <Col>

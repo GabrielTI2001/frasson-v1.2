@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { Button, Form, Col, FormGroup, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { SelectSearchOptions, sendData } from '../../../helpers/Data';
 import ServicoEtapa from './ServicoEtapa';
 import { useDropzone } from 'react-dropzone';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
@@ -21,7 +21,6 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
   const [defaultoptions, setDefaultOptions] = useState();
   const [etapas, setEtapas] = useState();
   const [selectedServices, setSelectedServices] = useState([]);
@@ -40,39 +39,25 @@ const ContratoForm = ({ hasLabel, type, submit, data}) => {
   });
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/finances/contratos-ambiental/${type === 'edit' ? data.uuid+'/':''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
-    try {
-      const response = await fetch(link, {
-        method: method,
-        headers: {
-            'Authorization': `Bearer ${token}`
-        },
-        body: dadosform
-      });
-      const data = await response.json();
-      if(response.status === 400){
-        setMessage({...data})
-        if (data.non_fields_errors){
-          toast.error(data.non_fields_errors, {autoClose:4000})
-        }
-        if (data.percentual){
-          toast.error(data.percentual[0], {autoClose:4000})
-        }
+    const {resposta, dados} = await sendData({type:type, url:'finances/contratos-ambiental', keyfield:null, dadosform:dadosform, is_json:false})
+    if(resposta.status === 400){
+      setMessage({...dados})
+      if (dados.non_fields_errors){
+        toast.error(dados.non_fields_errors, {autoClose:4000})
       }
-      else if (response.status === 401){
-        localStorage.setItem("login", JSON.stringify(false));
-        localStorage.setItem('token', "");
-        RedirectToLogin(navigate);
+      if (dados.percentual){
+        toast.error(dados.percentual[0], {autoClose:4000})
       }
-      else if (response.status === 201 || response.status === 200){
-        submit('add', {str_contratante:data.info_contratante.label, uuid:data.uuid, code:data.code, str_servicos:data.str_servicos.map(s => s.label).join(', '),
-          status:{'text': 'Em Andamento', 'color': 'warning'}, str_produto:data.str_produto, valor:data.valor, data_assinatura:data.data_assinatura
-        })
-        toast.success("Registro Efetuado com Sucesso!")
-      }
-    } catch (error) {
-        console.error('Erro:', error);
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      submit('add', {str_contratante:dados.info_contratante.label, uuid:dados.uuid, code:dados.code, 
+        str_servicos:dados.str_servicos.map(s => s.label).join(', '), status:{'text': 'Em Andamento', 'color': 'warning'}, 
+        str_produto:dados.str_produto, valor:dados.valor, data_assinatura:dados.data_assinatura
+      })
+      toast.success("Registro Efetuado com Sucesso!")
     }
     setIsLoading(false)
   };

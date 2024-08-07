@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch, faDownload } from "@fortawesome/free-solid-svg-icons";
 import {MapInfoDetailASV} from "./MapInfo";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const MapaAreasASV = () => {
     const [processos, setProcessos] = useState()
@@ -105,14 +106,14 @@ const MapaAreasASV = () => {
 
     return (
     <>
-        <ol className="breadcrumb breadcrumb-alt mb-2">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/ambiental/inema/asv'}>Processos ASV</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Mapa
-            </li>             
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <Row className="flex-end-center justify-content-start mb-3">
             <Col lg={6} xxl={6}>
                 <InputGroup className='position-relative'>

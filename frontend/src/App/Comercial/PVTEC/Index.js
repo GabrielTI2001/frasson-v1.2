@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Col, Placeholder, Row, Spinner, Tab, Tabs } from "react-bootstrap"
+import { Col, Placeholder, Row, Tab, Tabs } from "react-bootstrap"
 import { columnsPVTEC } from "../Data"
 import AdvanceTableWrapper from "../../../components/common/advance-table/AdvanceTableWrapper"
 import AdvanceTableSearchBox from "../../../components/common/advance-table/AdvanceTableSearchBox"
@@ -9,6 +9,7 @@ import { Link, useNavigate, useParams } from "react-router-dom"
 import { HandleSearch } from "../../../helpers/Data"
 import PVTECModal from "./Modal"
 import { RedirectToLogin } from "../../../Routes/PrivateRoute"
+import CustomBreadcrumb from "../../../components/Custom/Commom"
 
 const IndexPVTEC = () =>{
     const [searchResults, setSearchResults] = useState()
@@ -60,11 +61,11 @@ const IndexPVTEC = () =>{
     },[uuid])
     
     return (<>
-    <ol className="breadcrumb breadcrumb-alt fs-xs mb-0">
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+    <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
             PVTEC
-        </li>  
-    </ol>
+        </span>  
+    </CustomBreadcrumb>
     <Tabs defaultActiveKey="my" id="uncontrolled-tab-example" onSelect={handleTabSelect}>
         <Tab eventKey="my" title="Minhas PVTECs" className='p-3'>
             <AdvanceTableWrapper

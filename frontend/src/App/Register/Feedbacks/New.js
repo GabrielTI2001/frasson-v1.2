@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Form, Col} from 'react-bootstrap';
-import { SelectOptions } from "../../../helpers/Data";
+import { SelectOptions, sendData } from "../../../helpers/Data";
 import { toast } from 'react-toastify';
 import { ProfileContext } from "../../../context/Context";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const NewFeedback = () =>{
     const user = JSON.parse(localStorage.getItem('user'))
@@ -14,35 +15,18 @@ const NewFeedback = () =>{
     const [message, setMessage] = useState()
     const [categorias, setCategorias] = useState()
     const navigate = useNavigate();
-    const token = localStorage.getItem("token")
     const {profileState:{perfil}} = useContext(ProfileContext)
 
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/register/feedbacks/`
-        const method = 'POST'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dadosform)
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate);
-            }
-            else if (response.status === 201 || response.status === 200){
-                toast.success("Registro Efetuado com Sucesso!")
-            }
-        } catch (error) {
-            console.error('Erro:', error);
+        const {resposta, dados} = await sendData({type:'add', url:'register/feedbacks', keyfield:null, dadosform:dadosform})
+        if(resposta.status === 400){
+          setMessage({...dados})
+        }
+        else if (resposta.status === 401){
+          RedirectToLogin(navigate)
+        }
+        else if (resposta.status === 201 || resposta.status === 200){
+          toast.success("Registro Adicionado com Sucesso!")
         }
     };
     const handleFieldChange = e => {
@@ -67,11 +51,11 @@ const NewFeedback = () =>{
 
     return(
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 Feedbacks da Aplicação
-            </li>
-        </ol>
+            </span>
+        </CustomBreadcrumb>
         <h5 className="fs--2 fw-bold text-primary mb-3 mt-1">{perfil && perfil.first_name}, dê o seu feedback e ajude-nos a melhorar nossa aplicação.</h5>
         <Form onSubmit={handleSubmit} className='row'>
             <div>

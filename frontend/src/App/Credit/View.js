@@ -16,6 +16,7 @@ import ModalDelete from '../../components/Custom/ModalDelete';
 import { ApiCedula } from './Data';
 import { toast } from 'react-toastify';
 import { RedirectToLogin } from '../../Routes/PrivateRoute';
+import CustomBreadcrumb from '../../components/Custom/Commom';
 
 const ViewCredit = () => {
     const {uuid} = useParams()
@@ -101,14 +102,14 @@ const ViewCredit = () => {
 
     return (
     <>
-    <ol className="breadcrumb breadcrumb-alt fs-xs">
-        <li className="breadcrumb-item fw-bold">
+    <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold">
             <Link className="link-fx text-primary" to={'/credit'}>Operações Contratadas</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
             {operacao && operacao.str_beneficiario+' ('+operacao.numero_operacao+')'}
-        </li>  
-    </ol>
+        </span>  
+    </CustomBreadcrumb>
     {operacao ? <>
     <Row className='mt-2 mb-0 gy-2' xl={2} sm={1}>
         <Col>

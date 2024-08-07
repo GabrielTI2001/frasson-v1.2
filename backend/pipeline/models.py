@@ -84,8 +84,8 @@ class Fluxo_Gestao_Credito(models.Model):
 class Fluxo_Prospects(models.Model): 
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
-    cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cadastro Prospect')
-    produto = models.CharField(max_length=255, null=True, verbose_name='Produto de Interesse')
+    cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
+    produto = models.ForeignKey(Produtos_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Produto')
     classificacao = models.CharField(max_length=255, null=True, verbose_name='Classificação do Prospect')
     origem = models.CharField(max_length=255, null=True, verbose_name='Origem do Prospect')
     proposta_inicial = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Proposta Inicial')
@@ -94,11 +94,12 @@ class Fluxo_Prospects(models.Model):
     percentual_aprovado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Aprovado')
     data_vencimento = models.DateTimeField(null=True, verbose_name='Data de Vencimento')
     phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase Atual')
+    responsaveis = models.ManyToManyField(User, verbose_name='Responsáveis', related_name='responsaveisprospect')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
-        verbose_name_plural = 'Prospects Frasson'
+        verbose_name_plural = 'Fluxo Prospect'
     def __str__(self):
         return self.cliente.razao_social
 

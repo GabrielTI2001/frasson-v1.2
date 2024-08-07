@@ -12,6 +12,7 @@ import MachineryForm from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const InitData = {
     'columns':columnsMachinery, 'urlapilist':'register/machinery', 
@@ -20,7 +21,6 @@ const InitData = {
 
 const IndexMachinery = () => {
     const [searchResults, setSearchResults] = useState();
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
     const navigate = useNavigate();
     const [showmodal, setShowModal] = useState(false)
@@ -51,14 +51,14 @@ const IndexMachinery = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+            </span>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         <Row>
         {searchResults ? 
         <AdvanceTableWrapper
@@ -73,9 +73,9 @@ const IndexMachinery = () => {
                     <AdvanceTableSearchBox table onSearch={handleChange}/>
                 </Col>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <a className="text-decoration-none btn btn-primary shadow-none fs--2"
+                    <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
                         style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
-                    >Novo Cadastro</a>
+                    >Novo Cadastro</Link>
                 </Col>
             </Row>     
             <AdvanceTable

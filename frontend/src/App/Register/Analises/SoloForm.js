@@ -2,7 +2,6 @@ import React, { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Spinner } from 'react-bootstrap';
-import ModalGMS from '../../../components/Custom/ModalGMS';
 import { useAppContext } from '../../../Main';
 import { fieldsAnaliseSolo } from '../Data';
 import RenderFields from '../../../components/Custom/RenderFields';
@@ -16,7 +15,6 @@ const AnaliseSoloForm = ({ hasLabel, type, submit}) => {
     created_by: user.id
   });
   const [message, setMessage] = useState()
-  const [showModal, setShowModal] = useState({show:false, type:''})
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -43,7 +41,9 @@ const AnaliseSoloForm = ({ hasLabel, type, submit}) => {
     const formDataToSend = new FormData();
     for (const key in formData) {
       if (key === 'file') {
-        formDataToSend.append('file', formData[key]);
+        for (let i = 0; i < formData[key].length; i++) {
+          formDataToSend.append('file', formData[key][i]);
+        }
       } else {
         formDataToSend.append(key, formData[key]);
       }
@@ -52,7 +52,7 @@ const AnaliseSoloForm = ({ hasLabel, type, submit}) => {
   };
 
   const handleFileChange = (e) => {
-    setFormData({...formData, [e.target.name]:e.target.files[0]})
+    setFormData({...formData, [e.target.name]:e.target.files})
   };
 
   const handleFieldChange = e => {
@@ -65,8 +65,8 @@ const AnaliseSoloForm = ({ hasLabel, type, submit}) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
-        <RenderFields fields={fieldsAnaliseSolo.slice(0, 11)} formData={formData} changefile={handleFileChange} changefield={handleFieldChange} 
-          hasLabel={hasLabel} message={message} type={type} setform={setFormData}
+        <RenderFields fields={fieldsAnaliseSolo.slice(0, 11)} formData={formData} changefilemulti={handleFileChange} 
+          changefield={handleFieldChange} hasLabel={hasLabel} message={message} type={type} setform={setFormData}
         />
         <hr className='ms-3 mt-0 mb-2' style={{width:'93%'}}></hr>
         <h4 style={{fontSize:'14px'}} className='fw-700'>Resultados</h4>
@@ -79,7 +79,6 @@ const AnaliseSoloForm = ({ hasLabel, type, submit}) => {
           </Button>
         </Form.Group>    
       </Form>
-      <ModalGMS show={showModal.show} type={showModal.type} changemodal={setShowModal} formData={formData} changeform={setFormData}/>
     </>
   );
 };

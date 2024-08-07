@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col, Row} from 'react-bootstrap';
+import { Button, Form, Col, Row, Spinner} from 'react-bootstrap';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { SelectSearchOptions, sendData } from '../../../helpers/Data';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import ModalDelete from '../../../components/Custom/ModalDelete';
@@ -28,67 +28,50 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
   const [message, setMessage] = useState()
   const [safras, setSafras] = useState([])
   const [modal, setModal] = useState({show:false})
-  const token = localStorage.getItem("token")
   const [defaultoptions, setDefaultOptions] = useState()
+  const [isLoading, setIsLoading] = useState(false);
 
   const sortMonths = (months) => {
     return months.sort((a, b) => monthOrder[a] - monthOrder[b]);
   }
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/litec/agricola/${type === 'edit' ? data.id+'/' : ''}`
-    const method = type === 'edit' ? 'PUT' : 'POST'
     let dataToSend = { ...dadosform };
 
-    // Remove plantio se for vazio
     if (dataToSend.plantio.length === 0) {
         delete dataToSend.plantio;
     } else {
         dataToSend.plantio = sortMonths(dataToSend.plantio).join(", ");
     }
 
-    // Remove colheita se for vazio
     if (dataToSend.colheita.length === 0) {
         delete dataToSend.colheita;
     } else {
         dataToSend.colheita = sortMonths(dataToSend.colheita).join(", ");
     }
 
-    try {
-        const response = await fetch(link, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-            body: JSON.stringify(dataToSend)
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          RedirectToLogin(navigate);
-        }
-        else if (response.status === 201 || response.status === 200){
-          if (type === 'edit'){
-            toast.success("Registro Atualizado com Sucesso!")
-            submit('edit', data)
-          }
-          else{
-            toast.success("Registro Efetuado com Sucesso!")
-            submit('add', data)
-          }
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:type, url:'litec/agricola', keyfield:type === 'edit' ? data.id : null, dadosform:dataToSend})
+    if(resposta.status === 400){
+      setMessage(dados)
     }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      if (type === 'edit'){
+        toast.success("Registro Atualizado com Sucesso!")
+      }
+      else{
+        toast.success("Registro Efetuado com Sucesso!")
+      }
+      submit(type, dados)
+    }
+    setIsLoading(false)
   };
 
   const handleSubmit = e => {
     setMessage(null)
+    setIsLoading(true)
     e.preventDefault();
     handleApi(formData);
   };
@@ -157,7 +140,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
       <Form onSubmit={handleSubmit} className='row sectionform'>
         
         {defaultoptions && (
-          <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+          <Form.Group className="mb-2" as={Col} xl={12}>
             {hasLabel && <Form.Label className='fw-bold mb-1'>Cultura Agrícola*</Form.Label>}
             <AsyncSelect loadOptions={(v) => SelectSearchOptions(v, 'glebas/culturas', 'cultura')} name='cultura' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
               defaultValue={type === 'edit' ? (defaultoptions ? defaultoptions.cultura : '') : '' }
@@ -171,7 +154,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           </Form.Group>
         )}
 
-        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Variedade Cultura*</Form.Label>}
           <Form.Control
             value={formData.variedade || ''}
@@ -182,7 +165,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           <label className='text-danger'>{message ? message.variedade : ''}</label>
         </Form.Group>
         
-        <Form.Group className="mb-2" as={Col} xl={4} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Safra*</Form.Label>}
           <Form.Select
             value={formData.safra || ''}
@@ -197,7 +180,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           <label className='text-danger'>{message ? message.safra : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1 d-block'>Meses Plantio*</Form.Label>}
           <Row className='gx-1 d-flex justify-content-start'>
             {meses.map(mes =>
@@ -216,7 +199,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           <label className='text-danger'>{message ? message.plantio : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1 d-block'>Meses Colheita*</Form.Label>}
           <Row className='gx-1 d-flex justify-content-start'>
             {meses.map(mes =>
@@ -235,7 +218,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           <label className='text-danger'>{message ? message.colheita : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Prod. Prevista (kg)</Form.Label>}
           <Form.Control
             value={formData.prod_prevista_kg || ''}
@@ -246,7 +229,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           <label className='text-danger'>{message ? message.prod_prevista_kg : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={3} sm={6}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Prod. Obtida (kg)</Form.Label>}
           <Form.Control
             value={formData.prod_obtida_kg || ''}
@@ -257,7 +240,7 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           <label className='text-danger'>{message ? message.prod_obtida_kg : ''}</label>
         </Form.Group>
 
-        <Form.Group className="mb-2" as={Col} xl={6} sm={12}>
+        <Form.Group className="mb-2" as={Col} xl={12}>
           {hasLabel && <Form.Label className='fw-bold mb-1'>Descrição</Form.Label>}
           <Form.Control
             value={formData.descricao || ''}
@@ -267,20 +250,20 @@ const FormProdAgricola = ({ hasLabel, data, type, submit, gleba}) => {
           />
           <label className='text-danger'>{message ? message.descricao : ''}</label>
         </Form.Group>
-        <Row>
-          <Form.Group className={`mb-1 pe-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' xs='auto' sm='auto'> 
-            <Button className="w-40 py-1" type="submit">
-              {type === 'edit' ? "Atualizar Produção" : "Cadastrar Produção"}
-            </Button>
-          </Form.Group>       
+        
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Button className="w-50" type="submit" disabled={isLoading} >
+            {isLoading 
+              ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> 
+              : (type === 'edit' ? 'Atualizar' : 'Cadastrar')+' Produção'
+            }
+          </Button>
           {type === 'edit' &&
-            <Form.Group className={`mb-0 ps-1 ${type === 'edit' ? 'text-start' : 'text-end'}`} as={Col} xl='auto' xs='auto' sm='auto'>
-              <Button className="w-40 btn-danger py-1" onClick={() => setModal({show:true, id:data.id})}>
-                <FontAwesomeIcon icon={faTrash} className="me-2"></FontAwesomeIcon>Excluir
-              </Button>
-            </Form.Group> 
+            <Button className="w-40 ms-2 btn-danger py-1" onClick={() => setModal({show:true, id:data.id})}>
+              <FontAwesomeIcon icon={faTrash} className="me-2"></FontAwesomeIcon>Excluir
+            </Button>
           } 
-        </Row>
+        </Form.Group>      
       </Form>
       {type ===  'edit' &&
         <ModalDelete show={modal.show} link={`${process.env.REACT_APP_API_URL}/litec/agricola/${data.id}/`} close={() => setModal({show:false})} 

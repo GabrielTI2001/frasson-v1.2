@@ -3,54 +3,37 @@ import { useNavigate } from "react-router-dom";
 import { Button, Col} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import customStyles, { customStylesDark } from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { HandleSearch } from '../../helpers/Data';
+import { HandleSearch, sendData } from '../../helpers/Data';
 import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
-const ConfigMoverCard = ({type, data, submit, card}) => {
+const ConfigMoverCard = ({type, submit, card}) => {
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate()
-    const token = localStorage.getItem("token")
-    const user = JSON.parse(localStorage.getItem("user"))
     const [message, setMessage] = useState();
     const [formData, setformData] = useState({fase:card.phase});
     const [fases, setFases] = useState();
 
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/pipeline/fases/${type === 'edit' ? card.phase+'/' : ''}`
-        const method = type === 'edit' ? 'PUT' : 'POST'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dadosform)
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate);
-            }
-            else if (response.status === 201 || response.status === 200){
-                type === 'edit' ? submit('edit', data.list_destinos) : submit('add', data)
-                toast.success("Registro Atualizado com Sucesso!")
-            }
-        } catch (error) {
-            console.error('Erro:', error);
+        const {resposta, dados} = await sendData({type:type, url:'pipeline/fases', keyfield:type === 'edit' && card.phase, dadosform:dadosform})
+        if(resposta.status === 400){
+          setMessage({...dados})
+        }
+        else if (resposta.status === 401){
+          RedirectToLogin(navigate)
+        }
+        else if (resposta.status === 201 || resposta.status === 200){
+          type === 'edit' ? submit('edit', dados.list_destinos) : submit('add', dados)
+          toast.success("Registro Atualizado com Sucesso!")
         }
     };
+
     const handleSubmit = e => {
         e.preventDefault()
         setMessage(null)
         handleApi({...formData, destinos_permitidos:[...formData.destinos_permitidos, card.phase]});
     };
+
     const handleFieldChange = e => {
       const { name, value, type, checked } = e.target;
       setformData(prevState => {

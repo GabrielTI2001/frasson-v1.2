@@ -12,9 +12,9 @@ from cadastro.models import Detalhamento_Servicos
 from django.db.models import Sum, Q, Case, When, DecimalField, F, DateField, Subquery, OuterRef, Count, IntegerField, Value
 from django.db.models.functions import Coalesce
 from backend.frassonUtilities import Frasson
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from collections import defaultdict
-import locale, uuid, io, math
+import locale, uuid, io, math, json
 from .utilities import calcdre
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch, mm
@@ -34,7 +34,8 @@ from .utilities import fields_contratogai
 
 class PagamentosView(viewsets.ModelViewSet):
     queryset = Pagamentos.objects.all()
-    serializer_class = listPagamentosPipefy
+    serializer_class = detailPagamentos
+    lookup_field = 'uuid'
     # permission_classes = [IsAuthenticated]
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -45,25 +46,22 @@ class PagamentosView(viewsets.ModelViewSet):
             search_year = int(search_year)
             if search_month:
                 search_month = int(search_month)
-                query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) &
-                                (Q(data_vencimento__month=search_month) | Q(data_pagamento__month=search_month)) &
-                                (Q(beneficiario__razao_social__icontains=search) | Q(status__icontains=search) | Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)))
+                query_search = ((Q(beneficiario__razao_social__icontains=search) | Q(status__icontains=search) | 
+                    Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)))
                 queryset = Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
-                        When(status__isnull=False, then=F('data_pagamento')),
+                        When(status='PG', then=F('data_pagamento')),
                         default=F('data_vencimento'),
                         output_field=DateField()
                     )
                 ).filter(data__year=search_year, data__month=search_month).order_by('data')
             else:
                 search_year = int(search_year)
-                query_search = ((Q(data_vencimento__year=search_year) | Q(data_pagamento__year=search_year)) &
-                                (Q(beneficiario__razao_social__icontains=search) | Q(status__icontains=search) | 
-                                    Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)
-                                ))
+                query_search = ((Q(beneficiario__razao_social__icontains=search) | Q(status__icontains=search) | 
+                    Q(categoria__category__icontains=search) | Q(categoria__classification__icontains=search)))
                 queryset = Pagamentos.objects.filter(query_search).annotate(
                     data=Case(
-                        When(status__isnull=False, then=F('data_pagamento')),
+                        When(status='PG', then=F('data_pagamento')),
                         default=F('data_vencimento'),
                         output_field=DateField()
                     )
@@ -81,7 +79,7 @@ class PagamentosView(viewsets.ModelViewSet):
         return Response(response_data)
     def get_serializer_class(self):
         if self.action == 'list':
-            return listPagamentosPipefy
+            return listPagamentos
         else:
             return self.serializer_class
         
@@ -553,16 +551,16 @@ def index_dre_consolidado(request):
     produto_gai = 864795466
     produto_avaliacao = 864795628
     produto_tecnologia = 864795734
-    class_custo = 'Custo Operacional'
-    class_desp_oper = 'Despesa Operacional'
-    class_desp_nao_oper = 'Despesa Não Operacional'
-    class_retirada = 'Retirada de Sócio'
-    class_comissao = 'Pagamento Comissão'
-    class_ativos = 'Ativos Imobilizados'
-    class_outros = 'Outros'
+    class_custo = 'COE'
+    class_desp_oper = 'DOP'
+    class_desp_nao_oper = 'DNOP'
+    class_retirada = 'RS'
+    class_comissao = 'PC'
+    class_ativos = 'AI'
+    class_outros = 'O'
 
     anos = [ano for ano in range(2021, date.today().year + 1)] #cria a lista dos anos de busca
-    search = request.GET.get('search')
+    search = request.GET.get('year')
 
     if search: 
         year = int(search)
@@ -620,7 +618,8 @@ def index_dre_consolidado(request):
         total_custos=Sum(Case(When(categoria__classification=class_custo, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_oper=Sum(Case(When(categoria__classification=class_desp_oper, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_nao_oper=Sum(Case(When(categoria__classification=class_desp_nao_oper, then='valor_pagamento'), default=0, output_field=DecimalField())))
-
+    print(year)
+    print(Pagamentos.objects.filter(status='PG', data_pagamento__year=year))
     total_custos = query_total_despesas.get('total_custos', 0) or 0
     total_desp_oper = query_total_despesas.get('total_desp_oper', 0) or 0
     total_desp_nao_oper = query_total_despesas.get('total_desp_nao_oper', 0) or 0

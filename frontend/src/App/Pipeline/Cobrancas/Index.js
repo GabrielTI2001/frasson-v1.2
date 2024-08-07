@@ -118,7 +118,7 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
         {fieldsCobranca.filter(f => fields.some(n => f.name === n)).map(f => 
           !showForm[f.name] ?
             <div className='my-2' key={f.name}>
-              <CardTitle title={f.label.replace('*', '')} click={handleEdit} field={f.name}/>
+              <CardTitle title={f.label.replace('*', '')} click={f.name === 'saldo_devedor' ? null : handleEdit} field={f.name}/>
               {f.type === 'select' ?
                 <div><span className={`badge bg-success fs--2 p-1 px-2`}>{p[f.string] || '-'}</span></div>
               : f.type === 'select2' ?
@@ -159,25 +159,32 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
         clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/revenues/${p.uuid}/`})}}
       >
-        {fieldsCobranca.filter(f => fields.some(f.name)).map(f => 
+        {fieldsCobranca.filter(f => fields.some(n => f.name === n)).map(f => 
           !showForm[f.name] ?
-            <div className='my-2'>
-              <CardTitle title={f.label} click={handleEdit} field={f.name}/>
-              <div>
-                <span className={`badge bg-success fs--2 p-1 px-2`}>{p[f.name]}</span>
-              </div>
+            <div className='my-2' key={f.name}>
+              <CardTitle title={f.label.replace('*', '')} click={f.name === 'saldo_devedor' ? null : handleEdit} field={f.name}/>
+              {f.type === 'select' ?
+                <div><span className={`badge bg-success fs--2 p-1 px-2`}>{p[f.string] || '-'}</span></div>
+              : f.type === 'select2' ?
+                f.string ?
+                  <div className="fs--1 row-10">{p[f.string] || '-'}</div>
+                :
+                  <div className="fs--1 row-10">{p[f.data] && p[f.data][f.attr_data]}</div>
+              : f.type === 'date' ? 
+                <div className="fs--1 row-10">{p[f.name] ? new Date(p[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
+              : 
+                <div className="fs--1 row-10">{p[f.name] ? f.is_number 
+                  ? Number(p[f.name]).toLocaleString('pt-BR', {minimumFractionDigits:2}) : p[f.name] : '-'}
+                </div>
+              }
             </div>
           : 
-            <EditForm 
-              onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
-              show={showForm[f.name]}
-              fieldkey={f.name}
-              setShow={setShowForm}
-              data={p.f.name}
-              pipe={card.pipe_code}
-            />
+          <EditFormModal key={f.name}
+            onSubmit={(formData) => handleSubmit(formData, p.uuid)} 
+            show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
+            record={p} field={f}
+          />
         )}
-
       </ExpandableCard>
     )}
     <ModalDelete show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>

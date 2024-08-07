@@ -12,6 +12,7 @@ import ListOperacoes from "./ListOperacoes";
 import ListContas from "./ListContas";
 import { RetrieveRecord } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const ViewPessoal = () => {
     const {uuid} = useParams()
@@ -44,19 +45,19 @@ const ViewPessoal = () => {
 
     return (
     <>
-        <ol className="breadcrumb breadcrumb-alt mb-1">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
-            </li>
-            <li className="breadcrumb-item fw-bold">
+            </span>
+            <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/register/pessoal'}>Cadastro Pessoal</Link>
-            </li>
+            </span>
             {pessoa && (
-               <li className="breadcrumb-item fw-bold" aria-current="page">
+               <span className="breadcrumb-item fw-bold" aria-current="page">
                    {pessoa.razao_social}
-               </li>             
+               </span>             
             )}
-        </ol>
+        </CustomBreadcrumb>
         <Row className="mb-3">
             <div><FontAwesomeIcon icon={faCakeCandles} className="me-2"/>
                 {pessoa && pessoa.data_nascimento ? `${new Date(pessoa.data_nascimento).toLocaleDateString('pt-BR', {timeZone: 'UTC'})} (${calcIdade(pessoa.data_nascimento)} anos)` :'-'}

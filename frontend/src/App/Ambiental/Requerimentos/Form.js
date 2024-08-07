@@ -3,11 +3,11 @@ import AsyncSelect from 'react-select/async';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { Button, Form, Col, Row} from 'react-bootstrap';
-import { fetchMunicipio } from '../Data';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { useAppContext } from '../../../Main';
 import GoogleMap from '../../../components/map/GoogleMap';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { SelectSearchOptions } from '../../../helpers/Data';
 
 const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
   const {config: {theme}} = useAppContext();
@@ -217,7 +217,9 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
           {defaultoptions && (
             <Form.Group className="mb-2" as={Col} xl={6} sm={6}>
               {hasLabel && <Form.Label className='fw-bold mb-1'>Município localização*</Form.Label>}
-              <AsyncSelect loadOptions={fetchMunicipio} name='farm' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+              <AsyncSelect 
+                loadOptions={(v) => SelectSearchOptions(v, 'register/municipios', 'nome_municipio', 'sigla_uf')} name='farm' 
+                styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
                 defaultValue={defaultoptions.municipio || ''}
                 onChange={(selected) => {
                 setFormData((prevFormData) => ({
@@ -283,12 +285,8 @@ const RequerimentoAPPOForm = ({ hasLabel, type, submit, data}) => {
           </Form.Group>
 
           <Form.Group className={`mb-1 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-            <Button
-              className="w-40"
-              type="submit"
-              >
-                {type === 'edit' ? "Atualizar Requerimento"
-                : "Cadastrar Requerimento"}
+            <Button className="w-40" type="submit">
+              {type === 'edit' ? "Atualizar Requerimento" : "Cadastrar Requerimento"}
             </Button>
           </Form.Group>           
         </Form>

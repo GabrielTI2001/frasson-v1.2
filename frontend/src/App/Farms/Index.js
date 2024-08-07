@@ -6,6 +6,7 @@ import { faTractor,  faPerson } from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../Main";
 import { GetRecord } from "../../helpers/Data";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexAppFarms = () =>{
     const {config: { theme}} = useAppContext();
@@ -32,11 +33,11 @@ const IndexAppFarms = () =>{
     },[])
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cadastros Fazendas
-            </li>    
-        </ol>
+            </span>    
+        </CustomBreadcrumb>
         <Row className="gy-3 gx-4" xs={1} sm={3} lg={5} xl={6}>
           <Col>
             <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>

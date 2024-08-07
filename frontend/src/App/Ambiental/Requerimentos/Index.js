@@ -3,14 +3,15 @@ import { Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocationDot } from "@fortawesome/free-solid-svg-icons";
+import CustomBreadcrumb from "../../../components/Custom/Commom";
 
 const IndexRequerimentos = () =>{
     return (<>
-    <ol className="breadcrumb breadcrumb-alt mb-3">
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+    <CustomBreadcrumb>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
             Requerimentos INEMA
-        </li>             
-    </ol>
+        </span>     
+    </CustomBreadcrumb>
     <Row xl={4} className="gx-2 mt-1">
         <Col>
             <Link className="card shadow-sm px-3 py-1 panel cursor-pointer" to={'appo'}>

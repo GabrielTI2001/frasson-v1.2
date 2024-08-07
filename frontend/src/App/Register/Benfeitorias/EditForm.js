@@ -76,7 +76,7 @@ const EditForm = ({
             <Form.Label className='fw-bold mb-1'>Tipo de Benfeitoria*</Form.Label>
             <Form.Select
               defaultValue={data || ''}
-              className='mb-1 fs--1 py-0 w-100'
+              className='mb-1 fs--1'
               onChange={({target}) => {
                 setFormData(({...formData, type: target.value}));
               }}
@@ -92,7 +92,7 @@ const EditForm = ({
             <Form.Label className='mb-0 fw-bold fs--1'>Data Construção</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''}
               type='date'
-              className='mb-1 fs--1 py-0 px-2 w-50'
+              className='mb-1 fs--1 px-2'
               onChange={({target}) => {
                   setFormData(({...formData, data_construcao: target.value}));
                 }
@@ -102,7 +102,7 @@ const EditForm = ({
           {fieldkey === 'tamanho' &&(<>
             <Form.Label className='mb-0 fw-bold fs--1'>Tamanho</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''} type='number'
-              className='mb-1 fs--1 py-0 w-50'
+              className='mb-1 fs--1 px-2'
               onChange={({target}) => {
                 setFormData(({...formData, tamanho: target.value}));
               }
@@ -112,7 +112,7 @@ const EditForm = ({
           {fieldkey === 'valor_estimado' &&(<>
             <Form.Label className='mb-0 fw-bold fs--1'>Valor Estimado</Form.Label>
             <Form.Control ref={inputRef} defaultValue={data || ''} type='number'
-              className='mb-1 fs--1 py-0 w-50'
+              className='mb-1 fs--1 px-2'
               onChange={({target}) => {
                 setFormData(({...formData, valor_estimado: target.value}));
               }
@@ -124,7 +124,7 @@ const EditForm = ({
             <Button
               variant="primary"
               size="sm"
-              className="col w-30 fs-xs p-0 me-1 ms-0"
+              className="col col-auto me-1 ms-0"
               type="submit"
             >
               <span>Atualizar</span>
@@ -132,7 +132,7 @@ const EditForm = ({
             <Button
               variant="outline-secondary"
               size="sm"
-              className="col w-30 fs-xs p-0 border-400"
+              className="col col-auto border-400"
               type="button"
               onClick={() =>     
                 setShow(prevState => ({

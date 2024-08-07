@@ -12,10 +12,11 @@ import api from '../../context/data';
 import ModalDelete from '../../components/Custom/ModalDelete';
 import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
-export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) => {
+export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc, isprospect}) => {
   const user = JSON.parse(localStorage.getItem('user'))
-  const [formData, setFormData] = useState({fluxo_ambiental:!ispvtec ? card.id : null, uploaded_by:user.id, 
-    pvtec:ispvtec ? card.id : null, pvtec_response: pvtecresponse ? true : null, fluxo_credito: isgc ? card.id : null});
+  const [formData, setFormData] = useState({fluxo_ambiental:!ispvtec ? card.id : null, uploaded_by:user.id,  
+    pvtec:ispvtec ? card.id : null, pvtec_response: pvtecresponse ? true : null, fluxo_prospect:isprospect ? card.id : null,
+    fluxo_credito: isgc ? card.id : null});
   const [accFiles, setaccFiles] = useState();
   const {config: {theme, isRTL}} = useAppContext();
   const [anexos, setAnexos] = useState();
@@ -98,7 +99,7 @@ export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc}) =>
   useEffect(() =>{
     const getdata = async () =>{
       if (!anexos){
-        const param = ispvtec ? 'pvtec' : isgc ? 'fluxogc' : 'fluxogai'
+        const param = ispvtec ? 'pvtec' : isgc ? 'fluxogc' : isprospect ? 'prospect' : 'fluxogai'
         const param2 = pvtecresponse ? '&isresponse=1' : ''
         const status = await HandleSearch('', 'pipeline/card-anexos',(data) => {setAnexos(data)}, `?${param}=${card.id}&${param2}`)
         if (status === 401){

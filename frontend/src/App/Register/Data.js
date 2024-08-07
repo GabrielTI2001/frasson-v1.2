@@ -173,8 +173,8 @@ export const fieldsPessoal = [
 
 export const fieldsAnaliseSolo = [
   {name:'data_coleta', label:'Data Coleta*', type:'date'},
-  {name:'fazenda', label:'Fazenda*', type:'select2', url:'farms/farms', attr1:'nome', attr2:'matricula', string:'localizacao'},
   {name:'cliente', label:'Cliente*', type:'select2', url:'register/pessoal', attr1:'razao_social', attr2:'cpf_cnpj', string:'str_cliente'},
+  {name:'fazenda', label:'Fazenda*', type:'select2', url:'farms/farms', attr1:'nome', attr2:'matricula', string:'localizacao'},
   {name:'identificacao_amostra', label:'Identificação Amostra*', type:'text'}, 
   {name:'latitude_gd', label:'Latitude (GD)*', type:'text', iscoordenada:true, cat:'latitude'}, 
   {name:'longitude_gd', label:'Longitude (GD)*', type:'text', iscoordenada:true, cat:'longitude'},
@@ -182,49 +182,49 @@ export const fieldsAnaliseSolo = [
   {name:'numero_controle', label:'Número da Amostra', type:'text'},
   {name:'responsavel', label:'Responsável Pela Coleta*', type:'text'},
   {name:'laboratorio_analise', label:'Laboratório de Análise*', type:'text'},
-  {name:'file', label:'Arquivo PDF', type:'file'},
+  {name:'file', label:'Anexos', type:'file', isdrop:true, ismulti:true},
 
-  {name:'calcio_cmolc_dm3', label_html:<>Ca<sup>2+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'calcio_cmolc_dm3', label_html:<> Cálcio - Ca<sup>2+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Cálcio no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'magnesio_cmolc_dm3', label_html:<>Mg<sup>2+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'magnesio_cmolc_dm3', label_html:<>Magnésio - Mg<sup>2+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Magnésio no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'potassio_cmolc_dm3', label_html:<>K<sup>2+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'potassio_cmolc_dm3', label_html:<>Potássio - K<sup>2+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Potássio no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'fosforo', label_html:<>P (mg/dm<sup>3</sup>)</>, type:'text', 
+  {name:'fosforo', label_html:<>Fósforo - P (mg/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Fósforo no resultado da amostra (Estimado pelo extrator Mehlich-1). Atente-se para a unidade de medida.'
   },
-  {name:'fosforo_rem', label_html:<>P-rem. (mg/dm<sup>3</sup>)</>, type:'text', 
+  {name:'fosforo_rem', label_html:<>Fósforo Remanescente - P-rem. (mg/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Fósforo Remanescente no resultado da amostra. O P-rem é a quantidade de fósforo adicionado que fica na solução de equilíbrio, '+ 
       'após certo tempo de contato com o solo, em resposta a uma aplicação de P. Atente-se para a unidade.'
   },
-  {name:'aluminio_cmolc_dm3', label_html:<>Al<sup>3+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'aluminio_cmolc_dm3', label_html:<>Alumínio - Al<sup>3+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Alumínio no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'enxofre', label_html:<>S (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'enxofre', label_html:<>Enxofre - S (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Enxofre no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'zinco', label_html:<>Zn (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'zinco', label_html:<>Zinco - Zn (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Zinco no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'ferro', label_html:<>Fe (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'ferro', label_html:<>Ferro - Fe (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Ferro no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'cobre', label_html:<>Cu (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'cobre', label_html:<>Cobre - Cu (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Cobre no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'manganes', label_html:<>Mn (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'manganes', label_html:<>Manganês - Mn (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Manganês no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'boro', label_html:<>B (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'boro', label_html:<>Boro - B (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Boro no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'sodio', label_html:<>Na<sup>+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
+  {name:'sodio', label_html:<>Sódio - Na<sup>+</sup> (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor de Sódio no resultado da amostra. Atente-se para a unidade de medida.'
   },
-  {name:'h_mais_al', label:'H+Al', type:'text', 
+  {name:'h_mais_al', label_html:<>H+Al (cmolc/dm<sup>3</sup>)</>, type:'text', 
     tooltip:'Informe aqui o teor total de Acidez Potencial no resultado da amostra. Atente-se para a unidade de medida.'
   },
   {name:'mat_org_dag_dm3', label_html:<>Matéria Orgânica (dag/dm<sup>3</sup>)</>, type:'text', 

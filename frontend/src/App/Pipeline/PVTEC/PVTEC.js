@@ -15,9 +15,8 @@ import EditForm from './EditForm';
 import {CardTitle} from '../CardInfo';
 
 const PVTEC = ({card, updatedactivity, isgc}) => {
-  const user = JSON.parse(localStorage.getItem('user'))
   const [pvtecs, setPvtecs] = useState();
-  const {config: {theme, isRTL}} = useAppContext();
+  const {config: {theme}} = useAppContext();
   const token = localStorage.getItem("token")
   const [showmodal, setShowModal] = useState({show:false})
   const [modaldel, setModaldel] = useState({show:false})

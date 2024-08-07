@@ -7,50 +7,33 @@ import MapInfo from './MapInfo';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFileExcel, faCloudArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
+import { GetRecord, sendData } from '../../../helpers/Data';
+import { toast } from 'react-toastify';
+import CustomBreadcrumb from '../../../components/Custom/Commom';
 
 const PivotCoordinates = () => {
   const {config: {theme}} = useAppContext();
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({})
-  const [message, setMessage] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
   const [dados, setDados] = useState({coordinates:[]})
   const [tokenmaps, setTokenMaps] = useState()
 
   const handleApi = async (dadosform) => {
-    const link = `${process.env.REACT_APP_API_URL}/services/tools/pivot`
-
-    const method = 'POST'
-    try {
-        const response = await fetch(link, {
-          method: method,
-          headers: {
-              'Authorization': `Bearer ${token}`
-          },
-          body: dadosform
-        });
-        const data = await response.json();
-        if(response.status === 400){
-          setMessage({...data})
-        }
-        else if (response.status === 401){
-          localStorage.setItem("login", JSON.stringify(false));
-          localStorage.setItem('token', "");
-          RedirectToLogin(navigate);
-        }
-        else if (response.status === 201 || response.status === 200){
-          setDados({...data})
-        }
-    } catch (error) {
-        console.error('Erro:', error);
+    const {resposta, dados} = await sendData({type:'add', url:'services/tools/pivot', keyfield:null, dadosform:dadosform, is_json:false})
+    if(!resposta){
+      toast.error("Preencha todos os campos")
+    }
+    else if (resposta.status === 401){
+      RedirectToLogin(navigate)
+    }
+    else if (resposta.status === 201 || resposta.status === 200){
+      setDados(dados)
     }
     setIsLoading(false)
   };
 
-
   const handleSubmit = async e => {
-    setMessage(null)
     setIsLoading(true)
     e.preventDefault();
     const formDataToSend = new FormData();
@@ -66,17 +49,9 @@ const PivotCoordinates = () => {
 
   useEffect(()=>{
     const getTokenMaps = async () => {
-      try{
-          const response = await fetch(`${process.env.REACT_APP_API_URL}/token/maps/`, {
-              method: 'GET'
-          });
-          if (response.status === 200){
-              const data = await response.json();
-              setTokenMaps(data.token)
-          }
-      } catch (error){
-          console.error("Erro: ",error)
-      }
+      const data = await GetRecord('', 'token/maps')
+      if (!data) RedirectToLogin(navigate)
+      else setTokenMaps(data.token)
     }
     if (!tokenmaps) getTokenMaps()
     const table = document.querySelector("table").outerHTML;
@@ -86,14 +61,14 @@ const PivotCoordinates = () => {
 
   return (
     <>
-      <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-        <li className="breadcrumb-item fw-bold">
+      <CustomBreadcrumb >
+        <span className="breadcrumb-item fw-bold">
           <Link className="link-fx text-primary" to={'/services/tools'}>Ferramentas</Link>
-        </li>
-        <li className="breadcrumb-item fw-bold" aria-current="page">
+        </span>
+        <span className="breadcrumb-item fw-bold" aria-current="page">
           Gerar Coordenadas Pivot
-        </li>    
-      </ol>
+        </span>    
+      </CustomBreadcrumb>
       <div className='fs--2 mb-3' style={{marginTop: '-0.3rem'}}>
         Esta ferramenta gera uma quantidade específica de coordenadas no limite da área do pivô.
       </div>
@@ -105,7 +80,6 @@ const PivotCoordinates = () => {
             onChange={handleFieldchange}
             type="text"
           />
-          <label className='text-danger'>{message ? message.latitude_gd : ''}</label>
         </Form.Group>
         <Form.Group className="mb-0" as={Col} xl={2}>
           <Form.Label className='fw-bold mb-1'>Longitude Centro (GD)*</Form.Label>
@@ -114,7 +88,6 @@ const PivotCoordinates = () => {
             onChange={handleFieldchange}
             type="text"
           />
-          <label className='text-danger'>{message ? message.longitude_gd : ''}</label>
         </Form.Group>
         <Form.Group className="mb-0" as={Col} xl={2}>
           <Form.Label className='fw-bold mb-1'>Área (GD)*</Form.Label>
@@ -123,7 +96,6 @@ const PivotCoordinates = () => {
             onChange={handleFieldchange}
             type="number"
           />
-          <label className='text-danger'>{message ? message.area_ha : ''}</label>
         </Form.Group>
         <Form.Group className="mb-0" as={Col} xl={2}>
           <Form.Label className='fw-bold mb-1'>Quantidade Pontos*</Form.Label>
@@ -132,7 +104,6 @@ const PivotCoordinates = () => {
             onChange={handleFieldchange}
             type="number"
           />
-          <label className='text-danger'>{message ? message.quantidade : ''}</label>
         </Form.Group>
         <Form.Group className={`d-flex align-items-center`} as={Col} xl={2}>
           {!isLoading ?

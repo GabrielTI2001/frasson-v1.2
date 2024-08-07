@@ -11,6 +11,7 @@ import { HandleSearch } from "../../helpers/Data";
 import ModalDelete from "../../components/Custom/ModalDelete";
 import Edit from "./Edit";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexAlongamentos = () => {
     const [searchResults, setSearchResults] = useState();
@@ -38,7 +39,7 @@ const IndexAlongamentos = () => {
                 {url:`${process.env.REACT_APP_API_URL}/alongamentos/pdf/download/${dados.id}/2`, 
                     name:`${dados.beneficiario} ${dados.numero_operacao} - page 2.pdf`}
             ];
-            if (dados.str_tipo_armazenagem == 'Silo Bag'){
+            if (dados.str_tipo_armazenagem === 'Silo Bag'){
                 filesToDownload.push({url:`${process.env.REACT_APP_API_URL}/alongamentos/pdf/download/${dados.id}/3`, 
                 name:`${dados.beneficiario} ${dados.numero_operacao} - page 3.pdf`})
             }
@@ -92,11 +93,11 @@ const IndexAlongamentos = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Alongamentos
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsAlongamento}
@@ -145,7 +146,7 @@ const IndexAlongamentos = () => {
         </div>   
         }
         <Modal
-            size="xl"
+            size="md"
             show={modalform.show}
             onHide={() => setModalForm({show:false})}
             aria-labelledby="example-modal-sizes-title-lg"
@@ -157,7 +158,7 @@ const IndexAlongamentos = () => {
             </Modal.Title>
                 <CloseButton onClick={() => setModalForm({show:false})}/>
             </Modal.Header>
-            <Modal.Body>
+            <Modal.Body className="pb-0">
                 <div className="">
                     <Edit id={modalform.id} update={update}/>
                 </div>

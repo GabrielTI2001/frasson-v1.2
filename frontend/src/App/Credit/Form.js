@@ -40,7 +40,6 @@ const OperacoesForm = ({ hasLabel, type, submit }) => {
     const formDataToSend = new FormData();
     for (const key in formData) {
       if (key === 'file') {
-        // Percorrer a lista de arquivos enviados
         for (let i = 0; i < formData[key].length; i++) {
           formDataToSend.append('file', formData[key][i]);
         }
@@ -78,15 +77,6 @@ const OperacoesForm = ({ hasLabel, type, submit }) => {
         <RenderFields fields={fieldsOperacoes} formData={formData} changefile={handleKmlChange} changefield={handleFieldChange} 
           hasLabel={hasLabel} message={message} type={type} changefilemulti={handleFileChange}
         />
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-            >
-              {type === 'edit' ? "Atualizar Operação"
-              : "Cadastrar Operação"}
-          </Button>
-        </Form.Group>    
         <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
           <Button className="w-50" type="submit" disabled={isLoading} >
             {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Cadastrar Operação'}

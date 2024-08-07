@@ -12,6 +12,7 @@ import FormLicenca from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexLicenses = () => {
     const [searchResults, setSearchResults] = useState();
@@ -71,11 +72,11 @@ const IndexLicenses = () => {
 
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
+        <CustomBreadcrumb >
+            <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cadastro Licenças
-            </li>  
-        </ol>
+            </span>  
+        </CustomBreadcrumb>
         {searchResults ? 
         <AdvanceTableWrapper
             columns={columnsLicenca}

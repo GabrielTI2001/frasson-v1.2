@@ -2,37 +2,23 @@ import React, { useState, useEffect} from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Table, Row, Placeholder} from 'react-bootstrap';
 import { useAppContext } from "../../Main";
+import { GetRecords } from "../../helpers/Data";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const MyAssessments = () =>{
     const {config: {theme}} = useAppContext();
     const user = JSON.parse(localStorage.getItem('user'))
     const [dados, setDados] = useState();
     const navigate = useNavigate();
-    const token = localStorage.getItem("token")
 
     const handleApi = async () => {
-        const link = `${process.env.REACT_APP_API_URL}/assessments/my/?user=${user.id}`
-        const method = 'GET'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
-            });
-            const data = await response.json();
-            if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate)
-            }
-            else if (response.status === 201 || response.status === 200){
-                setDados(data.avaliacoes)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
+        const data = await GetRecords('assessments/my', `user=${user.id}`)
+        if (!data){
+            RedirectToLogin(navigate)
+        }
+        else{
+            setDados(data.avaliacoes)
         }
     };
     useEffect(()=>{
@@ -42,11 +28,11 @@ const MyAssessments = () =>{
 
     return(
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold">
+        <CustomBreadcrumb>
+            <span className="breadcrumb-item fw-bold">
                 Minhas Avaliações Pendentes
-            </li>
-        </ol>
+            </span>
+        </CustomBreadcrumb>
         {dados ?
         <Row xl={2} className="mt-2">
             <Table responsive>

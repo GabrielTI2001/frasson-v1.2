@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { Form, Row, Col, Button } from "react-bootstrap";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const Quiz = () =>{
     const [message, setMessage] = useState()
@@ -85,14 +86,14 @@ const Quiz = () =>{
 
     return (
         <>
-            <ol className="breadcrumb breadcrumb-alt mb-2">
-                <li className="breadcrumb-item fw-bold">
+            <CustomBreadcrumb>
+                <span className="breadcrumb-item fw-bold">
                     <Link className="link-fx text-primary" to={'/assessments/my'}>Minhas Avaliações</Link>
-                </li>
-                <li className="breadcrumb-item fw-bold" aria-current="page">
+                </span>
+                <span className="breadcrumb-item fw-bold" aria-current="page">
                     Questionário
-                </li>             
-            </ol>
+                </span>             
+            </CustomBreadcrumb>
             {dados && (dados.length > 0 ?
             <>
                 <div id="header-quiz" className="row-12 justify-content-start align-items-center position-fixed sectionform"

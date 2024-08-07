@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faComments, faListCheck, faUsers, faVial} from "@fortawesome/free-solid-svg-icons";
 import { useAppContext } from "../../Main";
 import { GetRecord } from "../../helpers/Data";
+import CustomBreadcrumb from "../../components/Custom/Commom";
 
 const IndexAdministrator = () =>{
     const {config: { theme}} = useAppContext();
@@ -25,11 +26,12 @@ const IndexAdministrator = () =>{
     },[])
     return (
         <>
-        <ol className="breadcrumb breadcrumb-alt fs-xs mb-3">
-            <li className="breadcrumb-item fw-bold" aria-current="page">
-                Administrator Panel
-            </li>    
-        </ol>
+        <CustomBreadcrumb>
+          <span className="breadcrumb-item fw-bold" aria-current="page">
+            Administrator Panel
+          </span> 
+        </CustomBreadcrumb>
+   
         <Row className="gy-3 gx-4" xs={1} sm={3} lg={5} xl={6}>
           <Col>
             <Card className="shadow-sm" style={{backgroundColor: 'rgba(6,159,186,.75)'}}>

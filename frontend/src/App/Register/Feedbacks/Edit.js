@@ -3,40 +3,24 @@ import { useNavigate } from "react-router-dom";
 import { Button, Form, Col} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
+import { sendData } from "../../../helpers/Data";
 
 const EditFeedback = ({data, submit}) =>{
     const [formData, setFormData] = useState();
     const [message, setMessage] = useState()
     const navigate = useNavigate();
-    const token = localStorage.getItem("token")
 
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/register/feedbacks-reply/${data.id}/`
-        const method = 'PUT'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(dadosform)
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate);
-            }
-            else if (response.status === 201 || response.status === 200){
-                toast.success("Registro Atualizado com Sucesso!")
-                submit('edit', data)
-            }
-        } catch (error) {
-            console.error('Erro:', error);
+        const {resposta, dados} = await sendData({type:'edit', url:'register/feedbacks-reply', keyfield:data.id, dadosform:dadosform})
+        if(resposta.status === 400){
+          setMessage({...dados})
+        }
+        else if (resposta.status === 401){
+          RedirectToLogin(navigate)
+        }
+        else if (resposta.status === 201 || resposta.status === 200){
+          submit('edit', dados)
+          toast.success("Registro Atualizado com Sucesso!")
         }
     };
     const handleFieldChange = e => {
