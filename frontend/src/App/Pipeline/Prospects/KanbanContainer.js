@@ -6,7 +6,6 @@ import { DragDropContext } from '@hello-pangea/dnd';
 import IconButton from '../../../components/common/IconButton';
 import is from 'is_js';
 import { PipeContext } from '../../../context/Context';
-import AddAnotherFase from '../AddAnotherFase';
 import { faGear, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { Col, Placeholder, Row } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
@@ -33,6 +32,7 @@ const KanbanContainer = () => {
   const navigate = useNavigate()
   const user = JSON.parse(localStorage.getItem("user"))
   const [socket, setSocket] = useState()
+  console.log(kanbanState)
   
   if (socket && kanbanState.fases){
     socket.onmessage = (event) => {
@@ -103,8 +103,8 @@ const KanbanContainer = () => {
   };
 
   const move = (source, destination) => {
-    const sourceItemsClone = [...getColumn(source.droppableId).fluxo_prospects_set];
-    const destItemsClone = [...getColumn(destination.droppableId).fluxo_prospects_set];
+    const sourceItemsClone = [...getColumn(source.droppableId).card_set];
+    const destItemsClone = [...getColumn(destination.droppableId).card_set];
 
     const [removedItem] = sourceItemsClone.splice(source.index, 1);
     destItemsClone.splice(destination.index, 0, removedItem);
@@ -122,7 +122,7 @@ const KanbanContainer = () => {
     }
 
     if (source.droppableId === destination.droppableId) {
-      const items = getColumn(source.droppableId).fluxo_prospects_set;
+      const items = getColumn(source.droppableId).card_set;
       const column = getColumn(source.droppableId);
       const reorderedItems = reorderArray(
         items,
@@ -134,14 +134,14 @@ const KanbanContainer = () => {
         payload: { column, reorderedItems }
       });
     } else {
-      const initialSourceItems = [...getColumn(source.droppableId).fluxo_prospects_set];
-      const initialDestItems = destination.droppableId !== source.droppableId ? [...getColumn(destination.droppableId).fluxo_prospects_set] : null;
+      const initialSourceItems = [...getColumn(source.droppableId).card_set];
+      const initialDestItems = destination.droppableId !== source.droppableId ? [...getColumn(destination.droppableId).card_set] : null;
       const sourceColumn = getColumn(source.droppableId);
       const destColumn = getColumn(destination.droppableId);
 
       const movedItems = move(source, destination);
-      if (getColumn(source.droppableId).fluxo_prospects_set[source.index].code){
-        const idcard = getColumn(source.droppableId).fluxo_prospects_set[source.index].code
+      if (getColumn(source.droppableId).card_set[source.index].code){
+        const idcard = getColumn(source.droppableId).card_set[source.index].code
         kanbanDispatch({
           type: 'UPDATE_DUAL_COLUMN',
           payload: {

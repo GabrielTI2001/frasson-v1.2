@@ -1,16 +1,14 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CloseButton, Col, Dropdown, Modal, Nav, Row, Tab } from 'react-bootstrap';
 import ModalMediaContent from '../../Pipeline/ModalMediaContent.js';
 import api from '../../../context/data.js';
 import { GetRecord, HandleSearch } from '../../../helpers/Data.js';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SubtleBadge from '../../../components/common/SubtleBadge.js';
 import { useAppContext } from '../../../Main.js';
-import CardInfo, {CardTitle} from '../../Pipeline/CardInfo.js';
+import {CardTitle} from '../../Pipeline/CardInfo.js';
 import { DropMenu } from './Menu.js';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendar } from '@fortawesome/free-solid-svg-icons';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import NavPVTEC from './Nav.js';
 import EditForm from '../../Pipeline/PVTEC/EditForm.js';
@@ -19,12 +17,6 @@ import ModalActivityContent from '../../Pipeline/ModalActivityContent.js';
 import ModalCommentContent from '../../Pipeline/ModalCommentContent.js';
 import ModalSidebar from './ModalSidebar.js';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
-
-const options = {
-  month: "short",
-  day: "numeric",
-  timeZone: 'UTC'
-};
 
 const PVTECModal = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -222,12 +214,11 @@ const PVTECModal = ({show, reducer}) => {
                     <Tab.Pane eventKey="comments">
                       <ModalMediaContent title='Comentários'> 
                         {activeTab === 'comments' &&
-                          <ModalCommentContent card={record} updatedactivity={(a) => setActivities([a, ...activities])} ispvtec/>
+                          <ModalCommentContent card={record} updatedactivity={(a) => setActivities([a, ...activities])} 
+                            link='pipeline/card-comments' param={'pvtec'}
+                          />
                         }
                       </ModalMediaContent>
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="pvtec">
-
                     </Tab.Pane>
                   </Tab.Content>
                 </div>

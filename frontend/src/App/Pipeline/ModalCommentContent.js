@@ -31,11 +31,9 @@ export const renderComment = (comment) => {
 };
 
 
-const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc, isprospect}) => {
+const ModalCommentContent = ({card, updatedactivity, link, param}) => {
   const user = JSON.parse(localStorage.getItem('user'))
-  const [formData, setFormData] = useState({created_by:user.id, fluxo_ambiental:!ispvtec ? card.id : null, phase:!ispvtec ? card.phase: null,
-    pvtec:ispvtec ? card.id : null, fluxo_credito: isgc ? card.id : null, fluxo_prospect:isprospect ? card.id : null
-  });
+  const [formData, setFormData] = useState({created_by:user.id, [param]:card.id});
   const [users, setUsers] = useState([]);
   const [comentarios, setComentarios] = useState();
   const navigate = useNavigate()
@@ -47,7 +45,7 @@ const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc, isprospect})
     e.preventDefault(); 
     const filteredData = Object.entries(formData).filter(([key, value]) => value !== null).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
     if (formData.text !== '' && formData.text !== null){
-      api.post('pipeline/card-comments/', filteredData, {headers: {Authorization: `Bearer ${token}`}})
+      api.post(`${link}/`, filteredData, {headers: {Authorization: `Bearer ${token}`}})
       .then((response) => {
         setFormData({...formData, text:''})
         setComentarios([response.data, ...comentarios])
@@ -64,8 +62,7 @@ const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc, isprospect})
   useEffect(() =>{
     const getusers = async () =>{
       if (!comentarios){
-        const param = ispvtec ? 'pvtec' : isgc ? 'fluxogc' : isprospect ? 'prospect' : 'fluxogai'
-        HandleSearch('', 'pipeline/card-comments',(data) => {setComentarios(data)}, `?${param}=${card.id}`)
+        HandleSearch('', link,(data) => {setComentarios(data)}, `?${param}=${card.id}`)
       }
       const status = HandleSearch('', 'users/users',
         (data) => {setUsers(data.map(r => ({'id':r.id, 'display':r.first_name+' '+r.last_name})))}, 
@@ -116,7 +113,7 @@ const ModalCommentContent = ({card, updatedactivity, ispvtec, isgc, isprospect})
           </div>
           <div className="flex-1 ms-2 fs--1 bg-200 rounded-3 p-2">
             <div className="mb-1 rounded-3 d-flex justify-content-between">
-              <span to="/user/profile" className="fw-semi-bold">
+              <span className="fw-semi-bold">
                 {comment.user.name}
               </span>
               {parseInt(comment.user.id) === parseInt(user.id) &&

@@ -28,12 +28,6 @@ input[type="checkbox"]{
 .error-msg{
   font-size: 10px !important;
 }
-.breadcrumb-item + .breadcrumb-item::before {
-  content: ">" !important;
-  line-height: 18px;
-  font-size: large;
-  font-weight: normal;
-}
 .card *:not(select){
   font-size: 0.75rem;
 }
@@ -237,10 +231,6 @@ textarea:focus, input:focus{
   }
 }
 
-.expandable-card {
-  transition: all 1s ease-in-out !important;
-  box-shadow: none;
-}
 .expandable-card .detailed-info {
   max-height: 0;
   overflow: hidden;
@@ -249,10 +239,6 @@ textarea:focus, input:focus{
 
 .expandable-card.expanded .detailed-info {
   max-height: 800px; /* Ajuste conforme necessário */
-}
-
-.expandable-card .card-body {
-  position: relative;
 }
 
 .dropzone-area {

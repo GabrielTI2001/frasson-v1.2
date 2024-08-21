@@ -21,8 +21,10 @@ def phase_history_prospect(sender, instance, created, **kwargs):
         instance.responsaveis.set(responsaveis)
         if instance.phase.dias_prazo:
             data_vencimento = datetime.now().date() + timedelta(days=instance.phase.dias_prazo)
-            data_e_hora_vencimento = datetime.combine(data_vencimento, time(18, 0))
-            instance.data_vencimento = data_e_hora_vencimento
+        else:
+            data_vencimento = datetime.now().date() + timedelta(days=5)
+        data_e_hora_vencimento = datetime.combine(data_vencimento, time(18, 0))
+        instance.data_vencimento = data_e_hora_vencimento
         instance.save()
 
 @receiver(post_save, sender=Fluxo_Gestao_Ambiental)

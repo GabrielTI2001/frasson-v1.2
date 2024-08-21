@@ -333,6 +333,20 @@ export const financeiroRoutes = {
       active: true,
       children: [
         {
+          name: 'Pagamentos',
+          to: '/finances/billings',
+          icon: faMoneyBill,
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Cobranças',
+          to: '/finances/revenues',
+          icon: faMoneyBill,
+          exact: true,
+          active: true
+        },
+        {
           name: 'DRE Consolidado',
           to: '/finances/dre/actual',
           icon: faCoins,
@@ -407,20 +421,6 @@ export const financeiroRoutes = {
       name: 'Financeiro Reports',
       active: true,
       children: [
-        {
-          name: 'Report Pagamentos',
-          to: '/finances/billings',
-          icon: faFilePdf,
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Report Cobranças',
-          to: '/finances/revenues',
-          icon: faFilePdf,
-          exact: true,
-          active: true
-        },
         {
           name: 'Report Saldos Contas',
           to: `${process.env.REACT_APP_API_URL}/finances/balances/bank-accounts/pdf`,

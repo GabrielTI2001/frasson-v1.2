@@ -127,7 +127,7 @@ const TaskCardProspect = ({
                 }
               </div>
               }
-              {task &&
+              {task && task.list_responsaveis &&
                 <div className='mb-1'> 
                   <GroupMember users={task.list_responsaveis}/>
                 </div>

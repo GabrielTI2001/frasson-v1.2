@@ -15,12 +15,13 @@ class listPagamentos(serializers.ModelSerializer):
     data = serializers.DateField(read_only=True)
     class Meta:
         model = Pagamentos
-        fields = ['id', 'uuid', 'str_beneficiario', 'str_categoria', 'str_status', 'str_classificacao', 'data', 'valor_pagamento']
+        fields = ['id', 'uuid', 'str_beneficiario', 'str_categoria', 'str_status', 'str_classificacao', 'data', 'valor_pagamento', 'status']
 
 class detailPagamentos(serializers.ModelSerializer):
     str_categoria = serializers.CharField(source='categoria.category', read_only=True)
     str_classificacao = serializers.CharField(source='categoria.classification', read_only=True)
     str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
+    str_cpf_cnpj = serializers.CharField(source='beneficiario.cpf_cnpj', read_only=True)
     str_caixa = serializers.CharField(source='caixa.nome', read_only=True)
     str_status = serializers.CharField(source='get_status_display', read_only=True)
     str_created_by = serializers.SerializerMethodField(read_only=True)
@@ -31,11 +32,16 @@ class detailPagamentos(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
         if not self.instance:
             for field_name, field in self.fields.items():
-                if field_name in ['beneficiario', 'categoria', 'caixa' ,'status', 'data_vencimento', 'valor_pagamento', 'descricao']:
+                if field_name in ['beneficiario', 'categoria', 'status', 'data_vencimento', 'valor_pagamento', 'descricao']:
                     field.required = True
         else:
             for field_name, field in self.fields.items():
                 field.required = False 
+    def validate_status(self, value):
+        if self.instance:
+            if value == 'PG' and not self.instance.caixa and not self.instance.data_pagamento:
+                raise serializers.ValidationError("Informe a data do pagamento e o caixa de saída")
+        return value
     class Meta:
         model = Pagamentos
         fields = '__all__'

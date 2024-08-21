@@ -8,7 +8,7 @@ from .models import Phases_History, Card_Activities
 from .models import Atualizacoes_Acompanhamento_GAI, Acompanhamento_GAI, Status_Acompanhamento
 from users.models import User
 from datetime import datetime, timedelta, time
-from .utils import fields_cardproduto_info, fields_pvtec
+from .utils import fields_cardproduto_info, fields_pvtec, fields_cardprospect_info
 import os
 from django.db.models import Q
 import operator
@@ -103,7 +103,7 @@ class FluxoProspectsView(viewsets.ModelViewSet):
                 Card_Activities.objects.create(fluxo_prospect_id=instance.pk, type='cf', campo=text, updated_by_id=user)
                 instance.save()
             activity = None
-            for key in fields_cardproduto_info.keys():
+            for key in fields_cardprospect_info.keys():
                 if key in request.data:
                     activity = Card_Activities.objects.create(fluxo_prospect_id=instance.pk, type='ch', campo=fields_cardproduto_info[key], 
                         updated_by_id=user)
@@ -180,12 +180,15 @@ class CommentView(viewsets.ModelViewSet):
         fluxogai = self.request.query_params.get('fluxogai', None)   
         pvtec = self.request.query_params.get('pvtec', None)   
         prospect = self.request.query_params.get('prospect', None) 
+        pagamento = self.request.query_params.get('pagamento', None)
         if fluxogai:
             queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
-        if prospect:
+        elif prospect:
             queryset = queryset.filter(Q(fluxo_prospect_id=int(prospect)))
-        if pvtec:
+        elif pvtec:
             queryset = queryset.filter(Q(pvtec_id=int(pvtec)))
+        elif pagamento:
+            queryset = queryset.filter(Q(pagamento_id=int(pagamento)))
         return queryset
 
 class ActivityView(viewsets.ModelViewSet):

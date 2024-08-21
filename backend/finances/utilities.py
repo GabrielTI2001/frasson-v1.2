@@ -203,3 +203,9 @@ fields_contratogai = {
     'servicos':'Serviços', 'contratante':'Contratante', 'data_assinatura':'Data de Assinatura', 'detalhes': 'Detalhes da Negociação',
     'servicos_etapas': 'Etapas de Pagamento dos Serviços'
 }
+
+fields_pagamento = {
+    'beneficiario':'Beneficiário', 'descricao':'Descrição', 'detalhamento':'Detalhamento', 'categoria': 'Categoria',
+    'status': 'Status', 'valor_pagamento':'Valor do Pagamento', 'data_vencimento':'Data de Vencimento', 'data_pagamento':'Data do Pagamento',
+    'caixa':'Caixa de Saída'
+}

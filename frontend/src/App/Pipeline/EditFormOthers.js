@@ -2,16 +2,13 @@ import classNames from 'classnames';
 import AsyncSelect from 'react-select/async';
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Form, Row } from 'react-bootstrap';
-import { useAppContext } from '../../../Main';
-import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
-import { SelectSearchOptions } from '../../../helpers/Data';
+import { useAppContext } from '../../Main';
+import customStyles, {customStylesDark} from '../../components/Custom/SelectStyles';
+import { SelectSearchOptions } from '../../helpers/Data';
 
 const EditFormOthers = ({
   onSubmit: handleSubmit,
   type,
-  fieldkey,
-  show,
-  setShow,
   data
 }) => {
   const user = JSON.parse(localStorage.getItem('user'))
@@ -40,32 +37,33 @@ const EditFormOthers = ({
         >
           <>
           {defaultselected &&
-              <Form.Group>
-                <Form.Label className='my-0'>Responsáveis</Form.Label>
-                <AsyncSelect ref={inputRef} isMulti defaultValue={defaultselected['responsaveis']}
-                  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-                  loadOptions={(v) => SelectSearchOptions(v, 'users/users', 'first_name', 'last_name', true)}
-                  onChange={(selectedOptions ) => {
-                    setFormData((prevFormData) => ({
-                      ...prevFormData,
-                      responsaveis: selectedOptions.map(s => s.value)
-                    }));
-                  }
-                } className='mb-1'/>
-              </Form.Group>
-            }
             <Form.Group>
-              <Form.Label className='my-0'>Data de Vencimento</Form.Label>
-              <Form.Control
-                ref={inputRef}
-                type='date'
-                className="mb-2 px-2 shadow-none outline-none"
-                onChange={({ target }) =>
-                  setFormData({ ...formData, data_vencimento: target.value })
+              <Form.Label className='my-0'>Responsáveis</Form.Label>
+              <AsyncSelect ref={inputRef} isMulti defaultValue={defaultselected['responsaveis']}
+                styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
+                loadOptions={(v) => SelectSearchOptions(v, 'users/users', 'first_name', 'last_name', true)}
+                onChange={(selectedOptions ) => {
+                  setFormData((prevFormData) => ({
+                    ...prevFormData,
+                    responsaveis: selectedOptions.map(s => s.value)
+                  }));
                 }
-                value={formData.data_vencimento || data.data_vencimento.slice(0, 10)}
-              /> 
-            </Form.Group> 
+              } className='mb-1'/>
+            </Form.Group>
+          }
+          <Form.Group>
+            <Form.Label className='my-0'>Data de Vencimento</Form.Label>
+            <Form.Control
+              ref={inputRef}
+              type='date'
+              className="mb-2 px-2 shadow-none outline-none"
+              onChange={({ target }) =>
+                setFormData({ ...formData, data_vencimento: target.value })
+              }
+              defaultValue={data.data_vencimento ? data.data_vencimento.slice(0, 10) : ''}
+            /> 
+          </Form.Group> 
+          {data.prioridade && 
             <Form.Group>
               <Form.Label className='my-0'>Prioridade</Form.Label>
               <Form.Select
@@ -84,12 +82,13 @@ const EditFormOthers = ({
                 <option value='Baixa'>Baixa</option>
               </Form.Select> 
             </Form.Group>
+          }
           </>
           <Row className={`gx-2 text-end d-flex justify-content-end`}>
             <Button
               variant="primary"
               size="sm"
-              className="col-6 w-30 fs-xs p-0 me-1"
+              className="col-auto w-30 fs-xs me-1"
               type="submit"
             >
               <span>Atualizar</span>

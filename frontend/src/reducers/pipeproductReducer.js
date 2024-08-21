@@ -41,7 +41,7 @@ export const kanbanReducer = (state, action) => {
         ...state,
         fases: state.fases.map(fase =>
           fase.id === payload.targetListId
-            ? { ...fase, fluxo_gestao_ambiental_set: [...fase.fluxo_gestao_ambiental_set, payload.novocard] }
+            ? { ...fase, card_set: [...fase.card_set, payload.novocard] }
             : fase
         )
       };
@@ -51,7 +51,7 @@ export const kanbanReducer = (state, action) => {
         ...state,
         fases: state.fases.map(fase =>
           fase.id === payload.targetListId ? 
-          {...fase, fluxo_gestao_ambiental_set:fase.fluxo_gestao_ambiental_set.map( card =>
+          {...fase, card_set:fase.card_set.map( card =>
               card.id === payload.id
               ? payload.updatedCard
               : card
@@ -65,7 +65,7 @@ export const kanbanReducer = (state, action) => {
         fases: state.fases.map(f => {
           return {
             ...f,
-            fluxo_gestao_ambiental_set: f.fluxo_gestao_ambiental_set.filter(card => card.id !== payload.idcard)
+            card_set: f.card_set.filter(card => card.id !== payload.idcard)
           };
         })
       };
@@ -91,7 +91,7 @@ export const kanbanReducer = (state, action) => {
           fase.id === payload.destColumn.id
             ? {
                 ...fase,
-                fluxo_gestao_ambiental_set:
+                card_set:
                   (fase.id === payload.sourceColumn.id &&
                     payload.updatedSourceItems) ||
                   (fase.id === payload.destColumn.id &&
@@ -106,9 +106,9 @@ export const kanbanReducer = (state, action) => {
         // Atualizar as colunas com os itens iniciais
         const updatedColumns = state.fases.map(column => {
           if (column.id === Number(sourceColumnId)) {
-            return { ...column, fluxo_gestao_ambiental_set: initialDestItems };
+            return { ...column, card_set: initialDestItems };
           } else if (column.id === Number(destColumnId)) {
-            return { ...column, fluxo_gestao_ambiental_set: initialSourceItems };
+            return { ...column, card_set: initialSourceItems };
           }
           return column;
         });
@@ -131,7 +131,7 @@ export const kanbanReducer = (state, action) => {
         ...state,
         fases: state.fases.map(f => ({
           ...f,
-          fluxo_gestao_ambiental_set: f.fluxo_gestao_ambiental_set.filter(c =>
+          card_set: f.card_set.filter(c =>
             Object.values(c).some(val => {
               if (typeof val === 'string') {
                 return val.toLowerCase().includes(payload.value.toLowerCase());

@@ -5,11 +5,24 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer
 from django.core.exceptions import ValidationError
 from .models import Allowed_Emails
+import os
 
 def email_in_allowed_list(email):
     return Allowed_Emails.objects.filter(email=email).exists()
 
 class serializerProfile(serializers.ModelSerializer):
+    first_name = serializers.CharField(source='user.first_name')
+    last_name = serializers.CharField(source='user.last_name')
+    email = serializers.CharField(source='user.email')
+    def validate_avatar(self, value):
+        file = self.initial_data.get('avatar')
+        ext = os.path.splitext(file.name)[1]
+        valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+        if not ext.lower() in valid_extensions:
+            raise serializers.ValidationError("Arquivo deve ser uma Imagem!")   
+        if file and value != 'default-avatar.jpg':
+            os.remove(self.instance.avatar.path)
+        return value
     class Meta:
         model = Profile
         fields = '__all__'

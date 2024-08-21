@@ -7,27 +7,29 @@ import { ProfileContext } from '../../../context/Context';
 
 const ProfileDropdown = () => {
   const {profileState:{perfil}} = useContext(ProfileContext)
-  return (
+  return (perfil &&
     <Dropdown navbar={true} as="li">
       <Dropdown.Toggle
         bsPrefix="toggle"
         as={Link}
-        className="pe-0 ps-2 nav-link"
+        className="px-1 text-800 d-flex align-items-center"
       >
-        {perfil.avatar && <Avatar src={`${process.env.REACT_APP_API_URL}/${perfil.avatar}`} size={'l'}></Avatar>}
+        {perfil.avatar && <Avatar src={`${perfil.avatar}`} size={'l'}></Avatar>}
+        <span className='ms-1 fs--2'>{perfil.first_name} {perfil.last_name}</span>
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="dropdown-caret dropdown-menu-card  dropdown-menu-end">
         <div className="bg-white rounded-2 py-2 dark__bg-1000">
-          <Dropdown.Item>Set status</Dropdown.Item>
-          <Dropdown.Item as={Link} to="/user/profile">
-            Profile &amp; account
-          </Dropdown.Item>
-          <Dropdown.Item>Feedback</Dropdown.Item>
+          <div className='text-center pt-3'>
+            {perfil.avatar && <Avatar src={`${perfil.avatar}`} size={'2xl'}></Avatar>}
+            <h6 className='fw-bold mb-1'>{perfil.first_name} {perfil.last_name}</h6>
+            <h6 className='text-600 fs--2'>{perfil.job_function || perfil.email}</h6>
+          </div>
           <Dropdown.Divider />
-          <Dropdown.Item as={Link} to="/user/settings">
-            Settings
+          <Dropdown.Item as={Link} to="/profile">
+            Editar Perfil
           </Dropdown.Item>
+          <Dropdown.Divider />
           <Dropdown.Item as={Link} to="/auth/logout">
             Logout
           </Dropdown.Item>

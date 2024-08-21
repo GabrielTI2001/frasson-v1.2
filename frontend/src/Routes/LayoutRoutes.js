@@ -98,9 +98,11 @@ import WebSocketComponent from '../App/Pipeline/Websocket';
 import IndexContratosAmbiental from '../App/Finances/ContratosAmbiental/Index';
 import IndexPVTEC from '../App/Comercial/PVTEC/Index';
 import Prospects from '../App/Pipeline/Prospects/products';
+import ProfileForm from '../App/Admin/Users/ProfileForm';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
+  const user = JSON.parse(localStorage.getItem("user"))
   const navigate = useNavigate();
   const [inicializado, setInicializado] = useState(false)
   const { profileDispatch } = useContext(ProfileContext)
@@ -108,7 +110,7 @@ const LayoutRoutes = () => {
   useEffect(() => {
     const CallAPI = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/users/profile/`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/users/profile/${user.id}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -119,10 +121,7 @@ const LayoutRoutes = () => {
         if (response.status === 200) {
           profileDispatch({
             type: 'SET_PROFILE',
-            payload: {
-              first_name: data.first_name,
-              avatar: data.avatar
-            }
+            payload: data
           });
         }
       } catch (error) {
@@ -262,6 +261,7 @@ const LayoutRoutes = () => {
           <Route path="followup" element={<IndexFollowup />}/>
           <Route path="followup/:id" element={<ViewFollowup />}/>
         </Route>
+        <Route path="profile" element={<ProfileForm hasLabel />}/>
         <Route path="/register">
           <Route path="" element={<IndexCadGerais />}/>
           <Route path="cartorios" element={<IndexCartorios />}/>

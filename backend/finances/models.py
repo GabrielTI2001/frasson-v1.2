@@ -223,6 +223,7 @@ class Pagamentos(models.Model):
     data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
     data_pagamento = models.DateField(null=True, verbose_name='Data Pagamento')
     caixa = models.ForeignKey(Caixas_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Caixa Saída')
+    observacoes = models.TextField(null=True, verbose_name='Observações')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -258,10 +259,12 @@ class Cobrancas(models.Model):
         return self.cliente.razao_social
 
 class Activities(models.Model):
-    TYPE_CHOICES = (('cr', 'criou'), ('ch', 'change'), ('c','concluiu'))
+    TYPE_CHOICES = (('cr', 'criou'), ('co','comment'), ('ch', 'change'), ('c','concluiu'))
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     contrato_ambiental = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
     contrato_credito = models.ForeignKey(Contratos_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    pagamento = models.ForeignKey(Pagamentos, on_delete=models.CASCADE, null=True, verbose_name='Pagamento')
+    cobranca = models.ForeignKey(Cobrancas, on_delete=models.CASCADE, null=True, verbose_name='Cobrança')
     type = models.CharField(null=True, max_length=60, choices=TYPE_CHOICES, verbose_name='Tipo')
     campo = models.TextField(null=True, verbose_name='Campo')
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Alterado por')

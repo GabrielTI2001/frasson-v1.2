@@ -109,7 +109,7 @@ const PasswordResetForm = ({ hasLabel }) => {
         className="w-100"
         disabled={!formData.current_password || !formData.new_password || !formData.re_new_password}
       >
-        Set password
+        Alterar Senha
       </Button>
     </Form>
   );

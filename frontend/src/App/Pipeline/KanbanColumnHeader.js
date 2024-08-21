@@ -6,6 +6,7 @@ import  {PipeContext  } from '../../context/Context';
 import ModalDelete from '../../components/Custom/ModalDelete';
 import { Modal, CloseButton } from 'react-bootstrap';
 import ProductForm from './GAI/Form';
+import ProspectForm from './Prospects/Form';
 
 const KanbanColumnHeader = ({ id, title, itemCount }) => {
   const {kanbanState, kanbanDispatch } = useContext(PipeContext);
@@ -61,7 +62,7 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       <Modal.Body>
         <Row className="flex-center sectionform">
           {kanbanState.pipe.code === 518984721 ? <ProductForm fase={id} onSubmit={() => setModalForm({show:false})}/>
-            : null
+            : kanbanState.pipe.code === 518984924 ? <ProspectForm fase={id} onSubmit={() => setModalForm({show:false})}/> : null
           }
         </Row>
       </Modal.Body>

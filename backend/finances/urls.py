@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from . import views
+from pipeline.views import CommentView
 from rest_framework import routers
 
 router = routers.DefaultRouter()
@@ -19,6 +20,7 @@ router.register(r'contratos-ambiental', views.ContratoAmbientalView)
 router.register(r'contratos-pagamentos-ambiental', views.ContratosPagamentosAmbientalView)
 router.register(r'activities', views.ActivityView)
 router.register(r'anexos', views.AnexoView)
+router.register(r'comments', CommentView)
 
 urlpatterns = [
     path('billings-report/', views.pagamentos_pipefy_report_pdf, name='billings.pipefy.report.pdf'),

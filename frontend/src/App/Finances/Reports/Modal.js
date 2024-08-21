@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { CloseButton, Col, Modal, Row, Tab } from 'react-bootstrap';
 import api from '../../../context/data.js';
-import { GetRecord } from '../../../helpers/Data.js';
+import { GetRecord, HandleSearch } from '../../../helpers/Data.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../../../Main.js';
@@ -12,6 +12,11 @@ import NavModal, { NavModalPagamento } from './Nav.js';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute.js';
 import { fieldsCobranca, fieldsPagamentos } from '../Data.js';
 import EditFormModal from '../../../components/Custom/EditForm.js';
+import ModalSidebarPagamentos from './ModalSidebar.js';
+import SubtleBadge from '../../../components/common/SubtleBadge.js';
+import ModalMediaContent from '../../Pipeline/ModalMediaContent.js';
+import ModalActivityContent from '../../Pipeline/ModalActivityContent.js';
+import ModalCommentContent from '../../Pipeline/ModalCommentContent.js';
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -20,7 +25,7 @@ const ModalRecord = ({show, reducer}) => {
   const {uuid} = useParams()
   const [record, setRecord] = useState();
   const {config: {theme}} = useAppContext();
-  const [activeTab, setActiveTab] = useState('coordenadas');
+  const [activeTab, setActiveTab] = useState('main');
 
   const handleClose = () => {
     navigate('/finances/revenues')
@@ -176,7 +181,9 @@ export const ModalPagamento = ({show, reducer}) => {
   const {uuid} = useParams()
   const [record, setRecord] = useState();
   const {config: {theme}} = useAppContext();
-  const [activeTab, setActiveTab] = useState('coordenadas');
+  const [activeTab, setActiveTab] = useState('main');
+  const [activities, setActivities] = useState();
+  const fields = record && (record.status !== 'AD' ? fieldsPagamentos : fieldsPagamentos.slice(0, 7))
 
   const handleClose = () => {
     navigate('/finances/billings')
@@ -200,9 +207,12 @@ export const ModalPagamento = ({show, reducer}) => {
           navigate("/error/404")
         }
         setRecord(reg)
+        if (!activities){
+          HandleSearch('', 'finances/activities',(data) => {setActivities(data)}, `?pagamento=${reg.id}`)
+        }
       }
     }
-    if(show && uuid){getData()}
+    if(show && uuid && !record){getData()}
   }, [show])
 
   const handleEdit = (key) =>{
@@ -220,6 +230,9 @@ export const ModalPagamento = ({show, reducer}) => {
         toast.success("Pagamento Atualizado com Sucesso!")
         setRecord(response.data)
         setShowForm({})
+        if (response.data.activity){
+          setActivities([response.data.activity, ...activities])
+        }
       })
       .catch((erro) => {
         if (erro.response.status === 400){
@@ -247,10 +260,11 @@ export const ModalPagamento = ({show, reducer}) => {
       </div>
       <Modal.Body className="pt-2">
         <Row className='p-2 gy-1'>
-          <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={6}>
+          <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={5}>
             {record ? <>
               <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-3">
                 <h4 className="mb-1 fs-1 fw-bold">{record.str_beneficiario}</h4>
+                <h6 className="mb-1 fs--1 fw-bold">{record.str_cpf_cnpj}</h6>
               </div>
               <Tab.Container id="left-tabs-example" defaultActiveKey="main" onSelect={handleTabSelect}>
                 <div className='ms-3 my-2'>
@@ -271,7 +285,7 @@ export const ModalPagamento = ({show, reducer}) => {
                           <div className="fs--1 row-10">{record.str_detalhe || '-'}</div>
                         </> 
                       }
-                      {fieldsPagamentos.filter(f => (record.etapa_ambiental || record.etapa_credito) ? f.name !== 'detalhamento' : f).map(f => 
+                      {fields.map(f => 
                         !showForm[f.name] ?
                           <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
                             <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
@@ -299,6 +313,15 @@ export const ModalPagamento = ({show, reducer}) => {
                           />
                       )}
                     </Tab.Pane>
+                    <Tab.Pane eventKey="comments">
+                      <ModalMediaContent title='Comentários'> 
+                        {activeTab === 'comments' &&
+                          <ModalCommentContent card={record} updatedactivity={(a) => setActivities([a, ...activities])}
+                            link='finances/comments' param={'pagamento'}
+                          />
+                        }
+                      </ModalMediaContent>
+                    </Tab.Pane>
                   </Tab.Content>
                 </div>
               </Tab.Container></>
@@ -307,12 +330,23 @@ export const ModalPagamento = ({show, reducer}) => {
             }
             
           </Col>
-          <Col lg={6} className='overflow-auto modal-column-scroll border border-bottom-0 border-top-0 border-end-0'>
+          <Col lg={4} className='overflow-auto modal-column-scroll border border-bottom-0 border-top-0'>
             {record ? <>
               <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Outras Informações</span>
+                <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Status</span>
+                <SubtleBadge bg={`${record.status === 'AD' ? 'warning' : 'success'}`}>{record.str_status}</SubtleBadge>
               </div>
+              <ModalMediaContent title='Atividades'>
+                <ModalActivityContent card={record} atividades={activities}/>
+              </ModalMediaContent>
               </>
+            : uuid &&
+              <SkeletBig />
+            }
+          </Col>
+          <Col lg={3} className='mb-1 overflow-auto modal-column-scroll actionscard'>
+            {record ?
+              <ModalSidebarPagamentos card={record} reducer={(type, data) => {reducer(type, data); setRecord(null); setActivities(null)}}/>
             : uuid &&
               <SkeletBig />
             }

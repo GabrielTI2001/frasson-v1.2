@@ -11,10 +11,10 @@ def calcduration(first_in, last_in, last_to):
         last_to = datetime.now()
     if (first_in and last_to < first_in) or (last_in and last_to < last_in):
         last_to = datetime.now()
-    result = last_to - first_in if first_in else last_to - last_in or 0
+    result = last_to - first_in if first_in else  last_to - last_in or 0 if last_in else 0
     if first_in and last_in:
         result = last_to - first_in
-    return int(result.total_seconds())
+    return int(result.total_seconds() if result != 0 else 0)
 
 class serializerFluxoAmbiental(serializers.ModelSerializer):
     pipe_code = serializers.IntegerField(source='phase.pipe.code', read_only=True)
@@ -45,7 +45,7 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
         return obj.created_by.first_name+' '+obj.created_by.last_name
     def get_list_beneficiario(self, obj):
         b = obj.beneficiario
-        return [{'id':obj.beneficiario.id, 'uuid':obj.beneficiario.uuid, 'razao_social':b.razao_social, 'cpf_cnpj':b.cpf_cnpj}]
+        return {'id':obj.beneficiario.id, 'uuid':obj.beneficiario.uuid, 'razao_social':b.razao_social, 'cpf_cnpj':b.cpf_cnpj}
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
@@ -65,7 +65,7 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
                 'id': obj.detalhamento.id,
                 'uuid': obj.detalhamento.uuid,
                 'detalhamento_servico': obj.detalhamento.detalhamento_servico,
-                'produto': obj.detalhamento.produto.description,
+                'str_produto': obj.detalhamento.produto.acronym,
             }
         else:
             return None
@@ -74,8 +74,8 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
             return {
                 'id': obj.contrato.id,
                 'uuid': obj.contrato.uuid,
-                'contratante': obj.contrato.contratante.razao_social if obj.contrato.contratante else '-',
-                'produto': ', '.join([s.produto.description for s in obj.contrato.servicos.all().distinct()]),
+                'str_contratante': obj.contrato.contratante.razao_social if obj.contrato.contratante else '-',
+                'str_produto': ', '.join([s.produto.acronym for s in obj.contrato.servicos.all().distinct()]),
             }
         else:
             return None
@@ -148,7 +148,7 @@ class serializerFluxoProspects(serializers.ModelSerializer):
         return {'id':c.id, 'uuid':c.uuid, 'razao_social':c.razao_social, 'cpf_cnpj':c.cpf_cnpj}
     def get_info_produto(self, obj):
         p = obj.produto
-        return {'id':p.id, 'uuid':p.uuid, 'descricao':p.description, 'sigla':p.acronym}
+        return {'id':p.id, 'uuid':p.uuid, 'description':p.description, 'acronym':p.acronym}
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]

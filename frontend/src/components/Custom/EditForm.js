@@ -28,7 +28,7 @@ const EditFormModal = ({
     if (show) {
       if (field.type === 'select2'){
         const option = field.ismulti ? record[field.list].map(d => ({value:d.value || d.id, label:d[field.string] || d.label})) 
-        : {value: record[field.name], label: field.string ? record[field.string] : record[field.data] && record[field.data][field.attr_data]}
+        : {value: record[field.name], label: field.string ? record[field.string] : record[field.data] && record[field.data][field.attr_data ||field.attr1]}
         setdefaultSelected({...defaultselected, [field.name]:option})
       }
       if (field.iscoordenada){
@@ -118,7 +118,7 @@ const EditFormModal = ({
             :
               <Form.Control
                 ref={inputRef} defaultValue={record[field.name] || ''} type={field.type}
-                className={`mb-1 fs--1 px-2`} 
+                className={`mb-1 fs--1 px-2`} rows={field.rows}
                 as={field.type === 'textarea' ? 'textarea' : 'input'}
                 onChange={({target}) => setFormData(({...formData, [field.name]: target.value}))}
               />

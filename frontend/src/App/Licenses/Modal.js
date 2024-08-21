@@ -12,6 +12,7 @@ import NavModal from './Nav.js';
 import EditFormModal from '../../components/Custom/EditForm.js';
 import { fieldsLicenca } from './Data.js';
 import { RedirectToLogin } from '../../Routes/PrivateRoute.js';
+import { Anexos } from './Anexos.js';
 
 const ModalRecord = ({show, reducer}) => {
   const [showForm, setShowForm] = useState({});
@@ -93,7 +94,10 @@ const ModalRecord = ({show, reducer}) => {
         <Row className='p-2 gy-1'>
           <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={6}>
             {record ? <>
-              <div className="pt-1 pb-0 ps-3 mb-3"><h4 className="mb-1 fs-1 fw-bold">{record.str_beneficiario}</h4></div>
+              <div className="pt-1 pb-0 ps-3 mb-3">
+                <h4 className="mb-1 fs-1 fw-bold">{record.str_beneficiario}</h4>
+                <h6 className="mb-1 fs--1 fw-bold">{record.str_tipo_licenca}</h6>
+              </div>
               <Tab.Container id="left-tabs-example" defaultActiveKey="main" onSelect={handleTabSelect}>
                 <div className='ms-3 my-1'>
                   <NavModal record={record} />
@@ -144,10 +148,12 @@ const ModalRecord = ({show, reducer}) => {
                         <span>{record.data_renovacao
                             ? new Date(record.data_renovacao).toLocaleDateString('pt-BR', {timeZone:'UTC'}) 
                         : '-'}</span>
-                        <span className={`ms-2 badge fs--2 bg-${record.status.color}`}>{record.status.text}</span>
                       </div>
                     </Tab.Pane>
                   </Tab.Content>
+                  <Tab.Pane eventKey="anexos">
+                    <Anexos record={record} licenca/>
+                  </Tab.Pane>
                 </div>
               </Tab.Container></>
             : uuid &&

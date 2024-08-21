@@ -176,9 +176,9 @@ export const fieldsPagamentos = [
   {name:'detalhamento', label:'Detalhamento', type:'text'},
   {name:'categoria', label:'Categoria*', type:'select2', url:'finances/category-payments', attr1:'category', attr2:'sub_category',
     string:'str_categoria'},
-  {name:'status', label:'Status*', type:'select', string:'str_status', options:{'AD':'Aguardando Distribuição', 'AG':'Agendado', 'PG':'Pago'}}, 
   {name:'valor_pagamento', label:'Valor Pagamento (R$)*', type:'text', is_number:true},
   {name:'data_vencimento', label:'Data Vencimento*', type:'date'},
+  {name:'observacoes', label:'Observações', type:'textarea', rows:4},
   {name:'data_pagamento', label:'Data Pagamento', type:'date'},
   {name:'caixa', label:'Caixa Saída*', type:'select2', url:'finances/caixas', attr1:'nome', string:'str_caixa'},
 ]

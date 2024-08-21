@@ -1,13 +1,12 @@
 import classNames from 'classnames';
-import AsyncSelect from 'react-select/async';
 import React, { useRef, useState, useContext } from 'react';
-import { Button, Col, Form} from 'react-bootstrap';
-import { SelectSearchOptions } from '../../../helpers/Data';
-import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
+import { Button, Col, Form, Spinner} from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
 import api from '../../../context/data';
 import { PipeContext } from '../../../context/Context';
 import { toast } from 'react-toastify';
+import { fieldsFluxoGAI } from '../Data';
+import RenderFields from '../../../components/Custom/RenderFields';
 
 const ProductForm = ({
   onSubmit,
@@ -19,10 +18,18 @@ const ProductForm = ({
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({phase:fase, created_by:user.id});
   const [message, setMessage] = useState();
-  const inputRef = useRef(null);
+  const [isLoading, setIsloading] = useState();
   const token = localStorage.getItem("token")
 
+  const handleFieldChange = e => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
   const submit = async () => {
+    setIsloading(true)
     const isEmpty = !Object.keys(formData).length;
     if (!isEmpty) {
       api.post('pipeline/fluxos/gestao-ambiental/', formData, {headers: {Authorization: `Bearer ${token}`}})
@@ -45,6 +52,7 @@ const ProductForm = ({
         console.error('erro: '+erro);
       })
     }
+    setIsloading(false)
   };
 
   return (
@@ -61,109 +69,14 @@ const ProductForm = ({
             return submit();
           }}
         >
-          <Form.Group className="mb-2" as={Col}>
-            <Form.Label className='fw-bold mb-1'>Prioridade</Form.Label>
-            <Form.Select
-              ref={inputRef}
-              onChange={({ target }) =>
-                setFormData({ ...formData, prioridade: target.value })
-              }
-            >
-              <option>---</option>
-              <option value='Alta'>Alta</option>
-              <option value='Media'>Média</option>
-              <option value='Baixa'>Baixa</option>
-            </Form.Select>  
-            <label className='text-danger fs--2'>{message ? message.prioridade : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col}>
-            <Form.Label className='fw-bold mb-1'>Beneficiário*</Form.Label>
-            <AsyncSelect 
-              ref={inputRef} styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'register/pessoal', 'razao_social', 'cpf_cnpj')}
-              onChange={(selected ) => {
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  beneficiario: selected.value
-                }));
-              }} 
-              className='mb-1'
-            />
-            <label className='text-danger fs--2'>{message ? message.beneficiario : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col}>
-            <Form.Label className='fw-bold mb-1'>Detalhamento da Demanda*</Form.Label>
-            <AsyncSelect 
-              ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'register/detalhamentos', 'detalhamento_servico')}
-              onChange={(selected ) => {
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  detalhamento: selected.value
-                }));
-              }} 
-              className='mb-1'
-            />
-            <label className='text-danger fs--2'>{message ? message.detalhamento : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col}>
-            <Form.Label className='fw-bold mb-1'>Valor da Operação</Form.Label>
-            <Form.Control
-              type='number'
-              ref={inputRef}
-              onChange={({ target }) =>
-                setFormData({ ...formData, valor_operacao: target.value })
-              }
-              value={formData.valor_operacao || ''}
-            />
-            <label className='text-danger fs--2'>{message ? message.valor_operacao : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col}>
-            <Form.Label className='fw-bold mb-1'>Instituição Vinculada*</Form.Label>
-            <AsyncSelect
-              ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'register/instituicoes', 'razao_social', 'identificacao')}
-              onChange={(selected ) => {
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  instituicao: selected.value
-                }));
-              }} 
-              className='mb-1'
-            />
-            <label className='text-danger fs--2'>{message ? message.instituicao : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2" as={Col}>
-            <Form.Label className='fw-bold mb-1'>Contrato Vinculado*</Form.Label>
-            <AsyncSelect
-              ref={inputRef}  styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              loadOptions={(v) => SelectSearchOptions(v, 'finances/contratos-ambiental', 'str_contratante', 'str_produto')}
-              onChange={(selected ) => {
-                setFormData((prevFormData) => ({
-                  ...prevFormData,
-                  contrato: selected.value
-                }));
-              }} 
-              className='mb-1'
-            />
-            <label className='text-danger fs--2'>{message ? message.contrato : ''}</label>
-          </Form.Group>
-
-          <Form.Group className="mb-2 text-end" as={Col} xl={12}>
-            <Button
-              variant="primary"
-              size="sm"
-              className="col-2 fs-xs"
-              type="submit"
-            >
-              <span>Adicionar</span>
+          <RenderFields fields={fieldsFluxoGAI} formData={formData}
+            changefield={handleFieldChange} hasLabel={true} message={message} setform={setFormData}
+          />
+          <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+            <Button className="w-50" type="submit" disabled={isLoading} >
+              {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Cadastrar'}
             </Button>
-          </Form.Group>
+          </Form.Group>  
         </Form>
       </div>   
     </>

@@ -328,6 +328,8 @@ class detailCadastro_Pessoal(serializers.ModelSerializer):
             valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
             if not ext.lower() in valid_extensions:
                 raise serializers.ValidationError("Arquivo deve ser uma Imagem!")     
+            if file and value != 'default-avatar.jpg':
+                os.remove(self.instance.avatar.path)
             return file
         else:
             return None
@@ -361,15 +363,16 @@ class serializer_Cad_Produtos(serializers.ModelSerializer):
         fields = ['id', 'description', 'acronym']
 
 class serializerDetalhamento_Servicos(serializers.ModelSerializer):
+    str_produto = serializers.CharField(source='produto.acronym', required=False, read_only=True)
     class Meta:
         model = Detalhamento_Servicos
-        fields = ['id', 'produto', 'detalhamento_servico']
+        fields = ['id', 'str_produto', 'detalhamento_servico']
 
 class serializerContratos_Servicos(serializers.ModelSerializer):
-    contratante = serializers.CharField(source='contratante.razao_social', required=False, read_only=True)
+    str_contratante = serializers.CharField(source='contratante.razao_social', required=False, read_only=True)
     class Meta:
         model = Contratos_Ambiental
-        fields = ['id', 'contratante', 'produto']
+        fields = ['id', 'str_contratante', 'produto']
 
 class serializerAnexos(serializers.ModelSerializer):
     user = serializers.SerializerMethodField(read_only=True)

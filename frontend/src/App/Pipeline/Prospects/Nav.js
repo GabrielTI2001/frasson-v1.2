@@ -4,7 +4,7 @@ import { Nav } from "react-bootstrap"
 
 const NavGai = ({card}) =>{
     return (
-    <Nav variant="pills" className="flex-row fs--2">
+    <Nav variant="pills" className="flex-row fs--2 mb-2">
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 mb-2 link-primary" eventKey="processo">
                 <FontAwesomeIcon icon={faFilter} className="me-1"/>Processo

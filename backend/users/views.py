@@ -35,27 +35,17 @@ class CreateUserView(View):
         else:
             return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-class UserProfileView(APIView):
-    # permission_classes = [IsAuthenticated]
+class UserProfileView(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
     serializer_class = serializerProfile
-    def get(self, request):
-        user = request.user
-        if user:
-            try:
-                profile = Profile.objects.get(user=user)
-                # Aqui você pode ajustar os campos que deseja retornar no perfil
-                profile_data = {
-                    'user_id': profile.user.id,
-                    'first_name': profile.user.first_name,
-                    'avatar': 'media/'+profile.avatar.name
-                    # Adicione outros campos do perfil conforme necessário
-                }
-                return Response(profile_data)
-            except Profile.DoesNotExist:
-                return Response({'error': 'Perfil não encontrado'}, status=404)
-        else:
-            return Response({'error': 'Usuário não autenticado'}, status=401)
+    lookup_field = 'user_id'
+    def perform_update(self, serializer):
+        instance = serializer.instance
+        nome = self.request.data.get('first_name')
+        sobrenome = self.request.data.get('last_name')
+        User.objects.filter(pk=instance.user.id).update(**{'first_name': nome, 'last_name': sobrenome})
+        super().perform_update(serializer)
+
 
 class CustomUserViewSet(UserViewSet):
     def perform_create(self, serializer):

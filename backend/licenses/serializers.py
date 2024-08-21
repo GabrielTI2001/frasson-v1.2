@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cadastro_Licencas
+from .models import Cadastro_Licencas, Anexos
 from backend.frassonUtilities import Frasson
 from backend.pipefyUtils import getTableRecordPipefy
 import locale, requests, json
@@ -81,4 +81,15 @@ class detailLicenses(serializers.ModelSerializer):
                 field.required = True
     class Meta:
         model = Cadastro_Licencas
+        fields = '__all__'
+
+class serializerAnexos(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    def get_user(self, obj):
+        if obj.uploaded_by:
+            return {'id':obj.uploaded_by.id, 'name':obj.uploaded_by.first_name+' '+obj.uploaded_by.last_name}
+        else:
+            return {'id':'', 'name':'-'+' '+'-'}
+    class Meta:
+        model = Anexos
         fields = '__all__'

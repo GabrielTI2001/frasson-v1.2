@@ -96,6 +96,7 @@ const ModalRecord = ({show, reducer}) => {
             {record ? <>
               <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-2">
                 <h4 className="mb-1 fs-1 fw-bold">{record.nome}</h4>
+                <h6 className="mb-1 fs--1 fw-bold">Mat. {record.matricula}</h6>
               </div>
               <Dropdown className='mb-2'>
                 <Dropdown.Toggle as={Nav}
@@ -133,7 +134,8 @@ const ModalRecord = ({show, reducer}) => {
                                 <div className="fs--1 row-10">{record[f.string] || '-'}</div>
                               :
                                 <div className="fs--1 row-10">{record[f.data] && record[f.data][f.attr_data]}</div>
-                            : f.type === 'file' && f.name === 'kml' ? <div></div>
+                            : f.type === 'file' && f.name === 'kml' ? 
+                              <div><Link>Baixar KML</Link></div>
                             : f.type === 'date' ? 
                               <div className="fs--1 row-10">{record[f.name] ? new Date(record[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
                             : 

@@ -1,7 +1,7 @@
 from django.db import models
 from cadastro.models import Cadastro_Pessoal, Detalhamento_Servicos, Instituicoes_Razao_Social, Imoveis_Rurais
 from users.models import User
-import uuid
+import uuid, os
 
 class Cadastro_Licencas(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -25,3 +25,26 @@ class Cadastro_Licencas(models.Model):
         verbose_name_plural = 'Cadastro Licenças'
     def __str__(self):
         return self.beneficiario.razao_social
+
+def upload_anexo(instance, filename):
+    ext = filename.split('.')[-1]
+    filename = f'{instance.uuid}.{ext}'
+    if instance.licenca:
+        return os.path.join('licenses/', filename)
+    else:
+        return os.path.join('licenses/other/', filename)
+    
+class Anexos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    licenca = models.ForeignKey(Cadastro_Licencas, on_delete=models.CASCADE, null=True, verbose_name='Análise Solo')
+    file = models.FileField(null=True, upload_to=upload_anexo, verbose_name='Arquivo')
+    name = models.CharField(null=True, max_length=100, verbose_name='Nome Arquivo')
+    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='Carregado por', related_name='licupby')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Anexos Licenses'
+    def save(self, *args, **kwargs):
+        if self.file and not self.name:
+            self.name = self.file.name
+        super().save(*args, **kwargs)

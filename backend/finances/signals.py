@@ -1,6 +1,7 @@
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 from .models import Activities, Anexos, Contratos_Ambiental
+from pipeline.models import Card_Comments
 import re, os
 from django.core.mail import send_mail
 
@@ -27,3 +28,9 @@ def anexo_atividade(sender, instance, created, **kwargs):
             contrato_ambiental_id=instance.id,
             campo='o Contrato'
         )
+
+@receiver(post_save, sender=Card_Comments)
+def mention_coment(sender, instance, created, **kwargs):
+    if created:
+        Activities.objects.create(type='co', updated_by_id=instance.created_by.id, 
+            pagamento=instance.pagamento, campo=instance.text)

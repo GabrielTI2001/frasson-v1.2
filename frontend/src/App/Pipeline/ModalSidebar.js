@@ -15,6 +15,7 @@ const SOCKET_SERVER_URL = `${process.env.REACT_APP_WS_URL}/pipeline/`;
 
 const ModalSidebar = ({card, pipe, move}) => {
   const {kanbanState, kanbanDispatch} = useContext(PipeContext);
+  const link = card.pipe_code === 518984924 ? 'prospects' : card.pipe_code === 518984721 ? 'gestao-ambiental' : 'gestao-credito';
   const token = localStorage.getItem("token")
   const user = JSON.parse(localStorage.getItem("user"))
   const [socket, setSocket] = useState()
@@ -30,7 +31,7 @@ const ModalSidebar = ({card, pipe, move}) => {
 
   const handleMove = (id) => {
     const result = {destination: {droppableId: id, index: 0}, source: {index: 0, droppableId: card.phase}, code:card.code}
-    api.put(`pipeline/fluxos/gestao-ambiental/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `Bearer ${token}`}})
+    api.put(`pipeline/fluxos/${link}/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
         move("movecardproduto", result, response.data.code)
         toast.success(`Card movido com sucesso para ${response.data.str_fase}`)

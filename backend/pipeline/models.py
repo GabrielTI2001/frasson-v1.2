@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User, Profile
+from finances.models import Pagamentos, Cobrancas
 from cadastro.models import Cadastro_Pessoal, Instituicoes_Parceiras, Instituicoes_Razao_Social, Produtos_Frasson, Detalhamento_Servicos
 from finances.models import Contratos_Ambiental , Contratos_Credito
 import uuid, time, random, os
@@ -155,6 +156,8 @@ class Card_Comments(models.Model):
     fluxo_ambiental = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
     fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
     fluxo_credito = models.ForeignKey(Fluxo_Gestao_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    pagamento = models.ForeignKey(Pagamentos, on_delete=models.CASCADE, null=True, verbose_name='Pagamento')
+    cobranca = models.ForeignKey(Cobrancas, on_delete=models.CASCADE, null=True, verbose_name='Cobrança')
     pvtec = models.ForeignKey(PVTEC, on_delete=models.CASCADE, null=True, verbose_name='PVTEC')
     text = models.TextField(null=True, verbose_name='Texto')
     phase = models.ForeignKey(Fase, null=True, verbose_name='Fase', on_delete=models.CASCADE)

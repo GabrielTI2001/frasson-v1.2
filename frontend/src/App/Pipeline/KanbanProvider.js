@@ -6,6 +6,7 @@ import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 const KanbanProvider = ({ children, code }) => {
   const token = localStorage.getItem("token")
+  const item = code === 518984924 ? 'fluxo_prospects_set' : code === 518984721 ? 'fluxo_gestao_ambiental_set' : 'fluxo_gestao_credito_set';
   const navigate = useNavigate();
   const [kanbanState, kanbanDispatch] = useReducer(kanbanReducer, {
     pipe: {},
@@ -14,13 +15,6 @@ const KanbanProvider = ({ children, code }) => {
       modalContent: {}
     }
   });
-
-  const currentUser = {
-    name: 'Emma',
-    // avatarSrc: currentUserAvatar,
-    profileLink: '/user/profile',
-    institutionLink: '#!'
-  };
 
   const fetchData = async () => {
     try {
@@ -42,7 +36,7 @@ const KanbanProvider = ({ children, code }) => {
         kanbanDispatch({
           type: 'SET_DATA',
           payload: {
-            fases: data.fase_set,
+            fases: data.fase_set.map(f => ({...f, card_set:f[item]})),
             pipe: {code:data.code, pessoas:data.pessoas, descricao:data.descricao, id:data.id},
             kanbanModal: {show: false, modalContent: {}},
             clientId:Math.floor(Math.random() * 1000000)
@@ -66,7 +60,7 @@ const KanbanProvider = ({ children, code }) => {
 
   return (
     <PipeContext.Provider
-      value={{ kanbanState, kanbanDispatch, currentUser }}
+      value={{ kanbanState, kanbanDispatch}}
     >
       {children}
     </PipeContext.Provider>

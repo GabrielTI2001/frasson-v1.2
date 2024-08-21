@@ -90,7 +90,7 @@ const PasswordConfirmForm = ({ hasLabel }) => {
         className="w-100"
         disabled={!formData.new_password || !formData.re_new_password}
       >
-        Set password
+        Alterar Senha
       </Button>
     </Form>
   );
