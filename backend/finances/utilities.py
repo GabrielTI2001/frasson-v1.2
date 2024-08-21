@@ -207,5 +207,12 @@ fields_contratogai = {
 fields_pagamento = {
     'beneficiario':'Beneficiário', 'descricao':'Descrição', 'detalhamento':'Detalhamento', 'categoria': 'Categoria',
     'status': 'Status', 'valor_pagamento':'Valor do Pagamento', 'data_vencimento':'Data de Vencimento', 'data_pagamento':'Data do Pagamento',
-    'caixa':'Caixa de Saída'
+    'caixa':'Caixa de Saída', 'data_previsao':'Data de Previsão', 'saldo_devedor':'Saldo Devedor'
+}
+
+fields_cobranca = {
+    'cliente':'Cliente', 'valor_operacao':'Valor da Operação', 'detalhamento':'Detalhamento', 'data_vencimento':'Data de Vencimento',
+    'status': 'Status', 'valor_pagamento':'Valor do Pagamento', 'data_pagamento':'Data do Pagamento', 
+    'percentual_contratado':'Percentual Contratado', 'saldo_devedor':'Saldo Devedor', 'caixa':'Caixa de Entrada', 
+    'valor_faturado':'Valor Faturado', 'data_previsao':'Data de Previsão'
 }

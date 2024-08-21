@@ -3,9 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Col} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import AsyncSelect from 'react-select/async';
-import { SelectSearchOptions, sendData } from '../../../helpers/Data';
-import customStyles, { customStylesDark } from '../../../components/Custom/SelectStyles';
+import { sendData } from '../../../helpers/Data';
 import { useAppContext } from '../../../Main';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
@@ -15,9 +13,11 @@ const FormCobranca = ({type, data, submit, card}) => {
     const user = JSON.parse(localStorage.getItem("user"))
     const [message, setMessage] = useState();
     const [formData, setformData] = useState({created_by:user.id, fluxo_ambiental:card ? card.id : '', status:'AD',
-      contrato:card.contrato, cliente:card.beneficiario
+      contrato:card.contrato, cliente:card.beneficiario, servico:card.detalhamento
     });
     const [defaultoptions, setDefaultOptions] = useState();
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 7);
 
     const handleApi = async (dadosform) => {
       const {resposta, dados} = await sendData({type:type, url:'finances/revenues', keyfield:null, dadosform:dadosform})
@@ -61,90 +61,30 @@ const FormCobranca = ({type, data, submit, card}) => {
 
     return (
     <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
-        <Form.Group className="mb-1" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Status*</Form.Label>
-            <Form.Select
-              value={formData.status || ''}
-              name="status"
-              onChange={handleFieldChange}
-              type="select"
-            >
-              <option value={undefined}>----</option>
-              <option value='AD'>Aguardando Distribuição</option>
-              <option value='NT'>Notificação</option>
-              <option value='FT'>Faturamento</option>
-              <option value='AG'>Agendado</option>
-              <option value='PG'>Pago</option>
-            </Form.Select>
-            <label className='text-danger'>{message ? message.status : ''}</label>
-        </Form.Group>
+      <Form.Group className="mb-2" as={Col} xl={12}>
+        <Form.Label className='fw-bold mb-1'>Etapa*</Form.Label>
+        <Form.Select
+          value={formData.etapa || ''}
+          name="etapa"
+          onChange={handleFieldChange}
+          type="select"
+        >
+          <option value={undefined}>----</option>
+          <option value='A'>Assinatura Contrato</option>
+          <option value='P'>Protocolo</option>
+          <option value='E'>Encerramento</option>
+        </Form.Select>
+      </Form.Group>
 
-        {defaultoptions && 
-          <Form.Group className="mb-2" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Serviço*</Form.Label>
-            <AsyncSelect 
-              loadOptions={(value) => SelectSearchOptions(value, 'register/detalhamentos', 'detalhamento_servico', null, false, `contratogai=${card.contrato}`)} 
-              name='servicos' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.servicos : '') : ''}
-              onChange={(selected) => {
-                setformData((prevFormData) => ({
-                  ...prevFormData,
-                  servico: selected.value
-                  }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.servico : ''}</label>
-          </Form.Group> 
-        }  
+      <Form.Group className="mb-1" as={Col} xl={12}>
+        <Form.Label className='fw-bold mb-1 me-1'>Data Previsão Pagamento: </Form.Label>
+        <span>{futureDate.toLocaleDateString('pt-br')}</span>
+      </Form.Group>
 
-        <Form.Group className="mb-1" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Etapa*</Form.Label>
-            <Form.Select
-              value={formData.etapa || ''}
-              name="etapa"
-              onChange={handleFieldChange}
-              type="select"
-            >
-              <option value={undefined}>----</option>
-              <option value='A'>Assinatura Contrato</option>
-              <option value='P'>Protocolo</option>
-              <option value='E'>Encerramento</option>
-            </Form.Select>
-            <label className='text-danger'>{message ? message.etapa : ''}</label>
-        </Form.Group>
-
-        <Form.Group className="mb-1" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Data Previsão Pagamento*</Form.Label>
-            <Form.Control
-              value={formData.data_previsao || ''}
-              name="data_previsao"
-              onChange={handleFieldChange}
-              type="date"
-            />
-            <label className='text-danger'>{message ? message.data_previsao : ''}</label>
-        </Form.Group>
-
-        {defaultoptions && 
-          <Form.Group className="mb-2" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Caixa*</Form.Label>
-            <AsyncSelect 
-              loadOptions={(value) => SelectSearchOptions(value, 'finances/caixas', 'nome', null, false)} 
-              name='caixa' styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={ type === 'edit' ? (defaultoptions ? defaultoptions.servicos : '') : ''}
-              onChange={(selected) => {
-                setformData((prevFormData) => ({
-                  ...prevFormData,
-                  caixa: selected.value
-                  }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.caixa : ''}</label>
-          </Form.Group> 
-        }
-        <label className='text-danger'>{message ? message.non_fields_errors : ''}</label>  
-        <Form.Group as={Col} className='text-end' xl={12}>
-            <Button type='submit'>Cadastrar</Button>
-        </Form.Group>
+      <label className='text-danger'>{message ? message.non_fields_errors : ''}</label>  
+      <Form.Group as={Col} className='text-end' xl={12}>
+        <Button type='submit'>Cadastrar</Button>
+      </Form.Group>
     </Form>
     );
 };

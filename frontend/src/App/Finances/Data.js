@@ -159,13 +159,10 @@ export const fieldsCobranca = [
   {name:'valor_operacao', label:'Valor Operação (RS)', type:'text', is_number:true},
   {name:'percentual_contratado', label:'Percentual Contratado (%)', type:'text', is_number:true},
   {name:'saldo_devedor', label:'Saldo Devedor (R$)*', type:'text', is_number:true},
-  {name:'status', label:'Status*', type:'select', string:'str_status', options:{
-    'AD':'Aguardando Distribuição', 'NT':'Notificação', 'FT':'Faturamento', 'AG':'Agendado', 'PG':'Pago'
-  }}, 
-  {name:'data_previsao', label:'Data Previsão Pagamento*', type:'date'},
+  {name:'data_previsao', label:'Data Previsão Pagamento', type:'date'},
   {name:'caixa', label:'Caixa Entrada*', type:'select2', url:'finances/caixas', attr1:'nome', string:'str_caixa'},
-  {name:'data_pagamento', label:'Data Pagamento', type:'date'},
-  {name:'valor_faturado', label:'Valor Faturado (R$)', type:'text', is_number:true},
+  {name:'data_pagamento', label:'Data Pagamento*', type:'date'},
+  {name:'valor_faturado', label:'Valor Faturado (R$)*', type:'text', is_number:true},
 ]
 
 export const fieldsPagamentos = [

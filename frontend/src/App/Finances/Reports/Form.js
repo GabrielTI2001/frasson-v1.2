@@ -48,7 +48,7 @@ const CobrançaForm = ({ hasLabel, type, submit }) => {
   return (
     <>
       <Form onSubmit={handleSubmit} className='row'>
-        <RenderFields fields={fieldsCobranca} formData={formData} changefield={handleFieldChange} 
+        <RenderFields fields={fieldsCobranca.slice(0, 6)} formData={formData} changefield={handleFieldChange} 
           hasLabel={hasLabel} message={message} type={type}
         />
         <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>

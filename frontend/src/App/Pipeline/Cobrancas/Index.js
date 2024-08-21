@@ -15,7 +15,7 @@ import {CardTitle} from '../CardInfo';
 import { fieldsCobranca } from '../../Finances/Data';
 import EditFormModal from '../../../components/Custom/EditForm';
 
-const fields = ['status', 'saldo_devedor', 'caixa', 'data_previsao']
+const fields = ['status', 'saldo_devedor', 'data_previsao']
 
 const Cobrancas = ({card, updatedactivity, isgc}) => {
   const user = JSON.parse(localStorage.getItem('user'))
@@ -110,7 +110,7 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
       </span>
     }
     {cobrancas ? cobrancas.filter(p => p.status !== 'PG').map(p =>
-      <ExpandableCard data={p} attr1='str_cliente' key={p.id} url='finances/revenues'
+      <ExpandableCard data={p} attr1='str_etapa' key={p.id} url='finances/revenues'
         footer={`Criado por ${p.str_created_by} em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
         clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/revenues/${p.uuid}/`})}}
@@ -119,14 +119,7 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
           !showForm[f.name] ?
             <div className='my-2' key={f.name}>
               <CardTitle title={f.label.replace('*', '')} click={f.name === 'saldo_devedor' ? null : handleEdit} field={f.name}/>
-              {f.type === 'select' ?
-                <div><span className={`badge bg-success fs--2 p-1 px-2`}>{p[f.string] || '-'}</span></div>
-              : f.type === 'select2' ?
-                f.string ?
-                  <div className="fs--1 row-10">{p[f.string] || '-'}</div>
-                :
-                  <div className="fs--1 row-10">{p[f.data] && p[f.data][f.attr_data]}</div>
-              : f.type === 'date' ? 
+              {f.type === 'date' ? 
                 <div className="fs--1 row-10">{p[f.name] ? new Date(p[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
               : 
                 <div className="fs--1 row-10">{p[f.name] ? f.is_number 
@@ -141,6 +134,8 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
             record={p} field={f}
           />
         )}
+        <CardTitle title={'Status'}/>
+        <div><span className={`badge bg-warning fs--2 p-1 px-2`}>{p.str_status || '-'}</span></div>
       </ExpandableCard>
     ) : 
     <div className='text-center mb-4'>
@@ -154,7 +149,7 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
       </span>
     }
     {cobrancas && cobrancas.filter(p => p.status === 'PG').map(p =>
-      <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='finances/revenues'
+      <ExpandableCard data={p} attr1='str_etapa' key={p.id} url='finances/revenues'
         footer={`Criado em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
         clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/finances/revenues/${p.uuid}/`})}}
@@ -163,14 +158,7 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
           !showForm[f.name] ?
             <div className='my-2' key={f.name}>
               <CardTitle title={f.label.replace('*', '')} click={f.name === 'saldo_devedor' ? null : handleEdit} field={f.name}/>
-              {f.type === 'select' ?
-                <div><span className={`badge bg-success fs--2 p-1 px-2`}>{p[f.string] || '-'}</span></div>
-              : f.type === 'select2' ?
-                f.string ?
-                  <div className="fs--1 row-10">{p[f.string] || '-'}</div>
-                :
-                  <div className="fs--1 row-10">{p[f.data] && p[f.data][f.attr_data]}</div>
-              : f.type === 'date' ? 
+              {f.type === 'date' ? 
                 <div className="fs--1 row-10">{p[f.name] ? new Date(p[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
               : 
                 <div className="fs--1 row-10">{p[f.name] ? f.is_number 
@@ -185,6 +173,8 @@ const Cobrancas = ({card, updatedactivity, isgc}) => {
             record={p} field={f}
           />
         )}
+        <CardTitle title={'Status'}/>
+        <div><span className={`badge bg-success fs--2 p-1 px-2`}>{p.str_status || '-'}</span></div>
       </ExpandableCard>
     )}
     <ModalDelete show={modaldel.show} link={modaldel.link} update={handledelete} close={() => setModaldel({show:false})}/>

@@ -30,7 +30,7 @@ from reportlab.lib.enums import TA_JUSTIFY, TA_RIGHT, TA_LEFT
 from reportlab.lib.colors import Color
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
-from .utilities import fields_contratogai, fields_pagamento
+from .utilities import fields_contratogai, fields_pagamento, fields_cobranca
 
 class PagamentosView(viewsets.ModelViewSet):
     queryset = Pagamentos.objects.all()
@@ -217,6 +217,25 @@ class CobrancasView(viewsets.ModelViewSet):
         else:
             erros.update(serializer.errors)
             return Response(erros, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        user = request.data['user'] if 'user' in request.data else None
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            activity = None
+            for key in fields_cobranca.keys():
+                if key in request.data:
+                    activity = Activities.objects.create(cobranca_id=instance.pk, type='ch', campo=fields_cobranca[key], 
+                        updated_by_id=user)
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            response_data = serializer.data.copy()
+            if activity:
+                activity_serializer = serializerActivities(activity)
+                response_data.update({'activity':activity_serializer.data if activity else None})
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class CobrancasInvoicesView(viewsets.ModelViewSet):
     queryset = Cobrancas.objects.all()
@@ -532,6 +551,8 @@ class ActivityView(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(contrato_credito_id=int(contratogc)))
         if pagamento:
             queryset = queryset.filter(Q(pagamento_id=int(pagamento)))
+        if cobranca:
+            queryset = queryset.filter(Q(cobranca_id=int(cobranca)))
         return queryset
 
 class AnexoView(viewsets.ModelViewSet):

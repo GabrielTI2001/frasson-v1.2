@@ -6,6 +6,7 @@ from finances.models import Pagamentos, Cobrancas
 from backend.frassonUtilities import Frasson
 from django.db.models import Q
 import locale
+from datetime import datetime, timedelta
 
 class listPagamentos(serializers.ModelSerializer):
     str_categoria = serializers.CharField(source='categoria.category', read_only=True)
@@ -39,7 +40,7 @@ class detailPagamentos(serializers.ModelSerializer):
                 field.required = False 
     def validate_status(self, value):
         if self.instance:
-            if value == 'PG' and not self.instance.caixa and not self.instance.data_pagamento:
+            if value == 'PG' and (not self.instance.caixa or not self.instance.data_pagamento):
                 raise serializers.ValidationError("Informe a data do pagamento e o caixa de saída")
         return value
     class Meta:
@@ -74,11 +75,12 @@ class listCobrancas(serializers.ModelSerializer):
             return None
     class Meta:
         model = Cobrancas
-        fields = ['id', 'uuid', 'str_status', 'saldo_devedor', 'str_cliente', 'str_produto', 'str_detalhe', 'data', 'valor']
+        fields = ['id', 'uuid', 'status', 'str_status', 'saldo_devedor', 'str_cliente', 'str_produto', 'str_detalhe', 'data', 'valor']
 
 class detailCobrancas(serializers.ModelSerializer):
     str_detalhe = serializers.SerializerMethodField(read_only=True)
     str_produto = serializers.SerializerMethodField(read_only=True)
+    str_etapa = serializers.SerializerMethodField(read_only=True)
     str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     str_caixa = serializers.CharField(source='caixa.nome', read_only=True)
     str_status = serializers.CharField(source='get_status_display', read_only=True)
@@ -105,15 +107,31 @@ class detailCobrancas(serializers.ModelSerializer):
             return obj.detalhamento.detalhamento_servico
         else:
             return None
+    def get_str_etapa(self, obj):
+        if obj.etapa_ambiental:
+            return obj.etapa_ambiental.get_etapa_display()
+        elif obj.etapa_credito:
+            return obj.etapa_credito.get_etapa_display()
+        else:
+            return None
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
             for field_name, field in self.fields.items():
-                if field_name in ['cliente', 'saldo_devedor', 'caixa' ,'status', 'data_previsao']:
+                if field_name in ['cliente', 'saldo_devedor', 'status']:
                     field.required = True
         else:
             for field_name, field in self.fields.items():
                 field.required = False 
+    def validate_status(self, value):
+        if self.instance:
+            if value == 'PG' and (not self.instance.caixa or not self.instance.data_pagamento or not self.instance.valor_faturado):
+                raise serializers.ValidationError("Informe a data do pagamento, valor faturado e o caixa de entrada")
+        return value
+    def validate(self, data):
+        data_previsao = self.initial_data.get('data_previsao')
+        data['data_previsao'] = datetime.now().date() + timedelta(days=7) if not data_previsao else data_previsao
+        return data
     class Meta:
         model = Cobrancas
         fields = '__all__'

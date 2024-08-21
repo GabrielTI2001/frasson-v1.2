@@ -181,6 +181,7 @@ class CommentView(viewsets.ModelViewSet):
         pvtec = self.request.query_params.get('pvtec', None)   
         prospect = self.request.query_params.get('prospect', None) 
         pagamento = self.request.query_params.get('pagamento', None)
+        cobranca = self.request.query_params.get('cobranca', None)
         if fluxogai:
             queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
         elif prospect:
@@ -189,6 +190,8 @@ class CommentView(viewsets.ModelViewSet):
             queryset = queryset.filter(Q(pvtec_id=int(pvtec)))
         elif pagamento:
             queryset = queryset.filter(Q(pagamento_id=int(pagamento)))
+        if cobranca:
+            queryset = queryset.filter(Q(cobranca_id=int(cobranca)))
         return queryset
 
 class ActivityView(viewsets.ModelViewSet):

@@ -1,5 +1,4 @@
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Profile
 from rest_framework import status
@@ -43,8 +42,11 @@ class UserProfileView(viewsets.ModelViewSet):
         instance = serializer.instance
         nome = self.request.data.get('first_name')
         sobrenome = self.request.data.get('last_name')
-        User.objects.filter(pk=instance.user.id).update(**{'first_name': nome, 'last_name': sobrenome})
+        instance.user.first_name = nome
+        instance.user.last_name = sobrenome
+        instance.user.save()
         super().perform_update(serializer)
+        instance.refresh_from_db()
 
 
 class CustomUserViewSet(UserViewSet):
