@@ -543,10 +543,6 @@ svg.leaflet-image-layer.leaflet-interactive path {
 	}
 .leaflet-popup-scrolled {
 	overflow: auto;
-	}
-
-.leaflet-oldie .leaflet-popup-content-wrapper {
-	-ms-zoom: 1;
 }
 .leaflet-oldie .leaflet-popup-tip {
 	width: 24px;
@@ -1442,9 +1438,10 @@ body {
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
+/* barras de scroll styles*/
 div::-webkit-scrollbar {
   width: 8px;
-  height: 10px;
+  height: 8px;
   background-color: var(--falcon-body-bg);
   border-radius: 10px;
   visibility: hidden;
@@ -26588,6 +26585,17 @@ option:disabled {
   box-shadow: var(--falcon-setting-toggle-shadow);
   cursor: pointer;
 }
+.add-card-toggle {
+  position: fixed;
+  bottom: 3%;
+  left: 2%;
+  text-decoration: none;
+  z-index: 1016;
+  margin-top: -83px;
+  box-shadow: var(--falcon-setting-toggle-shadow);
+  cursor: pointer;
+}
+
 @media (max-width: 575.98px) {
   .setting-toggle {
     transform: rotate(-90deg);
@@ -27066,6 +27074,7 @@ option:disabled {
   white-space: normal;
   vertical-align: top;
   margin-right: 1.25rem;
+  margin-bottom: 0.3rem;
 }
 .kanban-column:not(.form-added) .add-card-form {
   display: none;
@@ -27098,7 +27107,7 @@ option:disabled {
   overflow-y: auto;
   overflow-x: hidden;
   background-color: var(--falcon-kanban-bg);
-  height: 76.2vh;
+  height: 77.2vh;
 }
 .kanban-items-container .kanban-collapse:first-child,
 .kanban-items-container .kanban-item:first-child {

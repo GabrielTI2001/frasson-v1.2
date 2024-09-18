@@ -1,11 +1,7 @@
-export default {
-    border: '0px !important'
-};
-
 export const mentionInputStyleLight = {
     control: {
       fontSize: 12,
-      fontWeight: 'normal'
+      fontWeight: 'normal',
     },
   
     '&multiLine': {
@@ -14,26 +10,22 @@ export const mentionInputStyleLight = {
         minHeight: 60,
       },
       highlighter: {
-        padding: 9,
-        color:'blue',
-        // font: '400 12px 25px !important'
+        padding: 9
       },
       input: {
         padding: 9,
         border: '1px solid silver',
-        '&:focus': {
-            border: '1px solid silver', // Altere aqui para a cor desejada
-        },
+        borderRadius: 3,
+        transition: 'border-color 0.3s ease, box-shadow 0.3s ease',
       },
     },
   
     '&singleLine': {
       display: 'inline-block',
       width: 180,
-  
       highlighter: {
         padding: 1,
-        border: '2px inset transparent',
+        zIndex: 999
       },
       input: {
         padding: 1,

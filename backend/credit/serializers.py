@@ -32,6 +32,26 @@ class detailOperacoes(serializers.ModelSerializer):
     list_imoveis = serializers.SerializerMethodField(read_only=True)
     cedulas = serializers.SerializerMethodField(read_only=True)
     coordenadas = serializers.SerializerMethodField(read_only=True)
+    def validate(self, data):
+        errors = {}
+        if self.initial_data.get('item_financiado') or self.initial_data.get('instituicao'):
+            lista_itens = Itens_Financiados.objects.filter(
+                tipo='Custeio', item__in=['Soja', 'Soja Irrigada', 'Milho', 'Milho Irrigado', 'Trigo']).values_list('id', flat=True)
+            instituicao = data.get('instituicao')
+            data_prod_armazenado = data.get('data_prod_armazenado', None)
+            data_primeiro_vencimento = data.get('data_primeiro_vencimento', None)
+            item_financiado = data.get('item_financiado', None)
+
+            if not data_prod_armazenado and (item_financiado.id in lista_itens if item_financiado else True
+                and instituicao.instituicao.razao_social == 'Banco do Brasil S/A' if instituicao else True):
+                msg = "Este campo é obrigatório" if not self.instance else "Data Prod. Armazenado e Data 1º Vencimento são obrigatórios"
+                errors['data_prod_armazenado' if not self.instance else "non_fields_errors"] = msg + " para o item e instituição informados"
+            if not data_primeiro_vencimento and (item_financiado.id in lista_itens if item_financiado else True 
+                    and instituicao.instituicao.razao_social == 'Banco do Brasil S/A' if instituicao else True):
+                errors['data_primeiro_vencimento'] = "Esse campo é obrigatório para o item e instituição informados"
+            if errors:
+                raise serializers.ValidationError(errors)
+        return data
     def get_coordenadas(self, obj):
         coordenadas = [{'lat':float(c.latitude_gd), 'lng':float(c.longitude_gd), 'id':c.id} for c in Operacoes_Contratadas_Glebas.objects.filter(operacao=obj)]
         return coordenadas
@@ -39,15 +59,15 @@ class detailOperacoes(serializers.ModelSerializer):
         return [{'id': fazenda.id, 'nome':fazenda.nome+' - '+fazenda.matricula} for fazenda in obj.imoveis_beneficiados.all()]
     def get_alongamento(self, obj):
         operacao = {}
-        if obj.instituicao and obj.instituicao.instituicao_id == 47106067 and obj.item_financiado.tipo == "Custeio" and "Feijão" not in obj.item_financiado.item:
+        if obj.instituicao and obj.instituicao.instituicao.razao_social == 'Banco do Brasil S/A' and obj.item_financiado.tipo == "Custeio" and "Feijão" not in obj.item_financiado.item:
             operacao['alongamento_permission'] = True
         else:
-            operacao['alongamento_permission'] = True
+            operacao['alongamento_permission'] = False
         #verifica se já possui alongamento registrado
         if Cadastro_Alongamentos.objects.filter(operacao_id=obj.id).exists():
             operacao['along'] = True
             operacao['alongamento_total'] = locale.currency(Cadastro_Alongamentos.objects.get(operacao_id=obj.id).valor_total, grouping=True)
-            operacao['alongamento_id'] = Cadastro_Alongamentos.objects.get(operacao_id=obj.id).id
+            operacao['alongamento_id'] = Cadastro_Alongamentos.objects.get(operacao_id=obj.id).uuid
         else:
             operacao['along'] = False
         return operacao
@@ -66,7 +86,8 @@ class detailOperacoes(serializers.ModelSerializer):
         else:
             for field_name, field in self.fields.items():
                 field.required = False
-                field.allow_empty = True
+                if field_name == 'imoveis_beneficiados':
+                    field.allow_empty = True
     def update(self, instance, validated_data):
         list_data = validated_data.pop('imoveis_beneficiados', [])
         instance = super().update(instance, validated_data)

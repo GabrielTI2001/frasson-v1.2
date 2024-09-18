@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Nav, Row, Col } from 'react-bootstrap';
 import NavbarNavLink from './NavbarNavLink';
 
-const NavbarDropdownCredito = ({ items }) => {
+const NavbarDropdownCredito = ({ items, closeDropdown}) => {
   return (
     <Row>
       <Col xs={12} md={12}>
@@ -12,7 +12,7 @@ const NavbarDropdownCredito = ({ items }) => {
             <React.Fragment key={filho.name}>
               <NavbarNavLink key={filho.name} title={filho.name}/>
               {filho.children.map((item) =>(
-                <NavbarNavLink key={item.name} route={item} icon={item.icon} icon2={item.icon2} />
+                <NavbarNavLink key={item.name} route={item} icon={item.icon} icon2={item.icon2} click={closeDropdown}/>
               ))}
             </React.Fragment>
           ))}

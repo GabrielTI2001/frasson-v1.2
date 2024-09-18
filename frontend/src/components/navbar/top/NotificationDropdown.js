@@ -53,8 +53,7 @@ const NotificationDropdown = () => {
       <Dropdown.Toggle
         bsPrefix="toggle"
         as={Link}
-        to="#!"
-        className={classNames('px-0 nav-link', {
+        className={classNames('px-0 nav-link nav-not-hover', {
           'notification-indicator notification-indicator-primary': !isAllRead
         })}
       >

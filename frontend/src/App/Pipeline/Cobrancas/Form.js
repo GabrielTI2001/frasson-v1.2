@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Col} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import { sendData } from '../../../helpers/Data';
+import { SelectOptions, sendData } from '../../../helpers/Data';
 import { useAppContext } from '../../../Main';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
@@ -12,10 +12,10 @@ const FormCobranca = ({type, data, submit, card}) => {
     const navigate = useNavigate()
     const user = JSON.parse(localStorage.getItem("user"))
     const [message, setMessage] = useState();
+    const [etapas, setEtapas] = useState();
     const [formData, setformData] = useState({created_by:user.id, fluxo_ambiental:card ? card.id : '', status:'AD',
       contrato:card.contrato, cliente:card.beneficiario, servico:card.detalhamento
     });
-    const [defaultoptions, setDefaultOptions] = useState();
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
 
@@ -46,17 +46,11 @@ const FormCobranca = ({type, data, submit, card}) => {
     };
 
     useEffect(() =>{
-        const setform = () =>{
-          setformData({...data, ...formData})
+        const setform = async () =>{
+          const dados = await SelectOptions(`finances/etapas-contrato-ambiental/${card.contrato}`, 'name')
+          setEtapas(dados.map(d => d.label))
         }
-        if(type === 'edit' && !formData.atividade){
-            setform()
-        }
-        else{
-            if(!defaultoptions){
-                setDefaultOptions({})
-            }
-        }
+        setform()
     },[])
 
     return (
@@ -69,10 +63,9 @@ const FormCobranca = ({type, data, submit, card}) => {
           onChange={handleFieldChange}
           type="select"
         >
-          <option value={undefined}>----</option>
-          <option value='A'>Assinatura Contrato</option>
-          <option value='P'>Protocolo</option>
-          <option value='E'>Encerramento</option>
+          {etapas && etapas.map(e => 
+            <option value={e}>{e}</option>
+          )}
         </Form.Select>
       </Form.Group>
 

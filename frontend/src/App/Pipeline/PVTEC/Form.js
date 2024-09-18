@@ -46,7 +46,7 @@ const FormPVTEC = ({type, data, submit, card}) => {
         RedirectToLogin(navigate)
       }
       else if (resposta.status === 201 || resposta.status === 200){
-        type === 'edit' ? submit('edit', data) : submit('add', data)
+        type === 'edit' ? submit('edit', dados) : submit('add', dados)
         toast.success("Registro Atualizado com Sucesso!")
       }
     };

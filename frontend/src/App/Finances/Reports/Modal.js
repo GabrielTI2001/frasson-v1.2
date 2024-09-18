@@ -4,7 +4,6 @@ import api from '../../../context/data.js';
 import { GetRecord, HandleSearch } from '../../../helpers/Data.js';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { useAppContext } from '../../../Main.js';
 import {CardTitle} from '../../Pipeline/CardInfo.js';
 import { SkeletBig } from '../../../components/Custom/Skelet.js';
 import NavModal, { NavModalPagamento } from './Nav.js';
@@ -24,7 +23,6 @@ const ModalRecord = ({show, reducer}) => {
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [record, setRecord] = useState();
-  const {config: {theme}} = useAppContext();
   const [activeTab, setActiveTab] = useState('main');
   const [activities, setActivities] = useState();
   const fields = record && (record.status === 'AG' || record.status === 'PG' ? fieldsCobranca : fieldsCobranca.slice(0, 6))
@@ -215,7 +213,6 @@ export const ModalPagamento = ({show, reducer}) => {
   const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [record, setRecord] = useState();
-  const {config: {theme}} = useAppContext();
   const [activeTab, setActiveTab] = useState('main');
   const [activities, setActivities] = useState();
   const fields = record && (record.status !== 'AD' ? fieldsPagamentos : fieldsPagamentos.slice(0, 7))

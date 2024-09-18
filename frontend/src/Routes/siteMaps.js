@@ -102,13 +102,20 @@ export const ComercialRoutes = {
   icon: faCartPlus,
   children: [
     {
-      name: 'PVTEC',
+      name: '',
       active: true,
       children: [
         {
           name: 'PVTEC',
           icon: faFilter,
           to: '/comercial/pvtec',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Prospects',
+          icon: faHandshake,
+          to: '/pipeline/518984924',
           exact: true,
           active: true
         },
@@ -163,13 +170,6 @@ export const operacionalRoutes = {
       active: true,
       children: [
         {
-          name: 'Prospects',
-          icon: faHandshake,
-          to: '/pipeline/518984924',
-          exact: true,
-          active: true
-        },
-        {
           name: 'Gestão de Crédito',
           icon: faCartShopping,
           to: '/pipeline/518984721',
@@ -210,7 +210,7 @@ export const operacionalRoutes = {
           active: true
         },
         {
-          name: 'Alongamentos',
+          name: 'Alongamentos Custeios Agrícolas',
           icon2: 'Calendar2Check',
           to: '/alongamentos',
           exact: true,

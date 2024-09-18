@@ -179,3 +179,14 @@ export const fieldsPagamentos = [
   {name:'data_pagamento', label:'Data Pagamento', type:'date'},
   {name:'caixa', label:'Caixa Saída*', type:'select2', url:'finances/caixas', attr1:'nome', string:'str_caixa'},
 ]
+
+export const fieldsContrato = [
+  {name:'contratante', label:'Contratante*', type:'select2', url:'register/pessoal', attr1:'razao_social', 
+    attr2:'cpf_cnpj', data:'info_contratante', attr_data:'label'
+  },
+  {name:'servicos', label:'Serviços Contratados', type:'select2', url:'register/detalhamentos', attr1:'detalhamento_servico', 
+    list:'list_servicos', string:'label', ismulti:true
+  },
+  {name:'data_assinatura', label:'Data Assinatura', type:'date'},
+  {name:'detalhes', label:'Detalhes Negociação', type:'textarea', rows:3},
+]

@@ -6,6 +6,7 @@ import { Link } from "react-router-dom"
 import ModalDeleteCard from "../../components/Custom/ModalDeleteCard"
 import FormAlongamento from "../Alongamentos/Form"
 import Edit from "../Alongamentos/Edit"
+import CardInfo from "../Pipeline/CardInfo"
 
 const NavModal = ({record}) =>{
     return (
@@ -17,7 +18,7 @@ const NavModal = ({record}) =>{
         </Nav.Item>
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab mb-2 link-primary" eventKey="cedulas">
-                <FontAwesomeIcon icon={faFilePdf} className="me-1"/>Cédulas
+                <FontAwesomeIcon icon={faFilePdf} className="me-1"/>Anexos
             </Nav.Link>
         </Nav.Item>
         <Nav.Item>
@@ -43,9 +44,8 @@ export const Alongamentos = ({record, reducer}) =>{
     return (
         record.alongamento.alongamento_permission && 
         <>
-        <h6 className="fs-xs fw-bold mb-1 mt-0">Alongamentos</h6>
-        <hr className="mb-1 mt-1" />
         {!record.alongamento.along && <>
+            <hr className="mb-1 mt-1" />
             <div className="mb-1"><span className="fw-normal fs-xs">Operação sem alongamento</span></div>
             <div className='mt-0'><Link onClick={() => setModalForm({show:true, type:'add'})}>
                 <button className="btn btn-sm btn-primary shadow-none fw-semibold mb-1" style={{fontSize: '10px'}}>
@@ -53,21 +53,10 @@ export const Alongamentos = ({record, reducer}) =>{
                 </button>
             </Link></div>
         </>}
-        {record.alongamento.alongamento_id && <>
-            <div className="mb-1 fs--1 fw-normal">
-                <FontAwesomeIcon icon={faCircleCheck} className='me-2' />
-                Operação de alongamento no valor de <span className="fw-bold">{ record.alongamento.alongamento_total }</span>
-            </div>
-            <div className='mb-2 mt-0'>
-                <Link to={`${process.env.REACT_APP_API_URL}/alongamentos/pdf/${record.alongamento.alongamento_id}`}>
-                    <button className="btn btn-sm btn-warning shadow-none fw-semibold me-1" style={{fontSize: '10px'}}>
-                    <FontAwesomeIcon icon={faFilePdf} className='me-2' />Arquivo PDF</button>
-                </Link>
-                <Link onClick={() => setModalForm({show:true, type:'edit', id:record.alongamento.alongamento_id})}>
-                    <button className="btn btn-sm btn-info shadow-none fw-semibold" style={{fontSize: '10px'}}>
-                    <FontAwesomeIcon icon={faPenToSquare} className='me-2' />Editar Alongamento</button>
-                </Link>
-            </div></>
+        {record.alongamento.alongamento_id && 
+            <CardInfo data={record.alongamento} attr1={'alongamento_total'} pk={'alongamento_id'} 
+                url={'alongamentos'} title2={'teste'}
+            />
         }
         <Modal
             size="md"

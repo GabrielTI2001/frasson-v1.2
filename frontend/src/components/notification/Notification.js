@@ -9,8 +9,8 @@ const Notification = ({
   avatar,
   time,
   className,
-  unread,
-  flush,
+  unread=false,
+  flush=false,
   emoji,
   children
 }) => (
@@ -20,7 +20,7 @@ const Notification = ({
       { 'notification-unread': unread, 'notification-flush': flush },
       className
     )}
-    to="#!"
+    to=""
   >
     {avatar && (
       <div className="notification-avatar">
@@ -50,7 +50,5 @@ Notification.propTypes = {
   emoji: PropTypes.string,
   children: PropTypes.node
 };
-
-Notification.defaultProps = { unread: false, flush: false };
 
 export default Notification;

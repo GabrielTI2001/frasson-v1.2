@@ -2,14 +2,53 @@ import { useEffect, useState } from "react";
 import React from 'react';
 import { RetrieveRecord } from "../../helpers/Data";
 import {useNavigate, Link } from "react-router-dom";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, OverlayTrigger, Tooltip } from "react-bootstrap";
 import FormAlongamento from "./Form";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
+import ModalDelete from "../../components/Custom/ModalDelete";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCloudArrowDown, faFilePdf, faPen, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 
-const Edit = ({id, update}) => {
+const Edit = ({update, uuid}) => {
     const user = JSON.parse(localStorage.getItem("user"))
     const [alongamento, setAlongamento] = useState()
     const navigate = useNavigate();
+    const [modaldelete, setModalDelete] = useState({show:false, link:null})
+
+    const Click = (dados, type) =>{
+        if (type === 'download'){
+            const downloadFile = async (url) => {
+                const response = await fetch(url.url);
+                const blob = await response.blob();
+                const filename = url.name;
+                const link = document.createElement('a');
+                link.href = window.URL.createObjectURL(blob);
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            const filesToDownload = [
+                {url:`${process.env.REACT_APP_API_URL}/alongamentos/pdf/download/${dados}/1`, 
+                    name:`${alongamento.info_operacao.beneficiario} ${alongamento.info_operacao.numero_operacao} - page 1.pdf`},
+                {url:`${process.env.REACT_APP_API_URL}/alongamentos/pdf/download/${dados}/2`, 
+                    name:`${alongamento.info_operacao.beneficiario} ${alongamento.info_operacao.numero_operacao} - page 2.pdf`}
+            ];
+            if (alongamento.str_tipo_armazenagem === 'Silo Bag'){
+                filesToDownload.push({url:`${process.env.REACT_APP_API_URL}/alongamentos/pdf/download/${dados}/3`, 
+                name:`${alongamento.info_operacao.beneficiario} ${alongamento.info_operacao.numero_operacao} - page 3.pdf`})
+            }
+            // Itera sobre cada URL de arquivo e abre uma nova janela do navegador para fazer o download
+            filesToDownload.forEach(url => {
+                downloadFile(url)
+            });
+        }
+        if (type === 'delete'){
+            if ((user.permissions && user.permissions.indexOf("delete_operacoes_credito") !== -1) || user.is_superuser){
+                setModalDelete({show:true, link:`${process.env.REACT_APP_API_URL}/alongamentos/done/${dados}/`})
+            }
+        }
+    }
 
     const setter = (data) =>{
         setAlongamento(data)
@@ -22,7 +61,7 @@ const Edit = ({id, update}) => {
 
     useEffect(() =>{
         const getData = async () => {
-            const status = await RetrieveRecord(id, 'alongamentos/index', setter)
+            const status = await RetrieveRecord(uuid, 'alongamentos/done', setter)
             if(status === 401){
                 RedirectToLogin(navigate)
             }
@@ -65,8 +104,8 @@ const Edit = ({id, update}) => {
                 <strong className='me-1 d-block'>Taxa Juros (%)</strong>
                 <span className='my-1'>{alongamento.info_operacao.taxa_juros ? alongamento.info_operacao.taxa_juros : '-'}</span>
             </Col>
-            <Col className='mb-2'>
-                <strong className='me-1 d-block'>Nome Propriedade</strong>
+            <Col className='mb-2' xl={12}>
+                <strong className='me-1 d-block' style={{fontSize:'12px'}}>Nome Propriedade</strong>
                 <span className='my-1'>{alongamento.info_operacao.imovel ? alongamento.info_operacao.imovel : '-'}</span>
             </Col>
             <Col className='mb-2'>
@@ -91,10 +130,28 @@ const Edit = ({id, update}) => {
             </Col>
             
         </Row>
+        <div>
+            <OverlayTrigger overlay={
+                <Tooltip id="overlay-trigger-example">PDF Alongamento</Tooltip>
+            }>
+                <Link to={`${process.env.REACT_APP_API_URL}/alongamentos/pdf/${uuid}`}>
+                <FontAwesomeIcon icon={faFilePdf} className='text-danger me-2 cursor-pointer'/>
+                </Link>
+            </OverlayTrigger>
+
+            <OverlayTrigger overlay={
+                <Tooltip className='tooltip-a'>Download Páginas PDF</Tooltip>
+            }>
+                <FontAwesomeIcon icon={faCloudArrowDown} className='text-primary me-2 cursor-pointer' onClick={()=>{ Click(uuid, 'download')}}/>
+            </OverlayTrigger>
+            <FontAwesomeIcon icon={faTrashCan} className='text-danger me-2 cursor-pointer' onClick={()=>{ Click(uuid, 'delete')}}/>
+        </div>
         <hr className="my-1"></hr>
         <FormAlongamento hasLabel type='edit' data={alongamento} submit={submit}/>
+        <ModalDelete show={modaldelete.show} link={modaldelete.link} close={() => setModalDelete({...modaldelete, show:false})} update={update} />
         </>
     )}
+
     </>
     );
   };

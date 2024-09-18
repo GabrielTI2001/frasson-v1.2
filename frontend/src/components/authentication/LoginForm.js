@@ -36,7 +36,7 @@ const LoginForm = ({ hasLabel=false, layout='simple'}) => {
           localStorage.setItem('token', data.access);
           localStorage.setItem('user', JSON.stringify({id:data.user.id, is_superuser:data.user.is_superuser, 
             permissions: data.user.permissions}));
-          if (searchParams.get('next')){
+          if (searchParams.get('next') && searchParams.get('next') !== '/auth/login'){
             setIsLoad(true)
             navigate(`${searchParams.get('next')}`);
           }

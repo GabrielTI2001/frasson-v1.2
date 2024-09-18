@@ -2,7 +2,7 @@ import { faComment, faFilter, faMoneyBill, faPaperclip } from "@fortawesome/free
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Nav } from "react-bootstrap"
 
-const NavGai = ({card}) =>{
+const NavGai = ({card, acomp}) =>{
     return (
     <Nav variant="pills" className="flex-row fs--2 mb-3">
         <Nav.Item>
@@ -30,11 +30,13 @@ const NavGai = ({card}) =>{
                 <FontAwesomeIcon icon={faFilter} className="me-1"/>Prospects
             </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
-            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary mb-2" eventKey="cobrancas">
-                <FontAwesomeIcon icon={faMoneyBill} className="me-1"/>Cobranças
-            </Nav.Link>
-        </Nav.Item>
+        {card.contrato && 
+            <Nav.Item>
+                <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary mb-2" eventKey="cobrancas">
+                    <FontAwesomeIcon icon={faMoneyBill} className="me-1"/>Cobranças
+                </Nav.Link>
+            </Nav.Item>
+        }
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="analise">
                 <FontAwesomeIcon icon={faFilter} className="me-1"/>Análise e Processamento
@@ -55,11 +57,13 @@ const NavGai = ({card}) =>{
                 <FontAwesomeIcon icon={faFilter} className="me-1"/>Protocolo
             </Nav.Link>
         </Nav.Item>
-        <Nav.Item>
-            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="followup">
-                <FontAwesomeIcon icon={faFilter} className="me-1"/>Follow Up
-            </Nav.Link>
-        </Nav.Item>
+        {acomp && acomp.id &&
+            <Nav.Item>
+                <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="followup">
+                    <FontAwesomeIcon icon={faFilter} className="me-1"/>Follow Up
+                </Nav.Link>
+            </Nav.Item>
+        }
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="encerramento">
                 <FontAwesomeIcon icon={faFilter} className="me-1"/>Encerramento

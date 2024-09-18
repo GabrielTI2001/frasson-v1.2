@@ -10,7 +10,6 @@ import ModalDelete from '../../../components/Custom/ModalDelete';
 import FormCobranca from './Form';
 import { Link } from 'react-router-dom';
 import ExpandableCard from '../../../components/Custom/ExpandableCard';
-import EditForm from './EditForm';
 import {CardTitle} from '../CardInfo';
 import { fieldsCobranca } from '../../Finances/Data';
 import EditFormModal from '../../../components/Custom/EditForm';
@@ -18,7 +17,6 @@ import EditFormModal from '../../../components/Custom/EditForm';
 const fields = ['status', 'saldo_devedor', 'data_previsao']
 
 const Cobrancas = ({card, updatedactivity, isgc}) => {
-  const user = JSON.parse(localStorage.getItem('user'))
   const [cobrancas, setCobrancas] = useState();
   const {config: {theme, isRTL}} = useAppContext();
   const token = localStorage.getItem("token")

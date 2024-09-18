@@ -20,7 +20,7 @@ const Title = ({ titleTag: TitleTag, className, breakPoint, children }) => (
 const FalconCardHeader = ({
   title,
   light,
-  titleTag,
+  titleTag='h5',
   titleClass,
   className,
   breakPoint,
@@ -61,8 +61,6 @@ Title.propTypes = {
   className: PropTypes.string,
   children: PropTypes.node
 };
-
-Title.defaultProps = { titleTag: 'h5' };
 
 FalconCardHeader.propTypes = {
   title: PropTypes.node.isRequired,

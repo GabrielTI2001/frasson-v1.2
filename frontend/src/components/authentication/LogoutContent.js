@@ -7,7 +7,7 @@ import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
 import logoutImg from '../../assets/img/icons/spot-illustrations/45.png';
 import { useEffect } from 'react';
 
-const LogoutContent = ({ layout='simple', titleTag: TitleTag }) => {
+const LogoutContent = ({ layout='simple'}) => {
   const token = localStorage.getItem("token")
   const navigate = useNavigate();
   const [iniciado, setIniciado] = useState(false)
@@ -50,7 +50,7 @@ const LogoutContent = ({ layout='simple', titleTag: TitleTag }) => {
         alt="shield"
         width={100}
       />
-      <TitleTag>Vejo Você de Novo!</TitleTag>
+      <h1 className='fs-1'>Vejo Você de Novo!</h1>
       <p>
         Obrigado Por Usar Nossa Aplicação
       </p>

@@ -11,7 +11,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SubtleBadge from '../../../components/common/SubtleBadge';
 import { useAppContext } from '../../../Main';
-import CardInfo, {CardTitle, DropdownModal} from '../CardInfo';
+import CardInfo, {CardInfo2, CardTitle, DropdownModal} from '../CardInfo';
 import { TaskDropMenu } from './TaskCard';
 import { SkeletBig } from '../../../components/Custom/Skelet';
 import {Anexos} from '../Anexos';
@@ -21,8 +21,10 @@ import Cobrancas from '../Cobrancas/Index';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 import { fieldsFluxoGAI } from '../Data';
 import EditFormModal from '../../../components/Custom/EditForm';
+import IndexAcompGAI from '../FollowUp/Index';
+import IndexProtocolo from '../FollowUp/Protocolo';
 
-const KanbanModal = ({show, movercard}) => {
+const KanbanModalGAI = ({show, movercard}) => {
   const [showForm, setShowForm] = useState({});
   const {kanbanState: {kanbanModal}, kanbanDispatch} = useContext(PipeContext);
   const navigate = useNavigate()
@@ -30,6 +32,7 @@ const KanbanModal = ({show, movercard}) => {
   const {code} = useParams()
   const [card, setCard] = useState();
   const [activities, setActivities] = useState();
+  const [acomp, setAcomp] = useState();
   const {config: {theme}} = useAppContext();
   const [activeTab, setActiveTab] = useState('processo');
 
@@ -60,7 +63,11 @@ const KanbanModal = ({show, movercard}) => {
         }
         setCard(card)
         if (!activities){
-          HandleSearch('', 'pipeline/card-activities',(data) => {setActivities(data)}, `?fluxogai=${card.id}`)
+          const status = await HandleSearch('', 'pipeline/card-activities',(data) => {setActivities(data)}, `?fluxogai=${card.id}`)
+          if (status === 401){ RedirectToLogin(navigate) }
+        }
+        if (!acomp){
+          HandleSearch('', 'processes/followup/'+card.id, (data) => {setAcomp(data)})
         }
       }
     }
@@ -82,7 +89,7 @@ const KanbanModal = ({show, movercard}) => {
           type: 'UPDATE_TASK_CARD',
           payload: {
             updatedCard: {id: response.data.id, card:response.data.card, str_detalhamento:response.data.info_detalhamento.detalhamento_servico,
-              str_beneficiario:response.data.list_beneficiario[0].razao_social, created_at: response.data.created_at, code: response.data.code,
+              str_beneficiario:response.data.list_beneficiario.razao_social, created_at: response.data.created_at, code: response.data.code,
               prioridade:response.data.prioridade, list_responsaveis: response.data.list_responsaveis, data_vencimento: response.data.data_vencimento,
               str_instituicao:response.data.info_instituicao.razao_social
             },
@@ -100,6 +107,9 @@ const KanbanModal = ({show, movercard}) => {
       .catch((erro) => {
         if (erro.response.status === 400){
           toast.error(Object.values(erro.response.data)[0][0])
+        }
+        if (erro.response.status === 401){
+          RedirectToLogin(navigate)
         }
         console.error('erro: '+erro);
       })
@@ -132,7 +142,7 @@ const KanbanModal = ({show, movercard}) => {
               </div>
               <DropdownModal card={card} handleSubmit={handleSubmit} handleEdit={handleEdit}/>
               <Tab.Container id="left-tabs-example" defaultActiveKey="processo" onSelect={handleTabSelect}>
-                  <NavGai card={card} />
+                  <NavGai card={card} acomp={acomp}/>
                   <Tab.Content>
                     <Tab.Pane eventKey="processo">
                       <h5 className="mb-0 fs-0 mt-3 fw-bold">Informações do Processo</h5>
@@ -151,9 +161,13 @@ const KanbanModal = ({show, movercard}) => {
                             <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
                               <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
                               {f.type === 'select2' ? 
-                                  <CardInfo data={card[f.data]} attr1={f.attr1} attr2={f.attr2}  key={card[f.data].uuid} 
-                                    url={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.url}
-                                  />
+                                <CardInfo2 data={card[f.data]} title={card[f.data][f.attr1]} key={card[f.data] && card[f.data].uuid} 
+                                  title2={card[f.data][f.attr2]} urlapi={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.urlapi} 
+                                  url={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.url}
+                                />
+                                  // <CardInfo data={card[f.data]} attr1={f.attr1} attr2={f.attr2}  key={card[f.data] && card[f.data].uuid} 
+                                  //   url={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.urlapi}
+                                  // />
                               : f.type === 'date' ? 
                                 <div className="fs--1 row-10">{card[f.name] ? new Date(card[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
                               : 
@@ -199,6 +213,16 @@ const KanbanModal = ({show, movercard}) => {
                         <Cobrancas card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
                       }
                     </Tab.Pane>
+                    <Tab.Pane eventKey="protocolo">
+                      {activeTab === 'protocolo' && 
+                        <IndexProtocolo card={card} updatedactivity={(a) => setActivities([a, ...activities])} currentacomp={acomp} setter={setAcomp}/>
+                      }
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="followup">
+                      {activeTab === 'followup' && 
+                        <IndexAcompGAI card={card} updatedactivity={(a) => setActivities([a, ...activities])} currentacomp={acomp} setter={setAcomp}/>
+                      }
+                    </Tab.Pane>
                   </Tab.Content>
               </Tab.Container></>
             : kanbanModal.show &&
@@ -233,4 +257,4 @@ const KanbanModal = ({show, movercard}) => {
   );
 }
 
-export default KanbanModal;
+export default KanbanModalGAI;

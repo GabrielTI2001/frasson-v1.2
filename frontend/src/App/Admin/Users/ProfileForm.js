@@ -13,12 +13,11 @@ import Avatar from '../../../components/common/Avatar';
 const ProfileForm = ({hasLabel, type}) => {
     const {profileState, profileDispatch} = useContext(ProfileContext)
     const [formData, setFormData] = useState();
-    console.log(profileState)
     const [message, setMessage] = useState()
     const navigate = useNavigate();
-
+    
     const handleApi = async (dadosform) => {
-      const {resposta, dados} = await sendData({type:'edit', url:'users/profile', keyfield: profileState.perfil.user, 
+      const {resposta, dados} = await sendData({type:'edit', url:'users/profile', keyfield: profileState.perfil && profileState.perfil.user, 
         dadosform:dadosform, is_json:false
       })
       if(resposta.status === 400){
@@ -49,7 +48,6 @@ const ProfileForm = ({hasLabel, type}) => {
           [e.target.name]: e.target.files[0]
         });
     };
-
     
     const handleFieldChange = e => {
         setFormData({
@@ -59,17 +57,24 @@ const ProfileForm = ({hasLabel, type}) => {
     };
 
     useEffect(() => {
-      const {avatar, ...rest} = profileState.perfil;
-      setFormData({...rest})
+      if (profileState){
+        const {avatar, ...rest} = profileState.perfil;
+        setFormData({...rest})
+      }
+      else{
+        RedirectToLogin(navigate)
+      }
+
     }, [profileState])
 
-    return (<>
+    return (profileState && 
+    <>
       <CustomBreadcrumb>
         <span className="breadcrumb-item fw-bold" aria-current="page">
           Usuário
         </span>   
         <span className="breadcrumb-item fw-bold" aria-current="page">
-          {profileState && profileState.perfil.first_name} {profileState && profileState.perfil.last_name}
+          {profileState.perfil.first_name} {profileState.perfil.last_name}
         </span> 
         <span className="breadcrumb-item fw-bold" aria-current="page">
           Editar Perfil
@@ -77,7 +82,7 @@ const ProfileForm = ({hasLabel, type}) => {
       </CustomBreadcrumb>
       <Row className="gx-3">
         <Col xl='auto'>
-          <Avatar src={`${profileState.perfil.avatar}`} size={'3xl'}/>
+          <Avatar src={`${profileState.perfil && profileState.perfil.avatar}`} size={'3xl'}/>
         </Col>
         <Col className="d-flex flex-column justify-content-center">
           {profileState && <h5 className="fw-bold fs-0">{profileState.perfil.first_name} {profileState.perfil.last_name}</h5>}
@@ -97,7 +102,8 @@ const ProfileForm = ({hasLabel, type}) => {
       </Form>
       <hr></hr>
       <Link to={'/auth/password/change'} className="btn btn-primary fs--2">Redefinir Senha</Link>
-    </>);
+    </>
+  );
 }
 
 export default ProfileForm;

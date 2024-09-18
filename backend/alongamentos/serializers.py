@@ -1,5 +1,17 @@
 from rest_framework import serializers
 from .models import Cadastro_Alongamentos, Produto_Agricola, Tipo_Armazenagem, Tipo_Classificacao
+from credit.models import Operacoes_Contratadas
+
+class listOperacoesNext(serializers.ModelSerializer):
+    str_beneficiario = serializers.CharField(source='beneficiario.razao_social', read_only=True)
+    name_item = serializers.CharField(source='item_financiado.item', required=False, read_only=True)
+    data_inicio = serializers.DateTimeField(read_only=True)
+    data_limite = serializers.DateTimeField(read_only=True)
+    dias_ate_limite = serializers.IntegerField(read_only=True)
+    class Meta:
+        model = Operacoes_Contratadas
+        fields = ['id', 'uuid', 'data_limite', 'numero_operacao', 'str_beneficiario', 'name_item', 'data_primeiro_vencimento', 
+            'data_prod_armazenado',  'valor_operacao', 'data_inicio', 'dias_ate_limite']
 
 class ListAlongamentos(serializers.ModelSerializer):
     beneficiario = serializers.CharField(source='operacao.beneficiario.razao_social', read_only=True)

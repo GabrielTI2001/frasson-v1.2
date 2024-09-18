@@ -419,7 +419,6 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
         filtered_servicos_etapas = [item for item in servicos_etapas if json.loads(item).get('dados')]
         if len(filtered_servicos_etapas) < len(request.POST.getlist('servicos')):
             return Response({'non_fields_errors':'Cadastre pelo menos uma etapa de pagamento para cada serviço'}, status=status.HTTP_400_BAD_REQUEST)
-        
         total_percentages = {}
         for s in filtered_servicos_etapas:
             reg = json.loads(s)
@@ -487,28 +486,25 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
                         for e in reg['dados']:
                             search = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=contrato.id, servico_id=reg['servico'], 
                                 etapa=e['etapa'])
-                            if search.filter(percentual=e['percentual']).exists():
-                                pass
+                            cobrancas = Cobrancas.objects.filter(etapa_ambiental__etapa=e['etapa'], 
+                                etapa_ambiental__servico_id=reg['servico'], etapa_ambiental__contrato_id=contrato.id
+                            )
+                            if cobrancas.exists():
+                                str_servico = cobrancas[0].etapa_ambiental.servico.detalhamento_servico
+                                msg = f'Existem cobranças vinculadas a etapas de "{str_servico}". Exclua as cobranças vinculadas para poder alterá-las.'
+                                transaction.set_rollback(True)
+                                return Response({'non_fields_errors':msg}, 
+                                    status=status.HTTP_400_BAD_REQUEST)
                             else:
-                                cobrancas = Cobrancas.objects.filter(etapa_ambiental__etapa=e['etapa'], 
-                                    etapa_ambiental__servico_id=reg['servico'], etapa_ambiental__contrato_id=contrato.id
-                                )
-                                if cobrancas.exists():
-                                    str_servico = cobrancas[0].etapa_ambiental.servico.detalhamento_servico
-                                    msg = f'Existem cobranças vinculadas a etapas de "{str_servico}". Exclua as cobranças vinculadas para poder alterá-las.'
-                                    transaction.set_rollback(True)
-                                    return Response({'non_fields_errors':msg}, 
-                                        status=status.HTTP_400_BAD_REQUEST)
+                                if search.exists():
+                                    search.update(**{'percentual': e['percentual'], 'valor': e['valor'],
+                                        'contrato_id':contrato.id, 'servico_id':reg['servico'],'etapa':e['etapa']
+                                    })
                                 else:
-                                    if search.exists():
-                                        search.update(**{'percentual': e['percentual'], 'valor': e['valor'],
-                                            'contrato_id':contrato.id, 'servico_id':reg['servico'],'etapa':e['etapa']
-                                        })
-                                    else:
-                                        Contratos_Ambiental_Pagamentos.objects.create(
-                                            contrato_id=contrato.id, servico_id=reg['servico'], etapa=e['etapa'],
-                                            percentual= e['percentual'], valor= e['valor'],
-                                        )
+                                    Contratos_Ambiental_Pagamentos.objects.create(
+                                        contrato_id=contrato.id, servico_id=reg['servico'], etapa=e['etapa'],
+                                        percentual= e['percentual'], valor= e['valor'],
+                                    )
                     else: 
                         for e in reg['dados']:
                             ser = serContratosPagamentosAmbiental(data={'servico':reg["servico"], 'etapa':e['etapa'], 'percentual':e['percentual'],
@@ -531,10 +527,168 @@ class ContratoAmbientalView(viewsets.ModelViewSet):
                 return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class ContratosPagamentosAmbientalView(viewsets.ModelViewSet):
     serializer_class = serContratosPagamentosAmbiental
     queryset = Contratos_Ambiental_Pagamentos.objects.all()
+
+class ContratoCreditoView(viewsets.ModelViewSet):
+    serializer_class = detailContratoCredito
+    queryset = Contratos_Credito.objects.all()
+    lookup_field = 'uuid'
+    parser_classes = (MultiPartParser, FormParser)
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return listContratoCredito
+        else:
+            return self.serializer_class
+    def list(self, request, *args, **kwargs):
+        search = self.request.query_params.get('search', None)
+        subquery = Cobrancas.objects.filter(etapa_ambiental__contrato_id=OuterRef('id')).values('etapa_credito__contrato_id').annotate(
+            num_cobrancas=Count('id')).values('num_cobrancas')[:1]
+        subquery2 = Cobrancas.objects.filter(etapa_ambiental__contrato_id=OuterRef('id'), status='PG').values('etapa_credito__contrato_id').annotate(
+            num_cobrancas=Count('id')).values('num_cobrancas')[:1]
+        subquery3 = Contratos_Credito_Pagamentos.objects.filter(contrato_id=OuterRef('id')).values('contrato_id').annotate(
+            total=Count('id')).values('total')[:1]
+        if search:
+            query_search = (Q(contratante__razao_social__icontains=search) | Q(servicos__detalhamento_servico__icontains=search)) 
+            queryset = Contratos_Credito.objects.filter(query_search).annotate(
+                total_cobrancas=Coalesce(Subquery(subquery, output_field=IntegerField()), 0),
+                total_pago=Coalesce(Subquery(subquery2, output_field=IntegerField()), 0),
+                total_formas=Coalesce(Subquery(subquery3, output_field=IntegerField()), 0),
+                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_pago')) & Q(total_cobrancas=F('total_formas'))),
+                    then=Value('Finalizado')), default=Value('Em Andamento'))
+            ).distinct().order_by('-created_at')
+        else:
+            query_search = Contratos_Credito.objects.all()
+            queryset = query_search.annotate(
+                total_cobrancas=Coalesce(Subquery(subquery, output_field=IntegerField()), 0),
+                total_pago=Coalesce(Subquery(subquery2, output_field=IntegerField()), 0),
+                total_formas=Coalesce(Subquery(subquery3, output_field=IntegerField()), 0),
+                status=Case(When((Q(total_cobrancas__gt=0) & Q(total_pago=F('total_pago')) & Q(total_cobrancas=F('total_formas'))),
+                    then=Value('Finalizado')), default=Value('Em Andamento'))
+            ).order_by('-created_at')[:50]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        servicos_etapas = request.POST.getlist('servicos_etapas')
+        filtered_servicos_etapas = [item for item in servicos_etapas if json.loads(item).get('dados')]
+        if len(filtered_servicos_etapas) < len(request.POST.getlist('servicos')):
+            return Response({'non_fields_errors':'Cadastre pelo menos uma etapa de pagamento para cada serviço'}, status=status.HTTP_400_BAD_REQUEST)
+        total_percentages = {}
+        for s in filtered_servicos_etapas:
+            reg = json.loads(s)
+            if not reg['valor'] or reg['valor'] == 0:
+                return Response({'non_fields_errors': f'Defina o valor total do(s) serviço(s)'}, status=status.HTTP_400_BAD_REQUEST)
+            servico = reg['servico']
+            total_percentages[servico] = total_percentages.get(servico, 0) + sum(e['percentual'] for e in reg['dados'])
+        # Check if total percentage is 100% for each service
+        for servico, total in total_percentages.items():
+            if total != 100:
+                name_serv = Detalhamento_Servicos.objects.get(pk=servico).detalhamento_servico
+                return Response({'non_fields_errors': f'O total de percentual para o serviço "{name_serv}" deve ser 100%. Atual: {total}%'},
+                    status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            with transaction.atomic():
+                self.perform_create(serializer)
+                for s in servicos_etapas:
+                    reg = json.loads(s)
+                    for e in reg['dados']:
+                        ser = serContratosPagamentosCredito(data={'servico':reg["servico"], 'etapa':e['etapa'], 'percentual':e['percentual'],
+                            'valor':e['valor'], 'contrato':int(serializer.data['id'])})
+                        if ser.is_valid():
+                            ser.save()
+                        else:
+                            transaction.set_rollback(True)
+                            return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+                files = request.FILES.getlist('file')
+                if request.FILES:
+                    for i in files:
+                        Anexos.objects.create(contrato_credito=serializer.instance, uploaded_by_id=request.data['created_by'], file=i)
+                headers = self.get_success_headers(serializer.data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        servicos_list = list(instance.servicos.all().values_list('id', flat=True))  
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        servicos_etapas = request.POST.getlist('servicos_etapas')
+        if servicos_etapas:
+            filtered_servicos_etapas = [item for item in servicos_etapas if json.loads(item).get('dados')]
+            if len(filtered_servicos_etapas) < len(request.POST.getlist('servicos')):
+                return Response({'non_fields_errors':'Cadastre pelo menos uma etapa de pagamento para cada serviço'}, status=status.HTTP_400_BAD_REQUEST)
+            total_percentages = {}
+            for s in filtered_servicos_etapas:
+                reg = json.loads(s)
+                servico = reg['servico']
+                total_percentages[servico] = total_percentages.get(servico, 0) + sum(e['percentual'] for e in reg['dados'])
+            # Check if total percentage is 100% for each service
+            for servico, total in total_percentages.items():
+                if total != 100:
+                    name_serv = Detalhamento_Servicos.objects.get(pk=servico).detalhamento_servico
+                    return Response({'non_fields_errors': f'O total de percentual para o serviço "{name_serv}" deve ser 100%. Atual: {total}%'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+        if serializer.is_valid():
+            with transaction.atomic(): #faz as operações no DB serem reversíveis
+                contrato = serializer.save()  
+                Contratos_Credito_Pagamentos.objects.filter(contrato_id=instance.id).exclude(
+                    servico_id__in=[int(l) for l in request.POST.getlist('servicos')]).delete() #exlcui etapas de servicos antigos
+                for s in servicos_etapas:
+                    reg = json.loads(s)
+                    if reg['servico'] in servicos_list:
+                        Contratos_Credito_Pagamentos.objects.filter(contrato_id=instance.id, servico_id=reg['servico']).exclude(
+                            etapa__in=[e['etapa'] for e in reg['dados']]).delete()   
+                        for e in reg['dados']:
+                            search = Contratos_Credito_Pagamentos.objects.filter(contrato_id=contrato.id, servico_id=reg['servico'], 
+                                etapa=e['etapa'])
+                            if search.filter(percentual=e['percentual']).exists():
+                                pass
+                            else:
+                                cobrancas = Cobrancas.objects.filter(etapa_credito__etapa=e['etapa'], 
+                                    etapa_credito__servico_id=reg['servico'], etapa_credito__contrato_id=contrato.id
+                                )
+                                if cobrancas.exists():
+                                    str_servico = cobrancas[0].etapa_credito.servico.detalhamento_servico
+                                    msg = f'Existem cobranças vinculadas a etapas de "{str_servico}". Exclua as cobranças vinculadas para poder alterá-las.'
+                                    transaction.set_rollback(True)
+                                    return Response({'non_fields_errors':msg}, 
+                                        status=status.HTTP_400_BAD_REQUEST)
+                                else:
+                                    if search.exists():
+                                        search.update(**{'percentual': e['percentual'], 'valor': e['valor'],
+                                            'contrato_id':contrato.id, 'servico_id':reg['servico'],'etapa':e['etapa']
+                                        })
+                                    else:
+                                        Contratos_Credito_Pagamentos.objects.create(
+                                            contrato_id=contrato.id, servico_id=reg['servico'], etapa=e['etapa'],
+                                            percentual= e['percentual'], valor= e['valor'],
+                                        )
+                    else: 
+                        for e in reg['dados']:
+                            ser = serContratosPagamentosCredito(data={'servico':reg["servico"], 'etapa':e['etapa'], 'percentual':e['percentual'],
+                                'valor':e['valor'], 'contrato':contrato.id})
+                            if ser.is_valid():
+                                ser.save()
+                            else:
+                                transaction.set_rollback(True)
+                                return Response(ser.errors, status=status.HTTP_400_BAD_REQUEST)
+                activity = None
+                for key in fields_contratogai.keys():
+                    if key in request.POST:
+                        activity = Activities.objects.create(contrato_credito_id=instance.pk, type='ch', campo=fields_contratogai[key], 
+                            updated_by_id=request.data['user'])
+                headers = self.get_success_headers(serializer.data)
+                response_data = serializer.data.copy()
+                if activity:
+                    activity_serializer = serializerActivities(activity)
+                    response_data.update({'activity':activity_serializer.data if activity else None})
+                return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)         
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ContratosPagamentosCreditoView(viewsets.ModelViewSet):
+    serializer_class = serContratosPagamentosCredito
+    queryset = Contratos_Credito_Pagamentos.objects.all()
 
 class ActivityView(viewsets.ModelViewSet):
     queryset = Activities.objects.all().order_by('-created_at')
@@ -588,6 +742,10 @@ class AnexoView(viewsets.ModelViewSet):
                 })
             return Response(response_data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def etapas_contrato_ambiental(request, id):
+    etapas = Contratos_Ambiental_Pagamentos.objects.filter(contrato_id=id)
+    return JsonResponse([{'name':e.etapa} for e in etapas], safe=False)
 
 def index_dre_consolidado(request):
     #DRE CONSOLIDADO
@@ -662,8 +820,6 @@ def index_dre_consolidado(request):
         total_custos=Sum(Case(When(categoria__classification=class_custo, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_oper=Sum(Case(When(categoria__classification=class_desp_oper, then='valor_pagamento'), default=0, output_field=DecimalField())),
         total_desp_nao_oper=Sum(Case(When(categoria__classification=class_desp_nao_oper, then='valor_pagamento'), default=0, output_field=DecimalField())))
-    print(year)
-    print(Pagamentos.objects.filter(status='PG', data_pagamento__year=year))
     total_custos = query_total_despesas.get('total_custos', 0) or 0
     total_desp_oper = query_total_despesas.get('total_desp_oper', 0) or 0
     total_desp_nao_oper = query_total_despesas.get('total_desp_nao_oper', 0) or 0

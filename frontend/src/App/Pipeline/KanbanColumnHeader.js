@@ -26,22 +26,6 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       <h5 className="fs-0 mb-0">
         <span className='fs--1'>{title}</span> <span className="text-500 fs--1">({itemCount})</span>
       </h5>
-      <Dropdown align="end" className="font-sans-serif btn-reveal-trigger">
-        <Dropdown.Toggle variant="reveal" size="sm" className="py-0 px-2">
-          <FontAwesomeIcon icon="ellipsis-h" />
-        </Dropdown.Toggle>
-
-        <Dropdown.Menu className="py-0">
-          <Dropdown.Item onClick={() => setModalForm({show:true})}>Novo Card</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item
-            onClick={() => setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/fases/${id}/`})}
-            className="text-danger"
-          >
-            Remove
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
     </div>
 
     <ModalDelete show={modaldel.show} link={modaldel.link} update={handleRemoveColumn} close={() => setModaldel({show:false})}/>

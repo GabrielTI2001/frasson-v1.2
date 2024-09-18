@@ -19,6 +19,9 @@ import NavGai from './Nav';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 import { fieldsProspect } from '../Data';
 import EditFormModal from '../../../components/Custom/EditForm';
+import MinutaContrato from './MinutaContrato';
+import IndexAT from '../AnaliseTecnica/Index';
+import Encerramento from './Encerramento';
 
 const KanbanModal = ({show, movercard}) => {
   const [showForm, setShowForm] = useState({});
@@ -30,6 +33,7 @@ const KanbanModal = ({show, movercard}) => {
   const [activities, setActivities] = useState();
   const {config: {theme}} = useAppContext();
   const [activeTab, setActiveTab] = useState('processo');
+  const fields = card && card.phase === 89 ? fieldsProspect : fieldsProspect.slice(0, 5)
 
   const handleClose = () => {
     if (card){
@@ -58,7 +62,6 @@ const KanbanModal = ({show, movercard}) => {
         }
         setCard(reg)
         if (!activities){
-          console.log(reg)
           HandleSearch('', 'pipeline/card-activities',(data) => {setActivities(data)}, `?prospect=${reg.id}`)
         }
       }
@@ -81,7 +84,7 @@ const KanbanModal = ({show, movercard}) => {
           type: 'UPDATE_TASK_CARD',
           payload: {
             updatedCard: {id: response.data.id, str_produto:response.data.info_produto.description, 
-              str_cliente:response.data.info_cliente.razao_social, created_at: response.data.created_at, code: response.data.code,
+              nome:response.data.nome, created_at: response.data.created_at, code: response.data.code,
               list_responsaveis: response.data.list_responsaveis, data_vencimento: response.data.data_vencimento,
             },
             targetListId: card.phase,
@@ -124,35 +127,35 @@ const KanbanModal = ({show, movercard}) => {
           <Col className='border-1 pe-2 ps-3 overflow-auto modal-column-scroll' id='infocard' lg={5}>
             {card ? <>
               <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                {card.info_cliente && (
-                  <h4 className="mb-1 fs-1 fw-bold">{card.info_cliente.razao_social}</h4>
-                )}
+                <h4 className="mb-1 fs-1 fw-bold">{card.nome}</h4>
               </div>
               <DropdownModal card={card} handleSubmit={handleSubmit} handleEdit={handleEdit}/>
               <Tab.Container id="left-tabs-example" defaultActiveKey="processo" onSelect={handleTabSelect}>
                 <NavGai card={card} />
                   <Tab.Content>
                     <Tab.Pane eventKey="processo">
-                      <h5 className="mb-0 fs-0 mt-2 fw-bold">Informações do Processo</h5>
+                      <h5 className="mb-0 fs-0 mt-2 fw-bold">Informações do Prospect</h5>
                       <div className='text-secondary fs--2'>Criado por {card.str_created_by} em {' '}
                         {new Date(card.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
                         {' às '+new Date(card.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
                       </div>
                       <div className="rounded-top-lg pt-1 pb-0">
-                        <span className='fw-bold fs--1'>Processo</span>
+                        <span className='fw-bold fs--1'>Prospect</span>
                         <div className="fs--1 row-10">#{card.code}</div>
                       </div>
 
-                      {fieldsProspect.map(f => 
+                      {fields.map(f => 
                         !showForm[f.name] ?
                           <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
                             <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
                             {f.type === 'select2' ? 
-                                <CardInfo data={card[f.data]} attr1={f.attr1} 
-                                  attr2={f.attr2}  key={card[f.data].uuid} url={f.name !== 'produto' && f.url}
-                                />
+                              <CardInfo data={card[f.data]} attr1={f.attr1} 
+                                attr2={f.attr2}  key={card[f.data].uuid} url={f.name !== 'produto' && f.url}
+                              />
                             : f.type === 'date' ? 
                               <div className="fs--1 row-10">{card[f.name] ? new Date(card[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
+                            : f.type === 'dropdown' ?
+                              <div className="fs--1 row-10">{f.icon && f.icon[card[f.name]]} {card[f.string] || '-'}</div>
                             : 
                               <div className="fs--1 row-10">{card[f.name] || '-'}</div>}
                           </div>
@@ -185,6 +188,25 @@ const KanbanModal = ({show, movercard}) => {
                             link='pipeline/card-comments' param='prospect'
                           />
                         }
+                      </ModalMediaContent>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="minutacontrato">
+                      <ModalMediaContent title='Minuta de Contrato'> 
+                        {activeTab === 'minutacontrato' && 
+                          <MinutaContrato card={card} updatedactivity={(a) => setActivities([a, ...activities])} setcard={setCard}/>
+                         }
+                      </ModalMediaContent>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="analisetec">
+                      <ModalMediaContent title='Análse Técnica'> 
+                        {activeTab === 'analisetec' && <IndexAT card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>}
+                      </ModalMediaContent>
+                    </Tab.Pane>
+                    <Tab.Pane eventKey="encerramento">
+                      <ModalMediaContent title='Encerramento'> 
+                        {activeTab === 'encerramento' && 
+                          <Encerramento card={card} updatedactivity={(a) => setActivities([a, ...activities])} setcard={setCard}/>
+                         }
                       </ModalMediaContent>
                     </Tab.Pane>
                   </Tab.Content>

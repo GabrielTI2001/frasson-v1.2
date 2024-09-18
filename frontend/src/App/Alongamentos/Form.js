@@ -105,7 +105,7 @@ const FormAlongamento = ({ hasLabel, data, type, submit, operacao}) => {
           <Button className="w-50" type="submit" disabled={isLoading} >
             {isLoading 
               ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> 
-              : type === 'edit' ? 'Cadastrar' : 'Atualizar'+' Alongamento'
+              : type === 'edit' ? 'Atualizar' : 'Cadastrar'+' Alongamento'
             }
           </Button>
         </Form.Group>      

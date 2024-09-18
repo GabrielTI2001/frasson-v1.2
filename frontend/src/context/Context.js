@@ -15,7 +15,7 @@ export const AuthWizardContext = createContext({ user: {} });
 
 export const ChatContext = createContext();
 
-export const ProfileContext = createContext({profile:{}});
+export const ProfileContext = createContext();
 
 export const AmbientalContext = createContext({outorgas:[], appo:{}, outorga:{}});
 

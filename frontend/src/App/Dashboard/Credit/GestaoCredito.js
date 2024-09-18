@@ -3,7 +3,6 @@ import { Card, Row, Col, Modal, CloseButton, Placeholder} from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom";
 import { useAppContext } from "../../../Main";
 import { BarChart, ColumnChart, PieChart } from "../../../components/Custom/Charts";
-import IndexProdutos from "../../Pipefy/Produtos/Index";
 import { HandleSearch } from "../../../helpers/Data";
 import CustomBreadcrumb from "../../../components/Custom/Commom";
 
@@ -178,7 +177,7 @@ const DashGestaoCredito = () =>{
                 <CloseButton onClick={() => setModal({show:false})}/>
             </Modal.Header>
             <Modal.Body>
-                <IndexProdutos phasename={modal.fase} />
+                <></>
             </Modal.Body>
         </Modal>
         </>

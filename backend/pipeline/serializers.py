@@ -1,10 +1,8 @@
 from rest_framework import serializers
-from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, PVTEC, Acompanhamento_GAI, Atualizacoes_Acompanhamento_GAI, Fluxo_Prospects
-from .models import Phases_History, Card_Comments, Card_Activities, Card_Anexos, Status_Acompanhamento
+from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, PVTEC, Fluxo_Prospects, AnaliseTecnica
+from .models import Phases_History, Card_Comments, Card_Activities, Card_Anexos
+from finances.models import Contratos_Ambiental, Contratos_Credito
 from datetime import datetime
-from datetime import datetime, date, timedelta
-import locale
-from users.models import Profile
 
 def calcduration(first_in, last_in, last_to):
     if not last_to:
@@ -27,6 +25,7 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
     list_beneficiario = serializers.SerializerMethodField(read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
     history_fases_list = serializers.SerializerMethodField(read_only=True)
+    str_prioridade = serializers.CharField(source='prioridade', read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
@@ -38,6 +37,7 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
         else:
             for field_name, field in self.fields.items():
                 field.required = False
+                field.allow_empty = True
     def get_fases_list(self, obj):
         fases_list = [{'id':f.id, 'name':f.descricao} for f in Fase.objects.filter(pipe_id=obj.phase.pipe_id)]
         return fases_list
@@ -89,8 +89,8 @@ class serializerFluxoAmbiental(serializers.ModelSerializer):
         ]
         return list
     def validate_phase(self, value):
-        fase_anterior = self.instance.phase
-        if (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
+        fase_anterior = self.instance.phase if self.instance else None
+        if self.instance and (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
             raise serializers.ValidationError("Não é permitido mover para essa fase")
         return value
     def update(self, instance, validated_data):
@@ -123,15 +123,16 @@ class serializerFluxoProspects(serializers.ModelSerializer):
     str_fase = serializers.CharField(source='phase.descricao', read_only=True)
     str_created_by = serializers.SerializerMethodField(read_only=True)
     fases_list = serializers.SerializerMethodField(read_only=True)
-    info_cliente = serializers.SerializerMethodField(read_only=True)
     info_produto = serializers.SerializerMethodField(read_only=True)
+    info_contrato = serializers.SerializerMethodField(read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
     history_fases_list = serializers.SerializerMethodField(read_only=True)
+    str_prioridade = serializers.CharField(source='get_prioridade_display', read_only=True)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
             for field_name, field in self.fields.items():
-                if field_name in ['cliente', 'produto']:
+                if field_name in ['nome', 'produto', 'classificacao', 'descricao', 'prioridade']:
                     field.required = True
                 else:
                     field.required = False
@@ -143,9 +144,6 @@ class serializerFluxoProspects(serializers.ModelSerializer):
         return fases_list
     def get_str_created_by(self, obj):
         return obj.created_by.first_name+' '+obj.created_by.last_name
-    def get_info_cliente(self, obj):
-        c = obj.cliente
-        return {'id':c.id, 'uuid':c.uuid, 'razao_social':c.razao_social, 'cpf_cnpj':c.cpf_cnpj}
     def get_info_produto(self, obj):
         p = obj.produto
         return {'id':p.id, 'uuid':p.uuid, 'description':p.description, 'acronym':p.acronym}
@@ -161,10 +159,21 @@ class serializerFluxoProspects(serializers.ModelSerializer):
             for f in Phases_History.objects.filter(fluxo_prospect_id=obj.id)
         ]
         return list
+    def get_info_contrato(self, obj):
+        if obj.contrato_gai:
+            return {'uuid':obj.contrato_gai.uuid, 'cliente':obj.contrato_gai.contratante.id}
+        elif obj.contrato_gc:
+            return {'uuid':obj.contrato_gc.uuid, 'cliente':obj.contrato_gc.contratante.id}
+        else:
+            return None
     def validate_phase(self, value):
         fase_anterior = self.instance.phase if self.instance else None
         if fase_anterior and (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
-            raise serializers.ValidationError("Não é permitido mover para essa fase")
+            if fase_anterior.destinos_permitidos.all().count() > 1:
+                raise serializers.ValidationError("Não é permitido mover para essa fase")
+        contratos = self.instance.contrato_gc or self.instance.contrato_gai
+        if (fase_anterior and fase_anterior.id == 90) and (not contratos) and (value.id > 90):
+            raise serializers.ValidationError("Cadastre um Contrato")
         return value
     def update(self, instance, validated_data):
         responsaveis_data = validated_data.pop('responsaveis', [])
@@ -179,15 +188,15 @@ class serializerFluxoProspects(serializers.ModelSerializer):
 
 class listFluxoProspects(serializers.ModelSerializer):
     str_produto = serializers.CharField(source='produto.description', read_only=True)
-    str_cliente = serializers.CharField(source='cliente.razao_social', read_only=True)
     list_responsaveis = serializers.SerializerMethodField(read_only=True)
     str_fase = serializers.CharField(source='phase.descricao', read_only=True)
+    str_prioridade = serializers.CharField(source='get_prioridade_display', read_only=True)
     def get_list_responsaveis(self, obj):
         responsaveis = obj.responsaveis.all()
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
     class Meta:
         model = Fluxo_Prospects
-        fields = ['id', 'uuid', 'code', 'str_cliente', 'created_at', 'data_vencimento', 'list_responsaveis', 'str_produto', 'str_fase']
+        fields = ['id', 'uuid', 'code', 'nome', 'created_at', 'data_vencimento', 'list_responsaveis', 'str_produto', 'str_fase', 'str_prioridade']
 
 class serializerFase(serializers.ModelSerializer):
     fluxo_gestao_ambiental_set = listFluxoAmbiental(many=True, read_only=True, required=False)
@@ -205,7 +214,7 @@ class serializerFase(serializers.ModelSerializer):
 class listFase(serializers.ModelSerializer):
     list_destinos = serializers.SerializerMethodField(read_only=True, required=False)
     def get_list_destinos(self, obj):
-        destinos_permitidos = obj.destinos_permitidos.all()
+        destinos_permitidos = obj.destinos_permitidos.all() if len(obj.destinos_permitidos.all()) > 1 else Fase.objects.filter(pipe=obj.pipe_id)
         return [{'id':r.id, 'descricao':r.descricao} for r in destinos_permitidos]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -355,83 +364,28 @@ class listPVTEC(serializers.ModelSerializer):
         model = PVTEC
         fields = ['uuid', 'str_produto', 'str_cliente', 'str_detalhamento', 'str_responsaveis', 'atividade_display', 'info_status', 'status']
 
-class detailFollowup(serializers.ModelSerializer):
-    inema = serializers.SerializerMethodField(read_only=True)
-    acompanhamentos = serializers.SerializerMethodField(read_only=True)
-    fluxo_gai = serializers.SerializerMethodField(read_only=True)
-    def get_inema(self, obj):
-        processo_inema = Acompanhamento_GAI.objects.get(processo_id=obj.processo_id)
-        proxima_consulta = Atualizacoes_Acompanhamento_GAI.objects.filter(processo=processo_inema.id).order_by('-data', '-created_at').first() or None
-        data_formacao = processo_inema.data_formacao or None
-        dias_formado = date.today() - data_formacao if data_formacao is not None else '-'
-        num_dias_formado = dias_formado.days if data_formacao is not None else '-'
-        data_formacao_str = f"{datetime.strptime(str(data_formacao), '%Y-%m-%d').strftime('%d/%m/%Y')} (há {num_dias_formado}{' dias' if num_dias_formado > 1 else ' dia'})" if data_formacao is not None else '-'
-        inema = {
-            'id': processo_inema.id,
-            'requerimento': processo_inema.requerimento,
-            'data_requerimento': datetime.strptime(str(processo_inema.data_requerimento), '%Y-%m-%d').strftime("%d/%m/%Y"),
-            'data_enquadramento': datetime.strptime(str(processo_inema.data_enquadramento), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.data_enquadramento != None else '-',
-            'data_validacao': datetime.strptime(str(processo_inema.data_validacao), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.data_validacao != None else '-',
-            'valor_boleto': locale.format_string('%.0f', processo_inema.valor_boleto, True) if processo_inema.valor_boleto != None else '-',
-            'vencimento_boleto': datetime.strptime(str(processo_inema.vencimento_boleto), '%Y-%m-%d').strftime("%d/%m/%Y") if processo_inema.vencimento_boleto != None else '-',
-            'data_formacao': data_formacao_str,
-            'processo_inema': processo_inema.numero_processo if processo_inema.numero_processo != None else '-',
-            'processo_sei': processo_inema.processo_sei if processo_inema.processo_sei != None else '-',
-            'proxima_consulta': proxima_consulta.proxima_consulta.strftime("%d/%m/%Y") if proxima_consulta != None else '-'
-        }
-        return inema
-    def get_acompanhamentos(self, obj):
-        acompanhamentos_database = Atualizacoes_Acompanhamento_GAI.objects.filter(processo_id = obj.id).order_by('-data', '-created_at')
-        acompanhamentos = [{
-            'id': acomp.id,
-            'status': acomp.status.description,
-            'updated_at': acomp.updated_at,
-            'data': acomp.data.strftime("%d/%m/%Y") if acomp.data else '-',
-            'file': acomp.file.name if acomp.file else None,
-            'user': acomp.user.first_name,
-            'user_avatar': '/media/'+Profile.objects.get(user_id = acomp.user.id).avatar.name,
-            'description': acomp.detalhamento
-        } for acomp in acompanhamentos_database]
-        return acompanhamentos
-    def get_fluxo_gai(self, obj):
-        card_gai = Fluxo_Gestao_Ambiental.objects.get(pk=obj.processo_id)
-        pipefy = {
-            'id': card_gai.id,
-            'beneficiario': card_gai.beneficiario.razao_social,
-            'detalhamento': card_gai.detalhamento.detalhamento_servico,
-            'instituicao': card_gai.instituicao.instituicao.razao_social,
-            'current_phase': card_gai.phase.descricao,
-            'created_at': card_gai.created_at
-        }
-        return pipefy
-    class Meta:
-        model = Acompanhamento_GAI
-        fields = '__all__'
 
-class detailAcompanhamentoProcessos(serializers.ModelSerializer):
-    user_avatar = serializers.SerializerMethodField(read_only=True)
-    str_status = serializers.CharField(source='status.description', required=False, read_only=True)
+class detailAnaliseTecnica(serializers.ModelSerializer):
+    tipo_display = serializers.CharField(source='get_tipo_display', read_only=True)
+    str_created_by = serializers.SerializerMethodField(read_only=True)
+    def get_str_created_by(self, obj):
+        return obj.created_by.first_name+' '+obj.created_by.last_name
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field_name, field in self.fields.items():
-            if field_name in ['data', 'status']:
-                field.required = True
-    def get_user_avatar(self, obj):
-        return '/media/'+obj.user.profile.avatar.name
+        if not self.instance:
+            for field_name, field in self.fields.items():
+                if field_name in ['tipo']:
+                    field.required = True
+        else:
+            for field_name, field in self.fields.items():
+                field.required = False
+                field.allow_empty = True
     class Meta:
-        model = Atualizacoes_Acompanhamento_GAI
+        model = AnaliseTecnica
         fields = '__all__'
-    def save(self, **kwargs):
-        instance = super().save(**kwargs)
-        update_date = self.validated_data.get('data')
-        if update_date:
-            dias_proxima_consulta = 15
-            proxima_consulta = update_date + timedelta(days=dias_proxima_consulta)
-            instance.proxima_consulta = proxima_consulta
-            instance.save()
-        return instance
 
-class listStatus(serializers.ModelSerializer):
+class listAnaliseTecnica(serializers.ModelSerializer):
+    tipo_display = serializers.CharField(source='get_tipo_display', read_only=True)
     class Meta:
-        model = Status_Acompanhamento
-        fields = '__all__'
+        model = AnaliseTecnica
+        fields = ['uuid', 'tipo_display', 'observacoes', 'created_by']

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import AsyncSelect from 'react-select/async';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, Row } from 'react-bootstrap';
+import { Button, Form, Row, Spinner } from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
 import { SelectSearchOptions } from '../../../helpers/Data';
@@ -18,12 +18,13 @@ const EditForm = ({
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({user:user.id});
   const [defaultselected, setdefaultSelected] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef(null);
   const {config: {theme}} = useAppContext();
 
   useEffect(() => {
     if (show) {
-      let sel;
+      setIsLoading(false)
       switch(fieldkey){
         case 'responsaveis':
           const ids_resps = data.map(b => ({value: b.id, label: b.nome}));
@@ -46,7 +47,8 @@ const EditForm = ({
       >
         <Form
           onSubmit={e => {
-          e.preventDefault();
+            e.preventDefault();
+            setIsLoading(true)
             return handleSubmit(formData);
           }}
         >
@@ -115,10 +117,10 @@ const EditForm = ({
             <Button
               variant="primary"
               size="sm"
-              className="col col-auto me-1 ms-0"
-              type="submit"
+              className="col-auto me-1 ms-0"
+              type="submit" disabled={isLoading}
             >
-              <span>Atualizar</span>
+              {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Atualizar</span>}
             </Button>
             <Button
               variant="outline-secondary"

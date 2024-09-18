@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Flex from '../../components/common/Flex';
 import Avatar from '../../components/common/Avatar';
 import { Form, Button, Spinner } from 'react-bootstrap';
@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import ModalDelete from '../../components/Custom/ModalDelete';
 import { useNavigate } from 'react-router-dom';
 import { RedirectToLogin } from '../../Routes/PrivateRoute';
+import { ProfileContext } from '../../context/Context';
 
 export const renderComment = (comment) => {
   const parts = comment ? comment.split(/(\@\[[^\]]+\]\([^)]+\))/g) : [];
@@ -32,16 +33,19 @@ export const renderComment = (comment) => {
 
 
 const ModalCommentContent = ({card, updatedactivity, link, param}) => {
+  const {profileState, profileDispatch} = useContext(ProfileContext)
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({created_by:user.id, [param]:card.id});
   const [users, setUsers] = useState([]);
   const [comentarios, setComentarios] = useState();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate()
   const {config: {theme, isRTL}} = useAppContext();
   const token = localStorage.getItem("token")
   const [modaldel, setModaldel] = useState({show:false})
 
   const handlesubmit = (e) => {
+    setLoading(true)
     e.preventDefault(); 
     const filteredData = Object.entries(formData).filter(([key, value]) => value !== null).reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {});
     if (formData.text !== '' && formData.text !== null){
@@ -53,6 +57,7 @@ const ModalCommentContent = ({card, updatedactivity, link, param}) => {
         toast.success("Comentário adicionado com sucesso!")
       })
     }
+    setLoading(false)
   }
 
   const handledelete = (type, data) =>{
@@ -62,9 +67,12 @@ const ModalCommentContent = ({card, updatedactivity, link, param}) => {
   useEffect(() =>{
     const getusers = async () =>{
       if (!comentarios){
-        HandleSearch('', link,(data) => {setComentarios(data)}, `?${param}=${card.id}`)
+        const status = await HandleSearch('', link,(data) => {setComentarios(data)}, `?${param}=${card.id}`)
+        if (status === 401){
+          RedirectToLogin(navigate)
+        }
       }
-      const status = HandleSearch('', 'users/users',
+      const status = await HandleSearch('', 'users/users',
         (data) => {setUsers(data.map(r => ({'id':r.id, 'display':r.first_name+' '+r.last_name})))}, 
         `${card.pipe_code ? '?pipe='+card.pipe_code : ''}`
       )
@@ -75,22 +83,26 @@ const ModalCommentContent = ({card, updatedactivity, link, param}) => {
     getusers()
   },[])
 
+  const mentionStyle = {
+    color: '#0a7cf5', // Text color for the mention
+  };
+
   return (
     <>
       <Flex className='mb-4'>
-        <Avatar src="" className="me-2" size="l" />
-        <div className="flex-1 fs--1 px-3">
+        <Avatar src={profileState.perfil.avatar} className="me-2" size="l" />
+        <div className="flex-1 fs--1 pe-3 ps-0">
           <Form onSubmit={handlesubmit}>
             <div className="comment-box m-0 mb-2">
               <MentionsInput
                 value={formData.text || ''}
                 style={theme !== 'dark' ? mentionInputStyleLight : mentionInputStyleDark}
-                className="fs--1 border-1"
+                className="fs--1"
                 onChange={(event, newValue) => setFormData({...formData, text:newValue})}
               >
                 <Mention
                   trigger="@"
-                  data={users}
+                  data={users} style={mentionStyle}
                   appendSpaceOnAdd={true}
                   renderSuggestion={(suggestion, search, highlightedDisplay) => (
                     <div>{`${suggestion.display}`}</div>
@@ -100,7 +112,9 @@ const ModalCommentContent = ({card, updatedactivity, link, param}) => {
               </MentionsInput>
             </div>
             <div>
-              <Button type='submit' disabled={!formData.text}>Enviar</Button>
+              <Button type='submit' disabled={!formData.text || loading} className={`${loading && 'py-0'}`}>
+                {loading ? <Spinner size='sm' className='mx-3 mt-1' style={{height:'15px', width:'15px'}}/> : 'Enviar'}
+              </Button>
             </div>
           </Form>
         </div>

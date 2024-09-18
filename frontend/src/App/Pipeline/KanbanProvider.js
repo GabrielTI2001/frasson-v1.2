@@ -39,7 +39,6 @@ const KanbanProvider = ({ children, code }) => {
             fases: data.fase_set.map(f => ({...f, card_set:f[item]})),
             pipe: {code:data.code, pessoas:data.pessoas, descricao:data.descricao, id:data.id},
             kanbanModal: {show: false, modalContent: {}},
-            clientId:Math.floor(Math.random() * 1000000)
             // ... outras propriedades conforme necessário
           }
         });

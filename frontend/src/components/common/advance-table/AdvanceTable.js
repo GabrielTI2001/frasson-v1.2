@@ -106,7 +106,17 @@ const AdvanceTable = ({
                         <SubtleBadge bg={cell.value.color} className='fw-bold fs--2'>{cell.value.text}</SubtleBadge>
                       : cell.value 
                         ? (isDateTime(cell.value) 
-                          ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+' '+new Date(cell.value).toLocaleTimeString('pt-BR')
+                          ? (
+                            tableProps.nextalongamento ?
+                            <OverlayTrigger overlay={
+                              <Tooltip id="overlay-trigger-example">
+                                Em {row.original.dias_ate_limite} Dias
+                              </Tooltip>
+                            }>
+                              <span>{new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})}</span>
+                            </OverlayTrigger>
+                            : new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'})+' '+new Date(cell.value).toLocaleTimeString('pt-BR')
+                          )
                           : isDate(cell.value) 
                             ? new Date(cell.value).toLocaleDateString('pt-BR', {timeZone: 'UTC'}) 
                             : isDecimal(cell.value) 

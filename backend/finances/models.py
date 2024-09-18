@@ -36,77 +36,6 @@ class Caixas_Frasson(models.Model):
     def __str__(self):
         return self.nome
 
-class Contratos_Ambiental(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    code = models.BigIntegerField(unique=True, default=gerarcode)
-    contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
-    servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
-    detalhes = models.TextField(null=True, blank=True, verbose_name='Detalhe Negociação')
-    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    data_assinatura = models.DateField(null=True, blank=True, verbose_name='Data Assinatura')
-    pdf = models.FileField(upload_to='finances/contratos', null=True, blank=True, verbose_name='PDF Contrato')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Contratos Ambiental'
-    def __str__(self):
-        return self.contratante.razao_social
-    
-class Contratos_Ambiental_Pagamentos(models.Model):
-    CHOICES_ETAPAS = (
-        ("A", "Assinatura Contrato"),
-        ("P", "Protocolo"),
-        ("E", "Encerramento")
-    )
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    contrato = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True)
-    servico = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True)
-    etapa = models.CharField(max_length=1, choices=CHOICES_ETAPAS, null=True, verbose_name="Etapa Pagamento")
-    percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
-    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Contratos Ambiental - Forma Pagamento'
-    def __str__(self):
-        return self.contrato.contratante.razao_social
-
-class Contratos_Credito(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    code = models.BigIntegerField(unique=True, default=gerarcode)
-    contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
-    servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
-    detalhes = models.TextField(null=True, verbose_name='Detalhe Negociação')
-    percentual = models.DecimalField(max_digits=15, decimal_places=2, null=True)
-    data_assinatura = models.DateField(null=True, verbose_name='Data Assinatura')
-    data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
-    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
-    pdf = models.FileField(upload_to='finances/contratos', null=True)
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Contratos Crédito'
-    def __str__(self):
-        return self.contratante.razao_social
-
-class Contratos_Credito_Pagamentos(models.Model):
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    contrato = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True)
-    servico = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True)
-    etapa = models.CharField(max_length=20, default='Encerramento', null=True, verbose_name="Etapa Pagamento")
-    percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
-    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Contratos Crédito - Forma Pagamento'
-    def __str__(self):
-        return self.contrato.contratante.razao_social
-
 class Categorias_Pagamentos(models.Model):
     CHOICES_CLASS = (
         ("COE", "Custo Operacional"),
@@ -232,6 +161,69 @@ class Pagamentos(models.Model):
     def __str__(self):
         return self.beneficiario.razao_social
 
+class Contratos_Ambiental(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
+    servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
+    detalhes = models.TextField(null=True, blank=True, verbose_name='Detalhe Negociação')
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True)
+    data_assinatura = models.DateField(null=True, blank=True, verbose_name='Data Assinatura')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Contratos Ambiental'
+    def __str__(self):
+        return self.contratante.razao_social
+    
+class Contratos_Ambiental_Pagamentos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    contrato = models.ForeignKey(Contratos_Ambiental, on_delete=models.CASCADE, null=True)
+    servico = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True)
+    etapa = models.CharField(max_length=100, null=True, verbose_name="Etapa Pagamento")
+    percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Contratos Ambiental - Forma Pagamento'
+    def __str__(self):
+        return self.contrato.contratante.razao_social
+
+class Contratos_Credito(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    contratante = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Contratante')
+    servicos = models.ManyToManyField(Detalhamento_Servicos, verbose_name='Serviços Contratados')
+    detalhes = models.TextField(null=True, verbose_name='Detalhe Negociação')
+    data_assinatura = models.DateField(null=True, verbose_name='Data Assinatura')
+    data_vencimento = models.DateField(null=True, verbose_name='Data Vencimento')
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Contratos Crédito'
+    def __str__(self):
+        return self.contratante.razao_social
+
+class Contratos_Credito_Pagamentos(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    contrato = models.ForeignKey(Contratos_Credito, on_delete=models.CASCADE, null=True)
+    servico = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True)
+    etapa = models.CharField(max_length=50, default='Encerramento', null=True, verbose_name="Etapa Pagamento")
+    percentual = models.DecimalField(max_digits=8, decimal_places=2, null=True, verbose_name="percentual")
+    valor = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Contratos Crédito - Forma Pagamento'
+    def __str__(self):
+        return self.contrato.contratante.razao_social
+
 class Cobrancas(models.Model):
     STATUS_CHOICES = (
         ("AD", "Aguardando Distribuição"), ("NT", "Notificação"), ("FT", "Faturamento"), ("AG", "Agendado"), ("PG", "Pago")
@@ -239,8 +231,8 @@ class Cobrancas(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
     cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
-    etapa_ambiental = models.ForeignKey(Contratos_Ambiental_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Etapa da Cobrança GAI')
-    etapa_credito = models.ForeignKey(Contratos_Credito_Pagamentos, on_delete=models.SET_NULL, null=True, verbose_name='Etapa da Cobrança GC')
+    etapa_ambiental = models.ForeignKey(Contratos_Ambiental_Pagamentos, on_delete=models.CASCADE, null=True, verbose_name='Etapa da Cobrança GAI')
+    etapa_credito = models.ForeignKey(Contratos_Credito_Pagamentos, on_delete=models.CASCADE, null=True, verbose_name='Etapa da Cobrança GC')
     detalhamento = models.ForeignKey(Detalhamento_Servicos, on_delete=models.SET_NULL, null=True, verbose_name='Detalhamento')
     valor_operacao = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Contratado')
     percentual_contratado = models.DecimalField(max_digits=5, decimal_places=2, null=True, verbose_name='Percentual Contratado')

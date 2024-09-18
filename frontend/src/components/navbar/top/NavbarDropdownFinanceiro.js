@@ -4,7 +4,7 @@ import { Nav, Row, Col } from 'react-bootstrap';
 import { getFlatRoutes } from '../../../helpers/utils';
 import NavbarNavLink from './NavbarNavLink';
 
-const NavbarDropdownFinanceiro = ({ items }) => {
+const NavbarDropdownFinanceiro = ({ items, closeDropdown }) => {
   const routes = getFlatRoutes(items);
   return (
     <Row>
@@ -14,7 +14,7 @@ const NavbarDropdownFinanceiro = ({ items }) => {
             <React.Fragment key={item.name}>
               <NavbarNavLink key={item.name} title={item.name}/>
               {item.children.map((li) =>(
-                <NavbarNavLink key={li.name} route={li} icon={li.icon} icon2={li.icon2}/>
+                <NavbarNavLink key={li.name} route={li} icon={li.icon} icon2={li.icon2} click={closeDropdown}/>
               ))}
             </React.Fragment>
           ))}

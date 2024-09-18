@@ -92,7 +92,8 @@ const ModalRecord = ({show, reducer}) => {
       })
       .catch((erro) => {
         if (erro.response.status === 400){
-          toast.error(erro.response.data.non_fields_errors, {autoClose:4000})
+          console.log(erro.response.data)
+          toast.error(erro.response.data.non_fields_errors[0], {autoClose:4000})
           setMessage(erro.response.data)
         }
         if (erro.response.status === 401){
@@ -110,7 +111,7 @@ const ModalRecord = ({show, reducer}) => {
       show={show}
       onHide={handleClose}
       contentClassName="border-0"
-      dialogClassName="mt-2 modal-custom modal-lm mb-0"
+      dialogClassName="mt-2 modal-custom modal-xl mb-0"
     >
       <div className="position-absolute d-flex top-0 end-0 mt-1 me-1" style={{ zIndex: 1000 }}>
         <DropMenu record={record} reducer={reducer}/>
@@ -124,7 +125,9 @@ const ModalRecord = ({show, reducer}) => {
           <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={4}>
             {record ? <>
               <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-2">
-                <h4 className="mb-1 fs-0 fw-bold">{record.str_beneficiario+' ('+record.numero_operacao+')'}</h4>
+                <h4 className="mb-1 fs-0 fw-bold">{record.str_beneficiario}</h4>
+                <h6 className="mb-1 fs--1 fw-bold">{record.str_item_financiado}</h6>
+                <h6 className="mb-1 fs--1 fw-bold">{Number(record.valor_operacao).toLocaleString('pt-br', {style:'currency', currency:'BRL'})}</h6>
               </div>
               <Tab.Container id="left-tabs-example" defaultActiveKey={activeTab} onSelect={handleTabSelect}>
                 <div className='ms-3 my-2'>
@@ -176,9 +179,13 @@ const ModalRecord = ({show, reducer}) => {
                         </ModalMediaContent>  
                     </Tab.Pane>
                     <Tab.Pane eventKey="alongamentos">
-                      <Alongamentos record={record} reducer={
-                        (alongamento) => {setRecord({...record, alongamento:{...record.alongamento, ...alongamento}}); setActiveTab('alongamentos')}
-                      }/>
+                      <ModalMediaContent title='Alongamentos'>
+                        <Alongamentos record={record} reducer={
+                          (alongamento) => {setRecord({...record, alongamento:{...record.alongamento, ...alongamento}}); 
+                            setActiveTab('alongamentos')
+                          }
+                        }/>
+                      </ModalMediaContent>
                     </Tab.Pane>
                   </Tab.Content>
                 </div>
@@ -194,10 +201,8 @@ const ModalRecord = ({show, reducer}) => {
               </div>
               <div className='align-items-center justify-content-between p-2 py-1 rounded-top d-flex' style={{backgroundColor: '#cee9f0'}}>
                 {record.coordenadas.length > 0 ? <>  
-                  <Link className='fs-0'
-                      to={`${process.env.REACT_APP_API_URL}/credit/kml/operacoes/${record.uuid}`}
-                  >
-                      <FontAwesomeIcon icon={faDownload} />
+                  <Link className='fs-0' to={`${process.env.REACT_APP_API_URL}/credit/kml/operacoes/${record.uuid}`}>
+                    <FontAwesomeIcon icon={faDownload} />
                   </Link>
                   </>
                   : <strong className="fs--1">Sem KML</strong>

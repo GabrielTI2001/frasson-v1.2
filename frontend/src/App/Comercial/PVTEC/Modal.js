@@ -107,7 +107,7 @@ const PVTECModal = ({show, reducer}) => {
       show={show}
       onHide={handleClose}
       contentClassName="border-0"
-      dialogClassName="mt-2 modal-custom modal-custom modal-lm mb-0"
+      dialogClassName="mt-2 modal-custom modal-custom modal-xl mb-0"
     >
       <div className="position-absolute d-flex top-0 end-0 mt-1 me-1" style={{ zIndex: 1000 }}>
         <DropMenu record={record}/>

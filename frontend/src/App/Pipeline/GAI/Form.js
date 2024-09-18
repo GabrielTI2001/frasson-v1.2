@@ -9,14 +9,14 @@ import { fieldsFluxoGAI } from '../Data';
 import RenderFields from '../../../components/Custom/RenderFields';
 
 const ProductForm = ({
-  onSubmit,
+  onSubmit, data,
   type,
   fase
 }) => {
   const {config: {theme}} = useAppContext();
   const { kanbanDispatch } = useContext(PipeContext);
   const user = JSON.parse(localStorage.getItem('user'))
-  const [formData, setFormData] = useState({phase:fase, created_by:user.id});
+  const [formData, setFormData] = useState({phase:fase, created_by:user.id, prioridade:'Alta', ...data});
   const [message, setMessage] = useState();
   const [isLoading, setIsloading] = useState();
   const token = localStorage.getItem("token")
@@ -42,7 +42,7 @@ const ProductForm = ({
             prioridade:response.data.prioridade, str_instituicao:response.data.info_instituicao.razao_social
           }}
         });
-        onSubmit()
+        onSubmit('add', response.data)
         toast.success("Card adicionado com sucesso!")
       })
       .catch((erro) => {
@@ -69,10 +69,11 @@ const ProductForm = ({
             return submit();
           }}
         >
-          <RenderFields fields={fieldsFluxoGAI} formData={formData}
+          <RenderFields fields={data ? fieldsFluxoGAI.filter(f => !Object.keys(data).some(k => k === f.name)) : fieldsFluxoGAI} 
+            formData={formData}
             changefield={handleFieldChange} hasLabel={true} message={message} setform={setFormData}
           />
-          <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Form.Group className={`mb-0 mt-3 pb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
             <Button className="w-50" type="submit" disabled={isLoading} >
               {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Cadastrar'}
             </Button>

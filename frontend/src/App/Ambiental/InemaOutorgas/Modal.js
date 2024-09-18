@@ -125,7 +125,8 @@ const ModalRecord = ({show, reducer}) => {
             <Col className='border-1 px-0 overflow-auto modal-column-scroll pe-2' id='infocard' lg={5}>
               {record ? <>
                 <div className="rounded-top-lg pt-1 pb-0 ps-3 mb-2">
-                  <h4 className="mb-1 fs-1 fw-bold">Portaria {record.numero_portaria} - {record.nome_requerente}</h4>
+                  <h4 className="mb-1 fs-1 fw-bold">Portaria {record.numero_portaria}</h4>
+                  <h6 className="mb-1 fs--1 fw-bold">{record.nome_requerente}</h6>
                 </div>
                 <Dropdown className='mb-2'>
                   <Dropdown.Toggle as={Nav}

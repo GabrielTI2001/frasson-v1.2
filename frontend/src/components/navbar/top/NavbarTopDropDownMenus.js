@@ -21,23 +21,25 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Flex from '../../common/Flex';
 import NavbarDropdownComercial from './NavbarDropdownComercial';
 import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
+import { useAppContext } from '../../../Main';
 
 const NavbarTopDropDownMenus = () => {
-  // const {
-  //   config: { navbarCollapsed, showBurgerMenu },
-  //   setConfig
-  // } = useAppContext();
+  const {
+    config: { navbarCollapsed, showBurgerMenu },
+    setConfig
+  } = useAppContext();
 
   const user = JSON.parse(localStorage.getItem("user"))
 
-  // const handleDropdownItemClick = () => {
-  //   if (navbarCollapsed) {
-  //     setConfig('navbarCollapsed', !navbarCollapsed);
-  //   }
-  //   if (showBurgerMenu) {
-  //     setConfig('showBurgerMenu', !showBurgerMenu);
-  //   }
-  // };
+  const handleDropdownItemClick = () => {
+    if (navbarCollapsed) {
+      setConfig('navbarCollapsed', !navbarCollapsed);
+    }
+    if (showBurgerMenu) {
+      setConfig('showBurgerMenu', !showBurgerMenu);
+    }
+  };
+
   return (
     <>
     {user && ((user.permissions && user.permissions.indexOf("ver_menu_operacional") !== -1) || user.is_superuser) &&
@@ -73,32 +75,32 @@ const NavbarTopDropDownMenus = () => {
         <span className="nav-link-icon d-flex align-items-center">
           <FontAwesomeIcon icon={ambientalRoutes.icon} />
         </span>
-        <NavbarDropdown title="Ambiental" c>
+        <NavbarDropdown title="Ambiental">
           <NavbarDropdownAmbiental items={ambientalRoutes.children} />
         </NavbarDropdown>
       </Flex>
     }
-      <Flex>
-        <span className="nav-link-icon d-flex align-items-center">
-          <FontAwesomeIcon icon={dashboardRoutes.icon} />
-        </span>
-        <NavbarDropdown title="Dashboards">
-          <NavbarDropdownCredito items={dashboardRoutes.children} key={2}/>
-        </NavbarDropdown>
-      </Flex>
-      <NavbarDropdown title="Serviços">
-        <NavbarDropdownServicos items={servicosRoutes.children} />
+    <Flex>
+      <span className="nav-link-icon d-flex align-items-center">
+        <FontAwesomeIcon icon={dashboardRoutes.icon} />
+      </span>
+      <NavbarDropdown title="Dashboards">
+        <NavbarDropdownCredito items={dashboardRoutes.children} key={2}/>
       </NavbarDropdown>
-      {user && ((user.permissions && user.permissions.indexOf("ver_menu_financeiro") !== -1) || user.is_superuser) &&
-        <NavbarDropdown title="Adm & Fin">
-          <NavbarDropdownFinanceiro items={financeiroRoutes.children} />
-        </NavbarDropdown>
-      }
-      {user.is_superuser && 
-        <NavbarDropdown title="Admin">
-          <NavbarDropdownAdmin items={adminRoutes.children} />
-        </NavbarDropdown>
-      }
+    </Flex>
+    <NavbarDropdown title="Serviços">
+      <NavbarDropdownServicos items={servicosRoutes.children} />
+    </NavbarDropdown>
+    {user && ((user.permissions && user.permissions.indexOf("ver_menu_financeiro") !== -1) || user.is_superuser) &&
+      <NavbarDropdown title="Adm & Fin">
+        <NavbarDropdownFinanceiro items={financeiroRoutes.children} />
+      </NavbarDropdown>
+    }
+    {user.is_superuser && 
+      <NavbarDropdown title="Admin">
+        <NavbarDropdownAdmin items={adminRoutes.children} />
+      </NavbarDropdown>
+    }
     </>
   );
 };

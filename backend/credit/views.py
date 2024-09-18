@@ -68,21 +68,21 @@ class OperacoesContratadasView(viewsets.ModelViewSet):
         docs = request.FILES.getlist('file')
         kml = request.FILES.get('kml')
         if serializer.is_valid():
-            docs_validos = 0
-            for i in docs:
-                ext = os.path.splitext(i.name)[1]
-                valid_extensions = ['.pdf']
-                if not ext.lower() in valid_extensions:
-                    return Response({'file': 'Os arquivos precisa, ser em formato PDF!'}, status=400)
-                filesize = i.size
-                if filesize > 8 * 1024 * 1024:  # 2 MB
-                    return Response({'file': 'O tamanho máximo do arquivo é 8 MB!'}, status=400)
-                docs_validos += 1
-            if docs_validos == len(docs):
-                self.perform_create(serializer)
-                for i in docs:
-                    Operacoes_Contratadas_Cedulas.objects.create(operacao=serializer.instance, upload_by=request.user, file=i)
             if kml:
+                docs_validos = 0
+                for i in docs:
+                    ext = os.path.splitext(i.name)[1]
+                    valid_extensions = ['.pdf']
+                    if not ext.lower() in valid_extensions:
+                        return Response({'file': 'Os arquivos precisa, ser em formato PDF!'}, status=400)
+                    filesize = i.size
+                    if filesize > 8 * 1024 * 1024:  # 2 MB
+                        return Response({'file': 'O tamanho máximo do arquivo é 8 MB!'}, status=400)
+                    docs_validos += 1
+                if docs_validos == len(docs):
+                    self.perform_create(serializer)
+                    for i in docs:
+                        Operacoes_Contratadas_Cedulas.objects.create(operacao=serializer.instance, upload_by=request.user, file=i)
                 ext = os.path.splitext(kml.name)[1]
                 valid_extensions = ['.kml']
                 if not ext.lower() in valid_extensions:

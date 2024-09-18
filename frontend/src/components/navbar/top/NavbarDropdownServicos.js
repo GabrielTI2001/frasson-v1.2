@@ -4,7 +4,7 @@ import { Nav, Row, Col } from 'react-bootstrap';
 import { getFlatRoutes } from '../../../helpers/utils';
 import NavbarNavLink from './NavbarNavLink';
 
-const NavbarDropdownServicos = ({ items }) => {
+const NavbarDropdownServicos = ({ items, closeDropdown }) => {
   const routes = getFlatRoutes(items);
 
   return (
@@ -12,7 +12,7 @@ const NavbarDropdownServicos = ({ items }) => {
       <Col xs={12} md={12}>
         <Nav className="flex-column">
           {routes.servicos.map(route => (
-            <NavbarNavLink key={route.name} route={route} icon={route.icon} icon2={route.icon2}/>
+            <NavbarNavLink key={route.name} route={route} icon={route.icon} icon2={route.icon2} click={closeDropdown}/>
           ))}
         </Nav>
       </Col>

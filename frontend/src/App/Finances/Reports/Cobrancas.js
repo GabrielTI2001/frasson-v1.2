@@ -1,11 +1,8 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Spinner, Table, Form, Modal, CloseButton, Tabs, Tab} from 'react-bootstrap';
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { useAppContext } from "../../../Main";
+import { Modal, CloseButton, Tabs, Tab} from 'react-bootstrap';
+import { useNavigate, useParams } from "react-router-dom";
 import { HandleSearch } from "../../../helpers/Data";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 import ModalRecord from "./Modal";
 import CobrançaForm from "./Form";

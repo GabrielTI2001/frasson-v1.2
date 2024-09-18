@@ -6,23 +6,20 @@ import { Droppable } from '@hello-pangea/dnd';
 import classNames from 'classnames';
 import { PipeContext } from '../../context/Context';
 
-const KanbanColumn = ({ kanbanColumnItem, item}) => {
+const KanbanColumn = ({ kanbanColumnItem, item, handleMouseDown}) => {
   const { id, descricao, card_set } = kanbanColumnItem;
-  const [showForm, setShowForm] = useState(false);
   const formViewRef = useRef(null);
-  const {
-    kanbanState: { fases}
-  } = useContext(PipeContext);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       formViewRef.current.scrollIntoView({ behavior: 'smooth' });
     }, 500);
     return clearTimeout(timeout);
-  }, [showForm]);
+  }, []);
 
   return (
-    <div className={classNames('kanban-column')}>
+    <div className={classNames('kanban-column')} onMouseDown={handleMouseDown} ref={containerRef}>
       <KanbanColumnHeader id={id} title={descricao} itemCount={kanbanColumnItem ? card_set.length : 0} />
       <Droppable droppableId={`${id}`} type="KANBAN">
         {provided => (
@@ -34,9 +31,9 @@ const KanbanColumn = ({ kanbanColumnItem, item}) => {
               className="kanban-items-container scrollbar"
             >
               {kanbanColumnItem && card_set && card_set.map((card, index) => (
-                !item ? <TaskCard key={card && card.id} index={index} task={card}/>
-                : item === 'prospect' ? <TaskCardProspect key={card && card.id} index={index} task={card} /> 
-                : <></>
+                item === 'gestao-credito' ? <></>
+                : item === 'prospect' ? card && <TaskCardProspect className='task-card' key={card.id} index={index} task={card} /> 
+                : card && <TaskCard className='task-card' key={card.id} index={index} task={card}/>
               ))}
               {provided.placeholder}
               <div ref={formViewRef}></div>

@@ -85,7 +85,7 @@ const TaskCardProspect = ({
     transform: isDragging ? 'rotate(-2deg)' : ''
   });
   return (
-    <Draggable draggableId={`task${task ? task.id : 1}`} index={index}>
+    <Draggable draggableId={`task${task.id}`} index={index}>
       {(provided, snapshot) => (
         <div
           ref={provided.innerRef}
@@ -106,7 +106,7 @@ const TaskCardProspect = ({
                 </SubtleBadge>
               }
               <div className='mb-1'>
-                <h4 className='fw-bold fs--1'>{task && (task.str_cliente || '-')}</h4>
+                <h4 className='fw-bold fs--1'>{task && (task.nome || '-')}</h4>
               </div>
               <div className='mb-1'>
                 <label className='mb-0 text-uppercase fs--2'>Processo</label><br></br>

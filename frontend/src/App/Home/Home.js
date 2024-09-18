@@ -3,10 +3,11 @@ import {ProfileContext} from '../../context/Context';
 import { Col, Row } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPenSquare, faPencilSquare } from '@fortawesome/free-solid-svg-icons';
+import { faPencilSquare } from '@fortawesome/free-solid-svg-icons';
 import { useAppContext } from '../../Main';
 import { GetRecord, HandleSearch } from '../../helpers/Data';
 import { RedirectToLogin } from '../../Routes/PrivateRoute';
+
 const Home = () => {
     const {profileState:{perfil}} = useContext(ProfileContext)
     const {config: {theme}} = useAppContext();
@@ -31,7 +32,7 @@ const Home = () => {
                 <Row className='mb-3 mt-2 gx-1'>
                     <Col xl='auto' sm='auto'>
                         <img className='p-0 rounded-circle me-0' style={{width: '40px', height: '40px'}} 
-                            src={`${process.env.REACT_APP_API_URL}/${perfil.avatar}`}
+                            src={`${perfil.avatar}`}
                         />
                     </Col>
                     <Col>

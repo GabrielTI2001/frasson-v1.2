@@ -105,7 +105,7 @@ const PVTEC = ({card, updatedactivity, isgc}) => {
       </span>
     }
     {pvtecs && pvtecs.filter(p => p.status === 'EA').length > 0 ? pvtecs.filter(p => p.status === 'EA').map(p =>
-      <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='pipeline/pvtec'
+      <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='comercial/pvtec'
         footer={`Criado por ${p.user.name} em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
         clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/pvtec/${p.uuid}/`})}}
@@ -174,7 +174,7 @@ const PVTEC = ({card, updatedactivity, isgc}) => {
       </span>
     }
     {pvtecs && pvtecs.filter(p => p.status === 'OK').map(p =>
-      <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='pipeline/pvtec'
+      <ExpandableCard data={p} attr1='atividade_display' key={p.id} url='comercial/pvtec'
         footer={`Criado em ${new Date(p.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", 
         timeZone:'UTC'})} às ${new Date(p.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}`}
         clickdelete={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/pipeline/pvtec/${p.uuid}/`})}}

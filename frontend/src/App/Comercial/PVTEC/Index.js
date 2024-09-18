@@ -58,6 +58,9 @@ const IndexPVTEC = () =>{
                 handleChange('')
             }
         }
+        if (activeTab === "my" && !searchResults){
+            handleChange('')
+        }
     },[uuid])
     
     return (<>

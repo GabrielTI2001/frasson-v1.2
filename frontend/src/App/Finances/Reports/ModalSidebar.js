@@ -51,12 +51,12 @@ export const ModalSidebarCobranca = ({card, move, reducer}) => {
           <Nav.Item className={`me-2 me-lg-0`}>
             {card.status === menu.value ?
               <hr className='my-1'></hr>
-            : Math.abs(actionMenu.find(m => m.value == card.status).index - menu.index) == 1 &&
+            : Math.abs(actionMenu.find(m => m.value === card.status).index - menu.index) === 1 &&
             <>
-              <Nav.Link className={`px-2 ${actionMenu.find(m => m.value == card.status).index > menu.index 
+              <Nav.Link className={`px-2 ${actionMenu.find(m => m.value === card.status).index > menu.index 
                 ? 'nav-link-secondary nav-not-hover' : ''}`} onClick={menu.click}
               >
-                <FontAwesomeIcon icon={actionMenu.find(m => m.value == card.status).index > menu.index ? faArrowLeft : faArrowRight} 
+                <FontAwesomeIcon icon={actionMenu.find(m => m.value === card.status).index > menu.index ? faArrowLeft : faArrowRight} 
                   className="me-2" 
                 />
               {menu.title.length > 16 ? menu.title.slice(0, 17)+'...' : menu.title}
@@ -114,12 +114,12 @@ const ModalSidebarPagamentos = ({card, move, reducer}) => {
           <Nav.Item className={`me-2 me-lg-0`}>
             {card.status === menu.value ?
               <hr className='my-1'></hr>
-            : Math.abs(actionMenu.find(m => m.value == card.status).index - menu.index) == 1 &&
+            : Math.abs(actionMenu.find(m => m.value === card.status).index - menu.index) === 1 &&
             <>
-              <Nav.Link className={`px-2 ${actionMenu.find(m => m.value == card.status).index > menu.index 
+              <Nav.Link className={`px-2 ${actionMenu.find(m => m.value === card.status).index > menu.index 
                 ? 'nav-link-secondary nav-not-hover' : ''}`} onClick={menu.click}
               >
-                <FontAwesomeIcon icon={actionMenu.find(m => m.value == card.status).index > menu.index ? faArrowLeft : faArrowRight} 
+                <FontAwesomeIcon icon={actionMenu.find(m => m.value === card.status).index > menu.index ? faArrowLeft : faArrowRight} 
                   className="me-2" 
                 />
               {menu.title.length > 16 ? menu.title.slice(0, 17)+'...' : menu.title}

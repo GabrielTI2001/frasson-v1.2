@@ -7,7 +7,7 @@ import { useAppContext } from '../../../Main';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as icons from 'react-bootstrap-icons';
 
-const NavbarNavLink = ({ title, route, icon, icon2 }) => {
+const NavbarNavLink = ({ title, route, icon, icon2, click }) => {
   const {
     config: { navbarCollapsed, showBurgerMenu },
     setConfig
@@ -25,6 +25,7 @@ const NavbarNavLink = ({ title, route, icon, icon2 }) => {
     if (showBurgerMenu) {
       setConfig('showBurgerMenu', !showBurgerMenu);
     }
+    click()
   };
   return (
     <Nav.Link

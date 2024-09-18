@@ -5,7 +5,7 @@ import locale
 from rest_framework.response import Response
 from django.db.models import Q
 from .models import Processos_Andamento, Acompanhamento_Processos, Status_Acompanhamento
-from pipeline.models import Fluxo_Gestao_Ambiental
+from pipeline.models import Fluxo_Gestao_Ambiental, Card_Anexos, Card_Activities
 from .serializers import detailFollowup, detailAcompanhamentoProcessos, listStatus
 from rest_framework.parsers import MultiPartParser, FormParser
 from datetime import date, datetime
@@ -23,7 +23,6 @@ class FollowupView(viewsets.ModelViewSet):
         produto_gai = 2
         phases_produtos = [65, 66, 64]
         search = request.GET.get('search')
-
         if search: # se existe algum parâmetro de busca, faz a busca
             query_search_andamento = (Q(requerimento=search) | Q(numero_processo=search) | Q(processo_sei=search))
             processo_andamento = Processos_Andamento.objects.filter(query_search_andamento).first()
@@ -184,16 +183,6 @@ class FollowupView(viewsets.ModelViewSet):
 
         if processo_inema != None:
             inema = {
-                'id': processo_inema.id,
-                'requerimento': processo_inema.requerimento,
-                'data_requerimento': processo_inema.data_requerimento,
-                'data_enquadramento': processo_inema.data_enquadramento,
-                'data_validacao': processo_inema.data_validacao,
-                'valor_boleto': processo_inema.valor_boleto,
-                'vencimento_boleto': processo_inema.vencimento_boleto,
-                'data_formacao': processo_inema.data_formacao,
-                'processo_inema': processo_inema.numero_processo,
-                'processo_sei': processo_inema.processo_sei,
                 'proxima_consulta': proxima_consulta.proxima_consulta if proxima_consulta else None
             }
         else:
@@ -205,24 +194,54 @@ class FollowupView(viewsets.ModelViewSet):
                 'id': acomp.id,
                 'status': acomp.status.description,
                 'updated_at': acomp.updated_at,
+                'proxima_consulta': acomp.proxima_consulta,
                 'data': acomp.data.strftime("%d/%m/%Y") if acomp.data else '-',
                 'file': acomp.file.name if acomp.file else None,
-                'user_name': acomp.user.first_name,
-                'user_avatar': 'media/'+Profile.objects.get(user_id=acomp.user.id).avatar.name,
+                'user_name': acomp.created_by.first_name,
+                'user_avatar': 'media/'+Profile.objects.get(user_id=acomp.created_by.id).avatar.name,
                 'description': acomp.detalhamento
             })
-        
-        response_data = {
-            'pipeline': pipeline, 
-            'inema': inema, 
-            'acompanhamentos': acompanhamentos
-        }
+        if processo_inema:
+            response_data = {
+                'pipeline': pipeline, 
+                'inema': inema, 
+                'acompanhamentos': acompanhamentos,
+                'id': processo_inema.id,
+                'requerimento': processo_inema.requerimento,
+                'data_requerimento': processo_inema.data_requerimento,
+                'data_enquadramento': processo_inema.data_enquadramento,
+                'data_validacao': processo_inema.data_validacao,
+                'valor_boleto': processo_inema.valor_boleto,
+                'vencimento_boleto': processo_inema.vencimento_boleto,
+                'data_formacao': processo_inema.data_formacao,
+                'processo_inema': processo_inema.numero_processo,
+                'processo_sei': processo_inema.processo_sei,
+            }
+        else:
+            response_data = { 'pipeline': pipeline, 'inema': inema, 'acompanhamentos': acompanhamentos}
         return Response(response_data)
 
 class AcompanhamentoView(viewsets.ModelViewSet):
     queryset = Acompanhamento_Processos.objects.all()
     serializer_class = detailAcompanhamentoProcessos
     parser_classes = (MultiPartParser, FormParser)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        files = request.FILES.getlist('file')
+        if serializer.is_valid():
+            processo = Processos_Andamento.objects.filter(processo_id=request.POST.get('fluxo_ambiental')).first()
+            if processo:
+                serializer.save(processo=processo)
+                Card_Activities.objects.create(fluxo_ambiental_id=request.POST.get('fluxo_ambiental'), type='ch', campo='Acompanhamentos', 
+                    updated_by_id=request.POST['created_by'])
+            else:
+                return Response({'non_fields_errors':'Protocolo não cadastrado'}, status=status.HTTP_400_BAD_REQUEST)
+            if request.FILES:
+                for i in files:
+                    Card_Anexos.objects.create(acomp_gai=serializer.instance, uploaded_by_id=request.POST['created_by'], file=i)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class StatusView(viewsets.ModelViewSet):
     queryset = Status_Acompanhamento.objects.all()

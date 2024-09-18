@@ -33,17 +33,19 @@ const ModalSidebar = ({card, pipe, move}) => {
     const result = {destination: {droppableId: id, index: 0}, source: {index: 0, droppableId: card.phase}, code:card.code}
     api.put(`pipeline/fluxos/${link}/${card.code}/`, {'phase':id, 'user':user.id}, {headers: {Authorization: `Bearer ${token}`}})
     .then((response) => {
-        move("movecardproduto", result, response.data.code)
-        toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
-        kanbanDispatch({
-          type: 'SET_DATA',
-          payload: {
-            fases:null, pipe:null
-          }
-        })
+      move("movecardproduto", result, response.data.code)
+      toast.success(`Card movido com sucesso para ${response.data.str_fase}`)
+      kanbanDispatch({
+        type: 'SET_DATA',
+        payload: {
+          fases:null, pipe:null
+        }
       })
+      navigate(`/pipeline/${pipe}`)
+      kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
+    })
     .catch((erro) => {
-      if (erro.status === 400){
+      if (erro.response.status === 400){
         toast.error(erro.response.data.phase[0])
       }
       if (erro.response.status === 401){
@@ -53,8 +55,6 @@ const ModalSidebar = ({card, pipe, move}) => {
       }
       console.error('erro: '+erro);
     })
-    navigate(`/pipeline/${pipe}`)
-    kanbanDispatch({ type: 'TOGGLE_KANBAN_MODAL' });
   };
 
   const handledelete = () =>{
@@ -117,7 +117,7 @@ const ModalSidebar = ({card, pipe, move}) => {
       }
 
       <Modal show={modal.show} onHide={() => setModal({show:false})} className="align-items-center"
-        dialogClassName="p-3"
+        dialogClassName="p-3" backdrop={false}
       >
         <Modal.Header className='border-bottom-0 pb-1'>
           <CloseButton onClick={() => setModal({show:false})} className='btn btn-sm btn-circle p-0'/>

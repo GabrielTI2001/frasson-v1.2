@@ -57,7 +57,10 @@ textarea:focus, input:focus{
   outline: none !important;
   box-shadow: none !important;
 }
-
+.comment-box * textarea:focus{
+  border: 1px solid #3c6a88 !important;
+  /* box-shadow: 0 0 3px rgba(73, 143, 190, 0.5); */
+}
 @media (min-width: 578px){
   .gap{
     cursor: pointer;
@@ -238,7 +241,7 @@ textarea:focus, input:focus{
 }
 
 .expandable-card.expanded .detailed-info {
-  max-height: 800px; /* Ajuste conforme necessário */
+  max-height: 2000px; /* Ajuste conforme necessário */
 }
 
 .dropzone-area {
@@ -263,4 +266,25 @@ button.gm-ui-hover-effect{
 }
 .modal-delete-card{
   background-color: rgba(100, 100, 100, 0.1);
+}
+.fs--1__highlighter strong{
+  z-index: 999;
+  position: relative;
+}
+.etiqueta-dropdown button{
+  box-shadow: none;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+.etiqueta-dropdown button:focus{
+  box-shadow: none !important;
+}
+.etiqueta-dropdown button:hover{
+  background-color: rgb(235, 235, 235) !important;
+}
+.etiqueta-dropdown button::after {
+  display: none !important;
+}
+.etiqueta-dropdown button::before {
+  display: none !important;
 }

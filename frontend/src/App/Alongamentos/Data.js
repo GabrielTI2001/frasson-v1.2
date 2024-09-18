@@ -1,92 +1,3 @@
-
-export const fetchProdutoAgricola = async (inputValue) => {
-  const token = localStorage.getItem("token")
-  const params = inputValue ? `search=${inputValue}` : ''
-  try {
-    const apiUrl = `${process.env.REACT_APP_API_URL}/alongamentos/produtos-agricolas/?${params}`;
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-    });
-    const dataapi = await response.json();
-    const options = dataapi.length > 0 ? dataapi.map(b =>({
-      value: b.id,
-      label: b.description
-    })) : []
-    return options
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error);
-  }
-};
-
-export const fetchAgenciasBancarias = async (inputValue) => {
-  const token = localStorage.getItem("token")
-  const params = inputValue ? `search=${inputValue}` : ''
-  try {
-    const apiUrl = `${process.env.REACT_APP_API_URL}/register/agencias-bancarias/?${params}`;
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-    });
-    const dataapi = await response.json();
-    const options = dataapi.length > 0 ? dataapi.map(b =>({
-      value: b.id,
-      label: b.descricao_agencia
-    })) : []
-    return options
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error);
-  }
-};
-
-export const fetchTipoArmazenagem = async (inputValue) => {
-  const token = localStorage.getItem("token")
-  const params = inputValue ? `search=${inputValue}` : ''
-  try {
-    const apiUrl = `${process.env.REACT_APP_API_URL}/alongamentos/tipo-armazenagem/?${params}`;
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-    });
-    const dataapi = await response.json();
-    const options = dataapi.length > 0 ? dataapi.map(b =>({
-      value: b.id,
-      label: b.description
-    })) : []
-    return options
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error);
-  }
-};
-
-export const fetchTipoClassificacao = async (inputValue) => {
-  const token = localStorage.getItem("token")
-  const params = inputValue ? `search=${inputValue}` : ''
-  try {
-    const apiUrl = `${process.env.REACT_APP_API_URL}/alongamentos/tipo-classificacao/?${params}`;
-    const response = await fetch(apiUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-    });
-    const dataapi = await response.json();
-    const options = dataapi.length > 0 ? dataapi.map(b =>({
-      value: b.id,
-      label: b.description
-    })) : []
-    return options
-  } catch (error) {
-    console.error('Erro ao carregar dados:', error);
-  }
-};
-
 export const columnsAlongamento = [
   {
     accessor: 'numero_operacao',
@@ -126,6 +37,44 @@ export const columnsAlongamento = [
   {
     accessor: 'valor_total',
     Header: 'Valor Along',
+    headerProps: { className: 'text-900 p-1' }
+  },
+];
+
+export const columnsNext = [
+  {
+    accessor: 'numero_operacao',
+    Header: 'N° Operação',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'str_beneficiario',
+    Header: 'Beneficiário',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'name_item',
+    Header: 'Item Financiado',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'valor_operacao',
+    Header: 'Valor (R$)',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'data_prod_armazenado',
+    Header: 'Prod. Armaz.',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'data_primeiro_vencimento',
+    Header: 'Primeiro Venc.',
+    headerProps: { className: 'text-900 p-1' }
+  },
+  {
+    accessor: 'data_limite',
+    Header: 'Data Limite',
     headerProps: { className: 'text-900 p-1' }
   },
 ];

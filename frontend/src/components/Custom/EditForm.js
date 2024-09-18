@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 import AsyncSelect from 'react-select/async';
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Form, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Button, Dropdown, Form, OverlayTrigger, Row, Spinner, Tooltip } from 'react-bootstrap';
 import { useAppContext } from '../../Main';
 import customStyles, {customStylesDark} from './SelectStyles';
 import { SelectSearchOptions } from '../../helpers/Data';
 import { useNavigate } from 'react-router-dom';
-import { faCircleQuestion } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faCircleQuestion, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ModalGMS from './ModalGMS';
 
@@ -19,6 +19,7 @@ const EditFormModal = ({
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({user:user.id});
   const [defaultselected, setdefaultSelected] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState({show:false, type:''})
   const inputRef = useRef(null);
   const {config: {theme}} = useAppContext();
@@ -26,10 +27,12 @@ const EditFormModal = ({
 
   useEffect(() => {
     if (show) {
+      setIsLoading(false)
       if (field.type === 'select2'){
         const option = field.ismulti ? record[field.list].map(d => ({value:d.value || d.id, label:d[field.string] || d.label})) 
         : {value: record[field.name], label: field.string ? record[field.string] : record[field.data] && record[field.data][field.attr_data ||field.attr1]}
         setdefaultSelected({...defaultselected, [field.name]:option})
+        setFormData({...formData, [field.name]:field.ismulti ? option.map(s => s.value) : option.value})
       }
       if (field.iscoordenada){
         setFormData({...formData, [field.name]:record[field.name]})
@@ -45,7 +48,8 @@ const EditFormModal = ({
       >
         <Form
           onSubmit={e => {
-          e.preventDefault();
+            setIsLoading(true);
+            e.preventDefault();
             return handleSubmit(formData);
           }}
         >
@@ -96,6 +100,30 @@ const EditFormModal = ({
               }
             </Form.Select>
           </>)
+          : field.type === 'dropdown' ? <>
+            <Form.Label className='mb-1 ms-1 d-block d-flex align-items-center'>
+              {field.icon && field.icon[record[field.name]]}{record[field.name] && field.options[record[field.name]]}
+            </Form.Label>
+            <Dropdown
+              drop={field.direction || 'down'}
+              className='me-2 mb-1 d-block etiqueta-dropdown w-25'
+              onSelect={(key) => setFormData({...formData, [field.name]:key})}
+            >
+              <Dropdown.Toggle variant='none'>
+                <span className='text-primary'><FontAwesomeIcon icon={faPlus} className='me-2'/>Selecionar</span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+              {field.options &&
+                  Object.keys(field.options).map(key => 
+                    <Dropdown.Item eventKey={key} className='d-flex align-items-center fs--1 justify-content-between'>
+                      <span>{field.icon && field.icon[key]} {field.options[key]}</span> 
+                      {formData[field.name] === key && <FontAwesomeIcon icon={faCheckCircle} className='text-primary'/>}
+                    </Dropdown.Item>
+                  )
+              }   
+              </Dropdown.Menu>
+            </Dropdown>
+          </>
           : field.type === 'file' ? <>
             <Form.Control
                 name={field.name}
@@ -131,9 +159,9 @@ const EditFormModal = ({
               variant="primary"
               size="sm"
               className="col col-auto ms-0 me-2"
-              type="submit"
+              type="submit" disabled={isLoading}
             >
-              <span>Atualizar</span>
+              {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Atualizar</span>}
             </Button>
             <Button
               variant="outline-secondary"

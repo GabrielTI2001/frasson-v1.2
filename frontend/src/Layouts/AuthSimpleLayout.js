@@ -13,7 +13,7 @@ const AuthSimpleLayout = () => {
         <Col sm={10} md={8} lg={6} xl={5} className="col-xxl-4">
           <Card>
             <Card.Body className="p-4 p-sm-5">
-              <Logo width={190} dark={theme === 'dark'} />
+              <Logo width={190} dark={theme === 'dark'} className='justify-content-center mb-3' />
               <Outlet />
             </Card.Body>
           </Card>

@@ -1,8 +1,6 @@
 from django.db import models
 from users.models import User, Profile
-from finances.models import Pagamentos, Cobrancas
-from cadastro.models import Cadastro_Pessoal, Instituicoes_Parceiras, Instituicoes_Razao_Social, Produtos_Frasson, Detalhamento_Servicos
-from finances.models import Contratos_Ambiental , Contratos_Credito
+from cadastro.models import Cadastro_Pessoal, Instituicoes_Parceiras, Produtos_Frasson, Detalhamento_Servicos
 import uuid, time, random, os
 from datetime import datetime, time as dtime, timedelta
 
@@ -24,7 +22,6 @@ class Pipe(models.Model):
     def __str__(self):
         return self.descricao
 
-
 class Fase(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     pipe = models.ForeignKey(Pipe, on_delete=models.CASCADE)
@@ -41,7 +38,35 @@ class Fase(models.Model):
         ordering = ['done', 'pk']
     def __str__(self):
         return self.descricao
-    
+
+
+from finances.models import Contratos_Ambiental, Pagamentos, Cobrancas, Contratos_Credito
+class Fluxo_Prospects(models.Model): 
+    CHOICES_PRIORIDADE = (('A','Alta'), ('M','Média'), ('B','Baixa'))
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    nome = models.CharField(max_length=255, null=True, verbose_name='Nome Prospect')
+    prioridade = models.CharField(max_length=2, choices=CHOICES_PRIORIDADE, null=True, verbose_name='Prioridade')
+    produto = models.ForeignKey(Produtos_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Produto')
+    classificacao = models.CharField(max_length=255, null=True, verbose_name='Classificação do Prospect')
+    descricao = models.TextField(null=True, verbose_name='Descrição')
+    proposta_inicial = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Proposta Inicial')
+    proposta_aprovada = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Proposta Aprovada')
+    percentual_inicial = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Inicial')
+    percentual_aprovado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Aprovado')
+    data_vencimento = models.DateTimeField(null=True, verbose_name='Data de Vencimento')
+    contrato_gc = models.ForeignKey(Contratos_Credito, on_delete=models.SET_NULL, null=True, verbose_name='Contrato GC')
+    contrato_gai = models.ForeignKey(Contratos_Ambiental, on_delete=models.SET_NULL, null=True, verbose_name='Contrato GAI')
+    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase Atual')
+    responsaveis = models.ManyToManyField(User, verbose_name='Responsáveis', related_name='responsaveisprospect')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Fluxo Prospect'
+    def __str__(self):
+        return self.nome
+
 class Fluxo_Gestao_Ambiental(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
@@ -82,29 +107,6 @@ class Fluxo_Gestao_Credito(models.Model):
     def __str__(self):
         return self.detalhamento.detalhamento_servico
         
-class Fluxo_Prospects(models.Model): 
-    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    code = models.BigIntegerField(unique=True, default=gerarcode)
-    cliente = models.ForeignKey(Cadastro_Pessoal, on_delete=models.SET_NULL, null=True, verbose_name='Cliente')
-    produto = models.ForeignKey(Produtos_Frasson, on_delete=models.SET_NULL, null=True, verbose_name='Produto')
-    classificacao = models.CharField(max_length=255, null=True, verbose_name='Classificação do Prospect')
-    origem = models.CharField(max_length=255, null=True, verbose_name='Origem do Prospect')
-    proposta_inicial = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Proposta Inicial')
-    proposta_aprovada = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Proposta Aprovada')
-    percentual_inicial = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Inicial')
-    percentual_aprovado = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Percentual Aprovado')
-    data_vencimento = models.DateTimeField(null=True, verbose_name='Data de Vencimento')
-    phase = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase Atual')
-    responsaveis = models.ManyToManyField(User, verbose_name='Responsáveis', related_name='responsaveisprospect')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Fluxo Prospect'
-    def __str__(self):
-        return self.cliente.razao_social
-
-
 class Phases_History(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     code = models.BigIntegerField(unique=True, default=gerarcode)
@@ -150,6 +152,21 @@ class PVTEC(models.Model):
         self.data_vencimento = data_e_hora_vencimento
         super().save(*args, **kwargs)
 
+class AnaliseTecnica(models.Model): 
+    TIPOS_CHOICES = (('LC', 'Levantamento de Campo'), ('PA','Procedimentos Alternativos'), ('AT','Análise Técnica'))
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    code = models.BigIntegerField(unique=True, default=gerarcode)
+    fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Fluxo Prospect')
+    phase_origem = models.ForeignKey(Fase, on_delete=models.CASCADE, null=True, verbose_name='Fase Origem')
+    observacoes = models.TextField(null=True, verbose_name='Observações')
+    tipo = models.CharField(choices=TIPOS_CHOICES, default='EA', max_length=3, verbose_name='Status')
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = 'Análises Técnicas'
+    def __str__(self):
+        return self.tipo
 
 class Card_Comments(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
@@ -195,15 +212,22 @@ def upload_anexo(instance, filename):
         return os.path.join('pipeline/credit-anexos/', filename)
     elif instance.fluxo_prospect:
         return os.path.join('pipeline/prospect-anexos/', filename)
+    elif instance.acomp_gai:
+        return os.path.join('pipeline/followup/', filename)
+    elif instance.analise_tecnica:
+        return os.path.join('pipeline/analisetecnica/', filename)
     else:
         return os.path.join('pipeline/ambiental-anexos/', filename)
 
 class Card_Anexos(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     fluxo_ambiental = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    from processes.models import Acompanhamento_Processos
     fluxo_prospect = models.ForeignKey(Fluxo_Prospects, on_delete=models.CASCADE, null=True, verbose_name='Prospect')
     fluxo_credito = models.ForeignKey(Fluxo_Gestao_Credito, on_delete=models.CASCADE, null=True, verbose_name='Produto')
-    pvtec = models.ForeignKey(PVTEC, on_delete=models.CASCADE, null=True, verbose_name='Produto')
+    pvtec = models.ForeignKey(PVTEC, on_delete=models.CASCADE, null=True, verbose_name='PVTEC')
+    acomp_gai = models.ForeignKey(Acompanhamento_Processos, on_delete=models.CASCADE, null=True, verbose_name='Acomp GAI')
+    analise_tecnica = models.ForeignKey(AnaliseTecnica, on_delete=models.CASCADE, null=True, verbose_name='AT')
     pvtec_response = models.BooleanField(default=False)
     file = models.FileField(null=True, upload_to=upload_anexo, verbose_name='Arquivo')
     name = models.CharField(null=True, max_length=100, verbose_name='Nome Arquivo')
@@ -216,44 +240,3 @@ class Card_Anexos(models.Model):
         if self.file and not self.name:
             self.name = self.file.name
         super().save(*args, **kwargs)
-
-
-class Acompanhamento_GAI(models.Model):
-    processo = models.ForeignKey(Fluxo_Gestao_Ambiental, on_delete=models.SET_NULL, null=True, verbose_name='Processo Frason')
-    requerimento = models.CharField(max_length=255, null=True, verbose_name='Número do Requerimento')
-    data_requerimento = models.DateField(null=True, verbose_name='Data Requerimento')
-    data_enquadramento = models.DateField(null=True, verbose_name='Data Enquadramento')
-    data_validacao = models.DateField(null=True, verbose_name='Data Validação Prévia')
-    valor_boleto = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor do Boleto')
-    vencimento_boleto = models.DateField(null=True, verbose_name='Data Vencimento Boleto')
-    data_formacao = models.DateField(null=True, verbose_name='Data Formação do Processo')
-    numero_processo = models.CharField(max_length=255, null=True, verbose_name='Número do Processo')
-    processo_sei  = models.CharField(max_length=255, null=True, verbose_name='Número do Processo SEI')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='acompgai')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Processos Gestão Ambiental'
-
-class Status_Acompanhamento(models.Model):
-    description = models.CharField(max_length=255, null=True, verbose_name='Descrição do Status')
-    sigla = models.CharField(max_length=255, null=True, verbose_name='Sigla Status')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Status Processos GAI'
-    def __str__(self):
-        return self.description
-
-class Atualizacoes_Acompanhamento_GAI(models.Model):
-    processo = models.ForeignKey(Acompanhamento_GAI, on_delete=models.CASCADE, null=True, verbose_name='Processo')
-    data = models.DateField(null=True, verbose_name='Data da atualização')
-    status  = models.ForeignKey(Status_Acompanhamento, on_delete=models.SET_NULL, null=True, verbose_name='Status Processos')
-    detalhamento = models.TextField(null=True, verbose_name='Detalhamento da Atualização')
-    proxima_consulta = models.DateField(null=True, verbose_name='Próxima Consulta')
-    file = models.FileField(upload_to='inema/followup', null=True, blank=True, default=None, verbose_name='Arquivo PDF')
-    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='atualizaacomp')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    class Meta:
-        verbose_name_plural = 'Registros de Acompanhamento'

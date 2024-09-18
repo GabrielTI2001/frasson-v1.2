@@ -95,10 +95,13 @@ import InsertPoints from '../App/Services/Tools/InsertPoints';
 import KMLPolygon from '../App/Services/Tools/KMLPolygon';
 import ServicesMaps from '../App/Services/Maps';
 import WebSocketComponent from '../App/Pipeline/Websocket';
-import IndexContratosAmbiental from '../App/Finances/ContratosAmbiental/Index';
+import IndexContratosAmbiental from '../App/Finances/Contratos/Ambiental/Index';
 import IndexPVTEC from '../App/Comercial/PVTEC/Index';
 import Prospects from '../App/Pipeline/Prospects/products';
 import ProfileForm from '../App/Admin/Users/ProfileForm';
+import { RedirectToLogin } from './PrivateRoute';
+import AlongamentosDone from '../App/Alongamentos/Done';
+import AlongamentosNext from '../App/Alongamentos/Next';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -123,6 +126,9 @@ const LayoutRoutes = () => {
             type: 'SET_PROFILE',
             payload: data
           });
+        }
+        if (response.status === 401 && new URL(window.location.href.toString()).pathname === '/profile') {
+          RedirectToLogin(navigate)
         }
       } catch (error) {
         console.error('Erro:', error);
@@ -149,6 +155,9 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/alongamentos">
           <Route path="" element={<IndexAlongamentos />}/>
+          <Route path="done" element={<AlongamentosDone />}/>
+          <Route path="done/:uuid" element={<AlongamentosDone />}/>
+          <Route path="next" element={<AlongamentosNext />}/>
         </Route>
         <Route path="/ambiental/inema">
           <Route path="outorgas" element={<IndexOutorgas />}/>

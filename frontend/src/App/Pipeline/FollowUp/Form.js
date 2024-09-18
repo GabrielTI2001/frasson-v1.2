@@ -1,11 +1,9 @@
 import React,{useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, Col} from 'react-bootstrap';
+import { Button, Col, Spinner} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
-import AsyncSelect from 'react-select/async';
-import { SelectSearchOptions } from '../../../helpers/Data';
-import customStyles, { customStylesDark } from '../../../components/Custom/SelectStyles';
+import { SelectOptions, sendData } from '../../../helpers/Data';
 import { useAppContext } from '../../../Main';
 import { useDropzone } from 'react-dropzone';
 import { faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
@@ -13,17 +11,29 @@ import Flex from '../../../components/common/Flex';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
-const FormPVTEC = ({type, data, submit, card}) => {
+export const fieldsProcesso = [
+  {name:'data_requerimento', label:'Data Requerimento*', type:'date'},
+  {name:'requerimento', label:'N° Requerimento*', type:'text'},
+  {name:'data_enquadramento', label:'Data Enquadramento', type:'date'},
+  {name:'data_validacao', label:'Data Validação', type:'date'},
+  {name:'valor_boleto', label:'Valor Boleto (R$)', type:'text', isnumber:true},
+  {name:'vencimento_boleto', label:'Vencimento Boleto', type:'date'},
+  {name:'data_formacao', label:'Data Formação', type:'date'},
+  {name:'numero_processo', label:'N° Processo', type:'text'},
+  {name:'processo_sei', label:'N° Processo SEI', type:'text'},
+]
+
+const FormAcomp = ({submit, card}) => {
     const {config: {theme}} = useAppContext();
     const navigate = useNavigate()
-    const token = localStorage.getItem("token")
     const user = JSON.parse(localStorage.getItem("user"))
+    const [statuslist, setStatuslist] = useState();
     const [message, setMessage] = useState();
-    const [formData, setformData] = useState({created_by:user.id, fluxo_ambiental:card ? card.id : '', status:'EA',
+    const [formData, setformData] = useState({created_by:user.id, fluxo_ambiental:card ? card.id : '',
       phase_origem:card.phase
     });
-    const [defaultoptions, setDefaultOptions] = useState();
     const [isDragActive, setIsDragActive] = useState();
+    const [isLoading, setIsLoading] = useState(false);
 
     const { getRootProps: getRootProps, getInputProps: getInputProps } = useDropzone({
       multiple: true,
@@ -36,37 +46,24 @@ const FormPVTEC = ({type, data, submit, card}) => {
       onDropRejected: () => setIsDragActive(false),
     });
   
-
     const handleApi = async (dadosform) => {
-        const link = `${process.env.REACT_APP_API_URL}/pipeline/pvtec/${type === 'edit' ? data.id+'/' : ''}`
-        const method = type === 'edit' ? 'PUT' : 'POST'
-        try {
-            const response = await fetch(link, {
-                method: method,
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                },
-                body: dadosform
-            });
-            const data = await response.json();
-            if(response.status === 400){
-              setMessage({...data})
-            }
-            else if (response.status === 401){
-              localStorage.setItem("login", JSON.stringify(false));
-              localStorage.setItem('token', "");
-              RedirectToLogin(navigate);
-            }
-            else if (response.status === 201 || response.status === 200){
-                type === 'edit' ? submit('edit', data) : submit('add', data)
-                toast.success("Registro Atualizado com Sucesso!")
-            }
-        } catch (error) {
-            console.error('Erro:', error);
-        }
+      const {resposta, dados} = await sendData({type:'add', url:'processes/acompanhamentos', keyfield:null, dadosform:dadosform, is_json:false})
+      if(resposta.status === 400){
+        setMessage({...dados})
+      }
+      else if (resposta.status === 401){
+        RedirectToLogin(navigate);
+      }
+      else if (resposta.status === 201 || resposta.status === 200){
+        submit('add', {...dados, data: new Date(dados.data).toLocaleDateString('pt-BR', {timeZone: 'UTC'}), status:dados.str_status})
+        toast.success("Registro Adicionado com Sucesso!")
+      }
+      setIsLoading(false)
     };
+
     const handleSubmit = async e => {
         setMessage(null)
+        setIsLoading(true)
         e.preventDefault();
         const formDataToSend = new FormData();
         for (const key in formData) {
@@ -74,12 +71,7 @@ const FormPVTEC = ({type, data, submit, card}) => {
             for (let i = 0; i < formData[key].length; i++) {
               formDataToSend.append('file', formData[key][i]);
             }
-          }
-          else if (Array.isArray(formData[key])) {
-            formData[key].forEach(value => {
-              formDataToSend.append(key, value);
-            });
-          } else {
+          }else {
             formDataToSend.append(key, formData[key]);
           }
         }
@@ -93,74 +85,51 @@ const FormPVTEC = ({type, data, submit, card}) => {
     };
 
     useEffect(() =>{
-        const setform = () =>{
-          setformData({...data, ...formData})
-        }
-        if(type === 'edit' && !formData.atividade){
-            setform()
-        }
-        else{
-            if(!defaultoptions){
-                setDefaultOptions({})
-            }
-        }
+      const getoptions = async () =>{
+          const options = await SelectOptions('processes/status-acompanhamento', 'description')
+          setStatuslist(options)
+      }
+      if (!statuslist){
+          getoptions()
+      }
     },[])
 
     return (
     <Form onSubmit={handleSubmit} className='row' encType='multipart/form-data'>
-        <Form.Group className="mb-1" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Atividade*</Form.Label>
-            <Form.Select
-              value={formData.atividade || ''}
-              name="atividade"
+<       Form.Group as={Col} className='mb-3' xl={12}>
+          <Form.Label className='mb-0 fw-bold'>Data*</Form.Label>
+          <Form.Control type='date' value={formData.data || ''} 
               onChange={handleFieldChange}
-              type="select"
-            >
-              <option value={undefined}>----</option>
-              <option value='AC'>Ação com Cliente</option>
-              <option value='AT'>Ação com Terceiros</option>
-              <option value='ET'>Entrega Técnica</option>
-              <option value='LLC'>LITEC - Levantamento de Campo</option>
-              <option value='LPT'>LITEC - PTC</option>
-              <option value='LNT'>LITEC - NT</option>
-              <option value='FB'>Feedback</option>
-              <option value='RC'>Renovação de Contrato</option>
-              <option value='ND'>Novas Demandas</option>
-              <option value='MT'>Make Time</option>
-              <option value='FOC'>Formalização Operação de Crédito</option>
-              <option value='OF'>Outras Frentes</option>
-            </Form.Select>
-            <label className='text-danger'>{message ? message.etapa : ''}</label>
+              name='data'
+          />
+          <label className='text-danger'>{message ? message.data : ''}</label>
         </Form.Group>
 
-        {defaultoptions && (
-          <Form.Group className="mb-1" as={Col} xl={12}>
-            <Form.Label className='fw-bold mb-1'>Responsáveis*</Form.Label>
-            <AsyncSelect isMulti
-              loadOptions={(value) => SelectSearchOptions(value, 'users/users', 'first_name', 'last_name', true, `pipe=${card.pipe_code}`)}
-              styles={theme === 'light'? customStyles : customStylesDark} classNamePrefix="select"
-              defaultValue={type === 'edit' ? defaultoptions.responsaveis || '' : ''}
-              onChange={(selected) => {
-                setformData((prevFormData) => ({
-                  ...prevFormData,
-                  responsaveis: selected.map(s => s.value)
-                }));
-              }}>
-            </AsyncSelect>
-            <label className='text-danger'>{message ? message.responsaveis : ''}</label>
-          </Form.Group>        
-        )}
-        <Form.Group as={Col} xl={12} className='mb-1'>
-            <Form.Label className='mb-0 fw-bold'>Orientações*</Form.Label>
-            <Form.Control 
-                as='textarea' 
-                rows={5} className='fs--1'
-                value={formData.orientacoes || ''} 
-                onChange={handleFieldChange}
-                name='orientacoes'
-            />
-            <label className='text-danger'>{message ? message.orientacoes : ''}</label>
+        <Form.Group className="mb-2" as={Col} xl={12}>
+          <Form.Label className='fw-bold mb-1'>Status*</Form.Label>
+          <Form.Select
+            value={formData.status || ''}
+            name="status"
+            onChange={handleFieldChange}
+            type="select"
+          >
+            <option value={undefined}>----</option>
+            {statuslist &&( statuslist.map( c =>(
+              <option key={c.value} value={c.value}>{c.label}</option>
+            )))}
+          </Form.Select>
+          <label className='text-danger'>{message ? message.status : ''}</label>
         </Form.Group>
+
+        <Form.Group as={Col} className='mb-3' xl={12}>
+          <Form.Label className='mb-0 fw-bold'>Detalhamento</Form.Label>
+          <Form.Control as='textarea' value={formData.detalhamento || ''} 
+              onChange={handleFieldChange}
+              name='detalhamento'
+          />
+          <label className='text-danger'>{message ? message.detalhamento : ''}</label>
+        </Form.Group>
+
         <label className='fw-bold mb-0'>Anexos</label>
         <Form.Group as={Col} xl={12} className='mb-2'>
           <div {...getRootProps({ className: `dropzone-area py-2 container container-fluid ${isDragActive ? 'dropzone-active' : ''}`})}>
@@ -174,13 +143,15 @@ const FormPVTEC = ({type, data, submit, card}) => {
           </div>
         </Form.Group>
 
-        <Form.Group as={Col} className='text-end' xl={12}>
-            <Button type='submit'>Cadastrar</Button>
+        <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
+          <Button className="w-50" type="submit" disabled={isLoading}>
+            {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Registrar'}
+          </Button>
         </Form.Group>
     </Form>
     );
 };
   
-export default FormPVTEC;
+export default FormAcomp;
   
 

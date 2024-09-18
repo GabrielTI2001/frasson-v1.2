@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import AsyncSelect from 'react-select/async';
 import { useNavigate } from 'react-router-dom';
-import { Form, Col, Button, OverlayTrigger, Tooltip, ProgressBar } from 'react-bootstrap';
+import { Form, Col, Button, OverlayTrigger, Tooltip, ProgressBar, Dropdown } from 'react-bootstrap';
 import {customStyle} from '../../components/Custom/SelectStyles';
 import { useAppContext } from '../../Main';
 import { SelectSearchOptions } from '../../helpers/Data';
 import ModalGMS from './ModalGMS';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleQuestion, faCloudArrowUp } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faCircleQuestion, faCloudArrowUp, faPlus } from '@fortawesome/free-solid-svg-icons';
 import Flex from '../common/Flex';
 import { useDropzone } from 'react-dropzone';
 
@@ -34,7 +34,6 @@ const RenderFields = ({ fields, formData, changefield, changefile, message, hasL
       });
       return { acceptedFiles, getRootProps, getInputProps, isDragActive };
   }
-
 
   return (<>
     {fields && fields.map(f => {
@@ -76,8 +75,32 @@ const RenderFields = ({ fields, formData, changefield, changefile, message, hasL
                     </>
                     }
                 </Form.Select>
+            : f.type === 'dropdown' ? <>
+                <Form.Label className='mb-1 ms-1 d-block d-flex align-items-center'>
+                    {f.icon && f.icon[formData[f.name]]}{formData[f.name] && f.options[formData[f.name]]}
+                </Form.Label>
+                <Dropdown
+                    drop={'down'}
+                    className='me-2 mb-1 d-block etiqueta-dropdown w-25'
+                    onSelect={(key) => changefield({target:{name:f.name, value:key}})}
+                >
+                    <Dropdown.Toggle variant='none'>
+                        <span className='text-primary'><FontAwesomeIcon icon={faPlus} className='me-2'/>Selecionar</span>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                    {f.options &&
+                        Object.keys(f.options).map(key => 
+                            <Dropdown.Item key={key} eventKey={key} className='d-flex align-items-center fs--1 justify-content-between'>
+                                <span>{f.icon && f.icon[key]} {f.options[key]}</span> 
+                                {formData[f.name] === key && <FontAwesomeIcon icon={faCheckCircle} className='text-primary'/>}
+                            </Dropdown.Item>
+                        )
+                    }   
+                    </Dropdown.Menu>
+                </Dropdown>
+            </>
             : f.type === 'select2' ?
-                <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, f.url, f.attr1, f.attr2, false, f.params, navigate)} isMulti={f.ismulti}
+                <AsyncSelect loadOptions={(value) => SelectSearchOptions(value, f.urlapi || f.url, f.attr1, f.attr2, false, f.params, navigate)} isMulti={f.ismulti}
                     styles={customStyle(theme, message && message[f.name])} classNamePrefix="select"
                     defaultValue={defaultvalues ? defaultvalues[f.name] : ''}
                     onChange={(selected) => changefield({target:{name:f.name, value:f.ismulti ? selected.map(s => s.value) : selected.value}})}
@@ -116,14 +139,14 @@ const RenderFields = ({ fields, formData, changefield, changefile, message, hasL
                             name={f.name}
                             onChange={changefield}
                             type={f.type}
-                            className={`me-2`}
+                            className={`me-2 px-2`}
                         />
                         <Button onClick={() => {setShowModal({show:true, type:f.cat})}}>GMS</Button>
                     </div>
                 :
                     <Form.Control
                         isInvalid={message && message[f.name]}
-                        value={formData[f.name] || ''}
+                        value={formData[f.name] || ''} className='px-2'
                         name={f.name}
                         as={f.type === 'textarea' ? 'textarea' : 'input'}
                         rows={f.rows}
@@ -136,7 +159,6 @@ const RenderFields = ({ fields, formData, changefield, changefile, message, hasL
             <label className='text-danger'>{message ? message[f.name] : ''}</label>
         </Form.Group>
         )
-        
     })}
     <ModalGMS show={showModal.show} type={showModal.type} changemodal={setShowModal} formData={formData} changeform={setform}
         fields={fields.filter(f => f.iscoordenada === true).map(f => f.name)}

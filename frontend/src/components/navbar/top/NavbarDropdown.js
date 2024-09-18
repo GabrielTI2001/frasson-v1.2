@@ -4,34 +4,21 @@ import classNames from 'classnames';
 import { Link } from 'react-router-dom';
 import { Card, Dropdown } from 'react-bootstrap';
 // import AuthCornerImage from 'assets/img/illustrations/authentication-corner.png';
-import { breakpoints, capitalize } from '../../../helpers/utils';
-import { topNavbarBreakpoint } from '../../../config';
+import { capitalize } from '../../../helpers/utils';
 
 const NavbarDropdown = ({ title, children }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
-
+  const closeDropdown = () => setDropdownOpen(false);
   return (
     <Dropdown
       show={dropdownOpen}
       onToggle={() => setDropdownOpen(!dropdownOpen)}
-      onMouseOver={() => {
-        let windowWidth = window.innerWidth;
-        if (windowWidth >= breakpoints[topNavbarBreakpoint]) {
-          setDropdownOpen(true);
-        }
-      }}
-      onMouseLeave={() => {
-        let windowWidth = window.innerWidth;
-        if (windowWidth >= breakpoints[topNavbarBreakpoint]) {
-          setDropdownOpen(false);
-        }
-      }}
       className="me-3"
     >
-      <Dropdown.Toggle as={Link} to="#!" className="nav-link ps-1 fw-semi-bold text-body nav-not-hover">
+      <Dropdown.Toggle as={Link} className="nav-link ps-1 fw-semi-bold text-body nav-not-hover dropdown-caret-none">
         {capitalize(title)}
       </Dropdown.Toggle>
-      <Dropdown.Menu className="dropdown-menu-card mt-0 dropdown-caret">
+      <Dropdown.Menu className="dropdown-menu-card mt-0">
         {/* {children} */}
         <Card
           className={classNames('shadow-none dark__bg-1000', {
@@ -53,7 +40,7 @@ const NavbarDropdown = ({ title, children }) => {
                 width={130}
               />
             )} */}
-            {children}
+            {React.cloneElement(children, { closeDropdown })}
           </Card.Body>
         </Card>
       </Dropdown.Menu>

@@ -29,12 +29,10 @@ const App = () => {
     return (
       <>
         <div className={isFluid ? 'container-fluid' : 'container'}>
-          <div className={classNames('content', 'pb-0')}>
-              <NavbarTop />
-              <hr className="my-0 d-lg-block"></hr>
-              <div className="container-fluid mt-2 px-0 conteudo">
-                <Outlet />
-              </div>
+          <NavbarTop />
+          <hr className="my-0 d-lg-block"></hr>
+          <div className="mt-2 px-0 conteudo">
+            <Outlet />
           </div>
         </div>
       </>

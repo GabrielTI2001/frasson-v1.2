@@ -46,7 +46,7 @@ export const fieldsOperacoes = [
   {name:'instituicao', label:'Instituição*', type:'select2', url:'register/instituicoes', attr1:'razao_social',
     string:'str_instituicao'
   },
-  {name:'valor_operacao', label:'Valor da Operação (R$)*', type:'text'}, 
+  {name:'valor_operacao', label:'Valor da Operação (R$)*', type:'text', is_number:true}, 
   {name:'imoveis_beneficiados', label:'Imóveis Beneficiados*', type:'select2', ismulti:true, url:'farms/farms', attr1:'nome',
     attr2:'matricula', list:'list_imoveis', string:'nome'
   },

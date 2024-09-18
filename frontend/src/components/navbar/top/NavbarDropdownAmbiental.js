@@ -2,7 +2,7 @@ import React from 'react';
 import { Nav, Row, Col } from 'react-bootstrap';
 import NavbarNavLink from './NavbarNavLink';
 
-const NavbarDropdownAmbiental = ({ items }) => {
+const NavbarDropdownAmbiental = ({ items, closeDropdown }) => {
   return (
     <Row>
       <Col xs={12} md={12}>
@@ -11,7 +11,7 @@ const NavbarDropdownAmbiental = ({ items }) => {
             <React.Fragment key={filho.name}>
               <NavbarNavLink key={filho.name} title={filho.name}/>
               {filho.children.map((item) =>(
-                <NavbarNavLink key={item.name} route={item} icon={item.icon} />
+                <NavbarNavLink key={item.name} route={item} icon={item.icon} click={closeDropdown}/>
               ))}
             </React.Fragment>
           ))}

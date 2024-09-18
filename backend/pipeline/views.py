@@ -5,7 +5,6 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from .serializers import *
 from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, Card_Comments
 from .models import Phases_History, Card_Activities
-from .models import Atualizacoes_Acompanhamento_GAI, Acompanhamento_GAI, Status_Acompanhamento
 from users.models import User
 from datetime import datetime, timedelta, time
 from .utils import fields_cardproduto_info, fields_pvtec, fields_cardprospect_info
@@ -101,11 +100,19 @@ class FluxoProspectsView(viewsets.ModelViewSet):
                     instance.data_vencimento = data_e_hora_vencimento
                 text = 'de '+instance.phase.descricao+' para '+historico_fase_atual.phase.descricao
                 Card_Activities.objects.create(fluxo_prospect_id=instance.pk, type='cf', campo=text, updated_by_id=user)
-                instance.save()
+            if 'produto' in request.data and instance.contrato_gai:
+                contrato = instance.contrato_gai.id
+                instance.contrato_gai = None
+                Contratos_Ambiental.objects.get(pk=instance.contrato_gai.id).delete()
+            if 'produto' in request.data and instance.contrato_gc:
+                contrato = instance.contrato_gc.id
+                instance.contrato_gc = None
+                Contratos_Credito.objects.get(pk=contrato).delete()
+            instance.save()
             activity = None
             for key in fields_cardprospect_info.keys():
                 if key in request.data:
-                    activity = Card_Activities.objects.create(fluxo_prospect_id=instance.pk, type='ch', campo=fields_cardproduto_info[key], 
+                    activity = Card_Activities.objects.create(fluxo_prospect_id=instance.pk, type='ch', campo=fields_cardprospect_info[key], 
                         updated_by_id=user)
             serializer.save()
             headers = self.get_success_headers(serializer.data)
@@ -123,9 +130,17 @@ class FluxoAmbientalView(viewsets.ModelViewSet):
     lookup_field = 'code'
     def get_serializer_class(self):
         if self.action == 'list':
+            if self.request.query_params.get('contrato', None):
+                return serializerFluxoAmbiental
             return listFluxoAmbiental
         else:
             return self.serializer_class
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        contrato = self.request.query_params.get('contrato', None)   
+        if contrato:
+            queryset = queryset.filter(Q(contrato_id=int(contrato)))
+        return queryset
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop('partial', False)
         instance = self.get_object()
@@ -218,6 +233,8 @@ class AnexoView(viewsets.ModelViewSet):
         fluxogai = self.request.query_params.get('fluxogai', None)   
         prospect = self.request.query_params.get('prospect', None)   
         pvtec = self.request.query_params.get('pvtec', None)  
+        acompgai = self.request.query_params.get('acompgai', None)  
+        analisetecnica = self.request.query_params.get('analisetecnica', None)  
         is_response = self.request.query_params.get('isresponse', None)  
         if fluxogai:
             queryset = queryset.filter(Q(fluxo_ambiental_id=int(fluxogai)))
@@ -228,6 +245,10 @@ class AnexoView(viewsets.ModelViewSet):
                 queryset = queryset.filter(Q(pvtec_id=int(pvtec)) & Q(pvtec_response=True))
             else:
                 queryset = queryset.filter(Q(pvtec_id=int(pvtec)) & Q(pvtec_response=False))
+        if acompgai:
+            queryset = queryset.filter(Q(acomp_gai_id=int(acompgai)))
+        if analisetecnica:
+            queryset = queryset.filter(Q(analise_tecnica_id=int(analisetecnica)))
         return queryset
     def create(self, request, *args, **kwargs):
         response_data = []
@@ -318,138 +339,51 @@ class PVTECView(viewsets.ModelViewSet):
                 response_data.update({'activity':activity_serializer.data if activity else None})
             return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
-class FollowupGAIView(viewsets.ModelViewSet):
-    queryset = Acompanhamento_GAI.objects.all()
-    serializer_class = detailFollowup
-    lookup_field = 'processo_id'
-    def list(self, request, *args, **kwargs):
-        processos = []
-        produto_gai = 864795466
-        phases_produtos = [310429178, 310429179, 310429196]
-        search = request.GET.get('search')
-        fluxogai = request.GET.get('fluxogai')
-
-        if search: # se existe algum parâmetro de busca, faz a busca
-            query_search_andamento = (Q(requerimento=search) | Q(numero_processo=search) | Q(processo_sei=search))
-            processo_andamento = Acompanhamento_GAI.objects.filter(query_search_andamento).first()
-            if processo_andamento:
-                last_status_obj = Atualizacoes_Acompanhamento_GAI.objects.filter(processo=processo_andamento).order_by('-data', '-created_at').first() or None          
-                if last_status_obj != None:
-                    data_hoje = date.today()
-                    proxima_consulta = last_status_obj.proxima_consulta
-                    if proxima_consulta > data_hoje:
-                        needed_action = False
-                        needed_action_text = "Acompanhamento OK"
-                        needed_action_icon = "CheckCircleFill"
-                        needed_action_color = "success"
-                    else:
-                        needed_action = True
-                        needed_action_text = "Atualização Necessária"
-                        needed_action_icon = "Clock"
-                        needed_action_color = "warning"
-
-                else:
-                    needed_action = True
-                    needed_action_text = "Sem Registro de Status"
-                    needed_action_icon = "ExclamationTriangleFill"
-                    needed_action_color = "warning"
-
-            else:
-                query_search = Q(detalhamento__produto=produto_gai) & (Q(id__icontains=search) | Q(phase__descricao__icontains=search) | 
-                    Q(beneficiario__razao_social__icontains=search) | Q(detalhamento__detalhamento_servico__icontains=search) | Q(instituicao__instituicao__razao_social__icontains=search))
-                database_processos = Fluxo_Gestao_Ambiental.objects.filter(query_search).exclude(phase_id__in=[310429136, 310429228])
-                
-                for processo in database_processos:
-                    processo_acompanhamento = Acompanhamento_GAI.objects.filter(processo=processo.id).first() or None
-                    last_status_obj = Atualizacoes_Acompanhamento_GAI.objects.filter(processo__processo=processo.id).order_by('-data', '-created_at').first() or None
-
-                    if processo_acompanhamento != None:
-
-                        if last_status_obj != None:
-                            data_hoje = date.today()
-                            proxima_consulta = last_status_obj.proxima_consulta
-                            if proxima_consulta > data_hoje:
-                                needed_action = False
-                                needed_action_text = "Acompanhamento OK"
-                                needed_action_icon = "CheckCircleFill"
-                                needed_action_color = "success"
-                            else:
-                                needed_action = True
-                                needed_action_text = "Atualização Necessária"
-                                needed_action_icon = "Clock"
-                                needed_action_color = "warning"
-
-                        else:
-                            needed_action = True
-                            needed_action_text = "Sem Registro de Status"
-                            needed_action_icon = "ExclamationTriangleFill"
-                            needed_action_color = "warning"
-
-                    else:
-                        needed_action = True
-                        needed_action_text = "Sem Processo de Acompanhamento"
-                        needed_action_icon = "ExclamationCircleFill"
-                        needed_action_color = "danger"
-        
-        else:      # caso não exista parâmetro de busca
-            if fluxogai:
-                query_search = Q(pk=fluxogai)
-            else:
-                query_search = Q(detalhamento__produto=produto_gai) & Q(phase_id__in=phases_produtos)
-            database_processos = Fluxo_Gestao_Ambiental.objects.filter(query_search)
-
-            for processo in database_processos:
-                processo_acompanhamento = Acompanhamento_GAI.objects.filter(processo=processo.id).first() or None
-                last_status_obj = Atualizacoes_Acompanhamento_GAI.objects.filter(processo__processo=processo.id).order_by('-data', '-created_at').first() or None
-                if processo_acompanhamento != None:
-                    if last_status_obj != None:
-                        data_hoje = date.today()
-                        proxima_consulta = last_status_obj.proxima_consulta
-                        if proxima_consulta > data_hoje:
-                            needed_action = False
-                            needed_action_text = "Acompanhamento OK"
-                            needed_action_icon = "bi CheckCircleFill"
-                            needed_action_color = "success"
-                        else:
-                            needed_action = True
-                            needed_action_text = "Atualização Necessária"
-                            needed_action_icon = "Clock"
-                            needed_action_color = "warning"
-
-                    else:
-                        needed_action = True
-                        needed_action_text = "Sem Registro de Status"
-                        needed_action_icon = "ExclamationTriangleFill"
-                        needed_action_color = "warning"
-
-                else:
-                    needed_action = True
-                    needed_action_text = "Sem Processo de Acompanhamento"
-                    needed_action_icon = "ExclamationCircleFill"
-                    needed_action_color = "danger"
-                
-        processos.append({
-            'id': processo.id,
-            'beneficiario': processo.beneficiario.razao_social,
-            'detalhamento': processo.detalhamento.detalhamento_servico,
-            'instituicao': processo.instituicao.instituicao.abreviatura,
-            'last_status': last_status_obj.status.description if last_status_obj != None else '-',
-            'needed_action': needed_action,
-            'needed_action_text': needed_action_text,
-            'needed_action_icon': needed_action_icon,
-            'needed_action_color': needed_action_color,
-            'current_phase': processo.phase.descricao
-        })
-
-        return Response(processos)
-
-class AtualizacoesGAIView(viewsets.ModelViewSet):
-    queryset = Atualizacoes_Acompanhamento_GAI.objects.all()
-    serializer_class = detailAcompanhamentoProcessos
+class AnaliseTecnicaView(viewsets.ModelViewSet):
+    queryset = AnaliseTecnica.objects.all().order_by('-created_at')
+    serializer_class = detailAnaliseTecnica
     parser_classes = (MultiPartParser, FormParser)
-
-class StatusView(viewsets.ModelViewSet):
-    queryset = Status_Acompanhamento.objects.all()
-    serializer_class = listStatus
+    lookup_field = 'uuid'
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        prospect = self.request.query_params.get('prospect', None)   
+        search_term = self.request.query_params.get('search', None)     
+        query = Q()
+        if prospect:
+            query &= Q(fluxo_prospect_id=int(prospect))
+        if search_term:
+            query &= (Q(observacoes__icontains=search_term))
+        queryset = queryset.filter(query)
+        return queryset
+    def get_serializer_class(self):
+        if self.action == 'list':
+            if self.request.query_params.get('prospect', None):
+                return detailAnaliseTecnica
+            return listAnaliseTecnica
+        else:
+            return self.serializer_class
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        files = request.FILES.getlist('file')
+        user = request.POST.get('created_by')
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            if request.FILES:
+                for i in files:
+                    Card_Anexos.objects.create(analise_tecnica=serializer.instance, uploaded_by=user, file=i)
+            Card_Activities.objects.create(fluxo_prospect_id=request.data.get('fluxo_prospect'), type='ch', campo='Análises Técnicas', updated_by_id=user)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        if serializer.is_valid():
+            instance.save()
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            response_data = serializer.data.copy()
+            return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

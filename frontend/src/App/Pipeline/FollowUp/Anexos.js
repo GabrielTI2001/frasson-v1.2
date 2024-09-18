@@ -12,13 +12,11 @@ import { toast } from 'react-toastify';
 import Flex from '../../../components/common/Flex';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
-export const Anexos = ({ pvtec }) => {
+export const Anexos = ({ value, param, readonly, url}) => {
   const user = JSON.parse(localStorage.getItem('user'));
-  const [formData, setFormData] = useState({ pvtec: pvtec.id, uploaded_by: user.id });
-  const [formDataResponse, setFormDataResponse] = useState({ pvtec: pvtec.id, uploaded_by: user.id, pvtec_response: true });
+  const [formData, setFormData] = useState({ [param]: value, uploaded_by: user.id });
   const { config: { theme, isRTL } } = useAppContext();
   const [anexos, setAnexos] = useState();
-  const [anexosResposta, setAnexosResposta] = useState();
   const token = localStorage.getItem("token");
   const [modaldel, setModaldel] = useState({ show: false });
   const navigate = useNavigate();
@@ -61,8 +59,7 @@ export const Anexos = ({ pvtec }) => {
 
   useEffect(() => {
     sendFile(formData, setFormData, setAnexos);
-    sendFile(formDataResponse, setFormDataResponse, setAnexosResposta);
-  }, [formData, formDataResponse]);
+  }, [formData]);
 
   const { getRootProps: getRootPropsSolicitacao, getInputProps: getInputPropsSolicitacao } = useDropzone({
     multiple: true,
@@ -75,29 +72,17 @@ export const Anexos = ({ pvtec }) => {
     onDropRejected: () => setIsDragActive(false),
   });
 
-  const { getRootProps: getRootPropsResposta, getInputProps: getInputPropsResposta } = useDropzone({
-    multiple: true,
-    onDrop: (acceptedFiles) => {
-      setFormDataResponse({ ...formDataResponse, file: acceptedFiles });
-    },
-    onDragEnter: () => setIsDragActive(true),
-    onDragLeave: () => setIsDragActive(false),
-    onDropAccepted: () => setIsDragActive(false),
-    onDropRejected: () => setIsDragActive(false),
-  });
-
   const handleDelete = (type, data) => {
-    setAnexosResposta(anexosResposta.filter(c => parseInt(c.id) !== parseInt(data)));
+    setAnexos(anexos.filter(c => parseInt(c.id) !== parseInt(data)));
   };
 
   useEffect(() => {
     const getData = async () => {
       if (!anexos) {
-        const status = await HandleSearch('', 'pipeline/card-anexos', (data) => { setAnexos(data); }, `?pvtec=${pvtec.id}`);
+        const status = await HandleSearch('', `${url || 'pipeline/card-anexos'}`, (data) => { setAnexos(data); }, `?${param}=${value}`);
         if (status === 401) {
           RedirectToLogin(navigate);
         }
-        HandleSearch('', 'pipeline/card-anexos', (data) => { setAnexosResposta(data); }, `?pvtec=${pvtec.id}&isresponse=1`);
       }
     };
     getData();
@@ -106,7 +91,7 @@ export const Anexos = ({ pvtec }) => {
   return (
     <>
       <div className='mt-0 pe-2'>
-        <strong className='d-block'>Anexos de Solicitação ({anexos && anexos.length})</strong>
+        <strong className='d-block'>Anexos ({anexos && anexos.length})</strong>
         {anexos ? (anexos.length > 0 ? anexos.map(a =>
           <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer hover-children'
             key={a.id}
@@ -124,19 +109,6 @@ export const Anexos = ({ pvtec }) => {
           </div>
         ) : <>
           <span className='fs--1'>Nenhum Anexo</span>
-          <Form className='pe-2 mt-1 mb-3'>
-            <div {...getRootPropsSolicitacao({ className: `dropzone-area py-2 container container-fluid ${isDragActive ? 'dropzone-active' : ''}`})}>
-              <input {...getInputPropsSolicitacao()} />
-              {isUploading ? 
-                <ProgressBar animated now={progress} label={`${progress}%`} />
-                :
-                <Flex justifyContent="center" alignItems="center">
-                  <span className='text-midle'><FontAwesomeIcon icon={faCloudArrowUp} className='mt-1 fs-2 text-warning' /></span>
-                  <p className="fs-9 mb-0 text-700 ms-2">Arraste um novo anexo de SOLICITAÇÃO aqui</p>
-                </Flex>
-              }
-            </div>
-          </Form>
         </>) 
         :
           <div>
@@ -147,47 +119,21 @@ export const Anexos = ({ pvtec }) => {
             </Placeholder>
           </div>
         }
-        <strong className='d-block'>Anexos de Resposta ({anexosResposta && anexosResposta.length})</strong>
-        {anexosResposta ? (anexosResposta.length > 0 ? anexosResposta.map(a =>
-          <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer hover-children'
-            key={a.id}
-          >
-            <Link target='__blank' to={a.file}
-              className='col-11'
-            >
-              <FontAwesomeIcon icon={faFile} className='me-2 col-auto px-0 fs-1' />
-              <span className='col-10'>{a.name}</span>
-            </Link>
-            <span className='col-auto text-end rounded-circle modal-editar'
-              onClick={() => { setModaldel({ show: true, link: `${process.env.REACT_APP_API_URL}/pipeline/card-anexos/${a.id}/` }) }}>
-              <FontAwesomeIcon icon={faClose} className='fs-0 text-body' />
-            </span>
-          </div>
-        ) : <span className='fs--1'>Nenhum Anexo</span>) : 
-          <div>
-            <Placeholder animation="glow">
-              <Placeholder xs={7} /> <Placeholder xs={4} />
-              <Placeholder xs={4} />
-              <Placeholder xs={6} /> <Placeholder xs={8} />
-            </Placeholder>
-          </div>
-        }
-        {anexos && anexos.length > 0 &&
-        <Form className='pe-2 mt-1'>
-          <div {...getRootPropsResposta({className: `dropzone-area py-2 container container-fluid ${isDragActive ? 'dropzone-active' : ''}`})}>
-            <input {...getInputPropsResposta()} />
+        {!readonly && <Form className='pe-2 mt-1 mb-3'>
+          <div {...getRootPropsSolicitacao({ className: `dropzone-area py-2 container container-fluid ${isDragActive ? 'dropzone-active' : ''}`})}>
+            <input {...getInputPropsSolicitacao()} />
             {isUploading ? 
               <ProgressBar animated now={progress} label={`${progress}%`} />
               :
               <Flex justifyContent="center" alignItems="center">
                 <span className='text-midle'><FontAwesomeIcon icon={faCloudArrowUp} className='mt-1 fs-2 text-warning' /></span>
-                <p className="fs-9 mb-0 text-700 ms-2">Arraste um novo anexo de RESPOSTA aqui</p>
+                <p className="fs-9 mb-0 text-700 ms-2">Arraste um novo anexo aqui</p>
               </Flex>
             }
           </div>
-        </Form>
-        }
+        </Form>}
       </div>
+      
       <ModalDelete show={modaldel.show} link={modaldel.link} update={handleDelete} close={() => setModaldel({ show: false })} />
     </>
   );

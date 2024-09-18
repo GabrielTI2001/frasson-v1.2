@@ -69,7 +69,7 @@ const ViewFollowup = () => {
         </span>  
     </CustomBreadcrumb>
     {card ? <>
-    <Row className='mt-2 mb-2' xl={card.inema.id ? 2 : 1} sm={card.inema.id ? 2 : 1} xs={1}>
+    <Row className='mt-2 mb-2' xl={card.id ? 2 : 1} sm={card.id ? 2 : 1} xs={1}>
         <Col className='d-flex flex-column'>
             <Row xs={1} xl={1} className='gy-1'>
                 <h6 style={{fontSize: '12px'}} className='fw-bold mb-0'>Informações do Processo</h6>
@@ -98,41 +98,40 @@ const ViewFollowup = () => {
                     <strong className='me-1'>Fase Atual:</strong>
                     <span className='my-1 text-info'>{card.pipeline.current_phase}</span>
                 </Col>
-                {card.inema.id ? <>
+                {card.id ? <>
                 <Col> 
                     <Row xs={1} xl={2} className='gy-1'>
                         <Col>
                             <strong className='me-1'>N° Requerimento:</strong>
-                            <span className='my-1 text-info'>{card.inema.requerimento}</span> 
+                            <span className='my-1 text-info'>{card.requerimento}</span> 
                         </Col>
                         <Col>
                             <strong className='me-1'>Data Requerimento:</strong>
-                            <span className='my-1 text-info'>{card.inema.data_requerimento ? 
-                                new Date(card.inema.data_requerimento).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
+                            <span className='my-1 text-info'>{card.data_requerimento ? 
+                                new Date(card.data_requerimento).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
                             </span> 
                         </Col>
                         <Col>
                             <strong className='me-1'>Data Enquadramento:</strong>
-                            <span className='my-1 text-info'>{card.inema.data_enquadramento ? 
-                                new Date(card.inema.data_enquadramento).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
+                            <span className='my-1 text-info'>{card.data_enquadramento ? 
+                                new Date(card.data_enquadramento).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
                             </span> 
                         </Col>
                         <Col>
                             <strong className='me-1'>Data Formação:</strong>
-                            <span className='my-1 text-info'>{card.inema.data_formacao}</span> 
-                            <span className='my-1 text-info'>{card.inema.data_formacao ? 
-                                new Date(card.inema.data_formacao).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
+                            <span className='my-1 text-info'>{card.data_formacao ? 
+                                new Date(card.data_formacao).toLocaleDateString('pt-br', {timeZone:'UTC'}) : '-'}
                             </span> 
                         </Col>
                     </Row>
                 </Col>
                 <Col>
                     <strong className='me-1'>N° Processo Órgão:</strong>
-                    <span className='my-1 text-info'>{card.inema.processo_inema}</span>
+                    <span className='my-1 text-info'>{card.processo_inema}</span>
                 </Col>
                 <Col>
                     <strong className='me-1'>N° Processo SEI:</strong>
-                    <span className='my-1 text-info'>{card.inema.processo_sei}</span>
+                    <span className='my-1 text-info'>{card.processo_sei}</span>
                 </Col>
                 <Col className='mt-2 mb-1'>
                     <div>
@@ -143,7 +142,7 @@ const ViewFollowup = () => {
                         }
                         {((user.permissions && user.permissions.indexOf("delete_processos_andamento") !== -1) | user.is_superuser) ?
                             <Button className='col-auto btn-danger btn-sm px-2' style={{fontSize:'10px'}} 
-                                onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/processes/followup/${card.inema.id}/`})}>
+                                onClick={() => setModal({show:true, link:`${process.env.REACT_APP_API_URL}/processes/followup/${card.id}/`})}>
                                 <FontAwesomeIcon icon={faTrash} className='me-2' />Excluir Acompanhamento
                             </Button> : null
                         }
@@ -157,15 +156,15 @@ const ViewFollowup = () => {
                 </>}
                 <hr className='my-1 ms-3' style={{width:'95%'}}></hr>
             </Row>
-            {card.inema.id && 
+            {card.id && 
                 <div>
                     <Button className='col-auto btn-success btn-sm px-2' style={{fontSize:'10px'}} onClick={() => setModalform({show:true, type:'status'})}>
-                        Atualização de status
+                      Atualização de status
                     </Button>
                 </div>
             }
         </Col>
-        {card.inema.id && 
+        {card.id && 
         <Col className='d-flex flex-column'>
         <h6 style={{fontSize: '12px'}} className='fw-bold mb-2'>Atualizações de Acompanhamento</h6>
             {acompanhamentos && acompanhamentos.map(a => 
@@ -215,7 +214,7 @@ const ViewFollowup = () => {
     </div>}
     <ModalDelete show={modal.show} link={modal.link} close={() => setModal({...modal, show:false})} 
         update={
-            modal.link === `${process.env.REACT_APP_API_URL}/processes/followup/${card && card.inema.id}/` ?
+            modal.link === `${process.env.REACT_APP_API_URL}/processes/followup/${card && card.id}/` ?
             submit2 : submit
         } 
     />
@@ -236,7 +235,7 @@ const ViewFollowup = () => {
             <Row className="flex-center sectionform">
             {modalform.type === 'status' 
                 ? <FormAcomp hasLabel data={card} submit={submit}/> 
-                : <FormProcesso data={card && card.inema} type='edit' submit={submit2} />
+                : <FormProcesso data={card} type='edit' submit={submit2} />
             }
             </Row>
         </Modal.Body>

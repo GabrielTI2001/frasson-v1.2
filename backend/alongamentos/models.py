@@ -44,7 +44,7 @@ class Tipo_Classificacao(models.Model):
 class Cadastro_Alongamentos(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     data = models.DateField(null=True, verbose_name='Data Alongamento')
-    operacao = models.ForeignKey(Operacoes_Contratadas, on_delete=models.SET_NULL, null=True, verbose_name='Operação de Crédito')
+    operacao = models.ForeignKey(Operacoes_Contratadas, on_delete=models.CASCADE, null=True, verbose_name='Operação de Crédito')
     percentual = models.DecimalField(max_digits=5, decimal_places=2, null=True, verbose_name='Percentual Exigido Alongamento') 
     valor_unitario = models.DecimalField(max_digits=15, decimal_places=5, null=True, verbose_name='Valor Unitário')
     valor_total = models.DecimalField(max_digits=15, decimal_places=2, null=True, verbose_name='Valor Total Alongamento')
@@ -68,3 +68,12 @@ class Cadastro_Alongamentos(models.Model):
     def __str__(self):
         return f"{self.operacao.numero_operacao} - {self.operacao.beneficiario.razao_social}"
     
+class Alongamentos_Cancelados(models.Model):
+    uuid = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    operacao = models.ForeignKey(Operacoes_Contratadas, on_delete=models.SET_NULL, null=True, verbose_name='Operação de Crédito')
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name='Criado por')
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        verbose_name_plural = 'Alongamentos Cancelados'
+    def __str__(self):
+        return f"{self.operacao.beneficiario.razao_social}"
