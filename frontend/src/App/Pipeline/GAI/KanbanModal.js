@@ -142,88 +142,88 @@ const KanbanModalGAI = ({show, movercard}) => {
               </div>
               <DropdownModal card={card} handleSubmit={handleSubmit} handleEdit={handleEdit}/>
               <Tab.Container id="left-tabs-example" defaultActiveKey="processo" onSelect={handleTabSelect}>
-                  <NavGai card={card} acomp={acomp}/>
-                  <Tab.Content>
-                    <Tab.Pane eventKey="processo">
-                      <h5 className="mb-0 fs-0 mt-3 fw-bold">Informações do Processo</h5>
-                      <div className='text-secondary fs--2'>Criado por {card.str_created_by} em {' '}
-                        {new Date(card.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
-                        {' às '+new Date(card.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
-                      </div>
-                      <div className="rounded-top-lg pt-1 pb-0">
-                        <span className='fw-bold fs--1'>Processo</span>
-                        <div className="fs--1 row-10">#{card.code}</div>
-                      </div>
+                <NavGai card={card} acomp={acomp}/>
+                <Tab.Content>
+                  <Tab.Pane eventKey="processo">
+                    <h5 className="mb-0 fs-0 mt-3 fw-bold">Informações do Processo</h5>
+                    <div className='text-secondary fs--2'>Criado por {card.str_created_by} em {' '}
+                      {new Date(card.created_at).toLocaleDateString('pt-BR', {year:"numeric", month: "short", day: "numeric", timeZone: 'UTC'})}
+                      {' às '+new Date(card.created_at).toLocaleTimeString('pt-BR', {hour:"numeric", minute:"numeric"})}
+                    </div>
+                    <div className="rounded-top-lg pt-1 pb-0">
+                      <span className='fw-bold fs--1'>Processo</span>
+                      <div className="fs--1 row-10">#{card.code}</div>
+                    </div>
 
-                      <div className="rounded-top-lg pt-1 pb-0 mb-2">
-                        {fieldsFluxoGAI.filter(f => f.name !== 'valor_operacao').map(f => 
-                          !showForm[f.name] ?
-                            <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
-                              <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
-                              {f.type === 'select2' ? 
-                                <CardInfo2 data={card[f.data]} title={card[f.data][f.attr1]} key={card[f.data] && card[f.data].uuid} 
-                                  title2={card[f.data][f.attr2]} urlapi={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.urlapi} 
-                                  url={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.url}
-                                />
-                                  // <CardInfo data={card[f.data]} attr1={f.attr1} attr2={f.attr2}  key={card[f.data] && card[f.data].uuid} 
-                                  //   url={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.urlapi}
-                                  // />
-                              : f.type === 'date' ? 
-                                <div className="fs--1 row-10">{card[f.name] ? new Date(card[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
-                              : 
-                                <div className="fs--1 row-10">{card[f.name] || '-'}</div>}
-                            </div>
-                            :
-                            <EditFormModal key={f.name}
-                              onSubmit={(formData) => handleSubmit(formData, card.uuid)} 
-                              show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
-                              record={card} field={f}
-                            />
-                        )}
-                      </div>
-
-                      <span className='fw-bold fs-0 d-block mt-3 mb-2'>Histórico</span>
-                      {card.history_fases_list.map(h =>
-                        <CardInfo data={h} attr1={'phase_name'} small key={h.phase_name}
-                          title2={`Duração (min): ${Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}`}
-                        />
-                      )}
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="anexos">
-                      {activeTab === 'anexos' && 
-                        <ModalMediaContent title='Anexos'><Anexos card={card} updatedactivity={(a) => setActivities([a, ...activities])}/></ModalMediaContent>
-                      }
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="comments">
-                      <ModalMediaContent title='Comentários'> 
-                        {activeTab === 'comments' &&
-                          <ModalCommentContent card={card} updatedactivity={(a) => setActivities([a, ...activities])}
-                            link='pipeline/card-comments' param={'fluxogai'}
+                    <div className="rounded-top-lg pt-1 pb-0 mb-2">
+                      {fieldsFluxoGAI.filter(f => f.name !== 'valor_operacao').map(f => 
+                        !showForm[f.name] ?
+                          <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
+                            <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
+                            {f.type === 'select2' ? 
+                              <CardInfo2 data={card[f.data]} title={card[f.data][f.attr1]} key={card[f.data] && card[f.data].uuid} 
+                                title2={card[f.data][f.attr2]} urlapi={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.urlapi} 
+                                url={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.url}
+                              />
+                                // <CardInfo data={card[f.data]} attr1={f.attr1} attr2={f.attr2}  key={card[f.data] && card[f.data].uuid} 
+                                //   url={!['detalhamento', 'instituicao'].some(c => c === f.name) && f.urlapi}
+                                // />
+                            : f.type === 'date' ? 
+                              <div className="fs--1 row-10">{card[f.name] ? new Date(card[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
+                            : 
+                              <div className="fs--1 row-10">{card[f.name] || '-'}</div>}
+                          </div>
+                          :
+                          <EditFormModal key={f.name}
+                            onSubmit={(formData) => handleSubmit(formData, card.uuid)} 
+                            show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
+                            record={card} field={f}
                           />
-                        }
-                      </ModalMediaContent>
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="pvtec">
-                      {activeTab === 'pvtec' && 
-                        <PVTEC card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
+                      )}
+                    </div>
+
+                    <span className='fw-bold fs-0 d-block mt-3 mb-2'>Histórico</span>
+                    {card.history_fases_list.map(h =>
+                      <CardInfo data={h} attr1={'phase_name'} small key={h.phase_name}
+                        title2={`Duração (min): ${Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}`}
+                      />
+                    )}
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="anexos">
+                    {activeTab === 'anexos' && 
+                      <ModalMediaContent title='Anexos'><Anexos card={card} updatedactivity={(a) => setActivities([a, ...activities])}/></ModalMediaContent>
+                    }
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="comments">
+                    <ModalMediaContent title='Comentários'> 
+                      {activeTab === 'comments' &&
+                        <ModalCommentContent card={card} updatedactivity={(a) => setActivities([a, ...activities])}
+                          link='pipeline/card-comments' param={'fluxogai'} paramform={'fluxo_ambiental'}
+                        />
                       }
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="cobrancas">
-                      {activeTab === 'cobrancas' && 
-                        <Cobrancas card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
-                      }
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="protocolo">
-                      {activeTab === 'protocolo' && 
-                        <IndexProtocolo card={card} updatedactivity={(a) => setActivities([a, ...activities])} currentacomp={acomp} setter={setAcomp}/>
-                      }
-                    </Tab.Pane>
-                    <Tab.Pane eventKey="followup">
-                      {activeTab === 'followup' && 
-                        <IndexAcompGAI card={card} updatedactivity={(a) => setActivities([a, ...activities])} currentacomp={acomp} setter={setAcomp}/>
-                      }
-                    </Tab.Pane>
-                  </Tab.Content>
+                    </ModalMediaContent>
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="pvtec">
+                    {activeTab === 'pvtec' && 
+                      <PVTEC card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
+                    }
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="cobrancas">
+                    {activeTab === 'cobrancas' && 
+                      <Cobrancas card={card} updatedactivity={(a) => setActivities([a, ...activities])}/>
+                    }
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="protocolo">
+                    {activeTab === 'protocolo' && 
+                      <IndexProtocolo card={card} updatedactivity={(a) => setActivities([a, ...activities])} currentacomp={acomp} setter={setAcomp}/>
+                    }
+                  </Tab.Pane>
+                  <Tab.Pane eventKey="followup">
+                    {activeTab === 'followup' && 
+                      <IndexAcompGAI card={card} updatedactivity={(a) => setActivities([a, ...activities])} currentacomp={acomp} setter={setAcomp}/>
+                    }
+                  </Tab.Pane>
+                </Tab.Content>
               </Tab.Container></>
             : kanbanModal.show &&
               <SkeletBig />

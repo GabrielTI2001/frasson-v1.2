@@ -6,7 +6,7 @@ import ModalActivityContent from '../ModalActivityContent';
 import { PipeContext } from '../../../context/Context';
 import api from '../../../context/data';
 import ModalSidebar from '../ModalSidebar';
-import { GetRecord, HandleSearch } from '../../../helpers/Data';
+import { GetRecord, HandleSearch, SelectOptions } from '../../../helpers/Data';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import SubtleBadge from '../../../components/common/SubtleBadge';
@@ -33,6 +33,7 @@ const KanbanModal = ({show, movercard}) => {
   const [activities, setActivities] = useState();
   const {config: {theme}} = useAppContext();
   const [activeTab, setActiveTab] = useState('processo');
+  const [options, setOptions] = useState();
   const fields = card && card.phase === 89 ? fieldsProspect : fieldsProspect.slice(0, 5)
 
   const handleClose = () => {
@@ -61,6 +62,11 @@ const KanbanModal = ({show, movercard}) => {
           navigate("/error/404")
         }
         setCard(reg)
+        const getoptions = async () =>{
+          const options = await SelectOptions('register/produtos', 'description', 'acronym')
+          setOptions({'produto':options})
+        }
+        if (!options) { getoptions() }
         if (!activities){
           HandleSearch('', 'pipeline/card-activities',(data) => {setActivities(data)}, `?prospect=${reg.id}`)
         }
@@ -150,8 +156,13 @@ const KanbanModal = ({show, movercard}) => {
                             <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
                             {f.type === 'select2' ? 
                               <CardInfo data={card[f.data]} attr1={f.attr1} 
-                                attr2={f.attr2}  key={card[f.data].uuid} url={f.name !== 'produto' && f.url}
+                                attr2={f.attr2} key={card[f.data].uuid} url={f.name !== 'produto' && f.url}
                               />
+                            : f.type === 'select' ?
+                              f.name === 'classificacao' ?
+                                <div className="fs--1 row-10">{card[f.name] || '-'}</div>
+                              :
+                                <div className="fs--1 row-10">{card[f.data] && card[f.data][f.attr1]}</div>
                             : f.type === 'date' ? 
                               <div className="fs--1 row-10">{card[f.name] ? new Date(card[f.name]).toLocaleDateString('pt-BR', {timeZone:'UTC'}) : '-'}</div>
                             : f.type === 'dropdown' ?
@@ -160,7 +171,7 @@ const KanbanModal = ({show, movercard}) => {
                               <div className="fs--1 row-10">{card[f.name] || '-'}</div>}
                           </div>
                           :
-                          <EditFormModal key={f.name}
+                          <EditFormModal key={f.name} options={options}
                             onSubmit={(formData) => handleSubmit(formData, card.uuid)} 
                             show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
                             record={card} field={f}
@@ -185,7 +196,7 @@ const KanbanModal = ({show, movercard}) => {
                       <ModalMediaContent title='Comentários'> 
                         {activeTab === 'comments' &&
                           <ModalCommentContent card={card} updatedactivity={(a) => setActivities([a, ...activities])}
-                            link='pipeline/card-comments' param='prospect'
+                            link='pipeline/card-comments' param='prospect' paramform='fluxo_prospect'
                           />
                         }
                       </ModalMediaContent>

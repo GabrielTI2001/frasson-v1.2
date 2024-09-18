@@ -80,7 +80,7 @@ export const AddCard = ({onclick}) =>{
     >
       <Modal.Header>
         <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-            Adicionar Card
+            {kanbanState.pipe.code === 518984924 ? 'Novo Prospect' : 'Adicionar Card'}
         </Modal.Title>
             <CloseButton onClick={() => setModalForm({show:false})}/>
       </Modal.Header>

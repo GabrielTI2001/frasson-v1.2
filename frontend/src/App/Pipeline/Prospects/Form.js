@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Button, Col, Form, Spinner} from 'react-bootstrap';
 import { useAppContext } from '../../../Main';
 import api from '../../../context/data';
@@ -9,6 +9,7 @@ import { fieldsProspect } from '../Data';
 import RenderFields from '../../../components/Custom/RenderFields';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 import { useNavigate } from 'react-router-dom';
+import { SelectOptions } from '../../../helpers/Data';
 
 const ProspectForm = ({
   onSubmit,
@@ -20,6 +21,7 @@ const ProspectForm = ({
   const user = JSON.parse(localStorage.getItem('user'))
   const [formData, setFormData] = useState({phase:fase, classificacao:'Cliente Novo', created_by:user.id});
   const [message, setMessage] = useState();
+  const [options, setOptions] = useState();
   const [isLoading, setIsloading] = useState();
   const token = localStorage.getItem("token")
   const navigate = useNavigate()
@@ -61,6 +63,14 @@ const ProspectForm = ({
     }
   };
 
+  useEffect(() => {
+    const getoptions = async () =>{
+      const options = await SelectOptions('register/produtos', 'description', 'acronym')
+      setOptions({'produto':options})
+    }
+    if (!options) getoptions()
+  }, [])
+
   return (
     <>
       <div
@@ -75,7 +85,7 @@ const ProspectForm = ({
             return submit();
           }}
         >
-          <RenderFields fields={fieldsProspect.slice(0, 5)} formData={formData}
+          <RenderFields fields={fieldsProspect.slice(0, 5)} formData={formData} options={options}
             changefield={handleFieldChange} hasLabel={true} message={message} setform={setFormData}
           />
           <Form.Group className={`mb-0 pb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>

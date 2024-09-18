@@ -1,7 +1,6 @@
 const style = {width:'15px', height:'15px'}
 
 export const fieldsProspect = [
-  {name:'nome', label:'Nome Prospect*', type:'text'},
   {name:'prioridade', label:'Prioridade*', type:'dropdown', direction:'up', string:'str_prioridade', options:
     {'A':'Alta', 'M':'Média', 'B':'Baixa'},
     icon:{
@@ -10,10 +9,11 @@ export const fieldsProspect = [
       'B':<div className={`rounded-circle d-inline-block me-1 bg-success`} style={style}></div>
     }
   },
-  {name:'produto', label:'Produto de Interesse*', type:'select2', url:'register/produtos', attr1:'description', 
+  {name:'nome', label:'Nome Prospect*', type:'text'},
+  {name:'produto', label:'Produto de Interesse*', type:'select', attr1:'description', 
     attr2:'acronym', data:'info_produto'
   },
-  {name:'classificacao', label:'Classificação*', type:'select', string:'prioridade', options:
+  {name:'classificacao', label:'Classificação*', type:'select', options:
     {'Cliente Novo':'Cliente Novo', 'Cliente Carteira':'Cliente Carteira'}, 
   },
   {name:'descricao', label:'Descrição*', type:'textarea', rows:4},

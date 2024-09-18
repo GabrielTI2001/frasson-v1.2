@@ -14,7 +14,7 @@ import { RedirectToLogin } from '../../Routes/PrivateRoute';
 
 export const Anexos = ({card, updatedactivity, ispvtec, pvtecresponse, isgc, isprospect}) => {
   const user = JSON.parse(localStorage.getItem('user'))
-  const [formData, setFormData] = useState({fluxo_ambiental:!ispvtec ? card.id : null, uploaded_by:user.id,  
+  const [formData, setFormData] = useState({fluxo_ambiental:!ispvtec && !isprospect ? card.id : null, uploaded_by:user.id,  
     pvtec:ispvtec ? card.id : null, pvtec_response: pvtecresponse ? true : null, fluxo_prospect:isprospect ? card.id : null,
     fluxo_credito: isgc ? card.id : null});
   const [accFiles, setaccFiles] = useState();

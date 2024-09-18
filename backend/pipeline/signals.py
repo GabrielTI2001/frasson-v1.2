@@ -48,8 +48,11 @@ def phase_history_gai(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Card_Comments)
 def mention_coment(sender, instance, created, **kwargs):
     if created:
-        Card_Activities.objects.create(type='co', updated_by_id=instance.created_by.id, 
-            fluxo_ambiental=instance.fluxo_ambiental, pvtec=instance.pvtec, campo=instance.text)
+        Card_Activities.objects.create(type='co', updated_by_id=instance.created_by.id,  
+            fluxo_ambiental=instance.fluxo_ambiental, 
+            fluxo_prospect=instance.fluxo_prospect,
+            pvtec=instance.pvtec, campo=instance.text
+        )
         mentions = mention_pattern.findall(instance.text)
         for display, id in mentions:
             # mentioned_user = get_object_or_404(User, id=id)

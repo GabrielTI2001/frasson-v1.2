@@ -259,6 +259,7 @@ class AnexoView(viewsets.ModelViewSet):
                 reg = Card_Anexos.objects.create(
                     pvtec_id=request.data.get('pvtec') if request.data.get('pvtec') else None, 
                     fluxo_ambiental_id=request.data.get('fluxo_ambiental') if request.data.get('fluxo_ambiental') else None, 
+                    fluxo_prospect_id=request.data.get('fluxo_prospect') if request.data.get('fluxo_prospect') else None, 
                     uploaded_by_id=request.data.get('uploaded_by'), 
                     pvtec_response=True if request.data.get('pvtec_response') else False, 
                     file=i

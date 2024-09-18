@@ -32,10 +32,10 @@ export const renderComment = (comment) => {
 };
 
 
-const ModalCommentContent = ({card, updatedactivity, link, param}) => {
+const ModalCommentContent = ({card, updatedactivity, link, param, paramform}) => {
   const {profileState, profileDispatch} = useContext(ProfileContext)
   const user = JSON.parse(localStorage.getItem('user'))
-  const [formData, setFormData] = useState({created_by:user.id, [param]:card.id});
+  const [formData, setFormData] = useState({created_by:user.id, [paramform]:card.id, phase:card.phase});
   const [users, setUsers] = useState([]);
   const [comentarios, setComentarios] = useState();
   const [loading, setLoading] = useState(false);

@@ -171,7 +171,7 @@ class serializerFluxoProspects(serializers.ModelSerializer):
         if fase_anterior and (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
             if fase_anterior.destinos_permitidos.all().count() > 1:
                 raise serializers.ValidationError("Não é permitido mover para essa fase")
-        contratos = self.instance.contrato_gc or self.instance.contrato_gai
+        contratos = self.instance.contrato_gc or self.instance.contrato_gai if self.instance else False
         if (fase_anterior and fase_anterior.id == 90) and (not contratos) and (value.id > 90):
             raise serializers.ValidationError("Cadastre um Contrato")
         return value
