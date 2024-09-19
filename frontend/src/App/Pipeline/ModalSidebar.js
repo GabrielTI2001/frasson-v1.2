@@ -89,7 +89,7 @@ const ModalSidebar = ({card, pipe, move}) => {
 
   return (
     <>
-      <h6 className="mt-1 fs-0 fw-bold">Ações</h6>
+      <h6 className="mt-4 fs-0 fw-bold">Mover Para Fase</h6>
       {actionMenu && actionMenu.map(menu => (
         <Nav key={menu.id} className="flex-lg-column fs--2">
           <Nav.Item className={`me-2 me-lg-0`}>

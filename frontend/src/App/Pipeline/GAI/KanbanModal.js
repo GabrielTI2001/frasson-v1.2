@@ -183,11 +183,13 @@ const KanbanModalGAI = ({show, movercard}) => {
                     </div>
 
                     <span className='fw-bold fs-0 d-block mt-3 mb-2'>Histórico</span>
-                    {card.history_fases_list.map(h =>
-                      <CardInfo data={h} attr1={'phase_name'} small key={h.phase_name}
-                        title2={`Duração (min): ${Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}`}
-                      />
-                    )}
+                    <div className='row gx-0'>
+                      {card.history_fases_list.map(h =>
+                        <CardInfo data={h} attr1={'phase_name'} small key={h.phase_name}
+                          title2={`Duração (min): ${Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}`}
+                        />
+                      )}
+                    </div>
                   </Tab.Pane>
                   <Tab.Pane eventKey="anexos">
                     {activeTab === 'anexos' && 

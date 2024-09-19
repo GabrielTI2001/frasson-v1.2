@@ -196,7 +196,8 @@ class listFluxoProspects(serializers.ModelSerializer):
         return [{'id':r.id, 'nome':r.first_name+' '+r.last_name, 'avatar':'media/'+r.profile.avatar.name} for r in responsaveis]
     class Meta:
         model = Fluxo_Prospects
-        fields = ['id', 'uuid', 'code', 'nome', 'created_at', 'data_vencimento', 'list_responsaveis', 'str_produto', 'str_fase', 'str_prioridade']
+        fields = ['id', 'uuid', 'code', 'nome', 'created_at', 'data_vencimento', 'list_responsaveis', 'str_produto', 'str_fase', 
+            'str_prioridade', 'classificacao']
 
 class serializerFase(serializers.ModelSerializer):
     fluxo_gestao_ambiental_set = listFluxoAmbiental(many=True, read_only=True, required=False)
@@ -213,9 +214,13 @@ class serializerFase(serializers.ModelSerializer):
 
 class listFase(serializers.ModelSerializer):
     list_destinos = serializers.SerializerMethodField(read_only=True, required=False)
+    list_responsaveis = serializers.SerializerMethodField(read_only=True, required=False)
     def get_list_destinos(self, obj):
         destinos_permitidos = obj.destinos_permitidos.all() if len(obj.destinos_permitidos.all()) > 1 else Fase.objects.filter(pipe=obj.pipe_id)
         return [{'id':r.id, 'descricao':r.descricao} for r in destinos_permitidos]
+    def get_list_responsaveis(self, obj):
+        responsaveis = obj.responsaveis.all()
+        return [{'value':r.id, 'label':r.first_name+' '+r.last_name} for r in responsaveis]
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.instance:
@@ -237,6 +242,13 @@ class serializerPipe(serializers.ModelSerializer):
 
 class listPipe(serializers.ModelSerializer):
     list_pessoas = serializers.SerializerMethodField(read_only=True)
+    list_fases = serializers.SerializerMethodField(read_only=True)
+    def get_list_fases(self, obj):
+        fases = Fase.objects.filter(pipe=obj)
+        return [{'id':r.id, 'descricao':r.descricao, 'dias_prazo':r.dias_prazo,
+                'responsaveis':[{'value':r.id, 'label':r.first_name+' '+r.last_name} for r in r.responsaveis.all()]
+            } 
+            for r in fases]
     def get_list_pessoas(self, obj):
         responsaveis = obj.pessoas.all()
         return [{'value':r.id, 'label':r.first_name+' '+r.last_name} for r in responsaveis]

@@ -130,7 +130,7 @@ const KanbanModal = ({show, movercard}) => {
       </div>
       <Modal.Body className="pt-2">
         <Row className='p-2 gy-1'>
-          <Col className='border-1 pe-2 ps-3 overflow-auto modal-column-scroll' id='infocard' lg={5}>
+          <Col className='border-1 pe-3 ps-3 overflow-auto modal-column-scroll' id='infocard' lg={5}>
             {card ? <>
               <div className="rounded-top-lg pt-1 pb-0 mb-2">
                 <h4 className="mb-1 fs-1 fw-bold">{card.nome}</h4>
@@ -168,7 +168,7 @@ const KanbanModal = ({show, movercard}) => {
                             : f.type === 'dropdown' ?
                               <div className="fs--1 row-10">{f.icon && f.icon[card[f.name]]} {card[f.string] || '-'}</div>
                             : 
-                              <div className="fs--1 row-10">{card[f.name] || '-'}</div>}
+                              <div className="fs--1 row-10 text-justify">{card[f.name] || '-'}</div>}
                           </div>
                           :
                           <EditFormModal key={f.name} options={options}
@@ -179,11 +179,14 @@ const KanbanModal = ({show, movercard}) => {
                       )}
 
                       <span className='fw-bold fs-0 d-block mt-3 mb-2'>Histórico</span>
-                      {card.history_fases_list.map(h =>
-                        <CardInfo data={h} attr1={'phase_name'} small key={h.phase_name}
-                          title2={`Duração (min): ${Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}`}
-                        />
-                      )}
+                      <div className='row gx-0'>
+                        {card.history_fases_list.map(h =>
+                          <CardInfo data={h} attr1={'phase_name'} small key={h.phase_name}
+                            title2={`Duração (min): ${Number(h.duration/60).toLocaleString("pt-BR", {maximumFractionDigits:2})}`}
+                          />
+                        )}
+                      </div>
+
                     </Tab.Pane>
                     <Tab.Pane eventKey="anexos">
                       {activeTab === 'anexos' && 

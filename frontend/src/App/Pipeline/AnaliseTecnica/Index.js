@@ -94,7 +94,7 @@ const IndexAT = ({card, updatedactivity}) => {
       </Link>
     </div>
     {showmodal.show &&
-      <ExpandableCard title='Nova PVTEC' auto close={() => setShowModal({show:false})}>
+      <ExpandableCard title='Nova Análise Técnica' auto close={() => setShowModal({show:false})}>
         <FormAT type='add' hasLabel submit={submit} card={card}/>
       </ExpandableCard>
     }

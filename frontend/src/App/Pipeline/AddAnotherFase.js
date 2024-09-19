@@ -55,6 +55,7 @@ const AddAnotherFase = ({
         >
           <Form
             onSubmit={e => {
+              setIsloading(true)
               e.preventDefault();
               return submitform();
             }}

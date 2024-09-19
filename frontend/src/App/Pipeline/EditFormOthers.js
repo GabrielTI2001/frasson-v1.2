@@ -31,7 +31,7 @@ const EditFormOthers = ({
       >
         <Form
           onSubmit={e => {
-          e.preventDefault();
+            e.preventDefault();
             return handleSubmit(formData);
           }}
         >

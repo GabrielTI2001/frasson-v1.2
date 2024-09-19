@@ -105,7 +105,7 @@ const IndexProtocolo = ({card, updatedactivity, currentacomp, setter}) => {
             <span className='text-danger fw-bold'>Esta demanda não possui processo de acompanhamento vinculado... Por favor faça o registro!</span>
             <hr className='my-2'></hr>
             <Form
-              onSubmit={e => { e.preventDefault(); handleApi(formData);}}
+              onSubmit={e => { e.preventDefault(); setIsLoading(true); handleApi(formData);}}
             >
               <RenderFields fields={fieldsProcesso} formData={formData}
                 changefield={handleFieldChange} hasLabel={true} message={message} setform={setformData}

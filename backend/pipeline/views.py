@@ -305,11 +305,12 @@ class PVTECView(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         files = request.FILES.getlist('file')
+        user = request.POST.get('created_by')
         if serializer.is_valid():
             self.perform_create(serializer)
             if request.FILES:
                 for i in files:
-                    Card_Anexos.objects.create(pvtec=serializer.instance, uploaded_by=request.user, file=i)
+                    Card_Anexos.objects.create(pvtec=serializer.instance, uploaded_by_id=user, file=i)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -372,7 +373,7 @@ class AnaliseTecnicaView(viewsets.ModelViewSet):
             self.perform_create(serializer)
             if request.FILES:
                 for i in files:
-                    Card_Anexos.objects.create(analise_tecnica=serializer.instance, uploaded_by=user, file=i)
+                    Card_Anexos.objects.create(analise_tecnica=serializer.instance, uploaded_by_id=user, file=i)
             Card_Activities.objects.create(fluxo_prospect_id=request.data.get('fluxo_prospect'), type='ch', campo='Análises Técnicas', updated_by_id=user)
             headers = self.get_success_headers(serializer.data)
             return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

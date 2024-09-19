@@ -105,7 +105,7 @@ const TaskCard = ({
                   className='me-2 fw-normal text-body fs--2'>{task.prioridade}
                 </SubtleBadge>
               }
-              <div className='mb-1'>
+              <div className='mb-1 mt-2'>
                 <h4 className='fw-bold fs--1'>{task && (task.str_detalhamento || '-')}</h4>
               </div>
               <div className='mb-1'>

@@ -123,8 +123,8 @@ const KanbanContainer = () => {
   };
 
   const move = (source, destination) => {
-    const sourceItemsClone = [...getColumn(source.droppableId).card_set];
-    const destItemsClone = [...getColumn(destination.droppableId).card_set];
+    const sourceItemsClone = getColumn(source.droppableId) ? [...getColumn(source.droppableId).card_set] : [];
+    const destItemsClone = getColumn(destination.droppableId) ? [...getColumn(destination.droppableId).card_set] : [];
     const [removedItem] = sourceItemsClone.splice(source.index, 1);
     destItemsClone.splice(destination.index, 0, removedItem);
     return {

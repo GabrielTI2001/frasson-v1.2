@@ -100,21 +100,25 @@ const TaskCardProspect = ({
             onClick={handleModalOpen}
           >
             <Card.Body className='p-2'>
-              {task && task.prioridade && 
-                <SubtleBadge bg={`${task.prioridade === 'Alta' ? 'danger' : task.prioridade === 'Média' ? 'warning' : 'success'}`} 
-                  className='me-2 fw-normal text-body fs--2'>{task.prioridade}
+              {task && task.str_prioridade && 
+                <SubtleBadge bg={`${task.prioridade === 'Alta' ? 'danger' : task.str_prioridade === 'Média' ? 'warning' : 'success'}`} 
+                  className='me-2 fw-normal text-body fs--2'>{task.str_prioridade}
                 </SubtleBadge>
               }
-              <div className='mb-1'>
+              <div className='mb-1 mt-2'>
                 <h4 className='fw-bold fs--1'>{task && (task.nome || '-')}</h4>
               </div>
               <div className='mb-1'>
-                <label className='mb-0 text-uppercase fs--2'>Processo</label><br></br>
+                <label className='mb-0 text-uppercase fs--2'>Prospect</label><br></br>
                 <span className='d-block'>#{task && task.code}</span>
               </div>
               <div className='mb-1'>
                 <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Produto de Interesse</label>
                 <span className='d-block'>{task && task.str_produto}</span>
+              </div>
+              <div className='mb-1'>
+                <label className='mb-0 d-block cursor-pointer text-uppercase fs--2'>Classificação</label>
+                <span className='d-block'>{task && task.classificacao}</span>
               </div>
               {task && task.data_vencimento &&
               <div className='mb-1'>

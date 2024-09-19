@@ -24,7 +24,7 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
   <>
     <div className="kanban-column-header">
       <h5 className="fs-0 mb-0">
-        <span className='fs--1'>{title}</span> <span className="text-500 fs--1">({itemCount})</span>
+        <span className='fs--1' style={{color:'#1b339e'}}>{title}</span> <span className="text-500 fs--1">({itemCount})</span>
       </h5>
     </div>
 
@@ -38,9 +38,9 @@ const KanbanColumnHeader = ({ id, title, itemCount }) => {
       scrollable
     >
       <Modal.Header>
-      <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-        Adicionar Card
-      </Modal.Title>
+        <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
+          Adicionar Card
+        </Modal.Title>
           <CloseButton onClick={() => setModalForm({show:false})}/>
       </Modal.Header>
       <Modal.Body>

@@ -81,6 +81,7 @@ const ProspectForm = ({
       >
         <Form className='row row-cols-xl-1 row-cols-sm-1 row-cols-xs-1'
           onSubmit={e => {
+            setIsloading(true)
             e.preventDefault();
             return submit();
           }}
