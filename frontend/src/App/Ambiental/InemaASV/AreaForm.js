@@ -2,7 +2,7 @@ import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate} from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { Button, Form, Col} from 'react-bootstrap';
+import { Button, Form, Col, Spinner} from 'react-bootstrap';
 import ModalGMS from '../../../components/Custom/ModalGMS';
 import { AmbientalContext } from '../../../context/Context';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
@@ -15,6 +15,7 @@ const AreaForm = ({ hasLabel, type, data, update}) => {
   });
   const [showModal, setShowModal] = useState({show:false, type:''});
   const [message, setMessage] = useState();
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   
   const handleApi = async (dadosform) => {
@@ -38,10 +39,12 @@ const AreaForm = ({ hasLabel, type, data, update}) => {
       }
       update()
     }
+    setIsLoading(false)
   };
 
   const handleSubmit = e => {
     setMessage(null)
+    setIsLoading(true)
     e.preventDefault();
     const formDataToSend = new FormData();
     for (const key in formData) {
@@ -51,10 +54,7 @@ const AreaForm = ({ hasLabel, type, data, update}) => {
   };
 
   const handleFieldChange = e => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    setFormData({...formData, [e.target.name]: e.target.value});
   };
 
   const handleFileChange = (e) => {
@@ -114,12 +114,9 @@ const AreaForm = ({ hasLabel, type, data, update}) => {
 
         <label className='text-danger'>{message && (message.non_field_errors)}</label>
         <Form.Group className="mb-0 text-end">
-          <Button
-            className="w-40"
-            type="submit"
-          >
-            {type === 'edit' ? "Atualizar Área"
-            : "Cadastrar Área"}
+          <Button className="w-40"type="submit" disabled={isLoading}>
+            {isLoading ? <Spinner size='sm' className='p-0 mx-4' style={{height:'12px', width:'12px'}}/> : 
+            type === 'edit' ? "Atualizar Área" : "Cadastrar Área"}
           </Button>
         </Form.Group>           
       </Form>

@@ -58,10 +58,7 @@ const ProductForm = ({
   return (
     <>
       <div
-        className={classNames('rounded-3 transition-none', {
-          'bg-100 p-x1': type === 'list',
-          'p-3 border bg-white dark__bg-1000 mt-3': type === 'card'
-        })}
+        className={classNames('rounded-3 transition-none')}
       >
         <Form className='row row-cols-xl-1 row-cols-sm-1 row-cols-xs-1'
           onSubmit={e => {
@@ -70,7 +67,10 @@ const ProductForm = ({
             return submit();
           }}
         >
-          <RenderFields fields={data ? fieldsFluxoGAI.filter(f => !Object.keys(data).some(k => k === f.name)) : fieldsFluxoGAI} 
+          <RenderFields fields={data ? 
+              (type === 'gai' ? fieldsFluxoGAI.slice(0, 5) : fieldsFluxoGAI).filter(f => !Object.keys(data).some(k => k === f.name)) 
+            : 
+              type === 'gai' ? fieldsFluxoGAI.slice(0, 5) : fieldsFluxoGAI} 
             formData={formData}
             changefield={handleFieldChange} hasLabel={true} message={message} setform={setFormData}
           />

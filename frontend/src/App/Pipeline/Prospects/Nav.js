@@ -1,6 +1,6 @@
 import { faComment, faFilter, faPaperclip, faPlus } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Card, CloseButton, Modal, Nav, Row } from "react-bootstrap"
+import { CloseButton, Modal, Nav, Row } from "react-bootstrap"
 import { PipeContext } from "../../../context/Context"
 import { useContext, useState } from "react"
 import ProductForm from "../GAI/Form"
@@ -32,16 +32,6 @@ const NavGai = ({card}) =>{
         <Nav.Item>
             <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab mb-2 link-primary" eventKey="analisetec">
                 <FontAwesomeIcon icon={faFilter} className="me-1"/>Análise Técnica
-            </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary mb-2" eventKey="template">
-                <FontAwesomeIcon icon={faFilter} className="me-1"/>Template
-            </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-            <Nav.Link className="text-secondary px-1 py-0 border-1 border me-2 custom-tab link-primary" eventKey="propostavalor">
-                <FontAwesomeIcon icon={faFilter} className="me-1"/>Proposta de Valor
             </Nav.Link>
         </Nav.Item>
         {card.phase >= 90 &&

@@ -231,3 +231,38 @@ export const fieldsASV = [
   {name:'rendimento', label:'Rendimento Lenhoso', medida:'m', potencia:'3', type:'text'},
   {name:'file', label:'Arquivo PDF', type:'file'}
 ]
+
+export const fieldsPontoOutorga = [
+  {name:'descricao_ponto', label:'Descrição Ponto*', type:'text', xl:3, sm:6},
+  {name:'latitude_gd', label:'Latitude (GD)*', type:'text', iscoordenada:true, cat:'latitude', xl:4, sm:12},
+  {name:'longitude_gd', label:'Longitude (GD)*', type:'text', iscoordenada:true, cat:'longitude', xl:4, sm:12},
+  {name:'vazao_m3_dia', label_html:<>Vazão Máxima (m<sup>3</sup>/dia)*</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'bombeamento_h', label:'Horas Bombeamento*', type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_jan', label_html:<>JAN (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_fev', label_html:<>FEV (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_mar', label_html:<>MAR (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_abr', label_html:<>ABR (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_mai', label_html:<>MAI (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_jun', label_html:<>JUN (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_jul', label_html:<>JUL (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_ago', label_html:<>AGO (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_set', label_html:<>SET (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_out', label_html:<>OUT (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_nov', label_html:<>NOV (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'vazao_m3_dia_dez', label_html:<>DEZ (m<sup>3</sup>/dia)</>, type:'text', isnumber:true, xl:3, sm:6},
+]
+
+export const fieldsPontoAPPO = [
+  {name:'numero_poco', label:'Número Poço*', type:'text', xl:3, sm:6},
+  {name:'latitude_gd', label:'Latitude (GD)*', type:'text', iscoordenada:true, cat:'latitude', xl:4, sm:12},
+  {name:'longitude_gd', label:'Longitude (GD)*', type:'text', iscoordenada:true, cat:'longitude', xl:4, sm:12},
+  {name:'vazao_m3_dia', label_html:<>Expect. Vazão (m<sup>3</sup>/dia)*</>, type:'text', isnumber:true, xl:3, sm:6},
+  {name:'finalidade', label:'Finalidade APPO*', type:'select2', url:'environmental/inema/finalidade', attr1:'description', 
+    string:'str_finalidade', xl:4, sm:6
+  },
+  {name:'poco_perfurado', label:'Poço Perfurado?', type:'select', boolean:true, xl:3, sm:6},
+  {name:'data_perfuracao', label:'Data Perfuração*', type:'date', xl:3, sm:6},
+  {name:'profundidade_poco', label:'Prof. Poço (m)', type:'text', isnumber:true, xl:3, sm:6},
+  {name:'nivel_estatico', label:'Nível Estático (m)', type:'text', isnumber:true, xl:3, sm:6},
+  {name:'nivel_dinamico', label:'Nível Dinâmico (m)', type:'text', isnumber:true, xl:3, sm:6}
+]

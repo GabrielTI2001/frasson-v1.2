@@ -7,12 +7,13 @@ import { HandleSearch } from '../../../helpers/Data';
 import api from '../../../context/data';
 import { toast } from 'react-toastify';
 import ModalDelete from '../../../components/Custom/ModalDelete';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ExpandableCard from '../../../components/Custom/ExpandableCard';
 import {CardTitle} from '../CardInfo';
 import { Anexos } from '../FollowUp/Anexos';
 import EditFormModal from '../../../components/Custom/EditForm';
 import FormAT from './Form';
+import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
 const IndexAT = ({card, updatedactivity}) => {
   const [analises, setAnalises] = useState();
@@ -21,6 +22,7 @@ const IndexAT = ({card, updatedactivity}) => {
   const [showmodal, setShowModal] = useState({show:false})
   const [modaldel, setModaldel] = useState({show:false})
   const [showForm, setShowForm] = useState({})
+  const navigate = useNavigate()
 
   const submit = (type, data) => {
     if (type === 'add'){
@@ -67,6 +69,9 @@ const IndexAT = ({card, updatedactivity}) => {
         if (erro.response.status === 400){
           toast.error(Object.values(erro.response.data)[0][0])
         }
+        if (erro.response.status === 401){
+          RedirectToLogin(navigate)
+        }
         console.error('erro: '+erro);
       })
     }
@@ -79,7 +84,10 @@ const IndexAT = ({card, updatedactivity}) => {
   useEffect(() =>{
     const getusers = async () =>{
       if (!analises){
-        HandleSearch('', 'pipeline/analise-tecnica',(data) => {setAnalises(data)}, `?prospect=${card.id}`)
+        const status = await HandleSearch('', 'pipeline/analise-tecnica',(data) => {setAnalises(data)}, `?prospect=${card.id}`)
+        if (status === 401){
+          RedirectToLogin(navigate)
+        }
       }
     }
     getusers()
@@ -117,7 +125,7 @@ const IndexAT = ({card, updatedactivity}) => {
             field={{name:'observacoes', label:'Observações', type:'textarea', rows:3}}
           />
         }
-        <div className='mt-2'><Anexos param='analisetecnica' value={p.id}/></div>
+        <div className='mt-2'><Anexos param='analisetecnica' formparam='analise_tecnica' value={p.id}/></div>
       </ExpandableCard>
       ) : <div className='text-center mb-4'><Spinner /></div> 
     }

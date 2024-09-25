@@ -31,7 +31,7 @@ const ListActivities = ({item}) => {
           <span className='fs--1'>{item.type === 'ch' ? 'atualizou' : item.type === 'cf' ? 'moveu' : item.type === 'c' ? 'concluiu'
             : item.type === 'cr' ? 'criou' : 'comentou'}</span>{' '}
           {item.type === 'co' ?
-            <div className="flex-1 fs--1 border border-300 rounded-3 p-2">{renderComment(item.campo)}</div>
+            <div className="flex-1 text-justify fs--1 border border-300 rounded-3 p-2">{renderComment(item.campo)}</div>
             : item.campo
           }
         </div>

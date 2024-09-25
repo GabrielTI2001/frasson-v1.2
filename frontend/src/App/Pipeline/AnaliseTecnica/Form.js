@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, Col} from 'react-bootstrap';
+import { Button, Col, Spinner} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { sendData } from '../../../helpers/Data';
@@ -20,6 +20,7 @@ const FormAT = ({type, data, submit, card}) => {
       phase_origem:card.phase
     });
     const [defaultoptions, setDefaultOptions] = useState();
+    const [isLoading, setIsLoading] = useState(false);
     const [isDragActive, setIsDragActive] = useState();
 
     const { getRootProps: getRootProps, getInputProps: getInputProps } = useDropzone({
@@ -47,10 +48,12 @@ const FormAT = ({type, data, submit, card}) => {
         type === 'edit' ? submit('edit', dados) : submit('add', dados)
         toast.success("Registro Atualizado com Sucesso!")
       }
+      setIsLoading(false)
     };
 
     const handleSubmit = async e => {
         setMessage(null)
+        setIsLoading(true)
         e.preventDefault();
         const formDataToSend = new FormData();
         for (const key in formData) {
@@ -131,7 +134,9 @@ const FormAT = ({type, data, submit, card}) => {
         </Form.Group>
 
         <Form.Group as={Col} className='text-end' xl={12}>
-            <Button type='submit'>Cadastrar</Button>
+          <Button type='submit' disabled={isLoading}>
+            {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Cadastrar</span>}
+          </Button>
         </Form.Group>
     </Form>
     );

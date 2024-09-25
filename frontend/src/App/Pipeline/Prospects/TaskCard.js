@@ -101,7 +101,7 @@ const TaskCardProspect = ({
           >
             <Card.Body className='p-2'>
               {task && task.str_prioridade && 
-                <SubtleBadge bg={`${task.prioridade === 'Alta' ? 'danger' : task.str_prioridade === 'Média' ? 'warning' : 'success'}`} 
+                <SubtleBadge bg={`${task.str_prioridade === 'Alta' ? 'danger' : task.str_prioridade === 'Média' ? 'warning' : 'success'}`} 
                   className='me-2 fw-normal text-body fs--2'>{task.str_prioridade}
                 </SubtleBadge>
               }

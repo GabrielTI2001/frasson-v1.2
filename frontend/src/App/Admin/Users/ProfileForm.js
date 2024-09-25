@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState} from "react";
-import { Form, Col, Button, Row } from "react-bootstrap";
+import { Form, Col, Button, Row, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { sendData } from "../../../helpers/Data";
@@ -12,6 +12,7 @@ import Avatar from '../../../components/common/Avatar';
 
 const ProfileForm = ({hasLabel, type}) => {
     const {profileState, profileDispatch} = useContext(ProfileContext)
+    const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState();
     const [message, setMessage] = useState()
     const navigate = useNavigate();
@@ -30,10 +31,12 @@ const ProfileForm = ({hasLabel, type}) => {
         profileDispatch({type: 'SET_PROFILE', payload:dados});
         toast.success("Registro Atualizado com Sucesso!")
       }
+      setIsLoading(false)
     };
 
     const handleSubmit = e => {
         setMessage(null)
+        setIsLoading(true)
         e.preventDefault();
         const formDataToSend = new FormData();
         for (const key in formData) {
@@ -97,7 +100,9 @@ const ProfileForm = ({hasLabel, type}) => {
           />
         }
         <Form.Group as={Col} xl='12' className={`mb-0`}>
-          <Button className="w-40" variant="success" type="submit">Atualizar Informações</Button>
+          <Button className="w-40" variant="success" type="submit" disabled={isLoading}>
+            {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Atualizar Informações</span>}
+          </Button>
         </Form.Group>  
       </Form>
       <hr></hr>

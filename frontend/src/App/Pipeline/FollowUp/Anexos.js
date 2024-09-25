@@ -12,9 +12,9 @@ import { toast } from 'react-toastify';
 import Flex from '../../../components/common/Flex';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
 
-export const Anexos = ({ value, param, readonly, url}) => {
+export const Anexos = ({ value, param, formparam, readonly, url}) => {
   const user = JSON.parse(localStorage.getItem('user'));
-  const [formData, setFormData] = useState({ [param]: value, uploaded_by: user.id });
+  const [formData, setFormData] = useState({[formparam ? formparam : param]: value, uploaded_by: user.id });
   const { config: { theme, isRTL } } = useAppContext();
   const [anexos, setAnexos] = useState();
   const token = localStorage.getItem("token");
@@ -42,7 +42,7 @@ export const Anexos = ({ value, param, readonly, url}) => {
           formDataToSend.append(key, data[key]);
         }
       }
-      api.post('pipeline/card-anexos/', formDataToSend, { headers: { Authorization: `Bearer ${token}` },
+      api.post(url ? url+'/' : 'pipeline/card-anexos/', formDataToSend, { headers: { Authorization: `Bearer ${token}` },
         onUploadProgress: (progressEvent) => {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           setProgress(percentCompleted);
@@ -79,7 +79,7 @@ export const Anexos = ({ value, param, readonly, url}) => {
   useEffect(() => {
     const getData = async () => {
       if (!anexos) {
-        const status = await HandleSearch('', `${url || 'pipeline/card-anexos'}`, (data) => { setAnexos(data); }, `?${param}=${value}`);
+        const status = await HandleSearch('', `${url ? url : 'pipeline/card-anexos'}`, (data) => { setAnexos(data); }, `?${param}=${value}`);
         if (status === 401) {
           RedirectToLogin(navigate);
         }
@@ -96,9 +96,7 @@ export const Anexos = ({ value, param, readonly, url}) => {
           <div className='p-1 gx-2 d-flex col rounded-2 my-1 justify-content-between nav-link cursor-pointer hover-children'
             key={a.id}
           >
-            <Link target='__blank' to={a.file}
-              className='col-11'
-            >
+            <Link target='__blank' to={a.file} className='col-11'>
               <FontAwesomeIcon icon={faFile} className='me-2 col-auto px-0 fs-1' />
               <span className='col-10'>{a.name}</span>
             </Link>

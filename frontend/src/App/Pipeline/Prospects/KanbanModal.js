@@ -34,7 +34,6 @@ const KanbanModal = ({show, movercard}) => {
   const {config: {theme}} = useAppContext();
   const [activeTab, setActiveTab] = useState('processo');
   const [options, setOptions] = useState();
-  const fields = card && card.phase === 89 ? fieldsProspect : fieldsProspect.slice(0, 5)
 
   const handleClose = () => {
     if (card){
@@ -150,7 +149,7 @@ const KanbanModal = ({show, movercard}) => {
                         <div className="fs--1 row-10">#{card.code}</div>
                       </div>
 
-                      {fields.map(f => 
+                      {fieldsProspect.slice(0,5).map(f => 
                         !showForm[f.name] ?
                           <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
                             <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
@@ -236,6 +235,25 @@ const KanbanModal = ({show, movercard}) => {
                 <span className="mb-1 fs-0 fw-bold d-inline-block me-2">Fase Atual</span>
                 <SubtleBadge>{card.str_fase}</SubtleBadge>
               </div>
+              {card && card.phase === 89 &&
+                <ModalMediaContent title='Proposta de Valor'>
+                  {fieldsProspect.slice(5).map(f => 
+                    !showForm[f.name] ?
+                      <div className="rounded-top-lg pt-1 pb-0 mb-2" key={f.name}>
+                        <CardTitle title={f.label.replace('*','')} field={f.name} click={handleEdit}/>
+                        <div className="fs--1 row-10 text-justify">
+                          {card[f.name] ? Number(card[f.name]).toLocaleString('pt-br', {minimumFractionDigits:2}) : '-'}
+                        </div>
+                      </div>
+                    :
+                    <EditFormModal key={f.name} options={options}
+                      onSubmit={(formData) => handleSubmit(formData, card.uuid)} 
+                      show={showForm[f.name]} fieldkey={f.name} setShow={setShowForm} 
+                      record={card} field={f}
+                    />)
+                  }
+                </ModalMediaContent>
+              }  
               <ModalMediaContent title='Atividades'>
                 <ModalActivityContent card={card} atividades={activities}/>
               </ModalMediaContent>

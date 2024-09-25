@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, Col} from 'react-bootstrap';
+import { Button, Col, Spinner} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { SelectOptions, sendData } from '../../../helpers/Data';
@@ -16,6 +16,7 @@ const FormCobranca = ({type, data, submit, card}) => {
     const [formData, setformData] = useState({created_by:user.id, fluxo_ambiental:card ? card.id : '', status:'AD',
       contrato:card.contrato, cliente:card.beneficiario, servico:card.detalhamento
     });
+    const [isLoading, setIsLoading] = useState(false);
     const futureDate = new Date();
     futureDate.setDate(futureDate.getDate() + 7);
 
@@ -31,10 +32,12 @@ const FormCobranca = ({type, data, submit, card}) => {
         submit('add', dados)
         toast.success("Registro Atualizado com Sucesso!")
       }
+      setIsLoading(false)
     };
 
     const handleSubmit = async e => {
         setMessage(null)
+        setIsLoading(true)
         e.preventDefault();
         await handleApi(formData);
     };
@@ -76,7 +79,9 @@ const FormCobranca = ({type, data, submit, card}) => {
 
       <label className='text-danger'>{message ? message.non_fields_errors : ''}</label>  
       <Form.Group as={Col} className='text-end' xl={12}>
-        <Button type='submit'>Cadastrar</Button>
+        <Button type='submit' disabled={isLoading}>
+          {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Cadastrar</span>}
+        </Button>
       </Form.Group>
     </Form>
     );

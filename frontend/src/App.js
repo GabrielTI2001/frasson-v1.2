@@ -40,7 +40,7 @@ const App = () => {
   return (
     <>
       <RouterData />
-      <ToastContainer position='top-right' hideProgressBar={true} autoClose={1400}></ToastContainer>
+      <ToastContainer position='top-right' hideProgressBar={true} autoClose={1000}></ToastContainer>
     </>
   );
 };

@@ -1,6 +1,6 @@
 import React,{useState, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, Col,} from 'react-bootstrap';
+import { Button, Col, Spinner,} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { RedirectToLogin } from '../../../Routes/PrivateRoute';
@@ -11,9 +11,10 @@ const FormProcesso = ({type, data, submit}) => {
     const user = JSON.parse(localStorage.getItem("user"))
     const [message, setMessage] = useState();
     const [formData, setformData] = useState({user:user.id, processo:data.processo});
+    const [isLoading, setIsLoading] = useState(false);
     
     const handleApi = async (dadosform) => {
-        const {resposta, dados} = await sendData({type:type, url:'processes/followup', keyfield:type == 'edit' && data.id, dadosform:dadosform})
+        const {resposta, dados} = await sendData({type:type, url:'processes/followup', keyfield:type === 'edit' && data.id, dadosform:dadosform})
         if(resposta.status === 400){
           setMessage({...dados})
         }
@@ -24,10 +25,12 @@ const FormProcesso = ({type, data, submit}) => {
           submit('edit', dados)
           toast.success("Registro Atualizado com Sucesso!")
         }
+        setIsLoading(true)
     };
 
     const handleSubmit = async e => {
         setMessage(null)
+        setIsLoading(true)
         e.preventDefault();
         await handleApi(formData);
     };
@@ -120,7 +123,9 @@ const FormProcesso = ({type, data, submit}) => {
             <label className='text-danger'>{message ? message.processo_sei : ''}</label>
         </Form.Group>
         <Form.Group as={Col} xl={12} className='text-end'>
-            <Button type='submit'>{type == 'edit' ? 'Atualizar Processo' : 'Adicionar'}</Button>
+            <Button type='submit' disabled={isLoading}>
+                {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Cadastrar</span>}
+            </Button>
         </Form.Group>
     </Form>
     );

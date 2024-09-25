@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, Col} from 'react-bootstrap';
+import { Button, Col, Spinner} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import AsyncSelect from 'react-select/async';
@@ -21,6 +21,7 @@ const FormPVTEC = ({type, data, submit, card}) => {
     const [formData, setformData] = useState({created_by:user.id, fluxo_ambiental:card ? card.id : '', status:'EA',
       phase_origem:card.phase
     });
+    const [isLoading, setIsLoading] = useState(false);
     const [defaultoptions, setDefaultOptions] = useState();
     const [isDragActive, setIsDragActive] = useState();
 
@@ -49,10 +50,12 @@ const FormPVTEC = ({type, data, submit, card}) => {
         type === 'edit' ? submit('edit', dados) : submit('add', dados)
         toast.success("Registro Atualizado com Sucesso!")
       }
+      setIsLoading(false)
     };
 
     const handleSubmit = async e => {
         setMessage(null)
+        setIsLoading(true)
         e.preventDefault();
         const formDataToSend = new FormData();
         for (const key in formData) {
@@ -159,9 +162,10 @@ const FormPVTEC = ({type, data, submit, card}) => {
             </Flex>
           </div>
         </Form.Group>
-
         <Form.Group as={Col} className='text-end' xl={12}>
-            <Button type='submit'>Cadastrar</Button>
+          <Button type='submit' disabled={isLoading}>
+            {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Cadastrar</span>}
+          </Button>
         </Form.Group>
     </Form>
     );

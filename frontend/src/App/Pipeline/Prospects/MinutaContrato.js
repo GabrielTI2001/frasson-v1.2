@@ -165,7 +165,9 @@ const MinutaContrato = ({card, updatedactivity, setcard}) => {
           />
         ))}
         <div>
-          <Anexos param={'contrato'+card.info_produto.acronym.toLowerCase()} value={contrato.id} url={'finances/anexos'}/>
+          <Anexos param={'contrato'+card.info_produto.acronym.toLowerCase()} value={contrato.id} url={'finances/anexos'}
+            formparam={card.info_produto.acronym === 'GC' ? 'contrato_credito' : 'contrato_ambiental'}
+          />
         </div>
       </ExpandableCard>
     )}

@@ -1,6 +1,6 @@
 import React,{useEffect, useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import { Button, Col} from 'react-bootstrap';
+import { Button, Col, Spinner} from 'react-bootstrap';
 import {Form} from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { useAppContext } from '../../Main';
@@ -12,6 +12,7 @@ const ConfigMoverCard = ({type, submit, card}) => {
     const navigate = useNavigate()
     const [message, setMessage] = useState();
     const [formData, setformData] = useState({fase:card.phase});
+    const [isLoading, setIsLoading] = useState(false);
     const [fases, setFases] = useState();
 
     const handleApi = async (dadosform) => {
@@ -26,10 +27,12 @@ const ConfigMoverCard = ({type, submit, card}) => {
           type === 'edit' ? submit('edit', dados.list_destinos) : submit('add', dados)
           toast.success("Registro Atualizado com Sucesso!")
         }
+        setIsLoading(false)
     };
 
     const handleSubmit = e => {
         e.preventDefault()
+        setIsLoading(true)
         setMessage(null)
         handleApi({...formData, destinos_permitidos:[...formData.destinos_permitidos, card.phase]});
     };
@@ -81,7 +84,9 @@ const ConfigMoverCard = ({type, submit, card}) => {
         </Form.Group>
       )}
       <Form.Group as={Col} className='text-end px-0' xl={12}>
-          <Button type='submit'>Salvar</Button>
+        <Button type='submit' disabled={isLoading}>
+          {isLoading ? <Spinner size='sm' className='p-0 mx-3' style={{height:'12px', width:'12px'}}/> :<span>Salvar</span>}
+        </Button>
       </Form.Group>
     </Form>
     );

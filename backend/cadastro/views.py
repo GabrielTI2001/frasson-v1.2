@@ -295,6 +295,7 @@ class Detalhamento_ServicosView(viewsets.ModelViewSet):
         queryset = super().get_queryset()
         search_term = self.request.query_params.get('search', None)
         contrato_gai = self.request.query_params.get('contratogai', None)
+        contrato_gc = self.request.query_params.get('contratogc', None)
         produto = self.request.query_params.get('produto', None)
         query = Q()
         if search_term:

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, PVTEC, Fluxo_Prospects, AnaliseTecnica
+from .models import Fluxo_Gestao_Ambiental, Fase, Pipe, PVTEC, Fluxo_Prospects, AnaliseTecnica, Fluxo_Gestao_Credito
 from .models import Phases_History, Card_Comments, Card_Activities, Card_Anexos
 from finances.models import Contratos_Ambiental, Contratos_Credito
 from datetime import datetime
@@ -167,13 +167,23 @@ class serializerFluxoProspects(serializers.ModelSerializer):
         else:
             return None
     def validate_phase(self, value):
-        fase_anterior = self.instance.phase if self.instance else None
-        if fase_anterior and (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
-            if fase_anterior.destinos_permitidos.all().count() > 1:
-                raise serializers.ValidationError("Não é permitido mover para essa fase")
-        contratos = self.instance.contrato_gc or self.instance.contrato_gai if self.instance else False
-        if (fase_anterior and fase_anterior.id == 90) and (not contratos) and (value.id > 90):
-            raise serializers.ValidationError("Cadastre um Contrato")
+        if self.instance:
+            isgai = True if self.instance.contrato_gai else False
+            fase_anterior = self.instance.phase
+            if fase_anterior and (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
+                if fase_anterior.destinos_permitidos.all().count() > 1:
+                    raise serializers.ValidationError("Não é permitido mover para essa fase")
+            have_contrato = self.instance.contrato_gc or self.instance.contrato_gai
+            if (fase_anterior and fase_anterior.id == 90) and (not have_contrato) and (value.id > 90): #fase minuta contrato
+                raise serializers.ValidationError("Cadastre um Contrato")
+            servicos_contratos = self.instance.contrato_gai.servicos.all() if isgai else self.instance.contrato_gc.servicos.all()
+            validator = all([
+                Fluxo_Gestao_Ambiental.objects.filter(detalhamento=s, contrato=self.instance.contrato_gai).exists() 
+                if self.instance.contrato_gai else Fluxo_Gestao_Credito.objects.filter(detalhamento=s, contrato=self.instance.contrato_gc).exists()
+                for s in servicos_contratos
+            ])
+            if value.id == 93 and not validator: #fase ganho
+                raise serializers.ValidationError("Cadastre um fluxo para cada serviço do contrato")
         return value
     def update(self, instance, validated_data):
         responsaveis_data = validated_data.pop('responsaveis', [])

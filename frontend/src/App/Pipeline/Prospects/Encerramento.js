@@ -107,9 +107,9 @@ const Encerramento = ({card, updatedactivity}) => {
     {showmodal.show &&
       <ExpandableCard title={`Novo Produto ${card.info_produto.acronym}`} auto close={() => setShowModal({show:false})}>
         {card.info_produto.acronym === 'GC' ? 
-          <ProductForm onSubmit={submit} fase={1} data={{contrato:card.contrato_gc}}/>
+          <ProductForm onSubmit={submit} type='gc' fase={1} data={{contrato:card.contrato_gc}}/>
         :
-          <ProductForm onSubmit={submit} fase={1} data={{contrato:card.contrato_gai}}/>
+          <ProductForm onSubmit={submit} type='gai' fase={1} data={{contrato:card.contrato_gai}}/>
         }
       </ExpandableCard>
     }

@@ -35,7 +35,6 @@ class Fase(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
         verbose_name_plural = 'Fases'
-        ordering = ['done', 'pk']
     def __str__(self):
         return self.descricao
 
