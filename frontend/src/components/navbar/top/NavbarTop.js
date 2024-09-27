@@ -10,14 +10,9 @@ import { useLocation } from 'react-router-dom';
 import { useAppContext } from '../../../Main';
 
 const NavbarTop = () => {
-  const {
-    config: { showBurgerMenu, navbarPosition, navbarCollapsed },
-    setConfig
-  } = useAppContext();
-
+  const {config: { showBurgerMenu, navbarPosition, navbarCollapsed }, setConfig} = useAppContext();
   const { pathname } = useLocation();
   const isChat = pathname.includes('chat');
-
   const [showDropShadow, setShowDropShadow] = useState(false);
 
   const handleBurgerMenu = () => {
