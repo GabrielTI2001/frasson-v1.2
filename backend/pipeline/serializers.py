@@ -169,6 +169,7 @@ class serializerFluxoProspects(serializers.ModelSerializer):
     def validate_phase(self, value):
         if self.instance:
             isgai = True if self.instance.contrato_gai else False
+            isgc = True if self.instance.contrato_gc else False
             fase_anterior = self.instance.phase
             if fase_anterior and (value.id not in [d.id for d in fase_anterior.destinos_permitidos.all()]):
                 if fase_anterior.destinos_permitidos.all().count() > 1:
@@ -176,7 +177,7 @@ class serializerFluxoProspects(serializers.ModelSerializer):
             have_contrato = self.instance.contrato_gc or self.instance.contrato_gai
             if (fase_anterior and fase_anterior.id == 90) and (not have_contrato) and (value.id > 90): #fase minuta contrato
                 raise serializers.ValidationError("Cadastre um Contrato")
-            servicos_contratos = self.instance.contrato_gai.servicos.all() if isgai else self.instance.contrato_gc.servicos.all()
+            servicos_contratos = self.instance.contrato_gai.servicos.all() if isgai else self.instance.contrato_gc.servicos.all() if isgc else []
             validator = all([
                 Fluxo_Gestao_Ambiental.objects.filter(detalhamento=s, contrato=self.instance.contrato_gai).exists() 
                 if self.instance.contrato_gai else Fluxo_Gestao_Credito.objects.filter(detalhamento=s, contrato=self.instance.contrato_gc).exists()
