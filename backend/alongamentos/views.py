@@ -20,41 +20,44 @@ from datetime import date, datetime, timedelta
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 def get_query_filtered():
-    itens_along = Itens_Financiados.objects.filter(
-    tipo='Custeio', item__in=['Soja', 'Soja Irrigada', 'Milho', 'Milho Irrigado', 'Trigo']).values_list('id', flat=True)
-    id_banco = Instituicoes_Parceiras.objects.filter(instituicao__razao_social='Banco do Brasil S/A').first().id
-    date_today = date.today()
-    
-    queryset = Operacoes_Contratadas.objects.filter(
-        data_prod_armazenado__isnull=False,  # Filtra registros com 'data_prod_armazenado' não nula
-        data_primeiro_vencimento__isnull=False,  # Filtra registros com 'data_primeiro_vencimento' não nula
-        item_financiado__in=itens_along, # Filtra somente os items financiados de interesse
-        instituicao__instituicao=id_banco, # Filta somente operações do Banco do Brasil
-    ).exclude(
-        Q(cadastro_alongamentos__isnull=False) |  # Exclui se a operação estiver em Operacoes_Credito
-        Q(alongamentos_cancelados__isnull=False)  # Exclui se a operação estiver em Alongamentos_Cancelados
-    ).annotate(
-        data_inicio=ExpressionWrapper(
-        F('data_prod_armazenado') - timedelta(days=15), # 15 dias antes da data do prod. armazenado
-        output_field=DateField()
-    ),
-        data_limite=ExpressionWrapper(
-        F('data_primeiro_vencimento') - timedelta(days=15), # 15 dias antes do primeiro vencimento
-        output_field=DateField()
-    ),
-        dias_ate_limite=ExpressionWrapper(
-        (F('data_limite') - date_today) / timedelta(days=1), # Dividindo para ter o valor em dias
-        output_field=IntegerField()
-    )
-    ).filter(
-        #data_inicio__lte=date_today,   # Filtrar operações com 'data_limite' menor ou igual à current date
-        data_limite__gte=date_today,    # Filtrar operações com 'data_limite' maior ou igual à current date
-        dias_ate_limite__lte=100        # Filtrar os registros que estejam a uma quant. determinada de dias até a data limite
-    ).select_related(
-        'beneficiario',
-        'instituicao',
-        'item_financiado').order_by('data_limite')
-    return queryset
+    try:
+        itens_along = Itens_Financiados.objects.filter(
+        tipo='Custeio', item__in=['Soja', 'Soja Irrigada', 'Milho', 'Milho Irrigado', 'Trigo']).values_list('id', flat=True)
+        id_banco = Instituicoes_Parceiras.objects.filter(instituicao__razao_social='Banco do Brasil S/A').first().id
+        date_today = date.today()
+        
+        queryset = Operacoes_Contratadas.objects.filter(
+            data_prod_armazenado__isnull=False,  # Filtra registros com 'data_prod_armazenado' não nula
+            data_primeiro_vencimento__isnull=False,  # Filtra registros com 'data_primeiro_vencimento' não nula
+            item_financiado__in=itens_along, # Filtra somente os items financiados de interesse
+            instituicao__instituicao=id_banco, # Filta somente operações do Banco do Brasil
+        ).exclude(
+            Q(cadastro_alongamentos__isnull=False) |  # Exclui se a operação estiver em Operacoes_Credito
+            Q(alongamentos_cancelados__isnull=False)  # Exclui se a operação estiver em Alongamentos_Cancelados
+        ).annotate(
+            data_inicio=ExpressionWrapper(
+            F('data_prod_armazenado') - timedelta(days=15), # 15 dias antes da data do prod. armazenado
+            output_field=DateField()
+        ),
+            data_limite=ExpressionWrapper(
+            F('data_primeiro_vencimento') - timedelta(days=15), # 15 dias antes do primeiro vencimento
+            output_field=DateField()
+        ),
+            dias_ate_limite=ExpressionWrapper(
+            (F('data_limite') - date_today) / timedelta(days=1), # Dividindo para ter o valor em dias
+            output_field=IntegerField()
+        )
+        ).filter(
+            #data_inicio__lte=date_today,   # Filtrar operações com 'data_limite' menor ou igual à current date
+            data_limite__gte=date_today,    # Filtrar operações com 'data_limite' maior ou igual à current date
+            dias_ate_limite__lte=100        # Filtrar os registros que estejam a uma quant. determinada de dias até a data limite
+        ).select_related(
+            'beneficiario',
+            'instituicao',
+            'item_financiado').order_by('data_limite')
+        return queryset
+    except:
+        pass
 
 def index(request):
     total_along = Cadastro_Alongamentos.objects.select_related('operacao', 'testemunha01', 'testemunha02').all().count()
