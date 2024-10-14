@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Modal, CloseButton, Placeholder} from 'react-bootstrap';
+import {Row, Col, Modal, CloseButton} from 'react-bootstrap';
 import { useNavigate, Link, useParams } from "react-router-dom";
 import AdvanceTable from '../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../components/common/advance-table/AdvanceTableFooter';
@@ -12,6 +12,7 @@ import ModalDelete from "../../components/Custom/ModalDelete";
 import Edit from "./Edit";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
 import CustomBreadcrumb from "../../components/Custom/Commom";
+import { SkeletBig } from "../../components/Custom/Skelet";
 
 const AlongamentosDone = () => {
     const [searchResults, setSearchResults] = useState();
@@ -68,55 +69,48 @@ const AlongamentosDone = () => {
         <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/alongamentos'}>Alongamentos Custeios Agrícolas</Link>
+                <Link className="link-fx text-primary" to={'/operational'}>Operacional</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">Operações Alongadas</span>  
         </CustomBreadcrumb>
         {searchResults ? 
-        <AdvanceTableWrapper
-            columns={columnsAlongamento}
-            data={searchResults}
-            sortable
-            pagination
-            perPage={15}
-        >
-        <Row className="flex-end-center justify-content-start mb-3">
-            <Col xs="auto" sm={6} lg={4}>
-                <AdvanceTableSearchBox table onSearch={search}/>
-            </Col>
-            <Col xs="auto" sm={6} lg={4}>
-                <Link className="btn btn-sm btn-info px-2" to={'/credit'}>Operações de Crédito</Link>
-            </Col>
-        </Row>
-       
-        <AdvanceTable
-            table
-            headerClassName="text-nowrap align-middle fs-xs"
-            rowClassName='align-middle white-space-nowrap fs-xs'
-            tableProps={{
-                bordered: true,
-                striped: false,
-                className: 'fs-xs mb-0 overflow-hidden',
-            }}
-            Click={onClick}
-        />
-        <div className="mt-3">
-            <AdvanceTableFooter
-                rowCount={searchResults.length}
+            <AdvanceTableWrapper
+                columns={columnsAlongamento}
+                data={searchResults}
+                sortable
+                pagination
+                perPage={15}
+            >
+            <Row className="flex-end-center justify-content-start mb-3">
+                <Col xs="auto" sm={6} lg={4}>
+                    <AdvanceTableSearchBox table onSearch={search}/>
+                </Col>
+                <Col xs="auto" sm={6} lg={4}>
+                    <Link className="btn btn-sm btn-info px-2" to={'/credit'}>Operações de Crédito</Link>
+                </Col>
+            </Row>
+        
+            <AdvanceTable
                 table
-                rowInfo
-                navButtons
-                rowsPerPageSelection
+                headerClassName="text-nowrap align-middle fs-xs"
+                rowClassName='align-middle white-space-nowrap fs-xs'
+                tableProps={{
+                    bordered: true,
+                    striped: false,
+                    className: 'fs-xs mb-0 overflow-hidden',
+                }}
+                Click={onClick}
             />
-        </div>
-        </AdvanceTableWrapper> : 
-        <div>
-            <Placeholder animation="glow">
-                <Placeholder xs={7} /> <Placeholder xs={4} /> 
-                <Placeholder xs={4} />
-                <Placeholder xs={6} /> <Placeholder xs={8} />
-            </Placeholder>    
-        </div>   
+            <div className="mt-3">
+                <AdvanceTableFooter
+                    rowCount={searchResults.length}
+                    table
+                    rowInfo
+                    navButtons
+                    rowsPerPageSelection
+                />
+            </div>
+            </AdvanceTableWrapper> : <SkeletBig />  
         }
         <Modal
             size="md"

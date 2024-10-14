@@ -1691,7 +1691,7 @@ def create_pdf_contrato(request, uuid):
     #color_danger = Color(255/255, 0/255, 0/255)
 
     fases_pagamento = {
-        "A": "na assinatura do contrato", 
+        "Assinatura Contrato": "na assinatura do contrato", 
         "P": "no protocolo do processo",
         "E": "no encerramento do processo"
     }
@@ -1889,7 +1889,7 @@ def create_pdf_contrato(request, uuid):
             ,ParagraphStyle(name='DetailStyle', fontSize=font_size_body, leftIndent=0, alignment=TA_JUSTIFY, leading=15, spaceAfter=5, textColor=custom_color)))
 
             for i, pagamento in enumerate(formas_pagamento):
-                elements.append(Paragraph(f"""<b>{chr(ord('a') + i)})</b> {locale.format_string('%.0f', pagamento.percentual, True)}% (R$ {locale.format_string('%.2f', pagamento.valor, True)}) {fases_pagamento[pagamento.etapa]};"""
+                elements.append(Paragraph(f"""<b>{chr(ord('a') + i)})</b> {locale.format_string('%.0f', pagamento.percentual, True)}% (R$ {locale.format_string('%.2f', pagamento.valor, True)}) no(a) {pagamento.etapa};"""
                 ,ParagraphStyle(name='DetailStyle', fontSize=font_size_body, leftIndent=20, alignment=TA_JUSTIFY, leading=15, spaceAfter=0, textColor=custom_color)))
             
         

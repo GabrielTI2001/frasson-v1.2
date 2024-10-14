@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Spinner, Modal, CloseButton} from 'react-bootstrap';
+import {Row, Col, Spinner} from 'react-bootstrap';
 import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
@@ -14,6 +14,7 @@ import ModalPessoal from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const IndexPessoal = () => {
     const [searchResults, setSearchResults] = useState();
@@ -27,7 +28,7 @@ const IndexPessoal = () => {
         if ((user.permissions && user.permissions.indexOf("change_cadastro_pessoal") === -1) && !user.is_superuser){
            navigate("/error/403")
         }
-        const url = `/register/pessoal/${uuid}`
+        const url = `/databases/pessoal/${uuid}`
         navigate(url)
     }
     const setter = (data) => {
@@ -77,7 +78,7 @@ const IndexPessoal = () => {
             aria-label="breadcrumb"
         >
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
+                <Link className="link-fx text-primary" to={'/databases'}>Cadastros Gerais</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cadastro Pessoal
@@ -94,11 +95,6 @@ const IndexPessoal = () => {
             <Row className="flex-end-center justify-content-start mb-3">
                 <Col xs="auto" sm={6} lg={4}>
                     <AdvanceTableSearchBox table onSearch={handleChange}/>
-                </Col>
-                <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
-                        style={{padding: '2px 5px'}} onClick={() =>{setShowModal({show:true})}}
-                    >Novo Cadastro</Link>
                 </Col>
             </Row>
         <AdvanceTable
@@ -122,26 +118,12 @@ const IndexPessoal = () => {
             />
         </div>
         </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+
         <ModalPessoal show={modal.show} reducer={submit}/>
-        <Modal
-            size="md"
-            show={showmodal.show}
-            onHide={() => setShowModal({show:false})}
-            aria-labelledby="example-modal-sizes-title-lg"
-            scrollable
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Pessoa
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal({show:false})}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                        <PessoaForm type='add' hasLabel submit={submit}/>
-                    </Row>
-            </Modal.Body>
-        </Modal>
+        <FloatButton title='Novo Cadastro' onClick={() =>{setShowModal({show:true})}}/>
+        <ModalForm show={showmodal.show} onClose={() => setShowModal({show:false})} title={'Adicionar Pessoa'}>
+            <PessoaForm type='add' hasLabel submit={submit}/>
+        </ModalForm>
         </>
     );
   };

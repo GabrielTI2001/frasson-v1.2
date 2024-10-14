@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Placeholder, Modal, CloseButton} from 'react-bootstrap';
+import {Row, Col, Placeholder} from 'react-bootstrap';
 import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../components/common/advance-table/AdvanceTableFooter';
@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import FarmForm from "./Form";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const InitData = {
     'urlapilist':'farms/farms', 
@@ -74,10 +74,10 @@ const IndexFarms = () => {
     },[uuid])
 
     return (
-        <>
+    <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/farms'}>Cadastros Fazendas</Link>
+                <Link className="link-fx text-primary" to={'/databases'}>Cadastros</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">
                 {InitData.title}
@@ -94,11 +94,6 @@ const IndexFarms = () => {
             <Row className="flex-end-center justify-content-start mb-3">
                 <Col xs="auto" sm={6} lg={4}>
                     <AdvanceTableSearchBox table onSearch={handleChange}/>
-                </Col>
-                <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
-                        style={{padding: '2px 8px'}} onClick={() =>{setShowModal({show:true})}}
-                    >Novo Cadastro</Link>
                 </Col>
                 <Col xl={'auto'} sm='auto' xs={'auto'}>
                     <Link className="text-decoration-none btn btn-info shadow-none fs--1" style={{padding: '2px 8px'}} to={'map'}>
@@ -135,31 +130,13 @@ const IndexFarms = () => {
             </Placeholder>    
         </div>   
         }
+
+        <FloatButton title='Novo Cadastro' onClick={() =>{setShowModal({show:true})}}/>
         <ModalRecord show={modal.show} reducer={submit}/>
-        <Modal
-            size="md"
-            show={showmodal.show}
-            onHide={() => setShowModal({show:false})}
-            centered
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {showmodal.data ? 'Editar' : 'Adicionar' } Imóvel Rural
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal({show:false})}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                        {showmodal.data
-                           ? null
-                           : <FarmForm type='add' hasLabel submit={submit}/>
-                        } 
-                    </Row>
-            </Modal.Body>
-        </Modal>
-        </>
+        <ModalForm show={showmodal.show} onClose={() => setShowModal({show:false})} title={'Adicionar Imóvel Rural'}>
+            <FarmForm type='add' hasLabel submit={submit}/>
+        </ModalForm>
+     </>
     );
   };
   

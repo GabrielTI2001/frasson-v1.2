@@ -20041,7 +20041,7 @@ samp {
 /*                                   Navbar                                   */
 /* -------------------------------------------------------------------------- */
 :root {
-  --falcon-top-nav-height: 4.3125rem;
+  --falcon-top-nav-height: 3.8rem;
 }
 @media (min-width: 992px) {
   :root.double-top-nav-layout {
@@ -26587,8 +26587,7 @@ option:disabled {
 }
 .add-card-toggle {
   position: fixed;
-  bottom: 3%;
-  left: 2%;
+  bottom: 1%;
   text-decoration: none;
   z-index: 1016;
   margin-top: -83px;

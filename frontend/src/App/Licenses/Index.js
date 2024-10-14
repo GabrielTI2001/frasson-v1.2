@@ -12,7 +12,7 @@ import FormLicenca from "./Form";
 import { Modal, CloseButton } from "react-bootstrap";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../components/Custom/Commom";
 
 const IndexLicenses = () => {
     const [searchResults, setSearchResults] = useState();
@@ -78,68 +78,50 @@ const IndexLicenses = () => {
             </span>  
         </CustomBreadcrumb>
         {searchResults ? 
-        <AdvanceTableWrapper
-            columns={columnsLicenca}
-            data={searchResults}
-            sortable
-            pagination
-            perPage={15}
-        >
-        <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
-            <Col xl={4} sm={6} xs={12}>
-                <AdvanceTableSearchBox table onSearch={handleChange}/>
-            </Col>
-            <Col xl={'auto'} sm={'auto'} xs={'auto'}>
-                <a className="text-decoration-none btn btn-primary shadow-none fs--2"
-                    style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
-                >Nova Licença</a>
-            </Col>
-        </Row>
-        {isloading ? <div className="text-center"><Spinner></Spinner></div> :
-            <AdvanceTable
-                table
-                headerClassName="text-nowrap align-middle fs-xs"
-                rowClassName='align-middle white-space-nowrap fs-xs'
-                tableProps={{
-                    bordered: true,
-                    striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden',
-                    index_status: 7
-                }}
-                Click={onClick}
-            />
-        }       
+            <AdvanceTableWrapper
+                columns={columnsLicenca}
+                data={searchResults}
+                sortable
+                pagination
+                perPage={15}
+            >
+            <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
+                <Col xl={4} sm={6} xs={12}>
+                    <AdvanceTableSearchBox table onSearch={handleChange}/>
+                </Col>
+            </Row>
+            {isloading ? <div className="text-center"><Spinner></Spinner></div> :
+                <AdvanceTable
+                    table
+                    headerClassName="text-nowrap align-middle fs-xs"
+                    rowClassName='align-middle white-space-nowrap fs-xs'
+                    tableProps={{
+                        bordered: true,
+                        striped: false,
+                        className: 'fs-xs mb-0 overflow-hidden',
+                        index_status: 7
+                    }}
+                    Click={onClick}
+                />
+            }       
 
-        <div className="mt-3">
-            <AdvanceTableFooter
-                rowCount={searchResults.length}
-                table
-                rowInfo
-                navButtons
-                rowsPerPageSelection
-            />
-        </div>
-        </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+            <div className="mt-3">
+                <AdvanceTableFooter
+                    rowCount={searchResults.length}
+                    table
+                    rowInfo
+                    navButtons
+                    rowsPerPageSelection
+                />
+            </div>
+            </AdvanceTableWrapper> 
+        : <div className="text-center"><Spinner></Spinner></div>}
         <ModalRecord show={modal.show} reducer={submit}/>
-        <Modal
-            size="md"
-            show={showmodal}
-            onHide={() => setShowModal(false)}
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Licença
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                        <FormLicenca hasLabel type='add' submit={submit}/>
-                    </Row>
-            </Modal.Body>
-        </Modal>
+
+        <FloatButton title='Nova Licença' onClick={() =>{setShowModal(true)}}/>
+        <ModalForm show={showmodal} onClose={() => setShowModal(false)} title={'Adicionar Licença'}>
+            <FormLicenca hasLabel type='add' submit={submit}/>
+        </ModalForm>
         </>
     );
   };

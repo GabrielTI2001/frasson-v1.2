@@ -54,10 +54,10 @@ const NavGai = ({card}) =>{
 export default NavGai;
 
 export const AddCard = ({onclick}) =>{
-    const {kanbanState, kanbanDispatch } = useContext(PipeContext);
+    const {kanbanState } = useContext(PipeContext);
     const [modalform, setModalForm] = useState({show:false})
     return (<>
-    <div className="add-card-toggle rounded-pill d-flex align-items-center bg-primary px-3 py-1" onClick={() => setModalForm({show:true})}>
+    <div className="add-card-toggle rounded-pill d-flex align-items-center bg-primary px-3 py-1 mb-4" onClick={() => setModalForm({show:true})}>
         <FontAwesomeIcon icon={faPlus} className="text-white"/>
         <small className="fw-bold p-2 text-white">Novo Prospect</small>
     </div>

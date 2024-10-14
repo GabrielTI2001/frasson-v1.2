@@ -288,3 +288,6 @@ button.gm-ui-hover-effect{
 .etiqueta-dropdown button::before {
   display: none !important;
 }
+.text-hover-black:hover{
+  color: #000000 !important;
+}

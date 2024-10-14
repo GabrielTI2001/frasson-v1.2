@@ -37,7 +37,7 @@ class detailCartorio(serializers.ModelSerializer):
         return obj.municipio.nome_municipio + ' - ' + obj.municipio.sigla_uf
     def validate_cnpj(self, value):
         if not Frasson.valida_cpf_cnpj(value):
-            raise serializers.ValidationError("CNPJ Inválido!")
+            raise serializers.ValidationError("CPF ou CNPJ Inválido!")
         return value
     def validate_cep_logradouro(self, value):
         if not Frasson.valida_cep(value):

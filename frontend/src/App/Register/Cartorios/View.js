@@ -47,10 +47,10 @@ const ViewPessoal = () => {
     <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
+                <Link className="link-fx text-primary" to={'/databases'}>Cadastros Gerais</Link>
             </span>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register/pessoal'}>Cadastro Pessoal</Link>
+                <Link className="link-fx text-primary" to={'/databases/pessoal'}>Cadastro Pessoal</Link>
             </span>
             {pessoa && (
                <span className="breadcrumb-item fw-bold" aria-current="page">

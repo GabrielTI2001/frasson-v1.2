@@ -1,17 +1,15 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import { Modal, CloseButton, Tabs, Tab} from 'react-bootstrap';
+import { Tabs, Tab} from 'react-bootstrap';
 import { useNavigate, useParams } from "react-router-dom";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 import ModalRecord from "./Modal";
 import CobrançaForm from "./Form";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 import { MenuCobranca, TableCobranca } from "./Components";
 
-const InitData = {
-    'title': 'Report Cobranças'
-}
+const InitData = {'title': 'Report Cobranças'}
 
 const meses = [
     {'number': 1, 'name': 'JAN', 'description':'JANEIRO'}, {'number': 2, 'name': 'FEV', 'description':'FEVEREIRO'}, 
@@ -83,51 +81,37 @@ const ReportCobrancas = () => {
     return (
         <>
         <CustomBreadcrumb>
-            <span className="breadcrumb-item fw-bold" aria-current="page">
-               {InitData.title}
-            </span>  
+            <span className="breadcrumb-item fw-bold" aria-current="page">{InitData.title}</span>  
         </CustomBreadcrumb>
         <Tabs defaultActiveKey="ad" id="uncontrolled-tab-example">
             <Tab eventKey="ad" title="Aguardando Distribuição" className='py-3 px-0'>
-                <MenuCobranca handlechange={handleFieldChange} form={formData} setmodal={setShowModal} anos={anos} meses={meses}/>
+                <MenuCobranca handlechange={handleFieldChange} form={formData} anos={anos} meses={meses}/>
                 <TableCobranca cobrancas={cobrancas} status='AD' click={click}/>
             </Tab>
             <Tab eventKey="nt" title="Notificação" className='py-3 px-0'>
-                <MenuCobranca handlechange={handleFieldChange} form={formData} setmodal={setShowModal} anos={anos} meses={meses}/>
+                <MenuCobranca handlechange={handleFieldChange} form={formData} anos={anos} meses={meses}/>
                 <TableCobranca cobrancas={cobrancas} status='NT' click={click}/>
             </Tab>
             <Tab eventKey="ft" title="Faturamento" className='py-3 px-0'>
-                <MenuCobranca handlechange={handleFieldChange} form={formData} setmodal={setShowModal} anos={anos} meses={meses}/>
+                <MenuCobranca handlechange={handleFieldChange} form={formData} anos={anos} meses={meses}/>
                 <TableCobranca cobrancas={cobrancas} status='FT' click={click}/>
             </Tab>
             <Tab eventKey="ag" title="Agendado" className='py-3 px-0'>
-                <MenuCobranca handlechange={handleFieldChange} form={formData} setmodal={setShowModal} anos={anos} meses={meses}/>
+                <MenuCobranca handlechange={handleFieldChange} form={formData} anos={anos} meses={meses}/>
                 <TableCobranca cobrancas={cobrancas} status='AG' click={click}/>
             </Tab>
             <Tab eventKey="pg" title="Pago" className='py-3 px-0'>
-                <MenuCobranca handlechange={handleFieldChange} form={formData} setmodal={setShowModal} anos={anos} meses={meses}/>
+                <MenuCobranca handlechange={handleFieldChange} form={formData} anos={anos} meses={meses}/>
                 <TableCobranca cobrancas={cobrancas} status='PG' click={click}/>
             </Tab>
         </Tabs>
        
         <ModalRecord show={modal.show} reducer={submit} />
-        <Modal
-            size="md"
-            show={showmodal.show}
-            onHide={() => setShowModal({show:false})}
-            aria-labelledby="example-modal-sizes-title-lg"
-            scrollable
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {showmodal && showmodal.data ? 'Editar' : 'Adicionar'} Cobrança
-                </Modal.Title>
-                <CloseButton onClick={() => setShowModal({show:false})}/>
-            </Modal.Header>
-            <Modal.Body className="pb-0">
-                <CobrançaForm type='add' hasLabel submit={submit} />
-            </Modal.Body>
-        </Modal>
+        
+        <FloatButton title='Nova Cobrança' onClick={() =>{setShowModal(true)}}/>
+        <ModalForm show={showmodal} onClose={() => setShowModal(false)} title={'Adicionar Cobrança'}>
+            <CobrançaForm type='add' hasLabel submit={submit} />
+        </ModalForm>
         </>
     );
   };

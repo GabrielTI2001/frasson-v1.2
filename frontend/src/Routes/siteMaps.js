@@ -1,15 +1,9 @@
-import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faDroplet, faLocationDot, faFaucetDrip, 
-faMap, faWheatAwn, faCannabis, faFilePen, faFilePdf, faScrewdriverWrench,
-faMapLocationDot,
-faFileSignature,
-faTractor,
-faCartShopping,
-faHandshake,
-faCartPlus,
-faFilter} 
-from "@fortawesome/free-solid-svg-icons";
-import { faChartSimple, faUser, faChartColumn, faComments, faToolbox, faBullseye, faCoins, faRobot} 
-from "@fortawesome/free-solid-svg-icons";
+import { faGear, faMoneyBill, faLeaf, faChartLine, faDatabase, faDroplet, faLocationDot, faFaucetDrip, faMap, faWheatAwn, faCannabis,
+faFilePen, faFilePdf, faScrewdriverWrench, faFileSignature, faCartShopping, faHandshake, faCartPlus, faFilter, faCircleNotch,
+faMagnifyingGlass, faMoneyBillWheat, faMoneyBillTrendUp, faArrowTrendUp, faSatellite, faMapLocationDot,faGlobe, faChartSimple, 
+faUser, faChartColumn, faComments, faBullseye, faCoins, faRobot,
+faListCheck,
+faHourglassHalf} from "@fortawesome/free-solid-svg-icons";
 
 const user = JSON.parse(localStorage.getItem("user"));
 
@@ -138,21 +132,7 @@ export const operacionalRoutes = {
         {
           name: 'Cadastros Gerais',
           icon: faDatabase,
-          to: '/register/',
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Imóveis Rurais',
-          icon: faTractor,
-          to: '/farms',
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Glebas Imóveis',
-          icon: faMapLocationDot,
-          to: '/glebas',
+          to: '/databases/',
           exact: true,
           active: true
         },
@@ -210,15 +190,51 @@ export const operacionalRoutes = {
           active: true
         },
         {
-          name: 'Alongamentos Custeios Agrícolas',
-          icon2: 'Calendar2Check',
-          to: '/alongamentos',
+          name: 'Operações Alongadas',
+          icon: faMoneyBillWheat,
+          to: '/alongamentos/done',
+          exact: true,
+          active: true
+        },
+        {
+          name: 'Próximos Alongamentos',
+          icon: faHourglassHalf,
+          to: '/alongamentos/next',
           exact: true,
           active: true
         },
       ]
     }
   ],  
+};
+
+export const pipelineRoutes = {
+  label: 'Fluxos',
+  labelDisable: true,
+  icon: faGear,
+  children: [
+    {
+      name: 'Prospects',
+      icon: faHandshake,
+      to: '/pipeline/518984924',
+      exact: true,
+      active: true
+    },
+    {
+      name: 'Gestão de Crédito',
+      icon: faCartShopping,
+      to: '/pipeline/518984721',
+      exact: true,
+      active: true
+    },
+    {
+      name: 'Gestão Ambiental e Irrigação',
+      icon: faCartShopping,
+      to: '/pipeline/518984721',
+      exact: true,
+      active: true
+    },
+  ] 
 };
 
 
@@ -233,7 +249,7 @@ export const creditoRoutes = {
       children: [
         {
           name: 'Operações Contratadas',
-          to: '/credit',
+          to: '/credit/operations',
           icon2: 'CashCoin',
           exact: true,
           active: true
@@ -244,81 +260,81 @@ export const creditoRoutes = {
 };
 
 export const ambientalRoutes = {
-  label: 'Ambiental',
-  labelDisable: true,
+  name: 'Ambiental',
+  active: true,
   icon: faLeaf,
   children: [
     {
-      name: 'Ambiental',
+      name: 'INEMA - BA',
+      active: true,
+      children: [
+        user && ((user.permissions && user.permissions.indexOf("view_processos_outorga") !== -1) || user.is_superuser) ? {
+          name: 'Processos Outorga',
+          to: '/ambiental/inema/outorgas',
+          icon: faDroplet,
+          active: true
+        } : null,
+        user && ((user.permissions && user.permissions.indexOf("view_processos_appo") !== -1) || user.is_superuser) ? {
+          name: 'Processos APPO',
+          to: '/ambiental/inema/appos',
+          icon: faLocationDot,
+          active: true
+        } : null,
+        {
+          name: 'Processos ASV',
+          to: '/ambiental/inema/asv',
+          icon: faCannabis,
+          active: true
+        },
+        {
+          name: 'Requerimentos APPO',
+          to: '/ambiental/inema/requerimentos/appo',
+          icon: faFilePen,
+          active: true
+        }
+      ].filter(Boolean)
+    },
+    {
+      name: 'LICENCIAMENTO AMBIENTAL',
       active: true,
       children: [
         {
-          name: 'INEMA - BA',
-          active: true,
-          children: [
-            user && ((user.permissions && user.permissions.indexOf("view_processos_outorga") !== -1) || user.is_superuser) ? {
-              name: 'Processos Outorga',
-              to: '/ambiental/inema/outorgas',
-              icon: faDroplet,
-              active: true
-            } : null,
-            user && ((user.permissions && user.permissions.indexOf("view_processos_appo") !== -1) || user.is_superuser) ? {
-              name: 'Processos APPO',
-              to: '/ambiental/inema/appos',
-              icon: faLocationDot,
-              active: true
-            } : null,
-            {
-              name: 'Processos ASV',
-              to: '/ambiental/inema/asv',
-              icon: faCannabis,
-              active: true
-            },
-            {
-              name: 'Requerimentos',
-              to: '/ambiental/inema/requerimentos',
-              icon: faFilePen,
-              active: true
-            }
-          ].filter(Boolean)
+          name: 'Cadastro Licenças',
+          to: '/licenses',
+          icon: faFaucetDrip,
+          active: true
         },
         {
-          name: 'LICENCIAMENTO AMBIENTAL',
-          active: true,
-          children: [
-            {
-              name: 'Cadastro Licenças',
-              to: '/licenses',
-              icon: faFaucetDrip,
-              active: true
-            },
-            {
-              name: 'Outorgas ANA',
-              to: '/external-api/ana/outorgas',
-              icon: faDroplet,
-              active: true
-            },
-            {
-              name: 'Outorgas SEMAD GO',
-              to: '',
-              icon: faDroplet,
-              active: true
-            }
-          ]
+          name: 'Outorgas ANA',
+          to: '/external-api/ana/outorgas',
+          icon: faDroplet,
+          active: true
         },
         {
-          name: 'Outras Aplicações',
-          active: true,
-          children: [
-            
-            {
-              name: 'Irrigação',
-              to: '/irrigation',
-              icon: faFaucetDrip,
-              active: true
-            },
-          ]
+          name: 'Outorgas SEMAD GO',
+          to: '',
+          icon: faDroplet,
+          active: true
+        }
+      ]
+    },
+    {
+      name: 'IRRIGAÇÃO',
+      active: true,
+      children: [
+        {
+          name: 'Pivots',
+          to: '/irrigation/pivots',
+          icon: faCircleNotch,
+          active: true
         },
+        {
+          name: 'Projetos de Irrigação',
+          to: '/irrigation/project',
+          icon: faScrewdriverWrench,
+          active: true
+        },
+
       ]
     },
   ]
@@ -447,31 +463,17 @@ export const financeiroRoutes = {
 };
 
 export const servicosRoutes = {
-  label: 'Serviços',
-  labelDisable: true,
+  name: 'Servicos',
+  active: true,
   children: [
     {
-      name: 'servicos',
+      name: 'Geral',
       active: true,
       children: [
         {
           name: 'Registrar Feedback',
-          to: '/register/feedback/new',
+          to: '/databases/feedback/new',
           icon: faComments,
-          exact: true,
-          active: true
-        },
-        {
-          name: 'APIs de Terceiros',
-          to: '/external-api',
-          icon: faChartSimple,
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Ferramentas Frasson',
-          to: '/services/tools',
-          icon: faToolbox,
           exact: true,
           active: true
         },
@@ -497,41 +499,62 @@ export const servicosRoutes = {
           active: true
         },
       ]
-    }
+    },
+    {
+      name: 'APIs de Terceiros',
+      active: true,
+      children: [
+        {name:'Consulta CNPJ', to:'/external-api/cnpj', icon:faMagnifyingGlass, descricao:'Receita Federal'},
+        {name:'Cotações Agrícolas', to:'/external-api/currency/commodity', icon:faMoneyBillWheat, 
+          descricao:'Commodities Agrícolas e Pecuárias'
+        },
+        {name:'Moedas Estrangeiras', to:'/external-api/currency/exchange', icon:faMoneyBillTrendUp, descricao:'BRL, USD, BTC'},
+        {name:'Cotações de Ativos', to:'/external-api/404', icon:faArrowTrendUp, descricao:'B3'},
+        {name:'Map Biomas', to:'/external-api/404', icon:faSatellite, descricao:'Alerta Desmatamento'},
+      ]
+    },
+    {
+      name: 'Ferramentas Frasson',
+      active: true,
+      children: [
+        {name:'Extrair Coordenadas', to:'tools/kml-to-coordinates', icon:faMapLocationDot, descricao:'Arquivo KML'},
+        {name:'Coordenadas Pivot', to:'tools/pivot', icon:faLocationDot, descricao:'Limites do Pivot'},
+        {name:'Lançar Coordenadas', to:'tools/LatLong', icon:faGlobe, descricao:'KML Pontos ou Polígono'},
+        {name:'Google Countours', to:'tools', icon:faGlobe, descricao:'Curvas de Elevação'},
+        {name:'KML CAD -> KML Corrigido', to:'tools/kml/polygon', icon:faMap, descricao:'KML Pontos ou Polígono'},
+      ]
+    },
+  
   ]
 };
 
 export const adminRoutes = {
-  label: 'Admin',
-  labelDisable: true,
+  name: 'Admin',
+  active: true,
   children: [
+    {name:'Geral', children:[
+      {
+        name: 'Django Admin',
+        to: `${process.env.REACT_APP_API_URL}/admin/`,
+        icon2: 'WrenchAdjustable',
+        exact: true,
+        active: true
+      },
+      {
+        name: 'Usuários',
+        to: '/admin/users',
+        icon: faUser,
+        exact: true,
+        active: true
+      },
+    ]},
     {
-      name: 'Admin',
-      active: true,
-      children: [
-        {
-          name: 'Django Admin',
-          to: `${process.env.REACT_APP_API_URL}/admin/`,
-          icon2: 'WrenchAdjustable',
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Usuários',
-          to: '/admin/users',
-          icon: faUser,
-          exact: true,
-          active: true
-        },
-        {
-          name: 'Administrator Panel',
-          to: '/administrator',
-          icon: faScrewdriverWrench,
-          exact: true,
-          active: true
-        },
+      name: 'Administrator Panel',
+      children:[
+        {name: 'Feedbacks', to: '/databases/feedbacks',icon: faComments},
+        {name: 'Avaliação 360', to: '/assessments',icon: faListCheck},
       ]
-    }
+    },
   ]
 };
 

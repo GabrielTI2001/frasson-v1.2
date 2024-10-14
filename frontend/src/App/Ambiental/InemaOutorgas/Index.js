@@ -9,13 +9,12 @@ import AdvanceTableWrapper from '../../../components/common/advance-table/Advanc
 import { Link } from "react-router-dom";
 import { columnsOutorga } from "../Data";
 import OutorgaForm from "./OutorgaForm";
-import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const IndexOutorgas = () => {
     const [searchResults, setSearchResults] = useState();
@@ -97,11 +96,6 @@ const IndexOutorgas = () => {
             <Col xl={4} sm={6} xs={12}>
                 <AdvanceTableSearchBox table onSearch={handleChange}/>
             </Col>
-            <Col xl={'auto'} sm={'auto'} xs={'auto'}>
-                <a className="text-decoration-none btn btn-success shadow-none fs--2"
-                    style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
-                >Nova Portaria</a>
-            </Col>
             <Col xl={'auto'} sm='auto' xs={'auto'}>
                 <Link className="text-decoration-none btn btn-info shadow-none fs--2"
                 style={{padding: '2px 5px'}} to={'../outorga/map'}>
@@ -151,25 +145,10 @@ const IndexOutorgas = () => {
         </div>   
         }
         <ModalRecord show={modal.show} reducer={reducer}/>
-        <Modal
-            size="md"
-            show={showmodal}
-            onHide={() => setShowModal(false)}
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Nova Portaria de Outorga - INEMA
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                       <OutorgaForm hasLabel type='add' submit={reducer}></OutorgaForm>
-                    </Row>
-            </Modal.Body>
-        </Modal>
+        <FloatButton title='Nova Portaria' onClick={() =>{setShowModal(true)}}/>
+        <ModalForm show={showmodal} onClose={() => setShowModal(false)} title={'Nova Portaria de Outorga - INEMA'}>
+            <OutorgaForm hasLabel type='add' submit={reducer} />
+        </ModalForm>
         </>
     );
   };

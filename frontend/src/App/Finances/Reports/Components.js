@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFilePdf } from "@fortawesome/free-solid-svg-icons";
 
-export const MenuPagamento = ({ handlechange, form, meses, anos, setmodal }) => {
+export const MenuPagamento = ({ handlechange, form, meses, anos }) => {
     return ( form &&
         <Row>
             <Form.Group className="mb-1" as={Col} xl={2} sm={3}>
@@ -39,16 +39,11 @@ export const MenuPagamento = ({ handlechange, form, meses, anos, setmodal }) => 
                     </Link>
                 </Form.Group>
             }
-            <Col xl={'auto'} sm='auto' xs={'auto'}>
-                <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
-                    style={{padding: '2px 8px'}} onClick={() =>{setmodal({show:true})}}
-                >Novo Pagamento</Link>
-            </Col>
         </Row>
     );
 };
 
-export const MenuCobranca = ({ handlechange, form, meses, anos, setmodal }) => {
+export const MenuCobranca = ({ handlechange, form, meses, anos }) => {
     return ( form &&
         <Row className="gx-sm-1 gx-xl-3">
             <Form.Group className="mb-1" as={Col} xl={2} sm={2}>
@@ -83,11 +78,6 @@ export const MenuCobranca = ({ handlechange, form, meses, anos, setmodal }) => {
                     </Link>
                 </Form.Group>
             }
-            <Col xl={'auto'} sm='auto' xs={'auto'}>
-                <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
-                    style={{padding: '2px 8px'}} onClick={() =>{setmodal({show:true})}}
-                >Nova Cobrança</Link>
-            </Col>
         </Row>
     );
 };

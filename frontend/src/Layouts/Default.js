@@ -30,7 +30,6 @@ const App = () => {
       <>
         <div className={isFluid ? 'container-fluid' : 'container'}>
           <NavbarTop />
-          <hr className="my-0 d-lg-block"></hr>
           <div className="mt-2 px-0 conteudo">
             <Outlet />
           </div>

@@ -110,7 +110,7 @@ const Commodities = () =>{
         <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/external-api'}>API de Terceiros</Link>
+                <Link className="link-fx text-primary" to={'/services'}>Serviços</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">
                 Commodities

@@ -9,7 +9,7 @@ import { faFileExcel } from "@fortawesome/free-solid-svg-icons";
 import OperacoesForm from "./Form";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../components/Custom/Commom";
 
 const InitData = {
     'urlapilist':'credit/operacoes-contratadas', 
@@ -202,11 +202,6 @@ const IndexCredit = ({mes, ano}) => {
                         type="text"
                     />
                 </Form.Group>
-                <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
-                        style={{padding: '2px 8px'}} onClick={() =>{setShowModal({show:true})}}
-                    >Novo Cadastro</Link>
-                </Col>
             </>}
             <Col className={`mb- d-flex align-items-center ${mes || ano ? 'justify-content-start' : 'justify-content-end'}`} lg={2}>
                 <span className="fw-bold fs-0 text-primary">{somaDosValores ? Number(somaDosValores).toLocaleString('pt-BR', 
@@ -216,7 +211,7 @@ const IndexCredit = ({mes, ano}) => {
             <Col xl='auto'>
                 <Form action={`${process.env.REACT_APP_API_URL}/teste`} method="POST" onSubmit={submitExcel}>
                     <Form.Control type="hidden" id="html_content" name="html_content" value={dataexcel || ''} />
-                    <Button type="submit" className="btn btn-sm btn-success shadow-none fs--2 fw-normal py-0 px-2" disabled={searchResults && searchResults.length === 0}>
+                    <Button type="submit" className="btn btn-sm btn-success shadow-none mt-2 fs--2 fw-normal py-0 px-2" disabled={searchResults && searchResults.length === 0}>
                         <FontAwesomeIcon icon={faFileExcel} className="me-2" />Download Excel</Button>
                 </Form>
             </Col>
@@ -275,23 +270,10 @@ const IndexCredit = ({mes, ano}) => {
         </div>   
         }
         <ModalRecord show={modal.show} reducer={submit}/>
-        <Modal
-            size="md"
-            show={showmodal.show}
-            onHide={() => setShowModal({show:false})}
-            aria-labelledby="example-modal-sizes-title-lg"
-            scrollable
-        >
-            <Modal.Header>
-            <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                {showmodal && showmodal.data ? 'Editar' : 'Adicionar'} Operação
-            </Modal.Title>
-                <CloseButton onClick={() => setShowModal({show:false})}/>
-            </Modal.Header>
-            <Modal.Body className="pb-0">
-                <OperacoesForm type='add' hasLabel submit={submit}/>
-            </Modal.Body>
-        </Modal>
+        <FloatButton title='Novo Cadastro' onClick={() =>setShowModal({show:true})}/>
+        <ModalForm show={showmodal.show} onClose={() => setShowModal({show:false})} title={'Adicionar Nova Operação'}>
+            <OperacoesForm type='add' hasLabel submit={submit}/>
+        </ModalForm>
         </>
     );
   };

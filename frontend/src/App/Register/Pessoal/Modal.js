@@ -28,7 +28,7 @@ const ModalPessoal = ({show, reducer}) => {
   const [categorias, setCategorias] = useState([]);
 
   const handleClose = () => {
-    navigate('/register/pessoal')
+    navigate('/databases/pessoal')
     setRecord(null)
   };
   const handleTabSelect = async (key) => {

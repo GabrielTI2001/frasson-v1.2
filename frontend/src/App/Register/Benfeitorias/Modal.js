@@ -29,7 +29,7 @@ const ModalBenfeitoria = ({show, reducer}) => {
   const [modal, setModal] = useState({show:false, link:''})
 
   const handleClose = () => {
-    navigate('/register/farm-assets')
+    navigate('/databases/farm-assets')
     setRecord(null)
   };
   const handleTabSelect = async (key) => {

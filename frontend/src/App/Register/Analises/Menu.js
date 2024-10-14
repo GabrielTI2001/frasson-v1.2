@@ -20,7 +20,7 @@ export const DropMenu = ({ record, reducer }) => {
   } = useContext(AppContext);
 
   const handledelete = (type, uuid) =>{
-    navigate(`/register/analysis/soil`)
+    navigate(`/databases/analysis/soil`)
     reducer(type, uuid)
   }
 
@@ -38,7 +38,7 @@ export const DropMenu = ({ record, reducer }) => {
         <FontAwesomeIcon icon={faEllipsisV} transform="shrink-2" className='fs-2'/>
       </Dropdown.Toggle>
       <Dropdown.Menu className="py-0" align={isRTL ? 'start' : 'end'}>
-        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/register/analysis-soil/${record.uuid}/`})}}>
+        <Dropdown.Item onClick={() => {setModaldel({show:true, link:`${process.env.REACT_APP_API_URL}/databases/analysis-soil/${record.uuid}/`})}}>
           Excluir Análise
         </Dropdown.Item>
       </Dropdown.Menu>

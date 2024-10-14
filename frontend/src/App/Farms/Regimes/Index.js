@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Table, Form, Placeholder, Modal, CloseButton} from 'react-bootstrap';
+import {Row, Col, Table, Form, Placeholder} from 'react-bootstrap';
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AsyncSelect from 'react-select/async';
 import customStyles, {customStylesDark} from '../../../components/Custom/SelectStyles';
@@ -9,7 +9,7 @@ import { SelectSearchOptions } from "../../../helpers/Data";
 import RegimeForm from "./Form";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const InitData = {
     'urlapilist':'farms/regime', 
@@ -97,7 +97,7 @@ const IndexRegimes = () => {
         <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/farms'}>Cadastros Fazendas</Link>
+                <Link className="link-fx text-primary" to={'/databases'}>Cadastros</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
@@ -125,11 +125,6 @@ const IndexRegimes = () => {
                         instituicao: selected.value, loaded: !formData.cliente
                     }));
                 }} />
-            </Form.Group>
-            <Form.Group className="mb-2 d-flex align-items-end" as={Col} lg={4}>
-                <Link className="text-decoration-none btn btn-primary shadow-none fs--1"
-                    style={{padding: '2px 8px'}} onClick={() =>{setShowModal({show:true})}}
-                >Novo Cadastro</Link>
             </Form.Group>
         </Row>
         {searchResults && formData.loaded ? 
@@ -168,37 +163,19 @@ const IndexRegimes = () => {
             </tbody>
         </Table>
         : 
-        <div>
-            <Placeholder animation="glow">
-                <Placeholder xs={7} /> <Placeholder xs={4} /> 
-                <Placeholder xs={4} />
-                <Placeholder xs={6} /> <Placeholder xs={8} />
-            </Placeholder>    
-        </div>   
+            <div>
+                <Placeholder animation="glow">
+                    <Placeholder xs={7} /> <Placeholder xs={4} /> 
+                    <Placeholder xs={4} />
+                    <Placeholder xs={6} /> <Placeholder xs={8} />
+                </Placeholder>    
+            </div>   
         }
+        <FloatButton title='Novo Cadastro' onClick={() =>{setShowModal({show:true})}}/>
         <ModalRecord show={modal.show} reducer={submit}/>
-        <Modal
-            size="md"
-            show={showmodal.show}
-            onHide={() => setShowModal({show:false})}
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    {showmodal.data ? 'Editar' : 'Adicionar' } Regime de Exploração
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal({show:false})}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                        {showmodal.data
-                           ? null
-                           : <RegimeForm type='add' hasLabel submit={submit}/>
-                        } 
-                    </Row>
-            </Modal.Body>
-        </Modal>
+        <ModalForm show={showmodal.show} onClose={() => setShowModal({show:false})} title={'Adicionar Regime de Exploração'}>
+            <RegimeForm type='add' hasLabel submit={submit}/>
+        </ModalForm>
         </>
     );
   };

@@ -9,14 +9,13 @@ import AdvanceTableWrapper from '../../../components/common/advance-table/Advanc
 import { Spinner, Row, Col } from "react-bootstrap";
 import { HandleSearch } from "../../../helpers/Data";
 import AnaliseSoloForm from "./SoloForm";
-import { Modal, CloseButton } from "react-bootstrap";
 import ModalRecord from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const InitData = {
     'columns':columnsAnalisesSolo, 'urlapilist':'register/analysis-soil', 
-    'urlview':'/register/analysis/soil/', 'title': 'Análises Solo'
+    'urlview':'/databases/analysis/soil/', 'title': 'Análises Solo'
 }
 
 const IndexAnaliseSolo = () => {
@@ -70,76 +69,58 @@ const IndexAnaliseSolo = () => {
     },[uuid])
 
     return (
-        <>
+     <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
+                <Link className="link-fx text-primary" to={'/databases'}>Cadastros Gerais</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">
                {InitData.title}
             </span>  
         </CustomBreadcrumb>
         {searchResults ? 
-        <AdvanceTableWrapper
-            columns={InitData.columns}
-            data={searchResults}
-            sortable
-            pagination
-            perPage={15}
-        >
-            <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
-                <Col xl={4} sm={6} xs={12}>
-                    <AdvanceTableSearchBox table onSearch={handleChange}/>
-                </Col>
-                <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
-                        style={{padding: '2px 5px'}} onClick={() =>{setShowModal({show:true, type:'add'})}}
-                    >Novo Cadastro</Link>
-                </Col>
-            </Row>     
-            <AdvanceTable
-                table
-                headerClassName="text-nowrap align-middle fs-xs"
-                rowClassName='align-middle white-space-nowrap fs-xs'
-                tableProps={{
-                    bordered: true,
-                    striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden',
-                    index_status: 3
-                }}
-                Click={onClick}
-            />
-            <div className="mt-3">
-                <AdvanceTableFooter
-                    rowCount={searchResults.length}
+            <AdvanceTableWrapper
+                columns={InitData.columns}
+                data={searchResults}
+                sortable
+                pagination
+                perPage={15}
+            >
+                <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
+                    <Col xl={4} sm={6} xs={12}>
+                        <AdvanceTableSearchBox table onSearch={handleChange}/>
+                    </Col>
+                </Row>     
+                <AdvanceTable
                     table
-                    rowInfo
-                    navButtons
-                    rowsPerPageSelection
+                    headerClassName="text-nowrap align-middle fs-xs"
+                    rowClassName='align-middle white-space-nowrap fs-xs'
+                    tableProps={{
+                        bordered: true,
+                        striped: false,
+                        className: 'fs-xs mb-0 overflow-hidden',
+                        index_status: 3
+                    }}
+                    Click={onClick}
                 />
-            </div>
-        </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+                <div className="mt-3">
+                    <AdvanceTableFooter
+                        rowCount={searchResults.length}
+                        table
+                        rowInfo
+                        navButtons
+                        rowsPerPageSelection
+                    />
+                </div>
+            </AdvanceTableWrapper> 
+        : <div className="text-center"><Spinner></Spinner></div>}
         <ModalRecord show={modal.show} reducer={submit}/>
-        <Modal
-            size="md"
-            show={showmodal.show}
-            onHide={() => setShowModal(false)}
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Análise de Solo
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                        <AnaliseSoloForm hasLabel type='add' submit={submit}/>
-                    </Row>
-            </Modal.Body>
-        </Modal>
-        </>
+
+        <FloatButton title='Novo Cadastro' onClick={() =>setShowModal({show:true})}/>
+        <ModalForm show={showmodal.show} onClose={() => setShowModal({show:false})} title={'Adicionar Análise de Solo'}>
+            <AnaliseSoloForm hasLabel type='add' submit={submit}/>
+        </ModalForm>
+     </>
     );
   };
   

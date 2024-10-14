@@ -88,7 +88,7 @@ const KMLPolygon = () => {
     <>
       <CustomBreadcrumb>
         <span className="breadcrumb-item fw-bold">
-          <Link className="link-fx text-primary" to={'/services/tools'}>Ferramentas</Link>
+          <Link className="link-fx text-primary" to={'/services'}>Serviços</Link>
         </span>
         <span className="breadcrumb-item fw-bold" aria-current="page">
           Mapa Polígono

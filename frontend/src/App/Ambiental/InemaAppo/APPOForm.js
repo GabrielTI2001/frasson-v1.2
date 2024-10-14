@@ -17,7 +17,7 @@ const APPOForm = ({ hasLabel, type, submit}) => {
   const [message, setMessage] = useState()
   const navigate = useNavigate();
   const {uuid} = useParams()
-  const [aquifero, setAquifero] = useState([])
+  const [aquifero, setAquifero] = useState()
   const [isLoading, setIsLoading] = useState(false);
 
   const handleApi = async (dadosform) => {
@@ -63,13 +63,15 @@ const APPOForm = ({ hasLabel, type, submit}) => {
   useEffect(()=>{
     const buscar = async () =>{
       const data = await SelectOptions('environmental/inema/aquifero', 'description');
-      if (data.status === 401){
+      if (!data){
         const next = window.location.href.toString().split(process.env.REACT_APP_HOST)[1]
         navigate(`/auth/login?next=${next}`);
       }
-      setAquifero(data.dados)
+      else{
+        setAquifero(data)
+      }
     }
-    if (aquifero.length === 0){
+    if (!aquifero){
       buscar()
     }
   }, [])

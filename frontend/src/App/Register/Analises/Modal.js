@@ -30,7 +30,7 @@ const ModalRecord = ({show, reducer}) => {
   const [activeTab, setActiveTab] = useState('results');
 
   const handleClose = () => {
-    navigate('/register/analysis/soil')
+    navigate('/databases/analysis/soil')
     setRecord(null)
   };
 
@@ -196,7 +196,7 @@ const ModalRecord = ({show, reducer}) => {
                 </Tab.Pane>
                 <Tab.Pane eventKey="map">
                   <ModalMediaContent title='Mapa'> 
-                    {activeTab === 'map' && 
+                    {record && activeTab === 'map' && 
                       <GoogleMap
                         initialCenter={{
                             lat: Number(record.latitude_gd),

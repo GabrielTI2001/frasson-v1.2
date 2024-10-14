@@ -40,31 +40,31 @@ const IndexMyIndicators = () => {
         </CustomBreadcrumb>
         <span className="fs--1">Você Possui {searchResults && searchResults.length} Indicador</span>
         {searchResults ?
-        <Row xl={2} xs={1} className="mt-3">
-            <Table responsive className="table-sm">
-                <thead className="bg-300">
-                    <tr>
-                        <th scope="col">INDICADOR</th>
-                        <th scope="col">ANO</th>
-                        <th scope="col">RESPONSÁVEL</th>
+            <Row xl={2} xs={1} className="mt-3">
+                <Table responsive className="table-sm">
+                    <thead className="bg-300">
+                        <tr>
+                            <th scope="col">INDICADOR</th>
+                            <th scope="col">ANO</th>
+                            <th scope="col">RESPONSÁVEL</th>
+                        </tr>
+                    </thead>
+                    <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
+                    {searchResults && searchResults.map(reg =>(
+                    <tr key={reg.uuid} style={{cursor:'pointer'}} onClick={() => onClick(reg.uuid)}>
+                        <td className="align-middle fw-bold text-primary">{reg.str_indicator}</td>
+                        <td className="align-middle fw-bold text-primary">{reg.year}</td>
+                        <td className="py-0">
+                            <img className="rounded-circle p-1" src={`${process.env.REACT_APP_API_URL}/media/${reg.user_avatar}`} 
+                                alt="Header Avatar" style={{width: '35px'}}
+                            />
+                            <span className="col-xl-auto col-lg-auto fw-bold text-primary ps-1">{reg.str_responsavel}</span>
+                        </td>
                     </tr>
-                </thead>
-                <tbody className={`${theme === 'light' ? 'bg-light': 'bg-200'}`}>
-                {searchResults && searchResults.map(reg =>(
-                <tr key={reg.uuid} style={{cursor:'pointer'}} onClick={() => onClick(reg.uuid)}>
-                    <td className="align-middle fw-bold text-primary">{reg.str_indicator}</td>
-                    <td className="align-middle fw-bold text-primary">{reg.year}</td>
-                    <td className="py-0">
-                        <img className="rounded-circle p-1" src={`${process.env.REACT_APP_API_URL}/media/${reg.user_avatar}`} 
-                            alt="Header Avatar" style={{width: '35px'}}
-                        />
-                        <span className="col-xl-auto col-lg-auto fw-bold text-primary ps-1">{reg.str_responsavel}</span>
-                    </td>
-                </tr>
-                ))} 
-                </tbody>
-            </Table>
-        </Row>
+                    ))} 
+                    </tbody>
+                </Table>
+            </Row>
         : <div className="text-center"><Spinner></Spinner></div>}
         </>
     );

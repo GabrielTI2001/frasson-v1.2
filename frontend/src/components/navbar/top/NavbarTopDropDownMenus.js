@@ -1,105 +1,72 @@
-import React from 'react';
-import NavbarDropdown from './NavbarDropdown';
-import {
-  operacionalRoutes,
-  ComercialRoutes,
-  dashboardRoutes,
-  ambientalRoutes,
-  creditoRoutes,
-  servicosRoutes,
-  financeiroRoutes,
-  adminRoutes
-} from '../../../Routes/siteMaps';
-import NavbarDropdownAmbiental from './NavbarDropdownAmbiental';
-// import { useAppContext } from '../../../Main';
-import NavbarDropdownOperacional from './NavbarDropdownOperacional';
-import NavbarDropdownCredito from './NavbarDropdownCredito';
-import NavbarDropdownServicos from './NavbarDropdownServicos';
-import NavbarDropdownFinanceiro from './NavbarDropdownFinanceiro';
-import NavbarDropdownAdmin from './NavbarDropdownAdmin';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { useState } from 'react';
+import { operacionalRoutes, dashboardRoutes, ambientalRoutes, creditoRoutes } from '../../../Routes/siteMaps';
 import Flex from '../../common/Flex';
-import NavbarDropdownComercial from './NavbarDropdownComercial';
-import { faCartPlus } from '@fortawesome/free-solid-svg-icons';
-import { useAppContext } from '../../../Main';
+import { faCartPlus, faDatabase, faKaaba } from '@fortawesome/free-solid-svg-icons';
+import NavbarNavLink from './NavbarNavLink';
 
 const NavbarTopDropDownMenus = () => {
-  const {
-    config: { navbarCollapsed, showBurgerMenu },
-    setConfig
-  } = useAppContext();
-
+  const [selected, setSelected] = useState({})
   const user = JSON.parse(localStorage.getItem("user"))
-
-  const handleDropdownItemClick = () => {
-    if (navbarCollapsed) {
-      setConfig('navbarCollapsed', !navbarCollapsed);
-    }
-    if (showBurgerMenu) {
-      setConfig('showBurgerMenu', !showBurgerMenu);
-    }
-  };
 
   return (
     <>
     {user && ((user.permissions && user.permissions.indexOf("ver_menu_operacional") !== -1) || user.is_superuser) &&
       <Flex>
-        <span className="nav-link-icon d-flex align-items-center">
-          <FontAwesomeIcon icon={operacionalRoutes.icon} className='fs--3'/>
-        </span>
-        <NavbarDropdown title="Operacional">
-          <NavbarDropdownOperacional items={operacionalRoutes.children}/>
-        </NavbarDropdown>
+        <NavbarNavLink title="Cadastros" route={{to:'/databases'}} icon={faDatabase} 
+          click={() => {setSelected({Cadastros:true})}} selected={selected.Cadastros}
+        />
+      </Flex>
+    }
+    {user && ((user.permissions && user.permissions.indexOf("ver_menu_operacional") !== -1) || user.is_superuser) &&
+      <Flex>
+        <NavbarNavLink title="Operacional" route={{to:'/operational'}} icon={operacionalRoutes.icon} 
+          click={() => {setSelected({Operacional:true})}} selected={selected.Operacional}
+        />
+      </Flex>
+    }
+    {user && ((user.permissions && user.permissions.indexOf("ver_menu_operacional") !== -1) || user.is_superuser) &&
+      <Flex>
+        <NavbarNavLink title="Pipeline" route={{to:'/pipeline'}} icon={faKaaba} 
+          click={() => {setSelected({Pipeline:true})}} selected={selected.Pipeline}
+        />
       </Flex>
     }
     <Flex>
-      <span className="nav-link-icon d-flex align-items-center">
-        <FontAwesomeIcon icon={faCartPlus} />
-      </span>
-      <NavbarDropdown title="Comercial">
-        <NavbarDropdownComercial items={ComercialRoutes.children}/>
-      </NavbarDropdown>
+      <NavbarNavLink title="Comercial" icon={faCartPlus} route={{to:'/comercial'}} selected={selected.Comercial} 
+        click={() => {setSelected({Comercial:true})}}
+      />
     </Flex>
     {user && ((user.permissions && user.permissions.indexOf("ver_menu_credito") !== -1) || user.is_superuser) &&
       <Flex>
-        <span className="nav-link-icon d-flex align-items-center">
-          <FontAwesomeIcon icon={creditoRoutes.icon} />
-        </span>
-        <NavbarDropdown title="Crédito Rural">
-          <NavbarDropdownCredito items={creditoRoutes.children} key={1}/>
-        </NavbarDropdown>
+        <NavbarNavLink title="Crédito Rural" icon={creditoRoutes.icon} selected={selected.CreditoRural}
+          click={() => {setSelected({CreditoRural:true})}} route={{to:'/credit'}}
+        />
       </Flex>
     }
     {user && ((user.permissions && user.permissions.indexOf("ver_menu_ambiental") !== -1) || user.is_superuser) &&
       <Flex>
-        <span className="nav-link-icon d-flex align-items-center">
-          <FontAwesomeIcon icon={ambientalRoutes.icon} />
-        </span>
-        <NavbarDropdown title="Ambiental">
-          <NavbarDropdownAmbiental items={ambientalRoutes.children} />
-        </NavbarDropdown>
+        <NavbarNavLink title="Ambiental" icon={ambientalRoutes.icon} icon2={ambientalRoutes.icon2} selected={selected.Ambiental}
+          click={() => {setSelected({Ambiental:true})}} route={{to:'/ambiental'}}
+        />
       </Flex>
     }
     <Flex>
-      <span className="nav-link-icon d-flex align-items-center">
-        <FontAwesomeIcon icon={dashboardRoutes.icon} />
-      </span>
-      <NavbarDropdown title="Dashboards">
-        <NavbarDropdownCredito items={dashboardRoutes.children} key={2}/>
-      </NavbarDropdown>
+      <NavbarNavLink title="Dashboards" icon={dashboardRoutes.icon} selected={selected.Dashboards}
+        click={() => {setSelected({Dashboards:true})}} route={{to:'/dashboard'}}
+      />
     </Flex>
-    <NavbarDropdown title="Serviços">
-      <NavbarDropdownServicos items={servicosRoutes.children} />
-    </NavbarDropdown>
+    <Flex>
+      <NavbarNavLink title="Serviços" selected={selected.Servicos} click={() => {setSelected({Servicos:true})}} route={{to:'/services'}}/>
+    </Flex>
     {user && ((user.permissions && user.permissions.indexOf("ver_menu_financeiro") !== -1) || user.is_superuser) &&
-      <NavbarDropdown title="Adm & Fin">
-        <NavbarDropdownFinanceiro items={financeiroRoutes.children} />
-      </NavbarDropdown>
+      <Flex>
+        <NavbarNavLink title="Adm & Fin" selected={selected.AdmFin} click={() => {setSelected({AdmFin:true})}} route={{to:'/finances'}}/>
+      </Flex>
     }
     {user.is_superuser && 
-      <NavbarDropdown title="Admin">
-        <NavbarDropdownAdmin items={adminRoutes.children} />
-      </NavbarDropdown>
+      <Flex>
+        <NavbarNavLink title="Admin" selected={selected.Admin} click={() => {setSelected({Admin:true})}} route={{to:'/admin'}}/>
+      </Flex>
     }
     </>
   );

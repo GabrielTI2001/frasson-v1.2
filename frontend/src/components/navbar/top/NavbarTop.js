@@ -39,8 +39,8 @@ const NavbarTop = () => {
   const burgerMenuRef = useRef();
 
   return (
-    <Navbar
-      className={classNames('navbar-glass fs--1 navbar-top sticky-kit', {
+    <Navbar bg="primary-subtle" data-bs-theme="light"
+      className={classNames('navbar-glass text-900 fs--1 navbar-top sticky-kit', {
         // 'navbar-glass-shadow': showDropShadow
         'navbar-glass-shadow': showDropShadow && !isChat
       })}
@@ -114,7 +114,7 @@ const NavbarTopElements = ({
         </button>
       </Navbar.Toggle>
 
-      <Logo at="navbar-top" textClass="text-primary" width={110} id="topLogo" dark={dark} />
+      <Logo at="navbar-top" width={110} id="topLogo" dark={dark} />
 
       {navbarPosition === 'top' || navbarPosition === 'combo' ? (
         <Navbar.Collapse

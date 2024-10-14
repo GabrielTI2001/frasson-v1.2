@@ -9,13 +9,12 @@ import AdvanceTableWrapper from '../../../components/common/advance-table/Advanc
 import { Link } from "react-router-dom";
 import {columnsPivot} from "../Data"
 import PivotForm from "./Form";
-import { Modal, CloseButton } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapLocation } from "@fortawesome/free-solid-svg-icons";
 import { HandleSearch } from "../../../helpers/Data";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
 import ModalRecord from "./Modal";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const IndexPivots = () => {
     const [searchResults, setSearchResults] = useState();
@@ -70,80 +69,61 @@ const IndexPivots = () => {
         <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/irrigation'}>Irrigation Application</Link>
+                <Link className="link-fx text-primary" to={'/ambiental'}>Gestão Ambiental e Irrigação</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">
                 Cadastro Pivots
             </span>  
         </CustomBreadcrumb>
         {searchResults ? 
-        <AdvanceTableWrapper
-            columns={columnsPivot}
-            data={searchResults}
-            sortable
-            pagination
-            perPage={15}
-        >
-        <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
-            <Col xl={4} sm={6} xs={12}>
-                <AdvanceTableSearchBox table onSearch={handleChange}/>
-            </Col>
-            <Col xl={'auto'} sm={'auto'} xs={'auto'}>
-                <a className="text-decoration-none btn btn-primary shadow-none fs--2"
-                    style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
-                >Novo Pivot</a>
-            </Col>
-            <Col xl={'auto'} sm='auto' xs={'auto'}>
-                <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
-                style={{padding: '2px 5px'}} to={'map'}>
-                    <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa Pivots
-                </Link>
-            </Col>
-        </Row>
-        {isloading ? <div className="text-center"><Spinner></Spinner></div> :
-            <AdvanceTable
-                table
-                headerClassName="text-nowrap align-middle fs-xs"
-                rowClassName='align-middle white-space-nowrap fs-xs'
-                tableProps={{
-                    bordered: true,
-                    striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden'
-                }}
-                Click={onClick}
-            />
-        }       
-
-        <div className="mt-3">
-            <AdvanceTableFooter
-                rowCount={searchResults.length}
-                table
-                rowInfo
-                navButtons
-                rowsPerPageSelection
-            />
-        </div>
-        </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+            <AdvanceTableWrapper
+                columns={columnsPivot}
+                data={searchResults}
+                sortable
+                pagination
+                perPage={15}
+            >
+                <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
+                    <Col xl={4} sm={6} xs={12}>
+                        <AdvanceTableSearchBox table onSearch={handleChange}/>
+                    </Col>
+                    <Col xl={'auto'} sm='auto' xs={'auto'}>
+                        <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
+                        style={{padding: '2px 5px'}} to={'map'}>
+                            <FontAwesomeIcon icon={faMapLocation} className="me-1" />Mapa Pivots
+                        </Link>
+                    </Col>
+                </Row>
+                    {isloading ? <div className="text-center"><Spinner></Spinner></div> :
+                        <AdvanceTable
+                            table
+                            headerClassName="text-nowrap align-middle fs-xs"
+                            rowClassName='align-middle white-space-nowrap fs-xs'
+                            tableProps={{
+                                bordered: true,
+                                striped: false,
+                                className: 'fs-xs mb-0 overflow-hidden'
+                            }}
+                            Click={onClick}
+                        />
+                    }       
+                <div className="mt-3">
+                    <AdvanceTableFooter
+                        rowCount={searchResults.length}
+                        table
+                        rowInfo
+                        navButtons
+                        rowsPerPageSelection
+                    />
+                </div>
+            </AdvanceTableWrapper> 
+        : <div className="text-center"><Spinner></Spinner></div>}
         <ModalRecord show={modal.show} reducer={submit} />
-        <Modal
-            size="md"
-            show={showmodal}
-            onHide={() => setShowModal(false)}
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Pivot
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal(false)}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                       <PivotForm hasLabel type='add' submit={submit} />
-                    </Row>
-            </Modal.Body>
-        </Modal>
+        
+        <FloatButton title='Novo Pivot' onClick={() =>{setShowModal(true)}}/>
+        <ModalForm show={showmodal} onClose={() => setShowModal(false)} title={'Adicionar Pivot'}>
+            <PivotForm hasLabel type='add' submit={submit} />
+        </ModalForm>
         </>
     );
   };

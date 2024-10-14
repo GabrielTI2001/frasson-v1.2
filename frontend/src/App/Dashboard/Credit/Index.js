@@ -57,7 +57,7 @@ const DashCredit = () =>{
         <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/analytics/credit'}>Operações de Crédito</Link>
+                <Link className="link-fx text-primary" to={'/credit/operations'}>Operações de Crédito</Link>
             </span>
             <span className="breadcrumb-item fw-bold" aria-current="page">
                 Dashboard

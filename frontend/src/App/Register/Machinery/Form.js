@@ -16,7 +16,6 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
   });
   const [message, setMessage] = useState()
   const navigate = useNavigate();
-  const token = localStorage.getItem("token")
   const {uuid} = useParams()
   const [defaultoptions, setDefaultOptions] = useState()
   const estadocons = useState([{label:'Novo'}, {label:'Seminovo'}, {label:'Antigo'}])
@@ -269,19 +268,10 @@ const MachineryForm = ({ hasLabel, type, submit, data}) => {
           />
           <label className='text-danger'>{message ? message.participacao : ''}</label>
         </Form.Group>
-
-        <Form.Group className={`mb-0 ${type === 'edit' ? 'text-start' : 'text-end'}`}>
-          <Button
-            className="w-40"
-            type="submit"
-            >
-              {type === 'edit' ? "Atualizar Máquina"
-              : "Cadastrar Máquina"}
-          </Button>
-        </Form.Group>       
+      
         <Form.Group className={`mb-0 text-center fixed-footer ${theme === 'light' ? 'bg-white' : 'bg-dark'}`}>
           <Button className="w-50" type="submit" disabled={isLoading} >
-            {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Cadastrar Imóvel Rural'}
+            {isLoading ? <Spinner size='sm' className='p-0' style={{marginBottom:'-4px'}}/> : 'Cadastrar Máquina'}
           </Button>
         </Form.Group>       
       </Form>

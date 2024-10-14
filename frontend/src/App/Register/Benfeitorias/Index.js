@@ -9,17 +9,15 @@ import AdvanceTableWrapper from '../../../components/common/advance-table/Advanc
 import { Link } from "react-router-dom";
 import { columnsBenfeitorias} from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
-// import OutorgaForm from "./Machinery/OutorgaForm";
 import BenfeitoriaForm from "./Form";
-import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import ModalBenfeitoria from "./Modal";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const InitData = {
     'columns':columnsBenfeitorias, 'urlapilist':'register/farm-assets', 
-    'urlview':'/register/farm-assets/', 'title': 'Benfeitorias Fazendas'
+    'urlview':'/databases/farm-assets/', 'title': 'Benfeitorias Fazendas'
 }
 
 const IndexBenfeitorias = () => {
@@ -81,71 +79,34 @@ const IndexBenfeitorias = () => {
         <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/register'}>Cadastros Gerais</Link>
+                <Link className="link-fx text-primary" to={'/databases'}>Cadastros Gerais</Link>
             </span>
-            <span className="breadcrumb-item fw-bold" aria-current="page">
-               {InitData.title}
-            </span>  
+            <span className="breadcrumb-item fw-bold" aria-current="page">{InitData.title}</span>  
         </CustomBreadcrumb>
         {searchResults ? 
-        <AdvanceTableWrapper
-            columns={InitData.columns}
-            data={searchResults}
-            sortable
-            pagination
-            perPage={15}
-        >
-            <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
-                <Col xl={4} sm={6} xs={12}>
-                    <AdvanceTableSearchBox table onSearch={handleChange}/>
-                </Col>
-                <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
-                        style={{padding: '2px 5px'}} onClick={() =>{setShowModal(true)}}
-                    >Novo Cadastro</Link>
-                </Col>
-            </Row>     
-            <AdvanceTable
-                table
-                headerClassName="text-nowrap align-middle fs-xs"
-                rowClassName='align-middle white-space-nowrap fs-xs'
-                tableProps={{
-                    bordered: true,
-                    striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden'
-                }}
-                Click={onClick}
-            />
-            <div className="mt-3">
-                <AdvanceTableFooter
-                    rowCount={searchResults.length}
-                    table
-                    rowInfo
-                    navButtons
-                    rowsPerPageSelection
+            <AdvanceTableWrapper columns={InitData.columns} data={searchResults} sortable pagination perPage={15}>
+                <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
+                    <Col xl={4} sm={6} xs={12}>
+                        <AdvanceTableSearchBox table onSearch={handleChange}/>
+                    </Col>
+                </Row>     
+                <AdvanceTable
+                    table headerClassName="text-nowrap align-middle fs-xs" rowClassName='align-middle white-space-nowrap fs-xs'
+                    tableProps={{bordered: true, striped: false, className: 'fs-xs mb-0 overflow-hidden'}} Click={onClick}
                 />
-            </div>
-        </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
+                <div className="mt-3">
+                    <AdvanceTableFooter rowCount={searchResults.length} table rowInfo navButtons rowsPerPageSelection/>
+                </div>
+            </AdvanceTableWrapper> 
+        : <div className="text-center"><Spinner></Spinner></div>}
+
         <ModalBenfeitoria show={modal.show} reducer={submit}/>
-        <Modal
-            size="md"
-            show={showmodal}
-            onHide={() => setShowModal(false)}
-            dialogClassName="mt-7"
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                    Adicionar Benfeitoria
-                </Modal.Title>
-                <CloseButton onClick={() => setShowModal(false)}/>
-            </Modal.Header>
-            <Modal.Body className="pb-0">
-                <Row className="flex-center sectionform">
-                    <BenfeitoriaForm hasLabel type='add' submit={submit}/>
-                </Row>
-            </Modal.Body>
-        </Modal>
+
+        <FloatButton title='Novo Cadastro' onClick={() =>setShowModal(true)}/>
+        <ModalForm show={showmodal} onClose={() => setShowModal(false)} title={'Adicionar Benfeitoria'}>
+            <BenfeitoriaForm hasLabel type='add' submit={submit}/>
+        </ModalForm>
+
         <ModalDelete show={modalDelete.show} link={modalDelete.link} close={() => setModalDelete({show: false, link:''})} update={submit}/>
         </>
     );

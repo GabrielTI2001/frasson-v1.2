@@ -1,6 +1,6 @@
 import { useState, useEffect} from "react";
 import React from 'react';
-import {Row, Col, Spinner, Modal, CloseButton} from 'react-bootstrap';
+import {Row, Col, Spinner} from 'react-bootstrap';
 import { useNavigate, useParams } from "react-router-dom";
 import AdvanceTable from '../../../../components/common/advance-table/AdvanceTable';
 import AdvanceTableFooter from '../../../../components/common/advance-table/AdvanceTableFooter';
@@ -12,7 +12,7 @@ import { HandleSearch } from "../../../../helpers/Data";
 import ContratoForm from "../FormContrato";
 import ModalContract from "./Modal";
 import { RedirectToLogin } from "../../../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../../components/Custom/Commom";
 
 const IndexContratosAmbiental = () => {
     const [searchResults, setSearchResults] = useState();
@@ -20,7 +20,7 @@ const IndexContratosAmbiental = () => {
     const navigate = useNavigate();
     const {uuid} = useParams();
     const [modal, setModal] = useState({})
-    const [modalform, setModalform] = useState({show:false, type:''});
+    const [modalform, setModalform] = useState(false);
 
     const onClick = (id, uuid) =>{
         const url = `/finances/contracts/environmental/${uuid}`
@@ -86,58 +86,37 @@ const IndexContratosAmbiental = () => {
                 <Col sm={6} lg={4}>
                     <AdvanceTableSearchBox table onSearch={handleChange}/>
                 </Col>
-                <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-primary shadow-none fs--2"
-                        style={{padding: '2px 8px'}} onClick={() =>{setModalform({show:true})}}
-                    >Novo Cadastro</Link>
-                </Col>
             </Row>
-        {searchResults ? <>
-        <AdvanceTable
-            table
-            headerClassName="text-nowrap align-middle fs-xs"
-            rowClassName='align-middle white-space-nowrap fs-xs'
-            tableProps={{
-                bordered: true,
-                striped: false,
-                className: 'fs-xs mb-0 overflow-hidden',
-                index_status: 5
-            }}
-            Click={onClick}
-        />
-        <div className="mt-3">
-            <AdvanceTableFooter
-                rowCount={searchResults.length}
-                table
-                rowInfo
-                navButtons
-                rowsPerPageSelection
-            />
-        </div></>
-        : <div className="text-center"><Spinner></Spinner></div>}
+            {searchResults ? <>
+                <AdvanceTable
+                    table
+                    headerClassName="text-nowrap align-middle fs-xs"
+                    rowClassName='align-middle white-space-nowrap fs-xs'
+                    tableProps={{
+                        bordered: true,
+                        striped: false,
+                        className: 'fs-xs mb-0 overflow-hidden',
+                        index_status: 5
+                    }}
+                    Click={onClick}
+                />
+                <div className="mt-3">
+                    <AdvanceTableFooter
+                        rowCount={searchResults.length}
+                        table
+                        rowInfo
+                        navButtons
+                        rowsPerPageSelection
+                    />
+                </div></>
+            : <div className="text-center"><Spinner></Spinner></div>}
         </AdvanceTableWrapper> 
 
         <ModalContract show={modal.show} reducer={submit}/>
-        
-        <Modal
-            size="md"
-            show={modalform.show}
-            onHide={() => setModalform({show:false})}
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
-        >
-            <Modal.Header>
-            <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                {!modalform.data ? 'Adicionar Contrato' : 'Atualizar Contrato'}
-            </Modal.Title>
-                <CloseButton onClick={() => setModalform({show:false})}/>
-            </Modal.Header>
-            <Modal.Body className="pb-0">
-                <Row className="flex-center sectionform">
-                    <ContratoForm type='add' hasLabel submit={submit}/>
-                </Row>
-            </Modal.Body>
-        </Modal>
+        <FloatButton title='Novo Contraro' onClick={() =>{setModalform(true)}}/>
+        <ModalForm show={modalform} onClose={() => setModalform(false)} title={'Adicionar Contrato'}>
+            <ContratoForm type='add' hasLabel submit={submit}/>
+        </ModalForm>
         </>
     );
   };

@@ -59,7 +59,7 @@ const ConsultaCNPJ = () =>{
         <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
-                <Link className="link-fx text-primary" to={'/external-api'}>API de Terceiros</Link>
+                <Link className="link-fx text-primary" to={'/services'}>Serviços</Link>
             </span>
             <span className="breadcrumb-item fw-bold">
                 Consulta CNPJ
@@ -77,9 +77,7 @@ const ConsultaCNPJ = () =>{
                 <label className='text-danger'>{message ? message : ''}</label>
             </Form.Group>
             <Col className={`mb-0 text-end`} xl='auto' sm='auto'>
-                <Button className="w-40" type="submit">
-                    Pesquisa
-                </Button>
+                <Button className="w-40" type="submit">Pesquisa</Button>
             </Col> 
         </Form>
         {formData ?

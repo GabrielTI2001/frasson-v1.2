@@ -23,7 +23,7 @@ export const DropMenu = ({ record, reducer }) => {
   } = useContext(AppContext);
 
   const handledelete = (type, uuid) =>{
-    navigate(`/register/pessoal`)
+    navigate(`/databases/pessoal`)
     reducer(type, uuid)
   }
 

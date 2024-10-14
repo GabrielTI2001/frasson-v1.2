@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'backend',
     'cadastro',
     'credit',
+    'custompipeline',
     'dashboards',
     'environmental',
     'external',

@@ -28,6 +28,7 @@ urlpatterns = [
     path('litec/', include('litec.urls')),
     path('register/', include('cadastro.urls')),
     path('pipeline/', include('pipeline.urls')),
+    path('custom/pipeline/', include('custompipeline.urls')),
     path('processes/', include('processes.urls')),
     path('environmental/', include('environmental.urls')),
     path('services/', include('services.urls')),

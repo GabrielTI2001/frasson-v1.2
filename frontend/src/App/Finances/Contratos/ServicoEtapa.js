@@ -30,7 +30,6 @@ const ServicoEtapa = ({ change, servicos, etapas_current }) => {
     [])
     const [formData, setformData] = useState({});
     const [isListDataInitialized, setIsListDataInitialized] = useState(false);
-    console.log(listdata)
 
     const insertData = (dados, etapa, s) => {
         const etapasl = [...etapas.map(e => formatTovar(e)), ...newetapas.filter(e => e.s === s).map(e => e.e)]

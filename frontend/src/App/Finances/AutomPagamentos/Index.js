@@ -9,11 +9,10 @@ import AdvanceTableWrapper from '../../../components/common/advance-table/Advanc
 import { Link } from "react-router-dom";
 import { columnsAutomPayments} from "../Data";
 import { HandleSearch } from "../../../helpers/Data";
-import { Modal, CloseButton } from "react-bootstrap";
 import ModalDelete from "../../../components/Custom/ModalDelete";
 import FormAutomPagamento from "./Form";
 import { RedirectToLogin } from "../../../Routes/PrivateRoute";
-import CustomBreadcrumb from "../../../components/Custom/Commom";
+import CustomBreadcrumb, { FloatButton, ModalForm } from "../../../components/Custom/Commom";
 
 const InitData = {
     'columns':columnsAutomPayments, 'urlapilist':'finances/automation/payments', 
@@ -74,7 +73,7 @@ const IndexAutomPagamentos = () => {
     };
 
     return (
-        <>
+    <>
         <CustomBreadcrumb>
             <span className="breadcrumb-item fw-bold">
                 <Link className="link-fx text-primary" to={'/home'}>Home</Link>
@@ -84,69 +83,53 @@ const IndexAutomPagamentos = () => {
             </span>  
         </CustomBreadcrumb>
         {searchResults ? 
-        <AdvanceTableWrapper
-            columns={InitData.columns}
-            data={searchResults}
-            sortable
-            pagination
-            perPage={15}
-        >
-            <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
-                <Col xl={4} sm={6} xs={12}>
-                    <AdvanceTableSearchBox table onSearch={handleChange}/>
-                </Col>
-                <Col xl={'auto'} sm='auto' xs={'auto'}>
-                    <Link className="text-decoration-none btn btn-success shadow-none"
-                        style={{padding: '3px 5px', fontSize: '12px'}} onClick={() =>{setShowModal({show:true, type:'add'})}}
-                    >Novo Lançamento Automático</Link>
-                </Col>
-            </Row>     
-            <AdvanceTable
-                table
-                headerClassName="text-nowrap align-middle fs-xs"
-                rowClassName='align-middle white-space-nowrap fs-xs'
-                tableProps={{
-                    bordered: true,
-                    striped: false,
-                    className: 'fs-xs mb-0 overflow-hidden',
-                    showactions: 'true',
-                }}
-                Click={onClick}
-            />
-            <div className="mt-3">
-                <AdvanceTableFooter
-                    rowCount={searchResults.length}
+            <AdvanceTableWrapper
+                columns={InitData.columns}
+                data={searchResults}
+                sortable
+                pagination
+                perPage={15}
+            >
+                <Row className="flex-end-center justify-content-start gy-2 gx-2 mb-3" xs={2} xl={12} sm={8}>
+                    <Col xl={4} sm={6} xs={12}>
+                        <AdvanceTableSearchBox table onSearch={handleChange}/>
+                    </Col>
+                </Row>     
+                <AdvanceTable
                     table
-                    rowInfo
-                    navButtons
-                    rowsPerPageSelection
+                    headerClassName="text-nowrap align-middle fs-xs"
+                    rowClassName='align-middle white-space-nowrap fs-xs'
+                    tableProps={{
+                        bordered: true,
+                        striped: false,
+                        className: 'fs-xs mb-0 overflow-hidden',
+                        showactions: 'true',
+                    }}
+                    Click={onClick}
                 />
-            </div>
-        </AdvanceTableWrapper> : <div className="text-center"><Spinner></Spinner></div>}
-        <Modal
-            size="md"
-            show={showmodal.show}
-            onHide={() => setShowModal({show:false})}
-            scrollable
-            aria-labelledby="example-modal-sizes-title-lg"
+                <div className="mt-3">
+                    <AdvanceTableFooter
+                        rowCount={searchResults.length}
+                        table
+                        rowInfo
+                        navButtons
+                        rowsPerPageSelection
+                    />
+                </div>
+            </AdvanceTableWrapper> 
+        : <div className="text-center"><Spinner></Spinner></div>}
+
+        <FloatButton title='Novo Lançamento Automático' onClick={() =>{setShowModal({show:true, type:'add'})}}/>
+        <ModalForm show={showmodal.show} onClose={() => setShowModal({show:false})} 
+            title={showmodal.type === 'add' ? 'Adicionar' : 'Editar'+' Autom. Pagamento'}
         >
-            <Modal.Header>
-                <Modal.Title id="example-modal-sizes-title-lg" style={{fontSize: '16px'}}>
-                   {showmodal.type === 'add' ? 'Adicionar': 'Editar'} Autom. Pagamento
-                </Modal.Title>
-                    <CloseButton onClick={() => setShowModal({show:false})}/>
-                </Modal.Header>
-                <Modal.Body className="pb-0">
-                    <Row className="flex-center sectionform">
-                        {showmodal.type === 'add' 
-                            ? <FormAutomPagamento hasLabel type='add' submit={submit}/>
-                            : <FormAutomPagamento hasLabel type='edit' data={showmodal.data} submit={submit}/>
-                        }
-                    </Row>
-            </Modal.Body>
-        </Modal>
+            {showmodal.type === 'add' 
+                ? <FormAutomPagamento hasLabel type='add' submit={submit}/>
+                : <FormAutomPagamento hasLabel type='edit' data={showmodal.data} submit={submit}/>
+            }
+        </ModalForm>
         <ModalDelete show={modalDelete.show} link={modalDelete.link} close={() => setModalDelete({show: false, link:''})} update={submit}/>
-        </>
+    </>
     );
   };
   

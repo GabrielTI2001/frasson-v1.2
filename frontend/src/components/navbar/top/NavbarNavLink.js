@@ -7,7 +7,7 @@ import { useAppContext } from '../../../Main';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import * as icons from 'react-bootstrap-icons';
 
-const NavbarNavLink = ({ title, route, icon, icon2, click }) => {
+const NavbarNavLink = ({ title, route, icon, icon2, click, selected }) => {
   const {
     config: { navbarCollapsed, showBurgerMenu },
     setConfig
@@ -28,22 +28,22 @@ const NavbarNavLink = ({ title, route, icon, icon2, click }) => {
     click()
   };
   return (
-    <Nav.Link
-      as={title ? 'p' : Link}
-      className={classNames('fw-medium text-body', {
-        'opacity-50': !route?.active,
-        'mb-0 fw-bold opacity-100': title,
-        'py-1': !title,
-        '': !title && route?.active,
-        'px-0':true,
-        'submenu-a': true,
-        'nav-not-hover': true
+    <Nav.Link as={Link}
+      className={classNames('text-hover-black nav-not-hover', {
+        'text-800': !selected, 'text-black': selected,
+        // 'opacity-50': !route?.active,
+        // 'mb-0 fw-bold opacity-100': title,
+        // 'py-1': !title,
+        // '': !title && route?.active,
+        // 'px-0':true,
+        // 'submenu-a': true,
+        // 'nav-not-hover': true
       })}
       to={route?.to}
       onClick={handleClick}
     >
-      {icon && <FontAwesomeIcon icon={icon} className='me-2'></FontAwesomeIcon>}
-      {icon2 && <BootstrapIcon className='me-2'/>}
+      {icon && <FontAwesomeIcon icon={icon} className='me-1 d-xl-inline d-sm-none'/>}
+      {icon2 && <BootstrapIcon className='me-1 d-xl-inline d-sm-none'/>}
       {title ? title : route.name}
     </Nav.Link>
   );
@@ -52,8 +52,8 @@ const NavbarNavLink = ({ title, route, icon, icon2, click }) => {
 NavbarNavLink.propTypes = {
   title: PropTypes.string,
   route: PropTypes.shape({
-    name: PropTypes.string.isRequired,
-    to: PropTypes.string.isRequired,
+    // name: PropTypes.string.isRequired,
+    // to: PropTypes.string.isRequired,
     active: PropTypes.bool
   })
 };

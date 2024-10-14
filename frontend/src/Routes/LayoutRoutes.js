@@ -7,11 +7,8 @@ import PasswordResetFom from '../components/authentication/PasswordResetForm';
 import { ProfileContext } from '../context/Context';
 //Admin
 import IndexUsers from '../App/Admin/Users/Index';
-import IndexAdministrator from '../App/Admin/Index';
 import TestsIndex from '../App/Admin/Tests/Tests';
 import { ResultDatabase, ResultPipe } from '../App/Admin/Tests/Results';
-//Alongamentos
-import IndexAlongamentos from '../App/Alongamentos/Index';
 //Assessments
 import Quiz from '../App/Assessments/Quiz';
 import MyAssessments from '../App/Assessments/My';
@@ -31,7 +28,6 @@ import DashRevenues from '../App/Dashboard/Finances/Revenues';
 import IndexOutorgasANA from '../App/External/OutorgasANA/Index';
 import Exchange from '../App/Services/Currency/Exchange';
 //Farms
-import IndexAppFarms from '../App/Farms/Index';
 import IndexFarms from '../App/Farms/Farms/Index';
 import IndexRegimes from '../App/Farms/Regimes/Index';
 import MapaCAR from '../App/Farms/Farms/Mapa';
@@ -51,7 +47,6 @@ import MapaGlebas from '../App/Glebas/Mapa';
 //Inbox
 import Notifications from '../App/Inbox/Index';
 //Irrigation
-import IndexIrrigacao from '../App/Irrigacao/Index';
 import IndexPivots from '../App/Irrigacao/Pivots/Index';
 import MapaPivots from '../App/Irrigacao/Pivots/Mapa';
 //KPI
@@ -80,15 +75,12 @@ import IndexAPPO from '../App/Ambiental/InemaAppo/Index';
 import IndexOutorgas from '../App/Ambiental/InemaOutorgas/Index';
 import IndexASV from '../App/Ambiental/InemaASV/Index';
 import MapaAreasASV from '../App/Ambiental/InemaASV/Mapa';
-import IndexRequerimentos from '../App/Ambiental/Requerimentos/Index';
 import MapaPontosRequerimento from '../App/Ambiental/Requerimentos/Mapa';
 //Licenses
 import IndexLicenses from '../App/Licenses/Index';
 //Services
-import ExternalAPIs from '../App/Services/API';
 import Commodities from '../App/Services/Currency/Commodities';
 import ConsultaCNPJ from '../App/Services/CNPJ';
-import ToolsIndex from '../App/Services/Tools/Index';
 import KMLToCoordinate from '../App/Services/Tools/KMLToCoordinate';
 import PivotCoordinates from '../App/Services/Tools/PivotCoordinates';
 import InsertPoints from '../App/Services/Tools/InsertPoints';
@@ -102,6 +94,15 @@ import ProfileForm from '../App/Admin/Users/ProfileForm';
 import { RedirectToLogin } from './PrivateRoute';
 import AlongamentosDone from '../App/Alongamentos/Done';
 import AlongamentosNext from '../App/Alongamentos/Next';
+import Operacional from './Pages/Operacional';
+import Pipeline from './Pages/Pipeline';
+import Comercial from './Pages/Comercial';
+import CreditoRural from './Pages/CreditoRural';
+import Ambiental from './Pages/Ambiental';
+import Dashboard from './Pages/Dashboard';
+import Servicos from './Pages/Servicos';
+import Financeiro from './Pages/Financeiro';
+import Admin from './Pages/Admin';
 
 const LayoutRoutes = () => {
   const token = localStorage.getItem("token")
@@ -127,7 +128,7 @@ const LayoutRoutes = () => {
             payload: data
           });
         }
-        if (response.status === 401 && new URL(window.location.href.toString()).pathname === '/profile') {
+        if (response.status === 401 && new URL(window.location.href.toString()).pathname !== '/profile') {
           RedirectToLogin(navigate)
         }
       } catch (error) {
@@ -144,21 +145,22 @@ const LayoutRoutes = () => {
     <Routes>
       <Route element={<Default />}>
         <Route path="/websocket" element={<WebSocketComponent />}></Route>
+        <Route path="/operational" element={<Operacional />}/>
         <Route path="/administrator">
-          <Route path="" element={<IndexAdministrator />}/>
           <Route path="tests" element={<TestsIndex />}/>
           <Route path="tests/pipe/:id" element={<ResultPipe />}/>
           <Route path="tests/database/:id" element={<ResultDatabase />}/>
         </Route>
         <Route path="/admin">
+          <Route path="" element={<Admin />}/>
           <Route path="users" element={<IndexUsers />}/>
         </Route>
         <Route path="/alongamentos">
-          <Route path="" element={<IndexAlongamentos />}/>
           <Route path="done" element={<AlongamentosDone />}/>
           <Route path="done/:uuid" element={<AlongamentosDone />}/>
           <Route path="next" element={<AlongamentosNext />}/>
         </Route>
+        <Route path="/ambiental" element={<Ambiental />}/>
         <Route path="/ambiental/inema">
           <Route path="outorgas" element={<IndexOutorgas />}/>
           <Route path="outorgas/:uuid" element={<IndexOutorgas />} />
@@ -169,7 +171,6 @@ const LayoutRoutes = () => {
           <Route path="asv" element={<IndexASV/>}/>
           <Route path="asv/:uuid" element={<IndexASV/>}/>
           <Route path="asv/map" element={<MapaAreasASV />} />
-          <Route path="requerimentos" element={<IndexRequerimentos />} />
           <Route path="requerimentos/appo" element={<MapaPontosRequerimento type='appo' />} />
           <Route path="requerimentos/appo/:uuid" element={<MapaPontosRequerimento type='appo' />} />
         </Route>
@@ -180,14 +181,17 @@ const LayoutRoutes = () => {
           <Route path="results/:uuid" element={<ResultsAssessment />}/>
         </Route>
         <Route path="/credit">
-          <Route path="" element={<IndexCredit />}/>
-          <Route path=":uuid" element={<IndexCredit />}/>
+          <Route path="" element={<CreditoRural />}/>
+          <Route path="operations" element={<IndexCredit />}/>
+          <Route path="operations/:uuid" element={<IndexCredit />}/>
         </Route>
         <Route path="/comercial">
+          <Route path="" element={<Comercial />}/>
           <Route path="pvtec" element={<IndexPVTEC />}/>
           <Route path="pvtec/:uuid" element={<IndexPVTEC />}/>
         </Route>
         <Route path="/dashboard">
+          <Route path="" element={<Dashboard />}/>
           <Route path="ambiental" element={<DashAmbiental />}/>
           <Route path="credit" element={<DashCredit />}/>
           <Route path="credit/progress" element={<DashGestaoCredito />}/>
@@ -200,13 +204,11 @@ const LayoutRoutes = () => {
           <Route path="ana">
             <Route path="outorgas" element={<IndexOutorgasANA />}/>
           </Route>
-          <Route path="" element={<ExternalAPIs />}/>
           <Route path="cnpj" element={<ConsultaCNPJ />}/>
           <Route path="currency/commodity" element={<Commodities />}/>
           <Route path="currency/exchange" element={<Exchange />}/>
         </Route>
         <Route path="/farms">
-          <Route path="" element={<IndexAppFarms />}/>
           <Route path="regime" element={<IndexRegimes />}/>
           <Route path="regime/:uuid" element={<IndexRegimes />}/>
           <Route path="farms" element={<IndexFarms />}/>
@@ -214,6 +216,7 @@ const LayoutRoutes = () => {
           <Route path="farms/:uuid" element={<IndexFarms />}/>
         </Route>
         <Route path="/finances">
+          <Route path="" element={<Financeiro />}/>
           <Route path="dre/actual" element={<DREConsolidado />}/>
           <Route path="dre/forecast" element={<DREProvisionado />}/>
           <Route path="automation/payments" element={<IndexAutomPagamentos />}/>
@@ -235,7 +238,6 @@ const LayoutRoutes = () => {
         </Route>
         <Route path="/home" element={<Home />} />
         <Route path="/irrigation">
-          <Route path="" element={<IndexIrrigacao />}/>
           <Route path="pivots" element={<IndexPivots />}/>
           <Route path="pivots/:uuid" element={<IndexPivots />}/>
           <Route path="pivots/map" element={<MapaPivots />}/>
@@ -255,9 +257,8 @@ const LayoutRoutes = () => {
         <Route path="/Notifications">
           <Route path="" element={<Notifications />}/>
         </Route>
-        <Route path="/pipefy">
-        </Route>
         <Route path="/pipeline">
+          <Route path="" element={<Pipeline />}/>
           <Route path="518984924" element={<Prospects />}/>
           <Route path="518984924/processo/:code" element={<Prospects />}/>
           <Route path="518984721" element={<Products />}/>
@@ -271,7 +272,7 @@ const LayoutRoutes = () => {
           <Route path="followup/:id" element={<ViewFollowup />}/>
         </Route>
         <Route path="profile" element={<ProfileForm hasLabel />}/>
-        <Route path="/register">
+        <Route path="/databases">
           <Route path="" element={<IndexCadGerais />}/>
           <Route path="cartorios" element={<IndexCartorios />}/>
           <Route path="pessoal" element={<IndexPessoal />}/>
@@ -285,8 +286,8 @@ const LayoutRoutes = () => {
           <Route path='feedbacks' element={<IndexFeedbacks />}/>
         </Route>
         <Route path="/services">
+          <Route path="" element={<Servicos />}/>
           <Route path="maps" element={<ServicesMaps />}/>
-          <Route path="tools" element={<ToolsIndex />}/>
           <Route path="tools/kml-to-coordinates" element={<KMLToCoordinate />}/>
           <Route path="tools/pivot" element={<PivotCoordinates />}/>
           <Route path="tools/LatLong" element={<InsertPoints />}/>

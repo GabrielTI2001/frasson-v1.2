@@ -15,7 +15,6 @@ const ProfileDropdown = () => {
         className="px-1 text-800 d-flex align-items-center"
       >
         {perfil.avatar && <Avatar src={`${perfil.avatar}`} size={'l'}></Avatar>}
-        <span className='ms-1 fs--2'>{perfil.first_name} {perfil.last_name}</span>
       </Dropdown.Toggle>
 
       <Dropdown.Menu className="dropdown-caret dropdown-menu-card  dropdown-menu-end">
